@@ -6,3 +6,4 @@ TODO list
  * Add more tests, at least for structural time series, ARIMA and mixed models and multiple tests 
    for SSModel and auxiliary functions.
  * Study and possily implement marginal likelihood correction used in Francke et al. (2010)
+ * Check and correct documentations.
