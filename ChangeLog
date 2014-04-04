@@ -1,0 +1,55 @@
+Changes from Version 1.0.2 to 1.0.3:
+ * Changed default filtering option for Gaussian models back to "state" (was previously "none").
+ * Argument "invlink" in KFS is obsolete, proper argument is now "mean". For backwards compatibility,
+  "invlink" still works.
+ * Naming of output components of KFS were unified to follow the logic of state filtering and 
+   smoothing: Now mean filtering returns an array m, and mean smoothing returns an array muhat, 
+   signal filtering returns an array t, and signal smoothing returns an array thetahat. 
+   Also, signal filtering and smoothing for Gaussian models returns m and muhat, not t and thetahat.
+ * Fixed several bugs concerning the linearization of Gamma and Negative binomial distribution,
+   which resulted false standard errors, among other problems.
+ * Corrected bug in computing standardization for pearson and deviance residuals, 
+   and added separate method rstandard for standardized residuals.
+ * Added method hatvalues for computing hat values from KFS output.
+ * Added method fitted for extraction of fitted values from KFS output.
+ * Added method coef for extraction of fitted state values from KFS output.
+ * Added method deviance for computation of deviance from KFS output.
+ * Mean estimates for Poisson distribution now contains the effect of offset. Note that linear 
+   predictor theta still does not contain offset term, i.e. mu=exp(theta)*offset.
+ * Fixed a bug in SSMregression. In earlier versions missing values were removed from model matrix 
+   which caused error in constructing system matrices.
+ * Fixed a bug in SSMregression relating state names when type=="common".
+ * Fixed a bug in approxSSM which caused the approximation to fail if system matrix Z contained 
+   missing values.
+ * LogLik.SSModel now produces error if linearization of non-Gaussian model did not converge.
+ * When using formula list in SSMregression, option to use list of datasets is now also supported.
+ * Naming convention for common regression coefficients with formula lists was changed. 
+   Names for the states are now taken from the first dataset in data list.
+ * Fixed a bug in SSModel which caused error when formula contained interaction terms and custom parts.
+ * Broken SSMcycle with type="distinct" was fixed.
+ * Fixed a bug regarding simulateSSM with missing observations in diffuse phase, which caused 
+   variances of   simulated values to be much larger than expected.
+
+Changes from Version 1.0.0 to 1.0.2:
+ * Fixed a bug in SSMarima which caused function to fail if there was 
+   no ar part and stationarity option was TRUE.
+ * Fixed a bug regarding the deviance residuals for Gaussian model.
+ * Fixed a bugs in logLik.SSModel and transformSSM relating to the model transformation. 
+ * Fixed a bug in KFS signal smoothing regarding the multivariate model with
+   missing observations with time invariant Z and non-diagonal H.
+ * SSModel should now keep the time series attributes of the response variable.
+ * F is now set to 0 if F is smaller than the machine epsilon.
+ * transformSSM now keeps the proper dimnames of the system matrices.
+ * Changed the variable mu to muhat so it is similar to alphahat, thetahat etc.
+ * KFS now always returns the log-likelihood for the Gaussian models.
+ * Fixed a bug in residuals.KFS concerning the standardized deviance residuals.
+ * Fixed a bug in predict.SSModel concerning the interval computation for 
+   non-Gaussian models without simulation.
+ * Fixed a bug in SSMregression and SSMcustom where a test of equality of 
+   integer and double variables was done using function identical instead of ==.
+ * Fixed a bug in predict.SSModel regarding the standard error computations 
+   without simulation for non-Gaussian models.
+ * Added filtering for non-Gaussian models.
+ * Changed the filtering and smoothing options on KFS.
+ * Added option to simulate from predictive distributions.
+ * Other minor bug typo fixes.

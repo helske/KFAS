@@ -1,0 +1,46 @@
+\name{rstandard.KFS}
+\alias{rstandard.KFS}
+\title{Extract Standardized Residuals from KFS output}
+\usage{
+\method{rstandard}{KFS}(model, type = c("recursive", "deviance", "pearson",
+  "state"), ...)
+}
+\arguments{
+  \item{model}{KFS object}
+
+  \item{type}{Type of residuals. See details.}
+
+  \item{...}{Ignored.}
+}
+\description{
+Extract Standardized Residuals from KFS output
+}
+\details{
+For object of class KFS, several types of standardized
+residuals can be computed: \itemize{
+
+\item 'recursive': One-step ahead prediction residuals
+defined as \deqn{v_{t,i})/\sqrt{F_{i,t}},} with residuals
+being undefined in diffuse phase. Only supported for fully
+Gaussian models.
+
+\item 'pearson': Standardized Pearson residuals
+\deqn{(y_{t,i}-\theta_{t,i})/\sqrt{V(\mu)_{t,i}\phi_i\sqrt{1-h_{t,i}}},
+\quad
+i=1,\ldots,p,t=1,\ldots,n,}{(y[t,i]-\theta[t,i])/(V(\mu)[t,i]\phi[i](1-h[t,i]))^0.5,
+i=1,\ldots,p, t=1,\ldots,n,} where
+\eqn{V(\mu_{t,i})}{V(\mu[t,i])} is the variance function of
+the model, \eqn{\phi_i}{\phi[i]} is the dispersion
+parameter and \eqn{h_{t,i}}{h[t,i]} is the hat value.  For
+gaussian models, these coincide with the smoothed
+\eqn{\epsilon} disturbance residuals.
+
+\item 'state': Residuals based on the smoothed disturbance
+terms \eqn{\eta} are defined as \deqn{L^{-1}_t \hat \eta_t,
+\quad t=1,\ldots,n,}{L^{-1}[t] \eta[t], t=1,\ldots,n,}
+where \eqn{L_t}{L[t]} is the lower triangular matrix from
+Cholesky decomposition of \eqn{V_{\eta,t}}{V[\eta,t]}.
+
+\item 'deviance': Deviance residuals. }
+}
+

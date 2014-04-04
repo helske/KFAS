@@ -1,0 +1,14 @@
+\docType{data}
+\name{sexratio}
+\alias{sexratio}
+\title{Number of males and females born in Finland from 1751 to 2011}
+\format{A time series object containing the number of males and females born in Finland from 1751 to 2011.}
+\source{
+Statistics Finland
+}
+\description{
+A time series object containing the number of males and
+females born in Finland from 1751 to 2011.
+}
+\keyword{datasets}
+

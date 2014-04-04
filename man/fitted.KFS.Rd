@@ -1,0 +1,29 @@
+\name{fitted.KFS}
+\alias{fitted.KFS}
+\title{Extract Fitted Values of State Space Model}
+\usage{
+\method{fitted}{KFS}(object, start = NULL, end = NULL, filtered = FALSE,
+  ...)
+}
+\arguments{
+  \item{object}{An object of class \code{KFS}.}
+
+  \item{start}{The start time of the period of interest.
+  Defaults to first time point of the object.}
+
+  \item{end}{The end time of the period of interest.
+  Defaults to the last time point of the object.}
+
+  \item{filtered}{Logical, return filtered instead of
+  smoothed estimates of mean vector. Default is
+  \code{FALSE}.}
+
+  \item{\dots}{Ignored.}
+}
+\value{
+Multivariate time series containing fitted values.
+}
+\description{
+Extracts fitted values from output of \code{KFS}.
+}
+

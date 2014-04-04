@@ -1,0 +1,22 @@
+\name{ldl}
+\alias{ldl}
+\title{LDL Decomposition of a Matrix}
+\usage{
+ldl(x, tol = max(abs(diag(x))) * .Machine$double.eps)
+}
+\arguments{
+  \item{x}{Symmetrix matrix.}
+
+  \item{tol}{Tolerance parameter for LDL decomposition,
+  determines which diagonal values are counted as zero.
+  Same value is used in isSymmetric function.}
+}
+\value{
+Transformed matrix with D in diagonal, L in strictly lower
+diagonal and zeros on upper diagonal.
+}
+\description{
+Function \code{ldl} computes the LDL decomposition of a
+positive semidefinite matrix.
+}
+

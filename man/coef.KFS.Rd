@@ -1,0 +1,33 @@
+\name{coef.KFS}
+\alias{coef.KFS}
+\title{Extract Estimated States of State Space Model}
+\usage{
+\method{coef}{KFS}(object, start = NULL, end = NULL, filtered = FALSE,
+  ...)
+}
+\arguments{
+  \item{object}{An object of class \code{KFS}.}
+
+  \item{start}{The start time of the period of interest.
+  Defaults to first time point of the object}
+
+  \item{end}{The end time of the period of interest.
+  Defaults to the last time point of the object.}
+
+  \item{filtered}{Logical, return filtered instead of
+  smoothed estimates of state vector. Default is
+  \code{FALSE}.}
+
+  \item{\dots}{Ignored.}
+}
+\value{
+Multivariate time series containing estimates states.
+}
+\description{
+Extracts the estimates states from output of \code{KFS}.
+For non-Gaussian models without simulation, these are
+estimates of conditional modes of states. For Gaussian
+models and non-Gaussian models with importance sampling,
+these are estimates of conditional means of states.
+}
+

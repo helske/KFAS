@@ -1,0 +1,21 @@
+\docType{data}
+\name{GlobalTemp}
+\alias{GlobalTemp}
+\title{Two series of average global temperature deviations for years 1880-1987}
+\format{A time series object containing 108 times 2 observations.}
+\source{
+http://lib.stat.cmu.edu/general/stoffer/tsa2/
+}
+\description{
+This data set contains two series of average global
+temperature deviations for years 1880-1987. These series
+are same as used in Shumway and Stoffer (2006), where they
+are known as HL and Folland series. For more details, see
+Shumway and Stoffer (2006, p. 327).
+}
+\references{
+Shumway, Robert H. and Stoffer, David S. (2006). Time
+Series Analysis and Its Applications: With R examples.
+}
+\keyword{datasets}
+
