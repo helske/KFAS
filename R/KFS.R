@@ -39,7 +39,7 @@
 #' performs the usual Gaussian smoothing so that the smoothed state estimates equals to the 
 #' conditional mode of \eqn{p(\alpha_t|y)}{p(\alpha[t]|y)}.
 #' @param theta Initial values for conditional mode theta. Only used for non-Gaussian model.
-#' @param maxiter The maximum number of iterations used in linearisation. Default is 25. 
+#' @param maxiter The maximum number of iterations used in linearisation. Default is 50. 
 #' Only used for non-Gaussian model.
 #'
 #' @return What \code{KFS} returns depends on the arguments \code{filtering}, \code{smoothed} and 
@@ -101,7 +101,7 @@
 #'
 
 KFS <- function(model, filtering, smoothing, simplify = TRUE, transform = c("ldl","augment"), 
-                nsim = 0, theta, maxiter = 25) {
+                nsim = 0, theta, maxiter = 50) {
   
   is.SSModel(model, na.check = TRUE, return.logical = FALSE)
   
@@ -299,10 +299,15 @@ KFS <- function(model, filtering, smoothing, simplify = TRUE, transform = c("ldl
                       pmatch(x = model$distribution, 
                              table = c("gaussian", "poisson", "binomial", "gamma", "negative binomial"), 
                              duplicates.ok = TRUE), maxiter = as.integer(maxiter), model$tol, 
-                      as.integer(sum(model$P1inf)), as.double(1e-08))
+                      as.integer(sum(model$P1inf)), as.double(1e-08),diff=double(1))
       
-      if (maxiter == app$maxiter) 
-        warning("Maximum number of iterations reached, the linearization did not converge.")
+      if (!is.finite(app$diff)){
+        stop("Non-finite difference in approximation algoritm.")
+      }
+      if(app$maxiter==maxiter){
+        warning(paste("Maximum number of iterations reached, 
+                  the approximation algorithm did not converge. Latest difference was",app$diff))
+      }
       
       tsp(app$ytilde)<-tsp(model$y)
       model$y <- app$ytilde

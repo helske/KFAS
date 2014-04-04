@@ -30,7 +30,7 @@
 #' @return A matrix or list of matrices containing the predictions, and optionally standard errors.
 predict.SSModel <- function(object, newdata, interval = c("none", "confidence", "prediction"), 
                             level = 0.95, type = c("response", "link"), states=NULL,se.fit = FALSE, nsim = 0, 
-                            prob = TRUE, ...) {
+                            prob = TRUE, maxiter=50, ...) {
   
   
   interval <- match.arg(interval)
@@ -159,10 +159,10 @@ predict.SSModel <- function(object, newdata, interval = c("none", "confidence", 
       if (identical(states, as.integer(1:m))) {
         out <- KFS(model = object, smoothing = "signal")
       } else {
-        out <- signal(KFS(model = object, smoothing = "state"), states = states)
+        out <- signal(KFS(model = object, smoothing = "state",maxiter=maxiter), states = states)
         names(out)<-c("thetahat","V_theta")
       }
-      out <- KFS(model = object, smoothing = "signal")
+      out <- KFS(model = object, smoothing = "signal",maxiter=maxiter)
       for (i in 1:p) {
         pred[[i]] <- cbind(fit=out$thetahat[timespan, i]+(if(object$distribution[i]=="poisson") log(object$u[timespan, i]) else 0), 
                            switch(interval, none = NULL, out$thetahat[timespan, i] +
@@ -199,14 +199,14 @@ predict.SSModel <- function(object, newdata, interval = c("none", "confidence", 
     } else{
       if (interval == "none") {
         imp <- importanceSSM(object, ifelse(identical(states, as.integer(1:m)), "signal", "states"), 
-                             nsim = nsim, antithetics = TRUE) 
+                             nsim = nsim, antithetics = TRUE,maxiter=maxiter) 
         if (!identical(states, as.integer(1:m))) 
           imp$samples <- .Fortran(fzalpha, as.integer(dim(object$Z)[3] > 1), object$Z, imp$samples, 
                                   signal = array(0, c(n, p, nsim)), p, n, m, nsim, 
                                   as.integer(length(states)), states)$signal
         
         
-        imp <- importanceSSM(object, "signal", nsim = nsim, antithetics = TRUE)
+        imp <- importanceSSM(object, "signal", nsim = nsim, antithetics = TRUE,maxiter=maxiter)
         nsim <- as.integer(4 * nsim)
         w <- imp$weights/sum(imp$weights) 
         
@@ -238,7 +238,7 @@ predict.SSModel <- function(object, newdata, interval = c("none", "confidence", 
         
       } else {
         pred <- interval(object, interval = interval, level = level, type = type, states = states, 
-                         nsim = nsim, se.fit = se.fit, timespan = timespan, prob = prob)
+                         nsim = nsim, se.fit = se.fit, timespan = timespan, prob = prob,maxiter=maxiter)
       }
       
     }

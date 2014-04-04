@@ -3,7 +3,7 @@
 \title{Kalman Filter and Smoother with Exact Diffuse Initialization for Exponential Family State Space Models}
 \usage{
 KFS(model, filtering, smoothing, simplify = TRUE, transform = c("ldl",
-  "augment"), nsim = 0, theta, maxiter = 25)
+  "augment"), nsim = 0, theta, maxiter = 100)
 }
 \arguments{
   \item{model}{Object of class \code{SSModel}.}

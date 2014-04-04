@@ -37,13 +37,14 @@ aplus1,c,tol,info,antithetics,w,sim,nd,ndl,simwhat,simdim)
     double precision, dimension(n) :: tmp
     double precision, dimension(3 * nsim * antithetics + nsim) :: ps
     double precision, dimension(3 * nsim * antithetics + nsim) :: w
+    double precision :: diff
     double precision, external :: ddot
 
     ht=0.0d0
 
     ! approximate
     call approx(yt, ymiss, timevar, zt, tt, rtv, ht, qt, a1, p1,p1inf, p,n,m,r,&
-    theta, u, ytilde, dist,maxiter,tol,rankp,convtol)
+    theta, u, ytilde, dist,maxiter,tol,rankp,convtol,diff)
 
     ! simulate signals
     call simgaussian(ymiss,timevar, ytilde, zt, ht, tt, rtv, qt, a1, p1, &

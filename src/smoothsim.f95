@@ -34,7 +34,7 @@ d, j, p, m, n, r,tol,rankp,ft,finf,kt,kinf,epshat,etahat,rt0,rt1,needeps)
     double precision :: meps
     double precision, external :: ddot
 
- meps = tiny(meps)
+    meps = tiny(meps)
     tv = max(timevar(4),timevar(5))
     pinf = p1inf
     im = 0.0d0
@@ -178,12 +178,8 @@ d, j, p, m, n, r,tol,rankp,ft,finf,kt,kinf,epshat,etahat,rt0,rt1,needeps)
 
     !smoothing begins
 
-    im = 0.0d0
-    do i = 1, m
-        im(i,i) = 1.0d0
-    end do
-
     rrec = 0.0d0
+
     do t = n, d+1, -1
         call dgemv('t',m,r,1.0d0,rtv(:,:,(t-1)*timevar(4)+1),m,rrec,1,0.0d0,help,1)
         call dsymv('l',r,1.0d0,qt(:,:,(t-1)*timevar(5)+1),r,help,1,0.0d0,etahat(:,t),1)
@@ -191,7 +187,7 @@ d, j, p, m, n, r,tol,rankp,ft,finf,kt,kinf,epshat,etahat,rt0,rt1,needeps)
         rrec = rhelp
         do i = p, 1 , -1
             if(ymiss(t,i)==0) then
-                if(ft(i,t) >  0.0d0) then
+                if(ft(i,t) >  meps) then
                     if(needeps) then
                         epshat(i,t) = ht(i,i,(t-1)*timevar(2)+1)*(vt(i,t)-ddot(m,kt(:,i,t),1,rrec,1))/ft(i,t)
                     end if
@@ -208,12 +204,9 @@ d, j, p, m, n, r,tol,rankp,ft,finf,kt,kinf,epshat,etahat,rt0,rt1,needeps)
         t=d
         call dgemv('t',m,r,1.0d0,rtv(:,:,(t-1)*timevar(4)+1),m,rrec,1,0.0d0,help,1)
         call dsymv('l',r,1.0d0,qt(:,:,(t-1)*timevar(5)+1),r,help,1,0.0d0,etahat(:,t),1)
-
         call dgemv('t',m,m,1.0d0,tt(:,:,(t-1)*timevar(3)+1),m,rrec,1,0.0d0,rhelp,1,1)
         rrec = rhelp
-
         do i = p, (j+1) , -1
-
             if(ymiss(t,i).EQ.0) then
                 if(ft(i,t) .GT.  meps) then
                     if(needeps) then
@@ -227,7 +220,6 @@ d, j, p, m, n, r,tol,rankp,ft,finf,kt,kinf,epshat,etahat,rt0,rt1,needeps)
                 end if
             end if
         end do
-
         rrec1 = 0.0d0
         do i = j, 1, -1
             if(ymiss(t,i).EQ.0) then
@@ -248,7 +240,6 @@ d, j, p, m, n, r,tol,rankp,ft,finf,kt,kinf,epshat,etahat,rt0,rt1,needeps)
                     call dgemv('t',m,m,1.0d0,linf,m,rrec,1,0.0d0,rhelp,1) !rt0
                     rrec = rhelp
                 else
-
                     if(ft(i,t).GT. meps) then
                         if(needeps) then
                             epshat(i,t) = ht(i,i,(t-1)*timevar(2)+1)*(vt(i,t)-ddot(m,kt(:,i,t),1,rrec,1))/ft(i,t)
@@ -285,14 +276,12 @@ d, j, p, m, n, r,tol,rankp,ft,finf,kt,kinf,epshat,etahat,rt0,rt1,needeps)
                         call daxpy(m,ft(i,t)/finf(i,t),kinf(:,i,t),1,rhelp,1)
                         l0=0.0d0
                         call dger(m,m,(1.0d0/finf(i,t)),rhelp,1,zt(i,:,(t-1)*timevar(1)+1),1,l0,m) !l0
-
                         call dgemv('t',m,m,1.0d0,linf,m,rrec1,1,0.0d0,rhelp,1) !rt1
                         call dcopy(m,rhelp,1,rrec1,1)
                         call dgemv('t',m,m,1.0d0,l0,m,rrec,1,1.0d0,rrec1,1)
                         call daxpy(m,vt(i,t)/finf(i,t),zt(i,:,(t-1)*timevar(1)+1),1,rrec1,1)
                         call dgemv('t',m,m,1.0d0,linf,m,rrec,1,0.0d0,rhelp,1) !rt0
                         rrec = rhelp
-
                     else
                         if(ft(i,t).GT.  meps) then
                             if(needeps) then

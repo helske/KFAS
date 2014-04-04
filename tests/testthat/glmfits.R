@@ -8,7 +8,8 @@ weight <- c(ctl, trt)
 glm.gaussian <- glm(weight ~ group)
 model.gaussian <- SSModel(weight~group)
 tmp<-KFS(model.gaussian,filtering="state",smoothing="none")
-model.gaussian <- SSModel(weight~group,H=mean(c(tmp$v[1:11][tmp$Finf==0]^2/tmp$F[1:11][tmp$Finf==0],tmp$v[12:20]^2/tmp$F[12:20])))
+model.gaussian <- SSModel(weight~group,H=mean(c(tmp$v[1:tmp$d][tmp$Finf==0]^2/tmp$F[1:tmp$d][tmp$Finf==0],
+                                                tmp$v[-(1:tmp$d)]^2/tmp$F[-(1:tmp$d)])))
 kfas.gaussian <-KFS(model.gaussian,smoothing=c('state','signal','mean'))
 
 # Test for Poisson GLM
@@ -45,8 +46,21 @@ kfas.gamma2<-KFS(model.gamma2,smoothing=c('state','signal','mean'))
 ## Test for NB GLM
 ## From MASS library, ?glm.nb
 glm.NB <- glm.nb(Days ~ Sex/(Age + Eth*Lrn), data = quine,control=glm.control(epsilon=1e-12))
-#u from theta
-model.NB<-SSModel(Days ~ Sex/(Age + Eth*Lrn), u=glm.NB$theta, data = quine, distribution = 'negative binomial')
+
+# estimate theta
+theta0<-1
+model.NB<-SSModel(Days ~ Sex/(Age + Eth*Lrn), u=theta0, data = quine, distribution = 'negative binomial')
+kfas.NB<-KFS(model.NB,smoothing='mean')
+theta<-theta.ml(y=quine$Days,mu=c(fitted(kfas.NB)))
+maxit<-10
+i<-0
+while(abs(theta-theta0)/theta0>1e-7 && i<maxit){
+  model.NB$u[]<-theta0<-theta
+  kfas.NB<-KFS(model.NB,smoothing='mean')
+  theta<-theta.ml(y=quine$Days,mu=c(fitted(kfas.NB)))
+  i<-i+1
+}
+model.NB$u[]<-theta
 kfas.NB<-KFS(model.NB,smoothing=c('state','signal','mean'))
 
 test_that("Gaussian GLM fitting works properly",{

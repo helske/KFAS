@@ -2,7 +2,7 @@
 \alias{approxSSM}
 \title{Linear gaussian Approximation for Non-gaussian State Space Model}
 \usage{
-approxSSM(model, theta, maxiter = 25, tol = 1e-08)
+approxSSM(model, theta, maxiter = 100, tol = 1e-08)
 }
 \arguments{
   \item{model}{A non-Gaussian state space model object of
@@ -11,7 +11,7 @@ approxSSM(model, theta, maxiter = 25, tol = 1e-08)
   \item{theta}{Initial values for conditional mode theta.}
 
   \item{maxiter}{The maximum number of iterations used in
-  linearisation. Default is 25.}
+  linearisation. Default is 100.}
 
   \item{tol}{Tolerance parameter for convergence checks.
   Iterations are continued until

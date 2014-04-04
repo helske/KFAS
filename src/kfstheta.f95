@@ -70,11 +70,11 @@ p, n, m, r,tol,rankp,thetahat)
 
                         rankp = rankp -1
                         do i = 1, m
-                if(pirec(i,i) .LT. tol) then
-                    pirec(i,:) = 0.0d0
-                    pirec(:,i) = 0.0d0
-                end if
-            end do
+                            if(pirec(i,i) .LT. tol) then
+                                pirec(i,:) = 0.0d0
+                                pirec(:,i) = 0.0d0
+                            end if
+                        end do
                     else
                         finf(j,d) = 0.0d0
                         if(ft(j,d) .GT. meps) then
@@ -107,32 +107,32 @@ p, n, m, r,tol,rankp,thetahat)
         end do diffuse
 
         !non-diffuse filtering begins
-            if(rankp .EQ. 0) then
-        do i = j+1, p
-            if(ymiss(d,i).EQ.0) then
-                vt(i,d) = yt(d,i) - ddot(m,zt(i,:,(d-1)*timevar(1)+1),1,arec,1) !vt
-                call dsymv('u',m,1.0d0,prec,m,zt(i,:,(d-1)*timevar(1)+1),1,0.0d0,kt(:,i,d),1) ! p symmetric!
-                ft(i,d) = ddot(m,zt(i,:,(d-1)*timevar(1)+1),1,kt(:,i,d),1)  +  ht(i,i,(d-1)*timevar(2)+1)
-                if (ft(i,d) .GT.  meps) then !ft.NE.0
-                    call daxpy(m,vt(i,d)/ft(i,d),kt(:,i,d),1,arec,1) !a_rec = a_rec + kt(:,i,t)*vt(:,t)
-                    call dsyr('u',m,-1.0d0/ft(i,d),kt(:,i,d),1,prec,m) !p_rec = p_rec - kt*kt'*ft(i,t)
-                else
-                    ft(i,d)=0.0d0
+        if(rankp .EQ. 0) then
+            do i = j+1, p
+                if(ymiss(d,i).EQ.0) then
+                    vt(i,d) = yt(d,i) - ddot(m,zt(i,:,(d-1)*timevar(1)+1),1,arec,1) !vt
+                    call dsymv('u',m,1.0d0,prec,m,zt(i,:,(d-1)*timevar(1)+1),1,0.0d0,kt(:,i,d),1) ! p symmetric!
+                    ft(i,d) = ddot(m,zt(i,:,(d-1)*timevar(1)+1),1,kt(:,i,d),1)  +  ht(i,i,(d-1)*timevar(2)+1)
+                    if (ft(i,d) .GT.  meps) then !ft.NE.0
+                        call daxpy(m,vt(i,d)/ft(i,d),kt(:,i,d),1,arec,1) !a_rec = a_rec + kt(:,i,t)*vt(:,t)
+                        call dsyr('u',m,-1.0d0/ft(i,d),kt(:,i,d),1,prec,m) !p_rec = p_rec - kt*kt'*ft(i,t)
+                    else
+                        ft(i,d)=0.0d0
+                    end if
                 end if
-            end if
-        end do
+            end do
    
-        call dgemv('n',m,m,1.0d0,tt(:,:,(d-1)*timevar(3)+1),m,arec,1,0.0d0,at(:),1)  !at(:,t+1) = matmul(tt,a_rec)
+            call dgemv('n',m,m,1.0d0,tt(:,:,(d-1)*timevar(3)+1),m,arec,1,0.0d0,at(:),1)  !at(:,t+1) = matmul(tt,a_rec)
   
-        call dsymm('r','u',m,m,1.0d0,prec,m,tt(:,:,(d-1)*timevar(3)+1),m,0.0d0,mm,m)
-        call dgemm('n','t',m,m,m,1.0d0,mm,m,tt(:,:,(d-1)*timevar(3)+1),m,0.0d0,pt,m)
+            call dsymm('r','u',m,m,1.0d0,prec,m,tt(:,:,(d-1)*timevar(3)+1),m,0.0d0,mm,m)
+            call dgemm('n','t',m,m,m,1.0d0,mm,m,tt(:,:,(d-1)*timevar(3)+1),m,0.0d0,pt,m)
  
-        pt = pt + rqr(:,:,(d-1)*tv+1)
+            pt = pt + rqr(:,:,(d-1)*tv+1)
 
    
-        call dcopy(m,at(:),1,arec,1) ! a_rec =at(:,t+1)
-        prec = pt
-end if
+            call dcopy(m,at(:),1,arec,1) ! a_rec =at(:,t+1)
+            prec = pt
+        end if
     end if
 
     !Non-diffuse filtering continues from t=d+1, i=1
@@ -175,26 +175,16 @@ end if
     end do
 
     !smoothing begins
-
-
     rrec = 0.0d0
 
-    !rt(:,n+1) = 0.0d0
-
     do t = n, d+1, -1 !do until diffuse tts
-
-
         call dgemv('t',m,r,1.0d0,rtv(:,:,(t-1)*timevar(4)+1),m,rrec,1,0.0d0,help,1)
         call dsymv('l',r,1.0d0,qt(:,:,(t-1)*timevar(5)+1),r,help,1,0.0d0,etahat(:,t),1)
-
-
         call dgemv('t',m,m,1.0d0,tt(:,:,(t-1)*timevar(3)+1),m,rrec,1,0.0d0,rhelp,1) !r_t,p=t_t-1'*r_t+1
         rrec = rhelp
-
-
         do i = p, 1 , -1
             if(ymiss(t,i).EQ.0) then
-                if(ft(i,t) .GT. 0.0d0) then
+                if(ft(i,t) .GT. meps) then
                     lt = im
                     call dger(m,m,-1.0d0/ft(i,t),kt(:,i,t),1,zt(i,:,(t-1)*timevar(1)+1),1,lt,m) !l = I -kz
                     call dgemv('t',m,m,1.0d0,lt,m,rrec,1,0.0d0,rhelp,1)
@@ -202,27 +192,17 @@ end if
                 end if
             end if
         end do
-
-        !rt(:,t) = rrec !call dcopy(m,rrec,1,rt(:,t),1) !r_t-1 = r_t,0
-
-
     end do
 
     if(d.GT.0) then
         t=d
-        rrec1 = 0.0d0
+
         call dgemv('t',m,r,1.0d0,rtv(:,:,(t-1)*timevar(4)+1),m,rrec,1,0.0d0,help,1)
         call dsymv('l',r,1.0d0,qt(:,:,(t-1)*timevar(5)+1),r,help,1,0.0d0,etahat(:,t),1)
-        !if(t.GT.1) then
         call dgemv('t',m,m,1.0d0,tt(:,:,(t-1)*timevar(3)+1),m,rrec,1,0.0d0,rhelp,1,1) !tarkiSta tOimivUUS!
-        rrec = rhelp
-        call dgemv('t',m,m,1.0d0,tt(:,:,(t-1)*timevar(3)+1),m,rrec1,1,0.0d0,rhelp,1,1) !tarkiSta tOimivUUS!
-        rrec1 = rhelp
-        !end if
         do i = p, (j+1) , -1
-
             if(ymiss(t,i).EQ.0) then
-                if(ft(i,t) .GT. 0.0d0) then
+                if(ft(i,t) .GT. meps) then
                     lt = im
                     call dger(m,m,-1.0d0/ft(i,t),kt(:,i,t),1,zt(i,:,(t-1)*timevar(1)+1),1,lt,m) !l = i -kz
                     call dgemv('t',m,m,1.0d0,lt,m,rrec,1,0.0d0,rhelp,1)
@@ -231,13 +211,10 @@ end if
                 end if
             end if
         end do
-
-
-
-
+        rrec1 = 0.0d0
         do i = j, 1, -1
             if(ymiss(t,i).EQ.0) then
-                if(finf(i,t).GT. 0.0d0) then
+                if(finf(i,t).GT. tol) then
                     linf = im
                     call dger(m,m,-1.0d0/finf(i,t),kinf(:,i,t),1,zt(i,:,(t-1)*timevar(1)+1),1,linf,m) !linf
                     rhelp = -kt(:,i,t)
@@ -250,11 +227,8 @@ end if
                     call daxpy(m,(vt(i,t)/finf(i,t)),zt(i,:,(t-1)*timevar(1)+1),1,rrec1,1)
                     call dgemv('t',m,m,1.0d0,linf,m,rrec,1,0.0d0,rhelp,1) !rt0
                     rrec = rhelp
-
-
                 else
-
-                    if(ft(i,t).GT.0.0d0) then
+                    if(ft(i,t).GT.meps) then
                         lt= im
                         call dger(m,m,-1.0d0/ft(i,t),kt(:,i,t),1,zt(i,:,(t-1)*timevar(1)+1),1,lt,m) !lt = I -Kt*Z/Ft
                         call dgemv('t',m,m,1.0d0,lt,m,rrec,1,0.0d0,rhelp,1)
@@ -262,27 +236,18 @@ end if
                         call daxpy(m,vt(i,t)/ft(i,t),zt(i,:,(t-1)*timevar(1)+1),1,rrec,1) !r0 = Z'vt/Ft - Lt'r0
                         call dgemv('t',m,m,1.0d0,lt,m,rrec1,1,0.0d0,rhelp,1)
                         rrec1=rhelp
-
-
                     end if
                 end if
             end if
         end do
 
-
         do t=(d-1), 1, -1
-
-
             call dgemv('t',m,r,1.0d0,rtv(:,:,(t-1)*timevar(4)+1),m,rrec,1,0.0d0,help,1)
             call dsymv('l',r,1.0d0,qt(:,:,(t-1)*timevar(5)+1),r,help,1,0.0d0,etahat(:,t),1)
-
             call dgemv('t',m,m,1.0d0,tt(:,:,(t-1)*timevar(3)+1),m,rrec,1,0.0d0,rhelp,1,1)
             rrec = rhelp
             call dgemv('t',m,m,1.0d0,tt(:,:,(t-1)*timevar(3)+1),m,rrec1,1,0.0d0,rhelp,1,1)
             rrec1 = rhelp
-
-
-
             do i = p, 1, -1
                 if(ymiss(t,i).EQ.0) then
                     if(finf(i,t).GT. 0.0d0) then
@@ -301,8 +266,7 @@ end if
                         rrec = rhelp
 
                     else
-                        if(ft(i,t).GT. 0.0d0) then
-
+                        if(ft(i,t).GT. meps) then
                             lt= im
                             call dger(m,m,(-1.0d0)/ft(i,t),kt(:,i,t),1,zt(i,:,(t-1)*timevar(1)+1),1,lt,m) !lt = I -Kt*Z/Ft
                             call dgemv('t',m,m,1.0d0,lt,m,rrec,1,0.0d0,rhelp,1)

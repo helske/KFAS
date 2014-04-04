@@ -1,4 +1,4 @@
-#' Linear gaussian Approximation for Non-gaussian State Space Model
+#' Linear Gaussian Approximation for Exponential Family State Space Model
 #'
 #' Function \code{approxSMM} computes the linear Gaussian approximation of a
 #' state space model where observations follow an exponential family distribution.
@@ -12,24 +12,27 @@
 #' given the observations \eqn{y} as the original non-gaussian model. 
 #' Models also have a same curvature at the mode.
 #'
-#' The linearization of the exponential family state space model is based on iterative  weighted 
+#' The approximation of the exponential family state space model is based on iterative weighted 
 #' least squares method, see McCullagh and Nelder (1983) p.31 and Durbin Koopman (2012) p. 243.
 #'  
-#' @seealso Importance sampling of non-gaussian state space models \code{\link{importanceSSM}}, construct a \code{SSModel} object \code{\link{SSModel}}.
+#' @seealso Importance sampling of non-Gaussian state space models \code{\link{importanceSSM}}, 
+#' construct a \code{SSModel} object \code{\link{SSModel}}, and examples in \code{\link{KFAS}}.
 #' @export
 #' @param model A non-Gaussian state space model object of class \code{SSModel}.
 #' @param theta Initial values for conditional mode theta.
-#' @param maxiter The maximum number of iterations used in linearisation. Default is 25.
-#' @param tol Tolerance parameter for convergence checks. Iterations are continued until \eqn{tol>sum(abs(theta_{new}-theta_{old})/(abs(theta_{old})+0.1))/(n*p)}.
+#' @param maxiter The maximum number of iterations used in approximation Default is 50.
+#' @param tol Tolerance parameter for convergence checks.
+#'  Iterations are continued until 
+#'  \eqn{tol>sum(abs(\theta_{new}-\theta_{old})/(abs(\theta_{old})+0.1))/(n*p)}{tol>sum(abs(\theta[[new]-\theta[old])/(abs(\theta[old])+0.1))/(n*p)}.
 #' @return An object which contains the approximating Gaussian state space model with following additional components:
-#' \item{thetahat}{mode of \eqn{p(\theta|y)}.}
-#' \item{iterations}{number of iterations used.}
-approxSSM <- function(model, theta, maxiter = 25, tol = 1e-08) {
+#' \item{thetahat}{Mode of \eqn{p(\theta|y)}. }
+#' \item{iterations}{Number of iterations used. }
+approxSSM <- function(model, theta, maxiter = 50, tol = 1e-08) {
   
   # Check that the model object is of proper form
   is.SSModel(model, na.check = TRUE, return.logical = FALSE)
   if (all(model$distribution == "gaussian")) 
-    stop("Model is completely gaussian, nothing to approximate.")
+    stop("Model is completely Gaussian, nothing to approximate.")
   p <- attr(model, "p")
   m <- attr(model, "m")
   k <- attr(model, "k")
@@ -44,7 +47,7 @@ approxSSM <- function(model, theta, maxiter = 25, tol = 1e-08) {
   
   ymiss <- is.na(model$y)
   storage.mode(ymiss) <- "integer"
-  if(is.null(maxiter)) maxiter<-25
+  if(is.null(maxiter)) maxiter<-50
   
   # initial values for linear predictor theta
   if (missing(theta) || is.null(theta)) {
@@ -66,10 +69,15 @@ approxSSM <- function(model, theta, maxiter = 25, tol = 1e-08) {
                   pmatch(x = model$distribution, 
                          table = c("gaussian", "poisson", "binomial", "gamma", "negative binomial"), 
                          duplicates.ok = TRUE), maxiter = as.integer(maxiter), 
-                  model$tol, as.integer(sum(model$P1inf)), as.double(tol))
+                  model$tol, as.integer(sum(model$P1inf)), as.double(tol),diff=double(1))
   
-  if (maxiter == out$maxiter) 
-    warning("Maximum number of iterations reached, the linearization did not converge.")
+  if (!is.finite(out$diff)){
+    stop("Non-finite difference in approximation algoritm.")
+  }
+  if(out$maxiter==maxiter){
+    warning(paste("Maximum number of iterations reached, 
+                  the approximation algorithm did not converge. Latest difference was",out$diff))
+  }
   
   model$distribution <- rep("gaussian", p)
   model$y[] <- out$ytilde
@@ -77,6 +85,7 @@ approxSSM <- function(model, theta, maxiter = 25, tol = 1e-08) {
   model$H <- out$Htilde
   model$thetahat <- out$theta
   model$iterations <- out$maxiter
+  model$difference <- out$diff
   class(model) <- c("approxSSM", "SSModel")
   invisible(model)
 } 

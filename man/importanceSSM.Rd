@@ -4,7 +4,7 @@
 \usage{
 importanceSSM(model, type = c("states", "signals"), filtered = FALSE,
   nsim = 1000, save.model = FALSE, theta, antithetics = FALSE,
-  maxiter = 25)
+  maxiter = 100)
 }
 \arguments{
   \item{model}{Exponential family state space model of

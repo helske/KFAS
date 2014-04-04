@@ -1,7 +1,7 @@
 ! Subroutine for computation of the approximating gaussian model for non-gaussian models
 
 subroutine approx(yt, ymiss, timevar, zt, tt, rtv, ht, qt, a1, p1,p1inf, p,n,m,r,&
-theta, u, ytilde, dist,maxiter,tol,rankp,convtol)
+theta, u, ytilde, dist,maxiter,tol,rankp,convtol,diff)
 
     implicit none
 
@@ -23,7 +23,7 @@ theta, u, ytilde, dist,maxiter,tol,rankp,convtol)
     double precision, intent(inout), dimension(n,p) :: theta
     double precision, intent(inout), dimension(n,p) :: ytilde
     double precision, intent(inout), dimension(p,p,n) :: ht
-    double precision  :: err
+    double precision, intent(inout) :: diff
     double precision, dimension(n,p) :: theta0
     double precision, dimension(m,r) :: mr
     double precision, dimension(m,m,(n-1)*max(timevar(4),timevar(5))+1) :: rqr
@@ -37,7 +37,7 @@ theta, u, ytilde, dist,maxiter,tol,rankp,convtol)
         call dgemm('n','t',m,m,r,1.0d0,mr,m,rtv(:,:,(i-1)*timevar(4)+1),m,0.0d0,rqr(:,:,i),m)
     end do
 
-    err = 1000.0d0
+    diff = 1000.0d0
     theta0=theta
 
     k=0
@@ -89,7 +89,7 @@ theta, u, ytilde, dist,maxiter,tol,rankp,convtol)
     end do
 
 
-    do while(err .GT. convtol .AND. k .LT. maxiter)
+    do while(diff > convtol .AND. k < maxiter)
 
         k=k+1
 
@@ -104,7 +104,6 @@ theta, u, ytilde, dist,maxiter,tol,rankp,convtol)
                 case(2)
                     do i=1,n
                         if(ymiss(i,j).EQ.0) then
-
                             ht(j,j,i) =  1.0d0/(exp(theta(i,j))*u(i,j))
                             ytilde(i,j) =  yt(i,j)*ht(j,j,i) + theta(i,j) - 1.0d0
                         end if
@@ -139,7 +138,7 @@ theta, u, ytilde, dist,maxiter,tol,rankp,convtol)
         end do
 
 
-        err = sum(abs(theta-theta0)/(abs(theta0)+0.1d0),MASK=(ymiss .EQ. 0))/(n*p-sum(ymiss))
+        diff = sum(abs(theta-theta0)/(abs(theta0)+0.1d0),MASK=(ymiss .EQ. 0))/(n*p-sum(ymiss))
         theta0=theta
     end do
     maxiter=k

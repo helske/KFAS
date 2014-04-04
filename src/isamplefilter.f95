@@ -42,6 +42,7 @@ aplus1,c,tol,info,antithetics,w,sim,nd,ndl,simwhat,simdim)
     double precision, dimension(r,n,nsim) :: etaplus2
     double precision, dimension(m,nsim) :: aplus12
     double precision, dimension(simdim,n,3 * nsim * antithetics + nsim) :: sim2
+    double precision :: diff
 
     ht=0.0d0
     ytilde=0.0d0
@@ -68,7 +69,7 @@ aplus1,c,tol,info,antithetics,w,sim,nd,ndl,simwhat,simdim)
         call approx(yt(1:i,:), ymiss(1:i,:), timevar, zt(:,:,1:((i-1)*timevar(1)+1)), &
         tt(:,:,1:((i-1)*timevar(3)+1)), rtv(:,:,1:((i-1)*timevar(4)+1)), ht(:,:,1:i),&
         qt(:,:,1:((i-1)*timevar(5)+1)), a1, p1,p1inf, p,i,m,r,&
-        theta(1:i,:), u(1:i,:), ytilde(1:i,:), dist,maxiter2,tol,rankp2,convtol)
+        theta(1:i,:), u(1:i,:), ytilde(1:i,:), dist,maxiter2,tol,rankp2,convtol,diff)
         if(maxiter2>maxitermax) then
             maxitermax = maxiter2
         end if

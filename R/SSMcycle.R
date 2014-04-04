@@ -19,35 +19,22 @@ SSMcycle <- function(period, type, Q, index, a1, P1, P1inf, n, ynames) {
         stop("period of the cycle component must be integer larger than 1. ")
     
     
-    
+    lambda <- 2 * pi/period
     m <- 2 * ((p - 1) * (type == 1) + 1)
     Z <- matrix(0, p, m)
     T <- matrix(0, m, m)
-#     if (type == 2) {
-#         Z[, 1] <- 1
-#         p <- 1       
-#     } else {
-#         #Z[cbind(1:3, seq(1, m, by = p - 1))] <- 1
-#       Z[cbind(1:3, seq(1, m, by = p))] <- 1
-#     }
     Z_univariate <- matrix(c(1,0), 1, 2)
+    T_univariate <- matrix(c(cos(lambda), sin(lambda), -sin(lambda), cos(lambda)), 2, 2)
     if (type != 2) {
       for (i in 1:p) {
         Z[i, ((i - 1) * 2 + 1):(i * 2)] <- Z_univariate
+        T[((i - 1) * 2 + 1):(i * 2), ((i - 1) * 2 + 1):(i * 2)] <- T_univariate
       }
     } else {
       Z <- matrix(Z_univariate, nrow = p, ncol = m, byrow = TRUE)
+      T <- T_univariate
     }
     state_names <- paste0(c("cycle", "cycle*"), rep(ynames, each = 2))
-    lambda <- 2 * pi/period
-    
-    ### diag(T) <- cos(lambda) dxp <- 1 + 0:(p - 1) * (p+ 1) T[1:p, p + 1:p][dxp] <- sin(lambda) T[p + 1:p, 1:p][dxp] <- -sin(lambda)
-    T_univariate <- matrix(c(cos(lambda), sin(lambda), -sin(lambda), cos(lambda)), 2, 2)
-    
-    T <- matrix(0, m, m)
-    for (i in 1:p) {
-        T[((i - 1) * 2 + 1):(i * 2), ((i - 1) * 2 + 1):(i * 2)] <- T_univariate
-    }
     
     if (missing(a1)) {
         a1 <- matrix(0, m, 1)

@@ -20,10 +20,10 @@
 #' @param theta Initial values for conditional mode theta.
 #' @param antithetics Logical. If TRUE, two antithetic variables are used in
 #' simulations, one for location and another for scale. Default is FALSE.
-#' @param maxiter Maximum number of iterations used in linearisation. Default is 25.
+#' @param maxiter Maximum number of iterations used in linearisation. Default is 50.
 #' @return A list containing elements \code{samples}, \code{weights} and \code{model} (if \code{save.model==TRUE}).
 importanceSSM <- function(model, type = c("states", "signals"), filtered=FALSE,nsim = 1000, 
-                          save.model = FALSE, theta, antithetics = FALSE, maxiter = 25) {
+                          save.model = FALSE, theta, antithetics = FALSE, maxiter = 50) {
   
   sim.what <- match.arg(arg = type, choices = c("states", "signals"))
   is.SSModel(model, na.check = TRUE, return.logical = FALSE)

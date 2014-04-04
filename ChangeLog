@@ -1,3 +1,14 @@
+﻿Changes from Version 1.0.3 to 1.0.4:
+ * Corrected output of LogLik method for non-Gaussian models: It now returns Inf only when the 
+   approximation algoritm failed  completely (resulting NA), and issues only warning about 
+   non-convergence in other cases.
+ * Fixed a bug in SSMcycle which caused error with common components.
+ * Fixed a bug in SSMseasonal which caused error in SSModel when using common components.
+ * Added argument "maxiter" to predict.SSModel and changed its default value in all functions to 50.
+ * Corrected a bug in function ldl which caused semidefinite matrices.
+ * Added argument check.result for function ldl which warns if the decomposition was not successful 
+   (due to bad tolerance parameter). EI VIELÄ
+
 Changes from Version 1.0.2 to 1.0.3:
  * Changed default filtering option for Gaussian models back to "state" (was previously "none").
  * Argument "invlink" in KFS is obsolete, proper argument is now "mean". For backwards compatibility,
@@ -28,7 +39,7 @@ Changes from Version 1.0.2 to 1.0.3:
  * Fixed a bug in SSModel which caused error when formula contained interaction terms and custom parts.
  * Broken SSMcycle with type="distinct" was fixed.
  * Fixed a bug regarding simulateSSM with missing observations in diffuse phase, which caused 
-   variances of   simulated values to be much larger than expected.
+   variances of simulated values to be much larger than expected.
 
 Changes from Version 1.0.0 to 1.0.2:
  * Fixed a bug in SSMarima which caused function to fail if there was 
