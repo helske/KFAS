@@ -1,0 +1,8 @@
+TODO list
+ * Add argument check.result for function ldl which warns if the decomposition was not successful 
+   (due to bad tolerance parameter).
+ * Rewrite residual computations using Fortran.
+ * Change tolerance criterion in approx.f95 from linear predictor based to deviance based.
+ * Add more tests, at least for structural time series, ARIMA and mixed models and multiple tests 
+   for SSModel and auxiliary functions.
+ * Study and possily implement marginal likelihood correction used in Francke et al. (2010)
