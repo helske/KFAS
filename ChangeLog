@@ -5,7 +5,8 @@ Changes from Version 1.0.3 to 1.0.4:
  * Fixed a bug in SSMcycle which caused error with common components.
  * Fixed a bug in SSMseasonal which caused error in SSModel when using common components.
  * Added argument "maxiter" to predict.SSModel and changed its default value in all functions to 50.
- * Corrected a bug in function ldl which caused semidefinite matrices.
+ * Corrected a bug in function ldl which caused the decomposition of semidefinite matrices to fail 
+   silently.
 
 Changes from Version 1.0.2 to 1.0.3:
  * Changed default filtering option for Gaussian models back to "state" (was previously "none").

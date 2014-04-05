@@ -7,3 +7,6 @@ TODO list
    for SSModel and auxiliary functions.
  * Study and possily implement marginal likelihood correction used in Francke et al. (2010)
  * Check and correct documentations.
+
+TODO in distant future:
+ ** Move everything from Fortran to C++ with Rcpp and start using S4 and sparse matrices...
