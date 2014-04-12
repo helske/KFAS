@@ -20,11 +20,14 @@
 #' details. 
 #' @param maxiter The maximum number of iterations used in linearisation. Default is 50. Only used for non-Gaussian model.
 #' @param seed The value is used as a seed via set.seed function. Only used for non-Gaussian model.
+#' @param convtol Tolerance parameter for convergence checks for Gaussian approximation.
+#'  Iterations are continued until 
+#'  \eqn{tol>abs(dev_{old}-dev_{new})/(abs(dev_{new})+0.1))}.
 #' @param ... Ignored.
 #' @return \item{}{log-likelihood of the state space model.}
 logLik.SSModel <- function(object, nsim = 0, antithetics = TRUE, theta, check.model = FALSE, 
                            transform = c("ldl","augment"), maxiter = 50, 
-                           seed, ...) {
+                           seed, convtol=1e-15,...) {
   if (check.model) {
     if (!is.SSModel(object, na.check = TRUE)) {
       warning("Not a valid SSModel object. Returning -Inf")
@@ -131,7 +134,7 @@ logLik.SSModel <- function(object, nsim = 0, antithetics = TRUE, theta, check.mo
     out <- .Fortran(fngloglik, NAOK = TRUE, object$y, ymiss, as.integer(tv), object$Z, object$T, object$R, object$Q, object$a1, 
                     object$P1, object$P1inf, as.integer(p), as.integer(m), as.integer(k),as.integer(n), lik = double(1), theta = theta, object$u, pmatch(x = object$distribution, table = c("gaussian", 
                                                                                                                                                                                             "poisson", "binomial", "gamma", "negative binomial"), duplicates.ok = TRUE), maxiter=as.integer(maxiter), as.integer(sum(object$P1inf)), 
-                    1e-08, as.integer(nnd), as.integer(nsim), epsplus, etaplus, aplus1, c2, object$tol, info = integer(1), as.integer(antithetics), 
+                    convtol, as.integer(nnd), as.integer(nsim), epsplus, etaplus, aplus1, c2, object$tol, info = integer(1), as.integer(antithetics), 
                     as.integer(sim), nsim2, as.integer(nd), as.integer(length(nd)),diff=double(1))
     if (!is.finite(out$diff)){
       warning("Non-finite difference in approximation algoritm. Returning -Inf.")

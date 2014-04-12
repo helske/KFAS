@@ -2,11 +2,17 @@ Changes from Version 1.0.3 to 1.0.4:
  * Corrected output of LogLik method for non-Gaussian models: It now returns Inf only when the 
    approximation algoritm failed  completely (resulting NA), and issues only warning about 
    non-convergence in other cases.
+ * Corrected a bug in approximation algorithm which caused the approximation to fail for seemingly 
+   random models.
  * Fixed a bug in SSMcycle which caused error with common components.
  * Fixed a bug in SSMseasonal which caused error in SSModel when using common components.
  * Added argument "maxiter" to predict.SSModel and changed its default value in all functions to 50.
  * Corrected a bug in function ldl which caused the decomposition of semidefinite matrices to fail 
    silently.
+ * Changed variable mu to m for mean filtering for non-Gaussian models without simulation just like 
+   in other cases.
+ * Changed convergence criterion in approximation algorithm from linear predictor based to 
+   deviance based.
 
 Changes from Version 1.0.2 to 1.0.3:
  * Changed default filtering option for Gaussian models back to "state" (was previously "none").

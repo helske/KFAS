@@ -120,8 +120,7 @@ etahat,etahatvar,thetahat,thetahatvar, ldlsignal,zorig, zorigtv,aug,state,dist,s
                     lt = im
                     call dger(m,m,-1.0d0/ft(i,t),kt(:,i,t),1,zt(i,:,(t-1)*timevar(1)+1),1,lt,m)
                     call dgemv('t',m,m,1.0d0,lt,m,rrec,1,0.0d0,rhelp,1)
-                    rrec=rhelp
-                    call daxpy(m,vt(i,t)/ft(i,t),zt(i,:,(t-1)*timevar(1)+1),1,rrec,1)
+                    rrec = rhelp + vt(i,t)/ft(i,t)*zt(i,:,(t-1)*timevar(1)+1)
                     call dgemm('n','n',m,m,m,1.0d0,nrec,m,lt,m,0.0d0,mm,m) !n*l
                     call dgemm('t','n',m,m,m,1.0d0,lt,m,mm,m,0.0d0,nrec,m) !n = l'nl
                     call dger(m,m,(1.0d0)/ft(i,t),zt(i,:,(t-1)*timevar(1)+1),1,zt(i,:,(t-1)*timevar(1)+1),1,nrec,m) ! n = n+z'z/f
@@ -148,8 +147,6 @@ etahat,etahatvar,thetahat,thetahatvar, ldlsignal,zorig, zorigtv,aug,state,dist,s
                     call daxpy(m,ft(i,t)/finf(i,t),kinf(:,i,t),1,rhelp,1) !rhelp = -kt + ft/finf*kinf
                     l0=0.0d0
                     call dger(m,m,(1.0d0/finf(i,t)),rhelp,1,zt(i,:,(t-1)*timevar(1)+1),1,l0,m) !l0=  (-kt + ft/finf*kinf)*z/finf
-
-
                     call dgemv('t',m,m,1.0d0,linf,m,rrec1,1,0.0d0,rhelp,1) !rt1
                     call dcopy(m,rhelp,1,rrec1,1)
                     call dgemv('t',m,m,1.0d0,l0,m,rrec,1,1.0d0,rrec1,1)
@@ -186,7 +183,7 @@ etahat,etahatvar,thetahat,thetahatvar, ldlsignal,zorig, zorigtv,aug,state,dist,s
                             (1.0d0/ft(i,t)+ddot(m,kt(:,i,t),1,rhelp,1)/ft(i,t)**2)
                         end if
                         lt= im
-                        call dger(m,m,(-1.0d0)/ft(i,t),kt(:,i,t),1,zt(i,:,(t-1)*timevar(1)+1),1,lt,m) !lt = I -Kt*Z/Ft
+                        call dger(m,m,-1.0d0/ft(i,t),kt(:,i,t),1,zt(i,:,(t-1)*timevar(1)+1),1,lt,m) !lt = I -Kt*Z/Ft
                         call dgemv('t',m,m,1.0d0,lt,m,rrec,1,0.0d0,rhelp,1)
                         rrec = rhelp
                         call daxpy(m,vt(i,t)/ft(i,t),zt(i,:,(t-1)*timevar(1)+1),1,rrec,1) !r0 = Z'vt/Ft - Lt'r0

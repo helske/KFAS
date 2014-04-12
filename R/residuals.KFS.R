@@ -94,13 +94,13 @@ residuals.KFS <- function(object, type = c("recursive","deviance", "pearson", "r
                                                               log(ifelse(series[, i] == 1 | object$muhat[, i]==1, 1,
                                                                          (1 - series[,i])/(1 - object$muhat[, i])))), 
                            gamma =
-                             x<--2*(log(ifelse(object$model$y[, i] == 0, 1, 
-                                            object$model$y[,  i]/object$muhat[, i])) - 
-                                   (object$model$y[, i] - object$muhat[, i])/object$muhat[, i]),
+                             -2*(log(ifelse(series[, i] == 0, 1, 
+                                            series[,  i]/object$muhat[, i])) - 
+                                   (series[, i] - object$muhat[, i])/object$muhat[, i]),
                            `negative binomial` = 
-                             2*(object$model$y[, i] * log(pmax(1, object$model$y[, i])/object$muhat[, i]) - 
-                                  (object$model$y[, i] + object$model$u[, i]) * 
-                                  log((object$model$y[, i] + object$model$u[, i])/(object$muhat[, i] + 
+                             2*(series[, i] * log(pmax(1, series[, i])/object$muhat[, i]) - 
+                                  (series[, i] + object$model$u[, i]) * 
+                                  log((series[, i] + object$model$u[, i])/(object$muhat[, i] + 
                                                                                      object$model$u[, i])))))   
              
              series

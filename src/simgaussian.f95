@@ -37,7 +37,7 @@ tol,nd,ndl,sim,c,simwhat,simdim,antithetics)
     double precision, dimension(m) :: rt0,rt1
     double precision, dimension(m,r) :: mr
     double precision, dimension(m,m,(n-1)*max(timevar(4),timevar(5))+1) :: rqr
-    double precision, dimension(r,n) :: etahat,etahat1,etahat2
+    double precision, dimension(r,n) :: etahat
     double precision, dimension(p,n) :: epshat
     double precision, dimension(r,n) :: etaplushat
     double precision, dimension(p,n) :: epsplushat

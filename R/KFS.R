@@ -39,8 +39,11 @@
 #' performs the usual Gaussian smoothing so that the smoothed state estimates equals to the 
 #' conditional mode of \eqn{p(\alpha_t|y)}{p(\alpha[t]|y)}.
 #' @param theta Initial values for conditional mode theta. Only used for non-Gaussian model.
-#' @param maxiter The maximum number of iterations used in linearisation. Default is 50. 
+#' @param maxiter The maximum number of iterations used in approximation Default is 50. 
 #' Only used for non-Gaussian model.
+#' @param convtol Tolerance parameter for convergence checks for Gaussian approximation.
+#'  Iterations are continued until 
+#'  \eqn{tol>abs(dev_{old}-dev_{new})/(abs(dev_{new})+0.1))}.
 #'
 #' @return What \code{KFS} returns depends on the arguments \code{filtering}, \code{smoothed} and 
 #' \code{simplify}, and whether the model is Gaussian or not:
@@ -101,7 +104,7 @@
 #'
 
 KFS <- function(model, filtering, smoothing, simplify = TRUE, transform = c("ldl","augment"), 
-                nsim = 0, theta, maxiter = 50) {
+                nsim = 0, theta, maxiter = 50,convtol=1e-15) {
   
   is.SSModel(model, na.check = TRUE, return.logical = FALSE)
   
@@ -217,7 +220,7 @@ KFS <- function(model, filtering, smoothing, simplify = TRUE, transform = c("ldl
                               as.integer(m), as.integer(k), as.integer(sum(model$P1inf)), 
                               as.integer(nondiffuse_elements_length), as.integer(nsim), epsplus, 
                               etaplus, aplus1, c2, model$tol, info = integer(1),
-                              maxiter = as.integer(maxiter), convtol = 1e-08, as.integer(nd), 
+                              maxiter = as.integer(maxiter), convtol =convtol, as.integer(nd), 
                               as.integer(length(nd)), 
                               a = array(0, ("state" %in% filtering) * c(m - 1, n - 1) + 1), 
                               P = array(0, ("state" %in% filtering) * c(m - 1, m - 1, n - 1) + 1), 
@@ -255,7 +258,7 @@ KFS <- function(model, filtering, smoothing, simplify = TRUE, transform = c("ldl
                               as.integer(m),as.integer(k), as.integer(sum(model$P1inf)), 
                               as.integer(nondiffuse_elements_length), as.integer(nsim), epsplus, 
                               etaplus, aplus1, c2, model$tol, info = integer(1), 
-                              maxiter = as.integer(maxiter), convtol = 1e-08, as.integer(nd), 
+                              maxiter = as.integer(maxiter), convtol = convtol, as.integer(nd), 
                               as.integer(length(nd)), 
                               alphahat = array(0, ("state" %in% smoothing) * c(m - 1, n - 1) + 1), 
                               V = array(0, ("state" %in% smoothing) * c(m - 1, m - 1, n - 1) + 1), 
@@ -299,7 +302,7 @@ KFS <- function(model, filtering, smoothing, simplify = TRUE, transform = c("ldl
                       pmatch(x = model$distribution, 
                              table = c("gaussian", "poisson", "binomial", "gamma", "negative binomial"), 
                              duplicates.ok = TRUE), maxiter = as.integer(maxiter), model$tol, 
-                      as.integer(sum(model$P1inf)), as.double(1e-08),diff=double(1))
+                      as.integer(sum(model$P1inf)), convtol,diff=double(1))
       
       if (!is.finite(app$diff)){
         stop("Non-finite difference in approximation algoritm.")
@@ -425,7 +428,7 @@ KFS <- function(model, filtering, smoothing, simplify = TRUE, transform = c("ldl
           
         }
         
-        out <- c(out, list(mu = mu, P_mu = P_mu))
+        out <- c(out, list(m = mu, P_mu = P_mu))
       }  
     }
   }

@@ -24,11 +24,12 @@ theta, u, ytilde, dist,maxiter,tol,rankp,convtol,diff)
     double precision, intent(inout), dimension(n,p) :: ytilde
     double precision, intent(inout), dimension(p,p,n) :: ht
     double precision, intent(inout) :: diff
-    double precision, dimension(n,p) :: theta0
     double precision, dimension(m,r) :: mr
     double precision, dimension(m,m,(n-1)*max(timevar(4),timevar(5))+1) :: rqr
-
+    double precision dev, devold
+    double precision, dimension(n,p) :: muhat
     double precision, external :: ddot
+
 
     !compute rqr
     tv = max(timevar(4),timevar(5))
@@ -38,8 +39,6 @@ theta, u, ytilde, dist,maxiter,tol,rankp,convtol,diff)
     end do
 
     diff = 1000.0d0
-    theta0=theta
-
     k=0
 
 
@@ -89,13 +88,17 @@ theta, u, ytilde, dist,maxiter,tol,rankp,convtol,diff)
     end do
 
 
+    muhat = theta
+        call mu(dist,u,n,p,muhat)
+        call deviance(yt,muhat,u,ymiss,n,p,dist,devold)
+
     do while(diff > convtol .AND. k < maxiter)
 
         k=k+1
 
+
         rankp2 = rankp
 
-        ! Compute theta based on the approximating gausian model
         call kfstheta(ytilde, ymiss, timevar, zt, ht,tt, rtv,qt,rqr, a1, p1, p1inf, &
         p, n, m, r,tol,rankp2,theta)
 
@@ -136,12 +139,12 @@ theta, u, ytilde, dist,maxiter,tol,rankp,convtol,diff)
                     end do
             end select
         end do
-
-
-        diff = sum(abs(theta-theta0)/(abs(theta0)+0.1d0),MASK=(ymiss .EQ. 0))/(n*p-sum(ymiss))
-        theta0=theta
+        muhat = theta
+        call mu(dist,u,n,p,muhat)
+        call deviance(yt,muhat,u,ymiss,n,p,dist,dev)
+        diff = abs(dev - devold)/(0.1d0 + abs(dev))
+        devold=dev
     end do
     maxiter=k
-
 
 end subroutine approx

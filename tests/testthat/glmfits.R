@@ -161,11 +161,11 @@ test_that("negative binomial GLM fitting works properly",{
     model$P1inf[]<-0
     model$a1[]<-pars[2:15]
     if(estimate)
-      return(-logLik(model,check=TRUE,nsim=0))
+      return(-logLik(model,check=TRUE,nsim=0,tol=1e-5))
     model
   }
   
-  fit<-optim(f=likfn,p=c(log(glm.NB$theta),glm.NB$coef),model=model.NB,method="BFGS")
+  fit<-optim(f=likfn,p=c(log(glm.NB$theta),glm.NB$coef),model=model.NB)
   expect_equal(c(exp(fit$p[1]),fit$p[-1]),c(glm.NB$theta,glm.NB$coef))
   expect_equal(deviance(kfas.NB),deviance(glm.NB))
 })

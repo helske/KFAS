@@ -35,7 +35,6 @@ aplus1,c,tol,info,antithetics,w,sim,nd,ndl,simwhat,simdim)
     double precision, dimension(n,p) :: ytilde
     double precision, dimension(n,p) :: dn
     double precision, dimension(n) :: tmp
-    double precision, dimension(3 * nsim * antithetics + nsim) :: ps
     double precision, dimension(3 * nsim * antithetics + nsim) :: w
     double precision :: diff
     double precision, external :: ddot

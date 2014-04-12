@@ -23,11 +23,11 @@
 #' @param maxiter The maximum number of iterations used in approximation Default is 50.
 #' @param tol Tolerance parameter for convergence checks.
 #'  Iterations are continued until 
-#'  \eqn{tol>sum(abs(\theta_{new}-\theta_{old})/(abs(\theta_{old})+0.1))/(n*p)}{tol>sum(abs(\theta[[new]-\theta[old])/(abs(\theta[old])+0.1))/(n*p)}.
+#'  \eqn{tol>abs(dev_{old}-dev_{new})/(abs(dev_{new})+0.1))}.
 #' @return An object which contains the approximating Gaussian state space model with following additional components:
 #' \item{thetahat}{Mode of \eqn{p(\theta|y)}. }
 #' \item{iterations}{Number of iterations used. }
-approxSSM <- function(model, theta, maxiter = 50, tol = 1e-08) {
+approxSSM <- function(model, theta, maxiter = 50, tol = 1e-15) {
   
   # Check that the model object is of proper form
   is.SSModel(model, na.check = TRUE, return.logical = FALSE)
