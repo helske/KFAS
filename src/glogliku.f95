@@ -111,20 +111,20 @@ m, r, n, lik, tol,rankp)
         end do diffuse
 
         !non-diffuse filtering begins
-         if(rankp .EQ. 0) then
+        if(rankp .EQ. 0) then
 
-        call dgemv('n',m,m,1.0d0,tt(:,:,(d-1)*timevar(3)+1),m,arec,1,0.0d0,at(:),1)  !at(:,t+1) = matmul(tt,a_rec)
+            call dgemv('n',m,m,1.0d0,tt(:,:,(d-1)*timevar(3)+1),m,arec,1,0.0d0,at(:),1)  !at(:,t+1) = matmul(tt,a_rec)
 
-        call dsymm('r','u',m,m,1.0d0,prec,m,tt(:,:,(d-1)*timevar(3)+1),m,0.0d0,mm,m)
-        call dgemm('n','t',m,m,m,1.0d0,mm,m,tt(:,:,(d-1)*timevar(3)+1),m,0.0d0,pt,m)
+            call dsymm('r','u',m,m,1.0d0,prec,m,tt(:,:,(d-1)*timevar(3)+1),m,0.0d0,mm,m)
+            call dgemm('n','t',m,m,m,1.0d0,mm,m,tt(:,:,(d-1)*timevar(3)+1),m,0.0d0,pt,m)
 
-        call dsymm('r','u',m,r,1.0d0,qt(:,:,(d-1)*timevar(5)+1),r,rt(:,:,(d-1)*timevar(4)+1),m,0.0d0,mr,m)
-        call dgemm('n','t',m,m,r,1.0d0,mr,m,rt(:,:,(d-1)*timevar(4)+1),m,1.0d0,pt,m)
+            call dsymm('r','u',m,r,1.0d0,qt(:,:,(d-1)*timevar(5)+1),r,rt(:,:,(d-1)*timevar(4)+1),m,0.0d0,mr,m)
+            call dgemm('n','t',m,m,r,1.0d0,mr,m,rt(:,:,(d-1)*timevar(4)+1),m,1.0d0,pt,m)
 
 
-        call dcopy(m,at(:),1,arec,1)
-        prec = pt
-end if
+            call dcopy(m,at(:),1,arec,1)
+            prec = pt
+        end if
     end if
 
    
@@ -142,11 +142,11 @@ end if
             vt = yt(t,1) - ddot(m,zt(1,:,(t-1)*timevar(1)+1),1,arec,1)
             call dsymv('u',m,1.0d0,prec,m,zt(1,:,(t-1)*timevar(1)+1),1,0.0d0,kt(:,1),1)
             ft = ddot(m,zt(1,:,(t-1)*timevar(1)+1),1,kt(:,1),1)+ht(1,1,(t-1)*timevar(2)+1)
-           if (ft .GT. meps) then
+            if (ft .GT. meps) then
                 call daxpy(m,vt/ft,kt(:,1),1,arec,1) !a_rec = a_rec + kt(:,i,t)*vt(:,t)
                 call dsyr('u',m,-1.0d0/ft,kt(:,1),1,prec,m) !p_rec = p_rec - kt*kt'*ft(i,i,t)
                 lik = lik - 0.5d0*(log(ft) + vt**2/ft)-c
-           end if
+            end if
         end if
         call dgemv('n',m,m,1.0d0,tt(:,:,(t-1)*timevar(3)+1),m,arec,1,0.0d0,at(:),1)
         call dsymm('r','u',m,m,1.0d0,prec,m,tt(:,:,(t-1)*timevar(3)+1),m,0.0d0,mm,m)

@@ -73,16 +73,21 @@ SSMcycle <- function(period, type, Q, index, a1, P1, P1inf, n, ynames) {
             tvq <- max(dim(Q)[3] == n, 0, na.rm = TRUE)
             
             Qm <- array(0, c(m, m, tvq * (n - 1) + 1))
-            if (tvq == 1) {
+            if (tvq) {
                 for (i in 1:(tvq * (n - 1) + 1)) Qm[cbind(rep(1:(p * 2), p), rep(1:2, p^2) + rep(0:(p - 1) * 2, each = p * 2), 
                   i)] <- rep(Q[, , i], each = 2)
             } else Qm[cbind(rep(1:(p * 2), p), rep(1:2, p^2) + rep(0:(p - 1) * 2, each = p * 2), 1)] <- rep(Q, each = 2)
         } else {
-            if (length(Q) != 1 && (!identical(dim(Q)[1], dim(Q)[2]) || dim(Q)[1] != 1 || !(max(dim(Q)[3], 1, na.rm = TRUE) %in% 
+            if (length(Q) != 1 && (!identical(dim(Q)[1], dim(Q)[2]) || isTRUE(dim(Q)[1] != 1) || !(max(dim(Q)[3], 1, na.rm = TRUE) %in% 
                 c(1, n)))) 
                 stop("Misspecified Q, argument Q must be a scalar, (1 x 1) matrix, or (1 x 1 x 1)/(1 x 1 x n) array.")
-            Qm <- array(Q, c(m, m, tvq * (n - 1) + 1))
-            
+            tvq <- max(dim(Q)[3] == n, 0, na.rm = TRUE)
+            Qm <- array(0, c(m, m, tvq * (n - 1) + 1))
+            if (tvq) {
+              for (i in 1:(tvq * (n - 1) + 1)) 
+                Qm[cbind(1:2, 1:2, i)] <- rep(Q[1, 1, i], 2)
+            } else Qm[cbind(1:2, 1:2, 1)] <- rep(Q, 2)
+                        
         }
         
         

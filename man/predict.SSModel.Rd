@@ -5,7 +5,8 @@
 \usage{
 \method{predict}{SSModel}(object, newdata, interval = c("none", "confidence",
   "prediction"), level = 0.95, type = c("response", "link"),
-  states = NULL, se.fit = FALSE, nsim = 0, prob = TRUE, ...)
+  states = NULL, se.fit = FALSE, nsim = 0, prob = TRUE, maxiter = 50,
+  ...)
 }
 \arguments{
   \item{object}{Object of class \code{SSModel}.}

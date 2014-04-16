@@ -3,13 +3,14 @@
 \title{Kalman Filter and Smoother with Exact Diffuse Initialization for Exponential Family State Space Models}
 \usage{
 KFS(model, filtering, smoothing, simplify = TRUE, transform = c("ldl",
-  "augment"), nsim = 0, theta, maxiter = 100)
+  "augment"), nsim = 0, theta, maxiter = 50, convtol = 1e-15)
 }
 \arguments{
   \item{model}{Object of class \code{SSModel}.}
 
   \item{filtering}{Types of filtering. Possible choices are
-  'state', 'signal', 'mean', and 'none'. Default is 'none'.
+  'state', 'signal', 'mean', and 'none'. Default is 'state'
+  for Gaussian and 'none' for non-Gaussian models.
   Multiple values are allowed. Note that for Gaussian
   models, signal is mean. Note that filtering for
   non-Gaussian models with importance sampling can be very
@@ -43,8 +44,13 @@ KFS(model, filtering, smoothing, simplify = TRUE, transform = c("ldl",
   Only used for non-Gaussian model.}
 
   \item{maxiter}{The maximum number of iterations used in
-  linearisation. Default is 25. Only used for non-Gaussian
+  approximation Default is 50. Only used for non-Gaussian
   model.}
+
+  \item{convtol}{Tolerance parameter for convergence checks
+  for Gaussian approximation.  Iterations are continued
+  until
+  \eqn{tol>abs(dev_{old}-dev_{new})/(abs(dev_{new})+0.1))}.}
 }
 \value{
 What \code{KFS} returns depends on the arguments
@@ -148,12 +154,12 @@ at the time, the elements of prediction error
 \code{Finf}, \code{K} and \code{Kinf} contain only the
 diagonal elemens of the corresponding covariance matrices.
 
-In rare cases of a very long diffuse initialization phase
-with highly correlated states, cumulative rounding errors
-in computing \code{Finf} and \code{Pinf} can sometimes
-cause the diffuse phase end too early. Changing the
-tolerance parameter \code{tol} of the model (see
-\code{\link{SSModel}}) to smaller (or larger) should help.
+In rare cases of a diffuse initialization phase with highly
+correlated states, cumulative rounding errors in computing
+\code{Finf} and \code{Pinf} can sometimes cause the diffuse
+phase end too early. Changing the tolerance parameter
+\code{tol} of the model (see \code{\link{SSModel}}) to
+smaller (or larger) should help.
 
 In case of non-Gaussian models with \code{nsim=0}, the
 smoothed estimates relate the conditional mode of

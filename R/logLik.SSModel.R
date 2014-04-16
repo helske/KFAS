@@ -30,10 +30,10 @@ logLik.SSModel <- function(object, nsim = 0, antithetics = TRUE, theta, check.mo
                            seed, convtol=1e-15,...) {
   if (check.model) {
     if (!is.SSModel(object, na.check = TRUE)) {
-      warning("Not a valid SSModel object. Returning -Inf")
-      return(-Inf)
+      return(-.Machine$double.xmax)
     }
   }
+  
   p <- attr(object, "p")
   m <- attr(object, "m")
   k <- attr(object, "k")
@@ -47,6 +47,8 @@ logLik.SSModel <- function(object, nsim = 0, antithetics = TRUE, theta, check.mo
   tv[4] <- dim(object$R)[3] > 1
   tv[5] <- dim(object$Q)[3] > 1
   if (all(object$distribution == "gaussian")) {
+      if(all(c(object$Q,object$H)==0) || all(c(object$R,object$H)==0)|| any(!is.finite(c(object$R,object$Q,object$H)==0)))
+        return(-.Machine$double.xmax^0.75)
     kfout <- NULL
     if (p == 1) {
       kfout <- .Fortran(fglogliku, NAOK = TRUE, object$y, ymiss, as.integer(tv), object$Z, object$H, object$T, object$R, 
@@ -57,7 +59,7 @@ logLik.SSModel <- function(object, nsim = 0, antithetics = TRUE, theta, check.mo
         object <- tryCatch(transformSSM(object, type = match.arg(arg = transform, choices = c("ldl","augment"))), error = function(e) e)
         if (!inherits(object, "SSModel")) {
           warning(object$message)
-          return(-Inf)
+          return(-.Machine$double.xmax^0.75)
         }
         tv[1] <- dim(object$Z)[3] > 1
         tv[2] <- dim(object$H)[3] > 1
@@ -69,7 +71,8 @@ logLik.SSModel <- function(object, nsim = 0, antithetics = TRUE, theta, check.mo
     }
     logLik <- kfout$lik
   } else {
-    
+    if(all(c(object$Q,object$u)==0) || all(c(object$R,object$u)==0) || any(!is.finite(c(object$R,object$Q,object$u)==0)))
+      return(-.Machine$double.xmax^0.75)
     if (missing(theta)) {
       theta <- sapply(1:p, function(i)
         switch(object$distribution[i], 
@@ -138,7 +141,7 @@ logLik.SSModel <- function(object, nsim = 0, antithetics = TRUE, theta, check.mo
                     as.integer(sim), nsim2, as.integer(nd), as.integer(length(nd)),diff=double(1))
     if (!is.finite(out$diff)){
       warning("Non-finite difference in approximation algoritm. Returning -Inf.")
-      return(-Inf)
+      return(-.Machine$double.xmax^0.75)
     }
     if(out$maxiter==maxiter){
       warning(paste("Maximum number of iterations reached, 

@@ -40,8 +40,8 @@ SSMseasonal <- function(period, sea.type = c("dummy", "trigonometric"), type, Q,
     
     lambda <- 2 * pi * 1:floor((period - 1)/2)/period
     T_univariate[cbind(1:m1, 1:m1)] <- rep(c(cos(lambda), -1), each = 2, length = m1)
-    T_univariate[cbind(2 * 1:((m1 - 1)/2) - 1, 2 * 1:((m1 - 1)/2))] <- sin(lambda)
-    T_univariate[cbind(2 * 1:((m1 - 1)/2), 2 * 1:((m1 - 1)/2) - 1)] <- -sin(lambda)
+    T_univariate[which((col(T_univariate)-row(T_univariate))==1)[seq(from=1,by=2,length=length(lambda))]] <- sin(lambda)
+    T_univariate[which((col(T_univariate)-row(T_univariate))==-1)[seq(from=1,by=2,length=length(lambda))]] <- -sin(lambda)
   }
   m <- ((p - 1) * (type != 2) + 1) * (period - 1)
   # k <- ((p-1)*(type != 2)+1)*((sea.type=='dummy') + (sea.type=='trigonometric')*(period - 1))

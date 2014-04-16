@@ -63,7 +63,8 @@
     x
 }
 #' @rdname Extract.SSModel
-`subset<-` <- function(x, value) UseMethod("subset<-")
+#' @export
+`subset<-` <- function(x, value,...) UseMethod("subset<-")
 
 #' @method subset SSModel
 #' @S3method subset SSModel

@@ -78,8 +78,11 @@ SSMtrend <- function(degree = 1, type, Q, index, a1, P1, P1inf, n, ynames) {
             tvq <- max(unlist(sapply(lapply(Q, dim), "[", 3)) > 1, 0, na.rm = TRUE)
             
             Qm <- array(0, c(m, m, tvq * (n - 1) + 1))
+            if(!is.list(Q))
+              stop("Q must be a list of length degree.")
             for (i in 1:degree) {
-                if (length(Q[[i]]) != 1 && (any(dim(Q[[i]])[1:2] != p) || !(dim(Q[[i]])[3] %in% c(1, n, NA)))) 
+                if ((p>1 && length(Q[[i]]) == 1) || 
+                      (p==1 && length(Q[[i]]) != 1) || (p>1 &&( dim(Q[[i]])[1:2] != p || !(max(1,dim(Q[[i]])[3],na.rm=TRUE) %in% c(1, n)))))
                   stop("Q must be a list of length degree, which contains (p x p) matrices, (p x p x 1), or (p x p x n) arrays, where p is the number of series. ")
                 Qm[seq(from = i, by = degree, length = p), seq(from = i, by = degree, length = p), ] <- Q[[i]]
             }
@@ -87,8 +90,8 @@ SSMtrend <- function(degree = 1, type, Q, index, a1, P1, P1inf, n, ynames) {
             R <- diag(k)
             
         } else {
-            if (is.list(Q) || length(Q) != degree && (!identical(dim(Q)[1], dim(Q)[2]) || dim(Q)[1] != degree || !(max(dim(Q)[3], 
-                1, na.rm = TRUE) %in% c(1, n)))) 
+            if (is.list(Q) || (length(Q) != degree && is.null(dim(Q))) || 
+                  (any(dim(Q)[1:2] != degree) || !(max(1,dim(Q)[3],na.rm=TRUE) %in% c(1, n, NA))))
                 stop("Misspecified Q, argument Q must be a vector of length d, (d x d) matrix, or (d x d x 1)/(d x d x n) array where d is the degree of the trend.")
             if (length(Q) == degree) 
                 Q <- diag(drop(Q), degree)

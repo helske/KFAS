@@ -4,8 +4,8 @@
 \title{Log-likelihood of the State Space Model.}
 \usage{
 \method{logLik}{SSModel}(object, nsim = 0, antithetics = TRUE, theta,
-  check.model = FALSE, transform = c("ldl", "augment"), maxiter = 25,
-  seed, ...)
+  check.model = FALSE, transform = c("ldl", "augment"), maxiter = 50,
+  seed, convtol = 1e-15, ...)
 }
 \arguments{
   \item{object}{State space model of class \code{SSModel}.}
@@ -34,11 +34,16 @@
   details.}
 
   \item{maxiter}{The maximum number of iterations used in
-  linearisation. Default is 25. Only used for non-Gaussian
+  linearisation. Default is 50. Only used for non-Gaussian
   model.}
 
   \item{seed}{The value is used as a seed via set.seed
   function. Only used for non-Gaussian model.}
+
+  \item{convtol}{Tolerance parameter for convergence checks
+  for Gaussian approximation.  Iterations are continued
+  until
+  \eqn{tol>abs(dev_{old}-dev_{new})/(abs(dev_{new})+0.1))}.}
 
   \item{...}{Ignored.}
 }

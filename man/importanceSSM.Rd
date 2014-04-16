@@ -4,7 +4,7 @@
 \usage{
 importanceSSM(model, type = c("states", "signals"), filtered = FALSE,
   nsim = 1000, save.model = FALSE, theta, antithetics = FALSE,
-  maxiter = 100)
+  maxiter = 50)
 }
 \arguments{
   \item{model}{Exponential family state space model of
@@ -30,7 +30,7 @@ importanceSSM(model, type = c("states", "signals"), filtered = FALSE,
   another for scale. Default is FALSE.}
 
   \item{maxiter}{Maximum number of iterations used in
-  linearisation. Default is 25.}
+  linearisation. Default is 50.}
 }
 \value{
 A list containing elements \code{samples}, \code{weights}

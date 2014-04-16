@@ -27,14 +27,4 @@ coef.KFS<-function(object,start=NULL,end=NULL,filtered=FALSE,...){
   if(start==end && !is.null(start))
     tsp(tmp) <- class(tmp) <- NULL
   drop(tmp)
-  if(!is.null(object$alphahat)){
-    tmp<-window(object$alphahat,start,end)
-  } else {
-    if(!is.null(object[["a",exact=TRUE]])){
-      tmp<-window(object$a,start,end)
-    } else stop("Input does not contain estimates for states, rerun KFS with state filtering or smoothing.")
-  }
-  if(start==end && !is.null(start))
-    tsp(tmp) <- class(tmp) <- NULL
-  drop(tmp)
 }

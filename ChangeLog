@@ -2,10 +2,15 @@ Changes from Version 1.0.3 to 1.0.4:
  * Corrected output of LogLik method for non-Gaussian models: It now returns Inf only when the 
    approximation algoritm failed  completely (resulting NA), and issues only warning about 
    non-convergence in other cases.
+ * Added checks of degenerate model to LogLik method. If all elements in R, Q and H/u are zero, or 
+   they contain any non-finite values, -Inf is returned.
  * Corrected a bug in approximation algorithm which caused the approximation to fail for seemingly 
    random models.
  * Fixed a bug in SSMcycle which caused error with common components.
  * Fixed a bug in SSMseasonal which caused error in SSModel when using common components.
+ * SSMseasonal with trigonometric seasonal now works properly when period is odd.  
+ * Fixed a bug in coef.KFS which caused function to return smoothed states even with argument 
+   filtered=TRUE if they were present in KFS object.
  * Added argument "maxiter" to predict.SSModel and changed its default value in all functions to 50.
  * Corrected a bug in function ldl which caused the decomposition of semidefinite matrices to fail 
    silently.
@@ -13,6 +18,7 @@ Changes from Version 1.0.3 to 1.0.4:
    in other cases.
  * Changed convergence criterion in approximation algorithm from linear predictor based to 
    deviance based.
+ * Properly exported assigment using subset method. See ?subset.SSModel for details.
 
 Changes from Version 1.0.2 to 1.0.3:
  * Changed default filtering option for Gaussian models back to "state" (was previously "none").

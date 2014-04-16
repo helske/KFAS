@@ -161,7 +161,7 @@ test_that("negative binomial GLM fitting works properly",{
     model$P1inf[]<-0
     model$a1[]<-pars[2:15]
     if(estimate)
-      return(-logLik(model,check=TRUE,nsim=0,tol=1e-5))
+      return(-logLik(model,check=TRUE,nsim=0))
     model
   }
   

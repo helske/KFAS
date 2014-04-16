@@ -12,7 +12,7 @@
 
 \method{subset}{SSModel}(x, element, states, etas, series, times) <- value
 
-subset(x) <- value
+subset(x, ...) <- value
 
 \method{subset}{SSModel}(x, element, states, etas, series, times, ...)
 }
@@ -54,6 +54,22 @@ A selected subset of the chosen element or a value.
 }
 \description{
 S3 methods for extracting or replacing parts of objects of
-class \code{SSModel}.
+class \code{SSModel}. These methods ensure that dimensions
+of system matrices are not altered. \code{[} and
+\code{subset} and corresponding replacement methods are
+identical methods with different method names.
+}
+\examples{
+set.seed(1)
+model<-SSModel(rnorm(10)~1)
+model["H"]
+model["H"]<-10
+# H is still an array:
+model["H"]
+logLik(model)
+model$H<-1
+# model["H"] throws an error as H is now scalar:
+model$H
+logLik(model,check.model=TRUE) #with check.model=FALSE (default) R crashes!
 }
 

@@ -178,7 +178,7 @@ SSMregression <- function(rformula, data, type, Q, index, R, a1, P1, P1inf,  n, 
   } else {
     if (length(Q) == 1) 
       Q <- matrix(Q)
-    if (!identical(dim(Q)[1], dim(Q)[2]) || dim(Q)[1] > m || !(max(dim(Q)[3], 1, na.rm = TRUE) %in% c(1, n))) 
+    if (!identical(dim(Q)[1], dim(Q)[2]) || isTRUE(dim(Q)[1] > m) || !(max(dim(Q)[3], 1, na.rm = TRUE) %in% c(1, n))) 
       stop("Misspecified Q, argument Q must be (k x k) matrix, (k x k x 1), or (k x k x n) array where m is the number of disturbance terms.")
     k <- dim(Q)[1]
     tvq <- max(dim(Q)[3] == n, 0, na.rm = TRUE)
@@ -189,7 +189,7 @@ SSMregression <- function(rformula, data, type, Q, index, R, a1, P1, P1inf,  n, 
       R <- diag(m)[, 1:k, drop = FALSE]
     } else R <- NULL
   } else {
-    if (!(dim(R)[1]==m) || dim(R)[2] != k || !(max(dim(R)[3], 1, na.rm = TRUE) %in% c(1, n))) 
+    if (isTRUE(!(dim(R)[1]==m)) || isTRUE(dim(R)[2] != k) || !(max(dim(R)[3], 1, na.rm = TRUE) %in% c(1, n))) 
       stop("Misspecified R, argument R must be (m x k) matrix, (m x k x 1), or (m x k x n) array where m is the number of states and k is the number of disturbance terms.")
     tvr <- max(dim(R)[3] == n, 0, na.rm = TRUE)
   }

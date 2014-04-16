@@ -52,8 +52,10 @@ SSMtrend(degree = 1, type, Q, index, a1, P1, P1inf, n, ynames)
   observations. Default is \code{rep('gaussian',p)}.}
 
   \item{tol}{a tolerance parameter for a diffuse phase.
-  Smallest value of Finf not counted for zero. Defaults to
-  \code{.Machine$double.eps^0.5}.}
+  Smallest value of Finf not counted for zero.  Defaults to
+  \code{.Machine$double.eps^0.5}.  If smoothing gives
+  negative variances for smoothed states, try adjusting
+  this.}
 
   \item{index}{a vector indicating for which series the
   corresponding components are constructed.}

@@ -1,8 +1,8 @@
 \name{approxSSM}
 \alias{approxSSM}
-\title{Linear gaussian Approximation for Non-gaussian State Space Model}
+\title{Linear Gaussian Approximation for Exponential Family State Space Model}
 \usage{
-approxSSM(model, theta, maxiter = 100, tol = 1e-08)
+approxSSM(model, theta, maxiter = 50, tol = 1e-15)
 }
 \arguments{
   \item{model}{A non-Gaussian state space model object of
@@ -11,17 +11,17 @@ approxSSM(model, theta, maxiter = 100, tol = 1e-08)
   \item{theta}{Initial values for conditional mode theta.}
 
   \item{maxiter}{The maximum number of iterations used in
-  linearisation. Default is 100.}
+  approximation Default is 50.}
 
   \item{tol}{Tolerance parameter for convergence checks.
   Iterations are continued until
-  \eqn{tol>sum(abs(theta_{new}-theta_{old})/(abs(theta_{old})+0.1))/(n*p)}.}
+  \eqn{tol>abs(dev_{old}-dev_{new})/(abs(dev_{new})+0.1))}.}
 }
 \value{
 An object which contains the approximating Gaussian state
 space model with following additional components:
-\item{thetahat}{mode of \eqn{p(\theta|y)}.}
-\item{iterations}{number of iterations used.}
+\item{thetahat}{Mode of \eqn{p(\theta|y)}. }
+\item{iterations}{Number of iterations used. }
 }
 \description{
 Function \code{approxSMM} computes the linear Gaussian
@@ -43,14 +43,15 @@ conditional mode of \eqn{\theta=Z\alpha} given the
 observations \eqn{y} as the original non-gaussian model.
 Models also have a same curvature at the mode.
 
-The linearization of the exponential family state space
+The approximation of the exponential family state space
 model is based on iterative weighted least squares method,
 see McCullagh and Nelder (1983) p.31 and Durbin Koopman
 (2012) p. 243.
 }
 \seealso{
-Importance sampling of non-gaussian state space models
+Importance sampling of non-Gaussian state space models
 \code{\link{importanceSSM}}, construct a \code{SSModel}
-object \code{\link{SSModel}}.
+object \code{\link{SSModel}}, and examples in
+\code{\link{KFAS}}.
 }
 
