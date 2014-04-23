@@ -34,7 +34,7 @@
 #' model$H
 #' logLik(model,check.model=TRUE) #with check.model=FALSE (default) R crashes!
 
-`[<-.SSModel` <- function(x, element, states, etas, series, times, value) {
+`[<-.SSModel` <- function(x, element, states, etas, series, times, ..., value) {
     
     element <- match.arg(arg = element, choices = c("y", "Z", "H", "T", "R", "Q", "a1", "P1", "P1inf", "u"))
     
@@ -97,7 +97,7 @@
 #' @method [ SSModel
 #' @S3method [ SSModel
 #' @rdname Extract.SSModel
-`[.SSModel` <- function(x, element, states, etas, series, times) {
+`[.SSModel` <- function(x, element, states, etas, series, times, ...) {
     
     # is.SSModel(x,return.logical=FALSE)
     element <- match.arg(arg = element, choices = c("y", "Z", "H", "T", "R", "Q", "a1", "P1", "P1inf", "u"))

@@ -48,7 +48,7 @@ approxSSM <- function(model, theta, maxiter = 50, tol = 1e-15) {
   ymiss <- is.na(model$y)
   storage.mode(ymiss) <- "integer"
   if(is.null(maxiter)) maxiter<-50
-  
+  if(is.null(tol)) tol<-1e-8
   # initial values for linear predictor theta
   if (missing(theta) || is.null(theta)) {
     theta <- sapply(1:p, function(i) 

@@ -6,11 +6,11 @@
 \alias{subset<-.SSModel}
 \title{Extract or Replace Parts of a State Space Model}
 \usage{
-\method{[}{SSModel}(x, element, states, etas, series, times) <- value
+\method{[}{SSModel}(x, element, states, etas, series, times, ...) <- value
 
-\method{[}{SSModel}(x, element, states, etas, series, times)
+\method{[}{SSModel}(x, element, states, etas, series, times, ...)
 
-\method{subset}{SSModel}(x, element, states, etas, series, times) <- value
+\method{subset}{SSModel}(x, element, states, etas, series, times, ...) <- value
 
 subset(x, ...) <- value
 

@@ -38,8 +38,11 @@
   Default is FALSE.}
 
   \item{prob}{if TRUE (default), the predictions in
-  binomial/poisson case are probabilities/rates instead of
-  counts.}
+  binomial case are probabilities instead of counts.}
+
+  \item{maxiter}{The maximum number of iterations used in
+  approximation Default is 50. Only used for non-Gaussian
+  model.}
 
   \item{\dots}{Ignored.}
 }

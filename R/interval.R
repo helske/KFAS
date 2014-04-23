@@ -74,7 +74,7 @@ interval <- function(model, interval = c("confidence", "prediction"), level, typ
     pred <- lapply(1:p, function(j) cbind(fit = cbind(varmean$mean[, j], lwr = int[[j]][1, ], upr = int[[j]][2, ]), se.fit = sqrt(varmean$var[, 
                                                                                                                                               j])))
   } else {
-    pred <- lapply(1:p, function(j) cbind(varmean$mean[, j], lwr = int[[j]][1, ], upr = int[[j]][2, ]))
+    pred <- lapply(1:p, function(j) cbind(fit = varmean$mean[, j], lwr = int[[j]][1, ], upr = int[[j]][2, ]))
   }
   pred
 } 

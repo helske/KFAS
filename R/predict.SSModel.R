@@ -15,7 +15,11 @@
 #' @S3method predict SSModel
 #' @aliases predict predict.SSModel
 #' @param object Object of class \code{SSModel}.
-#' @param newdata A compatible \code{SSModel} object to be added in the end of the old object for which the predictions are required.
+#' @param newdata A compatible \code{SSModel} object to be added in the end of the old object for 
+#' which the predictions are required. If omitted, predictions are either for the whole data (fitted values), 
+#' or if argument \code{n.ahead} is given, \code{n.ahead} time steps ahead.
+#' @param n.ahead Number of steps ahead at which to predict. Only used if \code{newdata} is omitted. 
+#' Note that when using \code{n.ahead}, object cannot contain time varying system matrices.
 #' @param interval Type of interval calculation.
 #' @param level Confidence level for intervals.
 #' @param type Scale of the prediction, \code{'response'} or \code{'link'}.
@@ -25,11 +29,29 @@
 #' \dQuote{trend}, or \dQuote{regression}. These can be combined. Default is \dQuote{all}.
 #' @param nsim Number of independent samples used in importance sampling. Used only for non-Gaussian models.
 #' @param se.fit If TRUE, standard errors are computed. Default is FALSE.
-#' @param prob if TRUE (default), the predictions in binomial/poisson case are probabilities/rates instead of counts.
+#' @param prob if TRUE (default), the predictions in binomial case are probabilities instead of counts.
+#' @param maxiter The maximum number of iterations used in approximation Default is 50. 
+#' Only used for non-Gaussian model.
 #' @param \dots Ignored.
 #' @return A matrix or list of matrices containing the predictions, and optionally standard errors.
-predict.SSModel <- function(object, newdata, interval = c("none", "confidence", "prediction"), 
-                            level = 0.95, type = c("response", "link"), states=NULL,se.fit = FALSE, nsim = 0, 
+#' @examples
+#' 
+#'  \dontrun{
+#' set.seed(1)
+#' x<-runif(n=100,min=1,max=3)
+#' y<-rpois(n=100,lambda=exp(-1+x))
+#' model<-SSModel(y~x,distribution="poisson")
+#' xnew<-seq(0.5,3.5,by=0.1)
+#' newdata<-SSModel(rep(NA,length(xnew))~xnew,distribution="poisson")
+#' pred<-predict(model,newdata=newdata,interval="prediction",level=0.9,nsim=1000)
+#' plot(x=x,y=y,pch=19,ylim=c(0,25),xlim=c(0.5,3.5))
+#' matlines(x=xnew,y=pred,col=c(2,2,2),lty=c(1,2,2),type="l")
+#' 
+#' model<-SSModel(Nile~SSMtrend(1,Q=1469),H=15099)
+#' pred<-predict(model,n.ahead=10,interval="prediction",level=0.9)
+#' }
+predict.SSModel <- function(object, newdata, n.ahead, interval = c("none", "confidence", "prediction"), 
+                            level = 0.95, type = c("response", "link"), states=NULL, se.fit = FALSE, nsim = 0, 
                             prob = TRUE, maxiter=50, ...) {
   
   
@@ -58,6 +80,7 @@ predict.SSModel <- function(object, newdata, interval = c("none", "confidence", 
       } else states <- which(attr(object, "state_types") %in% states)
     }
   }
+  gaussianmodel <- all(object$distribution == "gaussian")
   
   if (!missing(newdata) && !is.null(newdata)) {
     
@@ -79,12 +102,12 @@ predict.SSModel <- function(object, newdata, interval = c("none", "confidence", 
     object$y <- rbind(object$y, newdata$y)
     tvo <- tvn <- logical(5)
     tvo[1] <- dim(object$Z)[3] > 1
-    tvo[2] <- all(object$distribution == "gaussian") && (dim(object$H)[3] > 1)
+    tvo[2] <- gaussianmodel && (dim(object$H)[3] > 1)
     tvo[3] <- dim(object$T)[3] > 1
     tvo[4] <- dim(object$R)[3] > 1
     tvo[5] <- dim(object$Q)[3] > 1
     tvn[1] <- dim(newdata$Z)[3] > 1
-    tvn[2] <- all(object$distribution == "gaussian") && (dim(object$H)[3] > 1)
+    tvn[2] <- gaussianmodel && (dim(object$H)[3] > 1)
     tvn[3] <- dim(newdata$T)[3] > 1
     tvn[4] <- dim(newdata$R)[3] > 1
     tvn[5] <- dim(newdata$Q)[3] > 1
@@ -94,7 +117,7 @@ predict.SSModel <- function(object, newdata, interval = c("none", "confidence", 
                                                                                                                    n))
     }
     
-    if (all(object$distribution == "gaussian") && (tvo[2] || tvn[2] || !identical(object$H, newdata$H))) {
+    if (gaussianmodel && (tvo[2] || tvn[2] || !identical(object$H, newdata$H))) {
       object$H <- array(data = c(array(object$H, dim = c(p, p, no)), array(newdata$H, dim = c(p, p, nn))), dim = c(p, p, 
                                                                                                                    n))
     } else object$u <- array(data = c(array(object$u, dim = c(no, p)), array(newdata$u, dim = c(nn, p))), dim = c(n, p))
@@ -114,14 +137,30 @@ predict.SSModel <- function(object, newdata, interval = c("none", "confidence", 
                         dim = c(k, k, n))
     }
     
-    if (tvo[5] || tvn[5] || !identical(object$Q, newdata$Q)) {
-      object$Q <- array(data = c(array(data = object$Q, dim = c(k, k, no)), array(data = newdata$Q, dim = c(k, k, nn))), 
-                        dim = c(k, k, n))
-    }
+  } else {
+    if(!is.null(n.ahead) || !missing(n.ahead)){
+     
+      tv  <- logical(5)
+      tv[1] <- dim(object$Z)[3] > 1
+      tv[2] <- gaussianmodel && (dim(object$H)[3] > 1)
+      tv[3] <- dim(object$T)[3] > 1
+      tv[4] <- dim(object$R)[3] > 1
+      tv[5] <- dim(object$Q)[3] > 1
+      
+      if(!gaussianmodel) tvu<-any(c(apply(object$u,2,function(x) length(unique(x))>1))) else tvu<-FALSE
+      if(any(tv) || tvu)
+        stop("Model contains time varying system matrices, cannot use argument 'n.ahead'. Use 'newdata' instead.")
+      
+      timespan <- attr(object, "n") + 1:n.ahead
+      n<-attr(object, "n") <- attr(object, "n")+as.integer(n.ahead)
+      object$y<-window(object$y,end=end(object$y)+c(n.ahead,0),extend=TRUE)     #!!
+      if(any(object$distribution!="gaussian")) object$u<-rbind(object$u,matrix(object$u[1,],nrow=n.ahead,ncol=ncol(object$u),byrow=TRUE))
+                      
+    } else timespan <- 1:attr(object, "n")
     
-  } else timespan <- 1:attr(object, "n")
+  }
   
-  gaussianmodel <- all(object$distribution == "gaussian")
+  
   if (!gaussianmodel && interval == "prediction") {
     if (type == "link") 
       stop("Prediction intervals can only be computed at response scale.")

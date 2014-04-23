@@ -15,7 +15,7 @@
 #' @return Multivariate time series containing hat values.
 hatvalues.KFS<-function(model,...){
   if(any(model$model$distribution != "gaussian")){
-    app<-approxSSM(model$model,theta=model$call$theta,maxiter=model$call$maxiter)
+    app<-approxSSM(model$model,theta=model$call$theta,tol=model$call$convtol,maxiter=model$call$maxiter)
     if(is.null(model$V_theta))
       stop("KFS was run without signal smoothing, cannot compute hat values.")
     hatv<-matrix(apply(model$V_theta/app$H, 3, diag), attr(model$model, "n"), attr(model$model,  "p"), 

@@ -27,7 +27,7 @@
 #' @return \item{}{log-likelihood of the state space model.}
 logLik.SSModel <- function(object, nsim = 0, antithetics = TRUE, theta, check.model = FALSE, 
                            transform = c("ldl","augment"), maxiter = 50, 
-                           seed, convtol=1e-15,...) {
+                           seed, convtol=1e-8,...) {
   if (check.model) {
     if (!is.SSModel(object, na.check = TRUE)) {
       return(-.Machine$double.xmax)

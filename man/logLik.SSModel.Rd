@@ -5,7 +5,7 @@
 \usage{
 \method{logLik}{SSModel}(object, nsim = 0, antithetics = TRUE, theta,
   check.model = FALSE, transform = c("ldl", "augment"), maxiter = 50,
-  seed, convtol = 1e-15, ...)
+  seed, convtol = 1e-08, ...)
 }
 \arguments{
   \item{object}{State space model of class \code{SSModel}.}
