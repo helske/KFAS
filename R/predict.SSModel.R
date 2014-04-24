@@ -138,7 +138,7 @@ predict.SSModel <- function(object, newdata, n.ahead, interval = c("none", "conf
     }
     
   } else {
-    if(!is.null(n.ahead) || !missing(n.ahead)){
+    if(!missing(n.ahead) && !is.null(n.ahead)){
      
       tv  <- logical(5)
       tv[1] <- dim(object$Z)[3] > 1
@@ -203,7 +203,8 @@ predict.SSModel <- function(object, newdata, n.ahead, interval = c("none", "conf
       }
       out <- KFS(model = object, smoothing = "signal",maxiter=maxiter)
       for (i in 1:p) {
-        pred[[i]] <- cbind(fit=out$thetahat[timespan, i]+(if(object$distribution[i]=="poisson") log(object$u[timespan, i]) else 0), 
+        pred[[i]] <- cbind(fit=out$thetahat[timespan, i]+
+                             (if(object$distribution[i]=="poisson") log(object$u[timespan, i]) else 0), 
                            switch(interval, none = NULL, out$thetahat[timespan, i] +
                                     (if(object$distribution[i]=="poisson") log(object$u[timespan, i]) else 0) +
                                     qnorm((1 - level)/2) * sqrt(out$V_theta[i, i, timespan]) %o% c(1, -1)),

@@ -7,6 +7,7 @@ Changes from Version 1.0.3 to 1.0.4:
  * Corrected a bug in approximation algorithm which caused the approximation to fail for seemingly 
    random models.
  * Fixed a bug in SSMcycle which caused error with common components.
+ * Fixed bug in SSMcycle which resulted erroneus system matrix T in all cases.
  * Fixed a bug in SSMseasonal which caused error in SSModel when using common components.
  * SSMseasonal with trigonometric seasonal now works properly when period is odd.  
  * Fixed a bug in coef.KFS which caused function to return smoothed states even with argument 

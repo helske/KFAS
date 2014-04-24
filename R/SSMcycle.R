@@ -15,8 +15,8 @@ SSMcycle <- function(period, type, Q, index, a1, P1, P1inf, n, ynames) {
             stop("type must be 'distinct' or 'common'.")
     }
     
-    if (!(length(period) == 1 & period > 1 & abs(period - round(period)) == 0)) 
-        stop("period of the cycle component must be integer larger than 1. ")
+    if (!(length(period) == 1 & period > 0)) 
+        stop("Period of the cycle component must be larger than 0. ")
     
     
     lambda <- 2 * pi/period
@@ -24,7 +24,7 @@ SSMcycle <- function(period, type, Q, index, a1, P1, P1inf, n, ynames) {
     Z <- matrix(0, p, m)
     T <- matrix(0, m, m)
     Z_univariate <- matrix(c(1,0), 1, 2)
-    T_univariate <- matrix(c(cos(lambda), sin(lambda), -sin(lambda), cos(lambda)), 2, 2)
+    T_univariate <- matrix(c(cos(lambda), -sin(lambda), sin(lambda), cos(lambda)), 2, 2)
     if (type != 2) {
       for (i in 1:p) {
         Z[i, ((i - 1) * 2 + 1):(i * 2)] <- Z_univariate
