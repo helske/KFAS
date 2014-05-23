@@ -157,6 +157,8 @@ test_that("negative binomial GLM fitting works properly",{
   # prediction variances on response scale
   expect_equivalent(c(kfas.NB$V_mu),predict(glm.NB,type='response',se.fit=TRUE,)$se.fit^2)
   
+  expect_equivalent(model.NB$u[1],glm.NB$theta)
+  
   likfn<-function(pars,model,estimate=TRUE){ 
     model$u[]<-exp(pars[1])
     model$P1inf[]<-0

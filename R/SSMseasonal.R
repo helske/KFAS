@@ -17,9 +17,9 @@ SSMseasonal <- function(period, sea.type = c("dummy", "trigonometric"), type, Q,
   }
   sea.type <- match.arg(arg = sea.type)
   
-  if (!(length(period) == 1 & period > 1 & abs(period - round(period)) == 0)) 
-    stop("Period of the seasonal component must be integer larger than 1.")
-  
+  if (!(length(period) == 1 & period > 1)) 
+    stop("Period of the seasonal component must be larger than 1.")
+  period <- floor(period)
   m1 <- period - 1
   
   Z_univariate <- matrix(0, 1, m1)

@@ -47,8 +47,10 @@ residuals.KFS <- function(object, type = c("recursive","deviance", "pearson", "r
              if (is.null(object[["a",exact=TRUE]])) 
                stop("KFS object needs to contain filtered estimates of states. ")
              series <- object$v
+             if(object$d>0){
              series[1:(object$d - 1), ] <- NA
              series[object$d, 1:object$j] <- NA
+             }
              series
            },
            response = {

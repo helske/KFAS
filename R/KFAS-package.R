@@ -188,7 +188,7 @@
 #'                  data=Seatbelts,H=matrix(NA,2,2)) 
 #' 
 #' likfn<-function(pars,model,estimate=TRUE){
-#'   model$H[,,1]<-exp(0.5*pars[1:2])
+#'   diag(model$H[,,1])<-exp(0.5*pars[1:2])
 #'   model$H[1,2,1]<-model$H[2,1,1]<-tanh(pars[3])*prod(sqrt(exp(0.5*pars[1:2]))) 
 #'   model$R[28:29]<-exp(pars[4:5])
 #'   if(estimate) return(-logLik(model))

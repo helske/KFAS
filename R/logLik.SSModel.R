@@ -140,7 +140,7 @@ logLik.SSModel <- function(object, nsim = 0, antithetics = TRUE, theta, check.mo
                     convtol, as.integer(nnd), as.integer(nsim), epsplus, etaplus, aplus1, c2, object$tol, info = integer(1), as.integer(antithetics), 
                     as.integer(sim), nsim2, as.integer(nd), as.integer(length(nd)),diff=double(1))
     if (!is.finite(out$diff)){
-      warning("Non-finite difference in approximation algoritm. Returning -Inf.")
+      warning("Non-finite difference in approximation algoritm.")
       return(-.Machine$double.xmax^0.75)
     }
     if(out$maxiter==maxiter){

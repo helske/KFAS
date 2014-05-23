@@ -110,7 +110,7 @@ KFS <- function(model, filtering, smoothing, simplify = TRUE, transform = c("ldl
   
   if(missing(filtering)){
     if(all(model$distribution == "gaussian")){
-    filtering <- "state"
+      filtering <- "state"
     } else filtering <- "none"
   } else{
     filtering <- match.arg(arg = filtering, 
@@ -336,6 +336,7 @@ KFS <- function(model, filtering, smoothing, simplify = TRUE, transform = c("ldl
   } else KFS_transform <- "none"
   filtersignal<-("signal"%in%filtering) || ("mean"%in%filtering)
   storage.mode(ymiss) <- "integer"
+
   filterout <- .Fortran(fkfilter, NAOK = TRUE, model$y, ymiss, as.integer(tv), model$Z, model$H, model$T, 
                         model$R, model$Q, model$a1, P1 = model$P1, model$P1inf, as.integer(p), 
                         as.integer(n), as.integer(m),as.integer(k), d = integer(1), j = integer(1), 
@@ -350,7 +351,7 @@ KFS <- function(model, filtering, smoothing, simplify = TRUE, transform = c("ldl
   
   if (filterout$d == n & filterout$j == p) 
     warning("Model is degenerate, diffuse phase did not end.")
-  if (filterout$d > 0 & m > 1 & !isTRUE(all.equal(min(apply(filterout$Pinf, 3, diag)), 0))) 
+  if (filterout$d > 0 & m > 1 & min(apply(filterout$Pinf, 3, diag))<0) 
     warning("Possible error in diffuse filtering: Negative variances in Pinf, 
             try changing the tolerance parameter tol of the model.")
   if (sum(filterout$Finf > 0) != sum(diag(model$P1inf))) 
@@ -434,6 +435,7 @@ KFS <- function(model, filtering, smoothing, simplify = TRUE, transform = c("ldl
   }
   
   if (!("none"%in%smoothing)) {
+    
     smoothout <- .Fortran(fgsmoothall, NAOK = TRUE, ymiss, as.integer(tv), model$Z, model$H, 
                           model$T, model$R, model$Q, as.integer(p), as.integer(n), as.integer(m), 
                           as.integer(k), filterout$d, filterout$j, filterout$a, filterout$P, 
@@ -449,13 +451,14 @@ KFS <- function(model, filtering, smoothing, simplify = TRUE, transform = c("ldl
                           epshat = array(0, dim = c(p, n)), V_eps = array(0, dim = c(p, n)), 
                           etahat = array(0, dim = c(k, n)), V_eta = array(0, dim = c(k, k, n)), 
                           thetahat = array(0, dim = c(p, n)), V_theta = array(0, dim = c(p, p, n)), 
-                          as.integer(KFS_transform=="ldl" && ("signal" %in% smoothing || "mean" %in% smoothing)), 
-{if (KFS_transform=="ldl" && ("signal" %in% smoothing || "mean" %in% smoothing)) out$model$Z else double(1)}, 
+                          as.integer(KFS_transform=="ldl" && ("signal" %in% smoothing || "mean" %in% smoothing)), {if (KFS_transform=="ldl" && ("signal" %in% smoothing || "mean" %in% smoothing)) out$model$Z else double(1)}, 
                           as.integer(dim(out$model$Z)[3]>1), as.integer(KFS_transform != "augment"), 
                           as.integer("state" %in% smoothing), as.integer("disturbance" %in% smoothing), 
                           as.integer(("signal" %in% smoothing || "mean" %in% smoothing)))
     
-    
+    if (m > 1 & min(apply(smoothout$V, 3, diag))<0) 
+      warning("Possible error in smoothing: Negative variances in V, 
+            try changing the tolerance parameter tol of the model.")
     
     if ("state" %in% smoothing) {
       out$alphahat <- ts(t(smoothout$alphahat),start=start(model$y),frequency=frequency(model$y))

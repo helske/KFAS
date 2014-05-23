@@ -3,8 +3,8 @@
 \alias{predict.SSModel}
 \title{State Space Model Predictions}
 \usage{
-\method{predict}{SSModel}(object, newdata, interval = c("none", "confidence",
-  "prediction"), level = 0.95, type = c("response", "link"),
+\method{predict}{SSModel}(object, newdata, n.ahead, interval = c("none",
+  "confidence", "prediction"), level = 0.95, type = c("response", "link"),
   states = NULL, se.fit = FALSE, nsim = 0, prob = TRUE, maxiter = 50,
   ...)
 }
@@ -13,7 +13,15 @@
 
   \item{newdata}{A compatible \code{SSModel} object to be
   added in the end of the old object for which the
-  predictions are required.}
+  predictions are required. If omitted, predictions are
+  either for the whole data (fitted values), or if argument
+  \code{n.ahead} is given, \code{n.ahead} time steps
+  ahead.}
+
+  \item{n.ahead}{Number of steps ahead at which to predict.
+  Only used if \code{newdata} is omitted. Note that when
+  using \code{n.ahead}, object cannot contain time varying
+  system matrices.}
 
   \item{interval}{Type of interval calculation.}
 
@@ -69,5 +77,21 @@ distribution \eqn{p(y|\theta^i)}.
 
 If no simulations are used, the standard errors in response
 scale are computed using delta method.
+}
+\examples{
+\dontrun{
+set.seed(1)
+x<-runif(n=100,min=1,max=3)
+y<-rpois(n=100,lambda=exp(-1+x))
+model<-SSModel(y~x,distribution="poisson")
+xnew<-seq(0.5,3.5,by=0.1)
+newdata<-SSModel(rep(NA,length(xnew))~xnew,distribution="poisson")
+pred<-predict(model,newdata=newdata,interval="prediction",level=0.9,nsim=1000)
+plot(x=x,y=y,pch=19,ylim=c(0,25),xlim=c(0.5,3.5))
+matlines(x=xnew,y=pred,col=c(2,2,2),lty=c(1,2,2),type="l")
+
+model<-SSModel(Nile~SSMtrend(1,Q=1469),H=15099)
+pred<-predict(model,n.ahead=10,interval="prediction",level=0.9)
+}
 }
 

@@ -1,10 +1,15 @@
 Changes from Version 1.0.3 to 1.0.4:
- * Corrected output of LogLik method for non-Gaussian models: It now returns Inf only when the 
-   approximation algoritm failed  completely (resulting NA), and issues only warning about 
+ * Tweaked the underlying algorithms for increased numerical stability of filtering and smoothing 
+   in KFS. Note that it is still possible that exact diffuse initialization fails due to to numerical
+   issues whereas traditional 'big value' approach works and vice versa.
+ * Corrected a bug in residuals.KFS which threw an error when computing recursive residuals without 
+   diffuse initialization.
+ * Corrected output of LogLik method for non-Gaussian models: It now returns -Inf only when the 
+   approximation algoritm failedcompletely (resulting NA), and issues only warning about 
    non-convergence in other cases.
  * Added checks of degenerate model to LogLik method. If all elements in R, Q and H/u are zero, or 
    they contain any non-finite values, -Inf is returned.
- * Corrected a bug in approximation algorithm which caused the approximation to fail for seemingly 
+ * Fixed a bug in approximation algorithm which caused the approximation to fail for seemingly 
    random models.
  * Fixed a bug in SSMcycle which caused error with common components.
  * Fixed bug in SSMcycle which resulted erroneus system matrix T in all cases.
