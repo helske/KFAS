@@ -1,5 +1,6 @@
 context("KFAS and glm comparison")
 
+tol<-1e-3
 require(MASS)
 # Test for Gaussian
 ctl <- c(4.17,5.58,5.18,6.11,4.50,4.61,5.17,4.53,5.33,5.14)
@@ -66,98 +67,114 @@ kfas.NB<-KFS(model.NB,smoothing=c('state','signal','mean'),convtol=1e-15)
 
 test_that("Gaussian GLM fitting works properly",{
   for(i in 1:length(model.gaussian$y))
-    expect_equal(coef(kfas.gaussian,start=i,end=i),coef(glm.gaussian),info=paste("Error in time step",i))
+    expect_equal(coef(kfas.gaussian,start=i,end=i),coef(glm.gaussian),
+                 tolerance=tol, check.attributes=FALSE, info=paste("Error in time step",i))
   for(i in 1:length(model.gaussian$y))
-    expect_equivalent(kfas.gaussian$V[,,i],summary(glm.gaussian)$cov.s,info=paste("Error in time step",i))
-  expect_equivalent(c(fitted(kfas.gaussian)),fitted(glm.gaussian))
-  expect_equivalent(c(kfas.gaussian$V_mu),predict(glm.gaussian,type='response',se.fit=TRUE)$se.fit^2)
-  expect_equal(deviance(kfas.gaussian),deviance(glm.gaussian))
+    expect_equal(kfas.gaussian$V[,,i],summary(glm.gaussian)$cov.s,tolerance=tol, check.attributes=FALSE,
+                 info=paste("Error in time step",i))
+  expect_equal(c(fitted(kfas.gaussian)),fitted(glm.gaussian),tolerance=tol, check.attributes=FALSE)
+  expect_equal(c(kfas.gaussian$V_mu),predict(glm.gaussian,type='response',se.fit=TRUE)$se.fit^2
+               ,tolerance=tol, check.attributes=FALSE)
+  expect_equal(deviance(kfas.gaussian),deviance(glm.gaussian),tolerance=tol, check.attributes=FALSE)
 })
 
 test_that("Poisson GLM fitting works properly",{
   for(i in 1:length(model.poisson$y))
-    expect_equivalent(coef(kfas.poisson,start=i,end=i),coef(glm.poisson),info=paste("Error in time step",i))
+    expect_equal(coef(kfas.poisson,start=i,end=i),coef(glm.poisson),info=paste("Error in time step",i)
+                 ,tolerance=tol, check.attributes=FALSE)
   for(i in 1:length(model.poisson$y))
-    expect_equivalent(kfas.poisson$V[,,i],summary(glm.poisson)$cov.s,info=paste("Error in time step",i))
+    expect_equal(kfas.poisson$V[,,i],summary(glm.poisson)$cov.s,info=paste("Error in time step",i)
+                 ,tolerance=tol, check.attributes=FALSE)
   ## linear
-  expect_equivalent(c(kfas.poisson$thetahat),glm.poisson$linear.predictor)
+  expect_equal(c(kfas.poisson$thetahat),glm.poisson$linear.predictor,tolerance=tol, check.attributes=FALSE)
   ## predictions on response scale
-  expect_equivalent(c(fitted(kfas.poisson)),fitted(glm.poisson))
+  expect_equal(c(fitted(kfas.poisson)),fitted(glm.poisson),tolerance=tol, check.attributes=FALSE)
   # prediction variances on link scale
-  expect_equivalent(c(kfas.poisson$V_theta),predict(glm.poisson,type='link',se.fit=TRUE)$se.fit^2)
+  expect_equal(c(kfas.poisson$V_theta),predict(glm.poisson,type='link',se.fit=TRUE)$se.fit^2
+               ,tolerance=tol, check.attributes=FALSE)
   # prediction variances on response scale
-  expect_equivalent(c(kfas.poisson$V_mu),predict(glm.poisson,type='response',se.fit=TRUE)$se.fit^2)
-  expect_equal(deviance(kfas.poisson),deviance(glm.poisson))
+  expect_equal(c(kfas.poisson$V_mu),predict(glm.poisson,type='response',se.fit=TRUE)$se.fit^2
+               ,tolerance=tol, check.attributes=FALSE)
+  expect_equal(deviance(kfas.poisson),deviance(glm.poisson),tolerance=tol, check.attributes=FALSE)
 })
 
 
 test_that("binomial GLM fitting works properly",{
   for(i in 1:length(model.binomial$y))
-    expect_equal(coef(kfas.binomial,start=i,end=i),coef(glm.binomial),info=paste("Error in time step",i))
+    expect_equal(coef(kfas.binomial,start=i,end=i),coef(glm.binomial),
+                 info=paste("Error in time step",i),tolerance=tol, check.attributes=FALSE)
   for(i in 1:length(model.binomial$y))
-    expect_equivalent(kfas.binomial$V[,,i],summary(glm.binomial)$cov.s,info=paste("Error in time step",i))
+    expect_equal(kfas.binomial$V[,,i],summary(glm.binomial)$cov.s,
+                 info=paste("Error in time step",i),tolerance=tol, check.attributes=FALSE)
   ## linear
-  expect_equivalent(c(kfas.binomial$thetahat),glm.binomial$linear.predictor)
+  expect_equal(c(kfas.binomial$thetahat),glm.binomial$linear.predictor,tolerance=tol, check.attributes=FALSE)
   ## predictions on response scale
-  expect_equivalent(c(fitted(kfas.binomial)),fitted(glm.binomial))
+  expect_equal(c(fitted(kfas.binomial)),fitted(glm.binomial),tolerance=tol, check.attributes=FALSE)
   # prediction variances on link scale
-  expect_equivalent(c(kfas.binomial$V_theta),predict(glm.binomial,type='link',se.fit=TRUE)$se.fit^2)
+  expect_equal(c(kfas.binomial$V_theta),
+               predict(glm.binomial,type='link',se.fit=TRUE)$se.fit^2,tolerance=tol, check.attributes=FALSE)
   # prediction variances on response scale
-  expect_equivalent(c(kfas.binomial$V_mu),predict(glm.binomial,type='response',se.fit=TRUE)$se.fit^2)
-  expect_equal(deviance(kfas.binomial),deviance(glm.binomial))
+  expect_equal(c(kfas.binomial$V_mu),
+               predict(glm.binomial,type='response',se.fit=TRUE)$se.fit^2,tolerance=tol, check.attributes=FALSE)
+  expect_equal(deviance(kfas.binomial),deviance(glm.binomial),tolerance=tol, check.attributes=FALSE)
 })
 
 
 test_that("gamma GLM fitting works properly",{
   for(i in 1:length(model.gamma1$y))
-    expect_equal(coef(kfas.gamma1,start=i,end=i),coef(glm.gamma),info=paste("Error in time step",i, ", dispersion=1"))
+    expect_equal(coef(kfas.gamma1,start=i,end=i),coef(glm.gamma),
+                 info=paste("Error in time step",i, ", dispersion=1"),tolerance=tol, check.attributes=FALSE)
   for(i in 1:length(model.gamma1$y))
-    expect_equivalent(kfas.gamma1$V[,,i],summary(glm.gamma,dispersion=1)$cov.s,
-                      info=paste("Error in time step",i, ", dispersion=1"))  
-  expect_equivalent(c(kfas.gamma1$thetahat),glm.gamma$linear.predictor,
-                    info=paste("dispersion=1"))
+    expect_equal(kfas.gamma1$V[,,i],summary(glm.gamma,dispersion=1)$cov.s,
+                      info=paste("Error in time step",i, ", dispersion=1"),tolerance=tol, check.attributes=FALSE)  
+  expect_equal(c(kfas.gamma1$thetahat),glm.gamma$linear.predictor,
+                    info=paste("dispersion=1"),tolerance=tol, check.attributes=FALSE)
   ## predictions on response scale
-  expect_equivalent(c(fitted(kfas.gamma1)),fitted(glm.gamma),info=paste("dispersion=1"))
+  expect_equal(c(fitted(kfas.gamma1)),fitted(glm.gamma),info=paste("dispersion=1"),tolerance=tol, check.attributes=FALSE)
   # prediction variances on link scale
-  expect_equivalent(c(kfas.gamma1$V_theta),
+  expect_equal(c(kfas.gamma1$V_theta),
                     predict(glm.gamma,type='link',se.fit=TRUE,dispersion=1)$se.fit^2,
-                    info=paste("dispersion=1"))
+                    info=paste("dispersion=1"),tolerance=tol, check.attributes=FALSE)
   # prediction variances on response scale
-  expect_equivalent(c(kfas.gamma1$V_mu),predict(glm.gamma,type='response',se.fit=TRUE,dispersion=1)$se.fit^2,
-                    info=paste("dispersion=1"))
+  expect_equal(c(kfas.gamma1$V_mu),predict(glm.gamma,type='response',se.fit=TRUE,dispersion=1)$se.fit^2,
+                    info=paste("dispersion=1"),tolerance=tol, check.attributes=FALSE)
   for(i in 1:length(model.gamma2$y))
-    expect_equal(coef(kfas.gamma2,start=i,end=i),coef(glm.gamma),info=paste("Error in time step",i))
+    expect_equal(coef(kfas.gamma2,start=i,end=i),coef(glm.gamma),
+                 info=paste("Error in time step",i),tolerance=tol, check.attributes=FALSE)
   for(i in 1:length(model.gamma2$y))
-    expect_equivalent(kfas.gamma2$V[,,i],summary(glm.gamma)$cov.s,info=paste("Error in time step",i))
+    expect_equal(kfas.gamma2$V[,,i],summary(glm.gamma)$cov.s,
+                 info=paste("Error in time step",i),tolerance=tol, check.attributes=FALSE)
   ## linear
-  expect_equivalent(c(kfas.gamma2$theta),glm.gamma$linear.predictor)
+  expect_equal(c(kfas.gamma2$theta),glm.gamma$linear.predictor,tolerance=tol, check.attributes=FALSE)
   ## predictions on response scale
-  expect_equivalent(c(fitted(kfas.gamma2)),fitted(glm.gamma))
+  expect_equal(c(fitted(kfas.gamma2)),fitted(glm.gamma),tolerance=tol, check.attributes=FALSE)
   # prediction variances on link scale
-  expect_equivalent(c(kfas.gamma2$V_theta),predict(glm.gamma,type='link',se.fit=TRUE)$se.fit^2)
+  expect_equal(c(kfas.gamma2$V_theta),
+               predict(glm.gamma,type='link',se.fit=TRUE)$se.fit^2,tolerance=tol, check.attributes=FALSE)
   # prediction variances on response scale
-  expect_equivalent(c(kfas.gamma2$V_mu),predict(glm.gamma,type='response',se.fit=TRUE)$se.fit^2)
-  expect_equal(deviance(kfas.gamma2),deviance(glm.gamma))
+  expect_equal(c(kfas.gamma2$V_mu),
+               predict(glm.gamma,type='response',se.fit=TRUE)$se.fit^2,tolerance=tol, check.attributes=FALSE)
+  expect_equal(deviance(kfas.gamma2),deviance(glm.gamma),tolerance=tol, check.attributes=FALSE)
 })
 
 test_that("negative binomial GLM fitting works properly",{
   
   for(i in 1:length(model.NB$y))
-    expect_equal(coef(kfas.NB,start=i,end=i),coef(glm.NB),info=paste("Error in time step",i))
+    expect_equal(coef(kfas.NB,start=i,end=i),coef(glm.NB),info=paste("Error in time step",i),tolerance=tol, check.attributes=FALSE)
   for(i in 1:length(model.NB$y))
-    expect_equivalent(kfas.NB$V[,,i],summary(glm.NB)$cov.s,
-                      info=paste("Error in time step",i))
+    expect_equal(kfas.NB$V[,,i],summary(glm.NB)$cov.s,
+                      info=paste("Error in time step",i),tolerance=tol, check.attributes=FALSE)
   
-  expect_equivalent(c(kfas.NB$thetahat),glm.NB$linear.predictor)
+  expect_equal(c(kfas.NB$thetahat),glm.NB$linear.predictor,tolerance=tol, check.attributes=FALSE)
   ## predictions on response scale
-  expect_equivalent(c(fitted(kfas.NB)),fitted(glm.NB))
+  expect_equal(c(fitted(kfas.NB)),fitted(glm.NB),tolerance=tol, check.attributes=FALSE)
   # prediction variances on link scale
-  expect_equivalent(c(kfas.NB$V_theta),
-                    predict(glm.NB,type='link',se.fit=TRUE,dispersion=1)$se.fit^2)
+  expect_equal(c(kfas.NB$V_theta),
+                    predict(glm.NB,type='link',se.fit=TRUE,dispersion=1)$se.fit^2,tolerance=tol, check.attributes=FALSE)
   # prediction variances on response scale
-  expect_equivalent(c(kfas.NB$V_mu),predict(glm.NB,type='response',se.fit=TRUE,)$se.fit^2)
+  expect_equal(c(kfas.NB$V_mu),predict(glm.NB,type='response',se.fit=TRUE,)$se.fit^2,tolerance=tol, check.attributes=FALSE)
   
-  expect_equivalent(model.NB$u[1],glm.NB$theta)
+  expect_equal(model.NB$u[1],glm.NB$theta,tolerance=tol, check.attributes=FALSE)
   
   likfn<-function(pars,model,estimate=TRUE){ 
     model$u[]<-exp(pars[1])
@@ -169,83 +186,83 @@ test_that("negative binomial GLM fitting works properly",{
   }
   
   fit<-optim(f=likfn,p=c(log(glm.NB$theta),glm.NB$coef),model=model.NB)
-  expect_equal(c(exp(fit$p[1]),fit$p[-1]),c(glm.NB$theta,glm.NB$coef))
-  expect_equal(deviance(kfas.NB),deviance(glm.NB))
+  expect_equal(c(exp(fit$p[1]),fit$p[-1]),c(glm.NB$theta,glm.NB$coef),tolerance=tol, check.attributes=FALSE)
+  expect_equal(deviance(kfas.NB),deviance(glm.NB),tolerance=tol, check.attributes=FALSE)
 })
 
 
 test_that("Residuals for Gaussian GLM works properly",{
-  expect_equivalent(as.numeric(residuals(kfas.gaussian,type="deviance")),
-                    residuals(glm.gaussian,type="deviance"))
-  expect_equivalent(as.numeric(residuals(kfas.gaussian,type="pearson")),
-                    residuals(glm.gaussian,type="pearson"))
-  expect_equivalent(as.numeric(residuals(kfas.gaussian,type="response")),
-                    residuals(glm.gaussian,type="response"))
+  expect_equal(as.numeric(residuals(kfas.gaussian,type="deviance")),
+                    residuals(glm.gaussian,type="deviance"),tolerance=tol, check.attributes=FALSE)
+  expect_equal(as.numeric(residuals(kfas.gaussian,type="pearson")),
+                    residuals(glm.gaussian,type="pearson"),tolerance=tol, check.attributes=FALSE)
+  expect_equal(as.numeric(residuals(kfas.gaussian,type="response")),
+                    residuals(glm.gaussian,type="response"),tolerance=tol, check.attributes=FALSE)
   
-  expect_equivalent(as.numeric(rstandard(kfas.gaussian,type="pearson")),
-                    rstandard(glm.gaussian,type="pearson"))
-  expect_equivalent(as.numeric(rstandard(kfas.gaussian,type="deviance")),
-                    rstandard(glm.gaussian,type="deviance"))
+  expect_equal(as.numeric(rstandard(kfas.gaussian,type="pearson")),
+                    rstandard(glm.gaussian,type="pearson"),tolerance=tol, check.attributes=FALSE)
+  expect_equal(as.numeric(rstandard(kfas.gaussian,type="deviance")),
+                    rstandard(glm.gaussian,type="deviance"),tolerance=tol, check.attributes=FALSE)
 })
 
 
 test_that("Residuals for Poisson GLM works properly",{
-  expect_equivalent(as.numeric(residuals(kfas.poisson,type="deviance")),
-                    residuals(glm.poisson,type="deviance"))
-  expect_equivalent(as.numeric(residuals(kfas.poisson,type="pearson")),
-                    residuals(glm.poisson,type="pearson"))
-  expect_equivalent(as.numeric(residuals(kfas.poisson,type="response")),
-                    residuals(glm.poisson,type="response"))
+  expect_equal(as.numeric(residuals(kfas.poisson,type="deviance")),
+                    residuals(glm.poisson,type="deviance"),tolerance=tol, check.attributes=FALSE)
+  expect_equal(as.numeric(residuals(kfas.poisson,type="pearson")),
+                    residuals(glm.poisson,type="pearson"),tolerance=tol, check.attributes=FALSE)
+  expect_equal(as.numeric(residuals(kfas.poisson,type="response")),
+                    residuals(glm.poisson,type="response"),tolerance=tol, check.attributes=FALSE)
   
-  expect_equivalent(as.numeric(rstandard(kfas.poisson,type="pearson")),
-                    rstandard(glm.poisson,type="pearson"))
-  expect_equivalent(as.numeric(rstandard(kfas.poisson,type="deviance")),
-                    rstandard(glm.poisson,type="deviance"))
+  expect_equal(as.numeric(rstandard(kfas.poisson,type="pearson")),
+                    rstandard(glm.poisson,type="pearson"),tolerance=tol, check.attributes=FALSE)
+  expect_equal(as.numeric(rstandard(kfas.poisson,type="deviance")),
+                    rstandard(glm.poisson,type="deviance"),tolerance=tol, check.attributes=FALSE)
 })
 
 
 test_that("Residuals for Binomial GLM works properly",{
-  expect_equivalent(as.numeric(residuals(kfas.binomial,type="deviance")),
-                    residuals(glm.binomial,type="deviance"))
-  expect_equivalent(as.numeric(residuals(kfas.binomial,type="pearson")),
-                    residuals(glm.binomial,type="pearson"))
-  expect_equivalent(as.numeric(residuals(kfas.binomial,type="response")),
-                    residuals(glm.binomial,type="response"))
+  expect_equal(as.numeric(residuals(kfas.binomial,type="deviance")),
+                    residuals(glm.binomial,type="deviance"),tolerance=tol, check.attributes=FALSE)
+  expect_equal(as.numeric(residuals(kfas.binomial,type="pearson")),
+                    residuals(glm.binomial,type="pearson"),tolerance=tol, check.attributes=FALSE)
+  expect_equal(as.numeric(residuals(kfas.binomial,type="response")),
+                    residuals(glm.binomial,type="response"),tolerance=tol, check.attributes=FALSE)
   
-  expect_equivalent(as.numeric(rstandard(kfas.binomial,type="pearson")),
-                    rstandard(glm.binomial,type="pearson"))
-  expect_equivalent(as.numeric(rstandard(kfas.binomial,type="deviance")),
-                    rstandard(glm.binomial,type="deviance"))
+  expect_equal(as.numeric(rstandard(kfas.binomial,type="pearson")),
+                    rstandard(glm.binomial,type="pearson"),tolerance=tol, check.attributes=FALSE)
+  expect_equal(as.numeric(rstandard(kfas.binomial,type="deviance")),
+                    rstandard(glm.binomial,type="deviance"),tolerance=tol, check.attributes=FALSE)
 })
 
 
 test_that("Residuals for Gamma GLM works properly",{
-  expect_equivalent(as.numeric(residuals(kfas.gamma2,type="deviance")),
-                    residuals(glm.gamma,type="deviance"))
-  expect_equivalent(as.numeric(residuals(kfas.gamma2,type="pearson")),
-                    residuals(glm.gamma,type="pearson"))
-  expect_equivalent(as.numeric(residuals(kfas.gamma2,type="response")),
-                    residuals(glm.gamma,type="response"))
+  expect_equal(as.numeric(residuals(kfas.gamma2,type="deviance")),
+                    residuals(glm.gamma,type="deviance"),tolerance=tol, check.attributes=FALSE)
+  expect_equal(as.numeric(residuals(kfas.gamma2,type="pearson")),
+                    residuals(glm.gamma,type="pearson"),tolerance=tol, check.attributes=FALSE)
+  expect_equal(as.numeric(residuals(kfas.gamma2,type="response")),
+                    residuals(glm.gamma,type="response"),tolerance=tol, check.attributes=FALSE)
   
-  expect_equivalent(as.numeric(rstandard(kfas.gamma2,type="pearson")),
-                    rstandard(glm.gamma,type="pearson"))
-  expect_equivalent(as.numeric(rstandard(kfas.gamma2,type="deviance")),
-                    rstandard(glm.gamma,type="deviance"))
+  expect_equal(as.numeric(rstandard(kfas.gamma2,type="pearson")),
+                    rstandard(glm.gamma,type="pearson"),tolerance=tol, check.attributes=FALSE)
+  expect_equal(as.numeric(rstandard(kfas.gamma2,type="deviance")),
+                    rstandard(glm.gamma,type="deviance"),tolerance=tol, check.attributes=FALSE)
 })
 
 
 test_that("Residuals for negative binomial GLM works properly",{
-  expect_equivalent(as.numeric(residuals(kfas.NB,type="deviance")),
-                    residuals(glm.NB,type="deviance"))
-  expect_equivalent(as.numeric(residuals(kfas.NB,type="pearson")),
-                    residuals(glm.NB,type="pearson"))
-  expect_equivalent(as.numeric(residuals(kfas.NB,type="response")),
-                    residuals(glm.NB,type="response"))
+  expect_equal(as.numeric(residuals(kfas.NB,type="deviance")),
+                    residuals(glm.NB,type="deviance"),tolerance=tol, check.attributes=FALSE)
+  expect_equal(as.numeric(residuals(kfas.NB,type="pearson")),
+                    residuals(glm.NB,type="pearson"),tolerance=tol, check.attributes=FALSE)
+  expect_equal(as.numeric(residuals(kfas.NB,type="response")),
+                    residuals(glm.NB,type="response"),tolerance=tol, check.attributes=FALSE)
   
-  expect_equivalent(as.numeric(rstandard(kfas.NB,type="pearson")),
-                    rstandard(glm.NB,type="pearson"))
-  expect_equivalent(as.numeric(rstandard(kfas.NB,type="deviance")),
-                    rstandard(glm.NB,type="deviance"))
+  expect_equal(as.numeric(rstandard(kfas.NB,type="pearson")),
+                    rstandard(glm.NB,type="pearson"),tolerance=tol, check.attributes=FALSE)
+  expect_equal(as.numeric(rstandard(kfas.NB,type="deviance")),
+                    rstandard(glm.NB,type="deviance"),tolerance=tol, check.attributes=FALSE)
 })
 
 
@@ -254,71 +271,71 @@ test_that("Predictions for GLM works properly",{
   pred.kfas.gaussian.link<-predict(model.gaussian,type="link",se.fit=TRUE,interval="confidence")
   pred.glm.gaussian.response<-predict(glm.gaussian,type="response",se.fit=TRUE)
   pred.kfas.gaussian.response<-predict(model.gaussian,type="response",se.fit=TRUE,interval="confidence")  
-  expect_equivalent(c(pred.kfas.gaussian.link[,"fit"]),pred.glm.gaussian.link$fit)
-  expect_equivalent(c(pred.kfas.gaussian.link[,"se.fit"]),pred.glm.gaussian.link$se.fit)
-  expect_equivalent(c(pred.kfas.gaussian.response[,"fit"]),pred.glm.gaussian.response$fit)
-  expect_equivalent(c(pred.kfas.gaussian.response[,"se.fit"]),pred.glm.gaussian.response$se.fit)
+  expect_equal(c(pred.kfas.gaussian.link[,"fit"]),pred.glm.gaussian.link$fit,tolerance=tol, check.attributes=FALSE)
+  expect_equal(c(pred.kfas.gaussian.link[,"se.fit"]),pred.glm.gaussian.link$se.fit,tolerance=tol, check.attributes=FALSE)
+  expect_equal(c(pred.kfas.gaussian.response[,"fit"]),pred.glm.gaussian.response$fit,tolerance=tol, check.attributes=FALSE)
+  expect_equal(c(pred.kfas.gaussian.response[,"se.fit"]),pred.glm.gaussian.response$se.fit,tolerance=tol, check.attributes=FALSE)
   
   
   pred.glm.poisson.link<-predict(glm.poisson,type="link",se.fit=TRUE)
   pred.kfas.poisson.link<-predict(model.poisson,type="link",se.fit=TRUE,interval="confidence")
   pred.glm.poisson.response<-predict(glm.poisson,type="response",se.fit=TRUE)
   pred.kfas.poisson.response<-predict(model.poisson,type="response",se.fit=TRUE,interval="confidence")  
-  expect_equivalent(pred.glm.poisson.link$fit,obj=c(pred.kfas.poisson.link[,"fit"]))
-  expect_equivalent(pred.glm.poisson.link$se.fit,obj=c(pred.kfas.poisson.link[,"se.fit"]))
-  expect_equivalent(pred.glm.poisson.response$fit,obj=c(pred.kfas.poisson.response[,"fit"]))
-  expect_equivalent(pred.glm.poisson.response$se.fit,obj=c(pred.kfas.poisson.response[,"se.fit"]))
+  expect_equal(pred.glm.poisson.link$fit,obj=c(pred.kfas.poisson.link[,"fit"]),tolerance=tol, check.attributes=FALSE)
+  expect_equal(pred.glm.poisson.link$se.fit,obj=c(pred.kfas.poisson.link[,"se.fit"]),tolerance=tol, check.attributes=FALSE)
+  expect_equal(pred.glm.poisson.response$fit,obj=c(pred.kfas.poisson.response[,"fit"]),tolerance=tol, check.attributes=FALSE)
+  expect_equal(pred.glm.poisson.response$se.fit,obj=c(pred.kfas.poisson.response[,"se.fit"]),tolerance=tol, check.attributes=FALSE)
   
   
   pred.glm.binomial.link<-predict(glm.binomial,type="link",se.fit=TRUE)
   pred.kfas.binomial.link<-predict(model.binomial,type="link",se.fit=TRUE,interval="confidence")
   pred.glm.binomial.response<-predict(glm.binomial,type="response",se.fit=TRUE)
   pred.kfas.binomial.response<-predict(model.binomial,type="response",se.fit=TRUE,interval="confidence")  
-  expect_equivalent(pred.glm.binomial.link$fit,obj=c(pred.kfas.binomial.link[,"fit"]))
-  expect_equivalent(pred.glm.binomial.link$se.fit,obj=c(pred.kfas.binomial.link[,"se.fit"]))
-  expect_equivalent(pred.glm.binomial.response$fit,obj=c(pred.kfas.binomial.response[,"fit"]))
-  expect_equivalent(pred.glm.binomial.response$se.fit,obj=c(pred.kfas.binomial.response[,"se.fit"]))
+  expect_equal(pred.glm.binomial.link$fit,obj=c(pred.kfas.binomial.link[,"fit"]),tolerance=tol, check.attributes=FALSE)
+  expect_equal(pred.glm.binomial.link$se.fit,obj=c(pred.kfas.binomial.link[,"se.fit"]),tolerance=tol, check.attributes=FALSE)
+  expect_equal(pred.glm.binomial.response$fit,obj=c(pred.kfas.binomial.response[,"fit"]),tolerance=tol, check.attributes=FALSE)
+  expect_equal(pred.glm.binomial.response$se.fit,obj=c(pred.kfas.binomial.response[,"se.fit"]),tolerance=tol, check.attributes=FALSE)
   
   
   pred.glm.gamma.link<-predict(glm.gamma,type="link",se.fit=TRUE)
   pred.kfas.gamma.link<-predict(model.gamma2,type="link",se.fit=TRUE,interval="confidence")
   pred.glm.gamma.response<-predict(glm.gamma,type="response",se.fit=TRUE)
   pred.kfas.gamma.response<-predict(model.gamma2,type="response",se.fit=TRUE,interval="confidence")  
-  expect_equivalent(pred.glm.gamma.link$fit,obj=c(pred.kfas.gamma.link[,"fit"]))
-  expect_equivalent(pred.glm.gamma.link$se.fit,obj=c(pred.kfas.gamma.link[,"se.fit"]))
-  expect_equivalent(pred.glm.gamma.response$fit,obj=c(pred.kfas.gamma.response[,"fit"]))
-  expect_equivalent(pred.glm.gamma.response$se.fit,obj=c(pred.kfas.gamma.response[,"se.fit"]))
+  expect_equal(pred.glm.gamma.link$fit,obj=c(pred.kfas.gamma.link[,"fit"]),tolerance=tol, check.attributes=FALSE)
+  expect_equal(pred.glm.gamma.link$se.fit,obj=c(pred.kfas.gamma.link[,"se.fit"]),tolerance=tol, check.attributes=FALSE)
+  expect_equal(pred.glm.gamma.response$fit,obj=c(pred.kfas.gamma.response[,"fit"]),tolerance=tol, check.attributes=FALSE)
+  expect_equal(pred.glm.gamma.response$se.fit,obj=c(pred.kfas.gamma.response[,"se.fit"]),tolerance=tol, check.attributes=FALSE)
   
   
   pred.glm.NB.link<-predict(glm.NB,type="link",se.fit=TRUE)
   pred.kfas.NB.link<-predict(model.NB,type="link",se.fit=TRUE,interval="confidence")
   pred.glm.NB.response<-predict(glm.NB,type="response",se.fit=TRUE)
   pred.kfas.NB.response<-predict(model.NB,type="response",se.fit=TRUE,interval="confidence")  
-  expect_equivalent(pred.glm.NB.link$fit,obj=c(pred.kfas.NB.link[,"fit"]))
-  expect_equivalent(pred.glm.NB.link$se.fit,obj=c(pred.kfas.NB.link[,"se.fit"]))
-  expect_equivalent(pred.glm.NB.response$fit,obj=c(pred.kfas.NB.response[,"fit"]))
-  expect_equivalent(pred.glm.NB.response$se.fit,obj=c(pred.kfas.NB.response[,"se.fit"]))
+  expect_equal(pred.glm.NB.link$fit,obj=c(pred.kfas.NB.link[,"fit"]),tolerance=tol, check.attributes=FALSE)
+  expect_equal(pred.glm.NB.link$se.fit,obj=c(pred.kfas.NB.link[,"se.fit"]),tolerance=tol, check.attributes=FALSE)
+  expect_equal(pred.glm.NB.response$fit,obj=c(pred.kfas.NB.response[,"fit"]),tolerance=tol, check.attributes=FALSE)
+  expect_equal(pred.glm.NB.response$se.fit,obj=c(pred.kfas.NB.response[,"se.fit"]),tolerance=tol, check.attributes=FALSE)
   
   #confidence intervals
   glm.gaussian.CI<-pred.glm.gaussian.link$fit +qnorm(0.025)*pred.glm.gaussian.link$se.fit%o%c(1,-1)
-  expect_equivalent(unclass(pred.kfas.gaussian.link[,c("lwr","upr")]),glm.gaussian.CI)
-  expect_equivalent(unclass(pred.kfas.gaussian.response[,c("lwr","upr")]),gaussian()$linkinv(glm.gaussian.CI))
+  expect_equal(unclass(pred.kfas.gaussian.link[,c("lwr","upr")]),glm.gaussian.CI,tolerance=tol, check.attributes=FALSE)
+  expect_equal(unclass(pred.kfas.gaussian.response[,c("lwr","upr")]),gaussian()$linkinv(glm.gaussian.CI),tolerance=tol, check.attributes=FALSE)
   
   glm.poisson.CI<-pred.glm.poisson.link$fit +qnorm(0.025)*pred.glm.poisson.link$se.fit%o%c(1,-1)
-  expect_equivalent(unclass(pred.kfas.poisson.link[,c("lwr","upr")]),glm.poisson.CI)
-  expect_equivalent(unclass(pred.kfas.poisson.response[,c("lwr","upr")]),poisson()$linkinv(glm.poisson.CI))
+  expect_equal(unclass(pred.kfas.poisson.link[,c("lwr","upr")]),glm.poisson.CI,tolerance=tol, check.attributes=FALSE)
+  expect_equal(unclass(pred.kfas.poisson.response[,c("lwr","upr")]),poisson()$linkinv(glm.poisson.CI),tolerance=tol, check.attributes=FALSE)
   
   glm.binomial.CI<-pred.glm.binomial.link$fit +qnorm(0.025)*pred.glm.binomial.link$se.fit%o%c(1,-1)
-  expect_equivalent(unclass(pred.kfas.binomial.link[,c("lwr","upr")]),glm.binomial.CI)
-  expect_equivalent(unclass(pred.kfas.binomial.response[,c("lwr","upr")]),binomial()$linkinv(glm.binomial.CI))
+  expect_equal(unclass(pred.kfas.binomial.link[,c("lwr","upr")]),glm.binomial.CI,tolerance=tol, check.attributes=FALSE)
+  expect_equal(unclass(pred.kfas.binomial.response[,c("lwr","upr")]),binomial()$linkinv(glm.binomial.CI),tolerance=tol, check.attributes=FALSE)
   
   glm.gamma.CI<-pred.glm.gamma.link$fit +qnorm(0.025)*pred.glm.gamma.link$se.fit%o%c(1,-1)
-  expect_equivalent(unclass(pred.kfas.gamma.link[,c("lwr","upr")]),glm.gamma.CI)
-  expect_equivalent(unclass(pred.kfas.gamma.response[,c("lwr","upr")]),Gamma(link="log")$linkinv(glm.gamma.CI))
+  expect_equal(unclass(pred.kfas.gamma.link[,c("lwr","upr")]),glm.gamma.CI,tolerance=tol, check.attributes=FALSE)
+  expect_equal(unclass(pred.kfas.gamma.response[,c("lwr","upr")]),Gamma(link="log")$linkinv(glm.gamma.CI),tolerance=tol, check.attributes=FALSE)
   
   glm.NB.CI<-pred.glm.NB.link$fit +qnorm(0.025)*pred.glm.NB.link$se.fit%o%c(1,-1)
-  expect_equivalent(unclass(pred.kfas.NB.link[,c("lwr","upr")]),glm.NB.CI)
-  expect_equivalent(unclass(pred.kfas.NB.response[,c("lwr","upr")]),glm.NB$family$linkinv(glm.NB.CI))
+  expect_equal(unclass(pred.kfas.NB.link[,c("lwr","upr")]),glm.NB.CI,tolerance=tol, check.attributes=FALSE)
+  expect_equal(unclass(pred.kfas.NB.response[,c("lwr","upr")]),glm.NB$family$linkinv(glm.NB.CI),tolerance=tol, check.attributes=FALSE)
 })
 ##
 

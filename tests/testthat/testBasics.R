@@ -1,4 +1,5 @@
 test_that("SSModel works properly",{
+  tol<-1e-3
   set.seed(123)
   d<-data.frame(x=rnorm(100))
   t12<-ts(cbind(t1=rnorm(100)+d$x,t2=rnorm(100)))
@@ -17,7 +18,7 @@ test_that("SSModel works properly",{
     ),not(gives_warning()))
   expect_that(print(model),not(gives_warning()))
   expect_that(logLik(model),not(gives_warning()))
-  expect_equivalent(logLik(model),-443.011122738032)
+  expect_equal(logLik(model),-443.011122738032,tolerance=tol,check.attributes=FALSE)
   expect_that(out<-KFS(model,filtering=c("state","mean"),smoothing=c("state","mean","disturbance")),
               not(gives_warning()))
   expect_equal(out$d,11)

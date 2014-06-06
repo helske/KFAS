@@ -14,11 +14,11 @@ Main features
 - Exact diffuse initialization
 - Multivariate models with mixed distributions
 
-Most of the algorithms are based on book "Time Series Analysis by State Space Methods" and related articles
-by J. Durbin and S.J. Koopman.
+Most of the algorithms are based on book "Time Series Analysis by State Space Methods" and related articles by J. Durbin and S.J. Koopman.
 
-Current version of KFAS in CRAN is 1.0.3. 
-See 
+Current version of KFAS in CRAN is 1.0.4-1. 
+See
+* help(KFAS) in R for examples
 * [ChangeLog](https://github.com/helske/KFAS/blob/master/ChangeLog) for upcoming, already completed changes
 * [TODO](https://github.com/helske/KFAS/blob/master/TODO) for future changes
 

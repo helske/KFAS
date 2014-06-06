@@ -1,3 +1,8 @@
+Changes from Version 1.0.4 to 1.0.4-1:
+ * Corrected R dependency from 3.0.0 to 3.1.0, which is needed for some package tests.
+ * Adjusted tolerance parameters in tests for better portability (test should now only fail in case 
+   of clearly bogus answers).
+
 Changes from Version 1.0.3 to 1.0.4:
  * Tweaked the underlying algorithms for increased numerical stability of filtering and smoothing 
    in KFS. Note that it is still possible that exact diffuse initialization fails due to to numerical
