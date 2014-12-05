@@ -2,20 +2,20 @@
 
 subroutine isample(yt, ymiss, timevar, zt, tt, rtv, qt, a1, p1,p1inf, u, dist, &
 p, n, m, r, theta, maxiter,rankp,convtol, nnd,nsim,epsplus,etaplus,&
-aplus1,c,tol,info,antithetics,w,sim,nd,ndl,simwhat,simdim)
+aplus1,c,tol,info,antithetics,w,sim,nd,ndl,simwhat,simdim,stepmax)
 
 
     implicit none
 
-    integer, intent(in) ::  p,m, r, n,nnd,info,antithetics,nsim&
-    ,ndl,simwhat,simdim
+    integer, intent(in) ::  p,m, r, n,nnd,antithetics,nsim&
+    ,ndl,simwhat,simdim,rankp
     integer, intent(in), dimension(p) :: dist
     integer, intent(in), dimension(n,p) :: ymiss
     integer, intent(in), dimension(ndl) :: nd
     integer, intent(in), dimension(5) :: timevar
-    integer, intent(inout) :: maxiter,rankp
-    integer ::  t, j,i
-    double precision, intent(in) :: convtol,tol
+    integer, intent(inout) :: maxiter,info
+    integer ::  t, j,i,info2
+    double precision, intent(in) :: convtol,tol,stepmax
     double precision, intent(in), dimension(n,p) :: u
     double precision, intent(in), dimension(n,p) :: yt
     double precision, intent(in), dimension(p,m,(n-1)*timevar(1)+1) :: zt
@@ -38,18 +38,27 @@ aplus1,c,tol,info,antithetics,w,sim,nd,ndl,simwhat,simdim)
     double precision, dimension(3 * nsim * antithetics + nsim) :: w
     double precision :: diff
     double precision, external :: ddot
+    double precision :: lik
 
     ht=0.0d0
 
     ! approximate
     call approx(yt, ymiss, timevar, zt, tt, rtv, ht, qt, a1, p1,p1inf, p,n,m,r,&
-    theta, u, ytilde, dist,maxiter,tol,rankp,convtol,diff)
+    theta, u, ytilde, dist,maxiter,tol,rankp,convtol,diff,lik,stepmax,info)
+
+    if(info .ne. 0 .and. info .ne. 2) then
+        return
+    end if
 
     ! simulate signals
     call simgaussian(ymiss,timevar, ytilde, zt, ht, tt, rtv, qt, a1, p1, &
-    p1inf, nnd,nsim, epsplus, etaplus, aplus1, p, n, m, r, info,rankp,&
+    p1inf, nnd,nsim, epsplus, etaplus, aplus1, p, n, m, r, info2,rankp,&
     tol,nd,ndl,sim,c,simwhat,simdim,antithetics)
 
+    if(info2 /= 0) then
+        info = info2
+        return
+    end if
 
     ! compute importance weights
 
@@ -91,19 +100,11 @@ aplus1,c,tol,info,antithetics,w,sim,nd,ndl,simwhat,simdim)
                     end do
                 case(5) !negbin
                     tmp = exp(theta(:,j))
-                    !tmp = u(t,j)/(u(t,j)+exp(theta(:,j)))
                     do t=1,n
                         if(ymiss(t,j) .EQ. 0) then
                             w = w*exp(yt(t,j)*(sim(j,t,:)-theta(t,j)) +&
                             (yt(t,j)+u(t,j))*log((u(t,j)+tmp(t))/(u(t,j)+exp(sim(j,t,:)))))/&
                             exp(-0.5d0/ht(j,j,t)*( (ytilde(t,j)-sim(j,t,:))**2 -dn(t,j)))
-                            !w = w*((u(t,j)+exp(sim(j,t,:)))/(u(t,j)+tmp(t)))**u(t,j)*&
-                            !(exp(sim(j,t,:))/(exp(sim(j,t,:))+u(t,j)))**yt(t,j)&
-                            !*(tmp/(tmp+u(t,j)))**(-yt(t,j))/&
-                            !w = w*(exp(sim(j,t,:)-theta(:,j)))**yt(t,j)*&
-                            !      ((tmp+u(t,j))/(exp(sim(j,t,:))+u(t,j)))**(u(t,j)+yt(t,j))/&
-                            !ps = u(t,j)/(u(t,j)+exp(sim(j,t,:)))
-                            !w= w*(ps/tmp)**u(t,j)*((1.0d0-ps)/(1.0d0-tmp))**yt(t,j)/&
 
                         end if
                     end do
@@ -160,9 +161,6 @@ aplus1,c,tol,info,antithetics,w,sim,nd,ndl,simwhat,simdim)
                             w = w*exp(yt(t,j)*(tsim(j,:)-theta(t,j)) +&
                             (yt(t,j)+u(t,j))*log((u(t,j)+tmp(t))/(u(t,j)+exp(tsim(j,:)))))/&
                             exp(-0.5d0/ht(j,j,t)*( (ytilde(t,j)-tsim(j,:))**2 -dn(t,j)))
-                            !w = w*((u(t,j)+exp(tsim(j,:)))/(u(t,j)+tmp(t)))**u(t,j)*&
-                            !(exp(tsim(j,:))/(exp(tsim(j,:))+u(t,j)))**yt(t,j)&
-                            !*(tmp/(tmp+u(t,j)))**(-yt(t,j))/&
                         end if
                     end do
             end select

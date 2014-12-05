@@ -85,7 +85,7 @@
 #' @docType package
 #' @name KFAS
 #' @aliases KFAS
-#' @useDynLib KFAS .registration=TRUE
+#' @useDynLib KFAS, .registration=TRUE
 #' @examples
 #'
 #' 
@@ -167,7 +167,7 @@
 #' out
 #' ts.plot(cbind(out$model$y,fitted(out)),lty=1:2,col=1:2,
 #' main='Observations and smoothed signal with and without seasonal component')
-#' lines(signal(out,states=c("regression","trend"))$signal,col=4,lty=1)
+#' lines(signal(out,states=c('regression','trend'))$signal,col=4,lty=1)
 #' legend('bottomleft',
 #' legend=c('Observations', 'Smoothed signal','Smoothed level'), 
 #' col=c(1,2,4), lty=c(1,2,1))
@@ -216,7 +216,7 @@
 #'                data=Seatbelts, distribution='poisson')
 #'
 #' # Estimate variance parameters
-#' fit<-fitSSM(inits=c(-4,-7,2), model=model,method='BFGS')
+#' fit<-fitSSM(inits=c(-4,-7), model=model,method='BFGS')
 #'
 #' model<-fit$model
 #' 
@@ -347,9 +347,9 @@
 #'   model
 #' }
 #' 
-#' fit<-fitSSM(model,inits=c(4,4),updatefn=updatefn,method="BFGS")
+#' fit<-fitSSM(model,inits=c(4,4),updatefn=updatefn,method='BFGS')
 #'
-#' pred<-predict(fit$model,interval="conf",level=0.95)
+#' pred<-predict(fit$model,interval='conf',level=0.95)
 #' plot(x=mcycle$times,y=mcycle$accel,pch=19)
 #' lines(x=mcycle$times,y=pred[,1])
 #' lines(x=mcycle$times,y=pred[,2],lty=2)
@@ -394,4 +394,4 @@ NULL
 #' @format A time series object containing the number of males and females born in Finland from 1751 to 2011.
 #' @source Statistics Finland
 #' @keywords datasets
-NULL
+NULL 

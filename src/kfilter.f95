@@ -27,7 +27,7 @@ at, pt, vt, ft,kt, pinf, finf, kinf, lik, tol,rankp,theta,thetavar,filtersignal)
     double precision, intent(inout), dimension(p,p,n) :: thetavar
     double precision, intent(inout), dimension(n,p) :: theta
     double precision, dimension(m) :: arec
-    double precision, dimension(m,m) ::pirec,im,mm,prec
+    double precision, dimension(m,m) ::pirec,mm,prec
     double precision, dimension(m,r) :: mr
     double precision, dimension(p,m) :: pm
     double precision :: c
@@ -40,10 +40,6 @@ at, pt, vt, ft,kt, pinf, finf, kinf, lik, tol,rankp,theta,thetavar,filtersignal)
 
     lik = 0.0d0
 
-    im = 0.0d0
-    do i = 1, m
-        im(i,i) = 1.0d0
-    end do
     j=0
     d=0
     pinf(:,:,1)=p1inf
@@ -89,15 +85,18 @@ at, pt, vt, ft,kt, pinf, finf, kinf, lik, tol,rankp,theta,thetavar,filtersignal)
                             finv = 1.0d0/ft(j,d)
                             call daxpy(m,vt(j,d)*finv,kt(:,j,d),1,arec,1) !a_rec = a_rec + kt(:,i,t)*vt(:,t)/ft(i,t)
                             call dsyr('u',m,-finv,kt(:,j,d),1,prec,m) !prec = prec -kt*kt'/ft
-                            lik = lik - 0.5d0*(log(ft(j,d)) + vt(j,d)**2*finv)
+                            lik = lik - c - 0.5d0*(log(ft(j,d)) + vt(j,d)**2*finv)
 
                         end if
                     end if
-                    if (ft(j,d) > meps) then
-                        lik = lik -c
-                    else
+                    if (ft(j,d) <= meps) then
                         ft(j,d)=0.0d0
                     end if
+                    !if (ft(j,d) > meps) then
+                    !    lik = lik -c
+                    !else
+                    !    ft(j,d)=0.0d0
+                    !end if
                     if(rankp .EQ. 0) then
                         exit diffuse
                     end if

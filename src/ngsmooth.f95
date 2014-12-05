@@ -2,19 +2,20 @@
 
 subroutine ngsmooth(yt, ymiss, timevar, zt, tt, rtv, qt, a1, p1,p1inf, u, theta,&
 dist, p,n, m, r, rankp, nnd,nsim,epsplus,etaplus,aplus1,c,tol,info,maxiter,&
-convtol,nd,ndl,alphahat,alphavar,thetahat,thetavar,yhat,yvar,smootha,smooths,smoothy)
+convtol,nd,ndl,alphahat,alphavar,thetahat,thetavar,yhat,yvar,smootha,smooths,smoothy,stepmax)
 
     implicit none
 
-    integer, intent(in) ::  p,m, r, n,nnd,info,nsim,maxiter,ndl,smootha,smooths,smoothy
+    integer, intent(in) ::  p,m, r, n,nnd,nsim,ndl,smootha,smooths,smoothy, rankp
     integer, intent(in), dimension(p) :: dist
     integer, intent(in), dimension(n,p) :: ymiss
     integer, intent(in), dimension(5) :: timevar
     integer, intent(in), dimension(ndl) :: nd
-    integer, intent(inout) :: rankp
+    integer, intent(inout) :: maxiter,info
     integer ::  t, j
-    double precision, intent(in) :: tol,convtol
-    double precision, intent(in), dimension(n,p) :: u,theta
+    double precision, intent(in) :: tol,convtol,stepmax
+        double precision, intent(inout), dimension(n,p) :: theta
+    double precision, intent(in), dimension(n,p) :: u
     double precision, intent(in), dimension(n,p) :: yt
     double precision, intent(in), dimension(p,m,(n-1)*timevar(1)+1) :: zt
     double precision, intent(in), dimension(m,m,(n-1)*timevar(3)+1) :: tt
@@ -42,7 +43,7 @@ convtol,nd,ndl,alphahat,alphavar,thetahat,thetavar,yhat,yvar,smootha,smooths,smo
 
         call isample(yt, ymiss, timevar, zt, tt, rtv, qt, a1, p1,p1inf, u, dist, &
         p, n, m, r, theta, maxiter,rankp,convtol, nnd,nsim,epsplus,etaplus,&
-        aplus1,c,tol,info,1,w,sim,nd,ndl,4,m)
+        aplus1,c,tol,info,1,w,sim,nd,ndl,4,m,stepmax)
 
         w = w/sum(w)
 
@@ -81,7 +82,7 @@ convtol,nd,ndl,alphahat,alphavar,thetahat,thetavar,yhat,yvar,smootha,smooths,smo
     else
         call isample(yt, ymiss, timevar, zt, tt, rtv, qt, a1, p1,p1inf, u, dist, &
         p, n, m, r, theta, maxiter,rankp,convtol, nnd,nsim,epsplus,etaplus,&
-        aplus1,c,tol,info,1,w,sim,nd,ndl,5,p)
+        aplus1,c,tol,info,1,w,sim,nd,ndl,5,p,stepmax)
 
         w = w/sum(w)
 

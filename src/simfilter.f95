@@ -91,7 +91,7 @@ tol,nd,ndl,sim,c,simwhat,simdim,antithetics)
             rcholhelp = qt(:,:,t)
             call ldl(rcholhelp,r,tol,info)
             if(info .NE. 0) then
-                info=2
+                info=-2
                 return
             end if
             do i=1,r
@@ -111,7 +111,7 @@ tol,nd,ndl,sim,c,simwhat,simdim,antithetics)
             cholp1 = p1
             call ldl(cholp1,m,tol,info)
             if(info .NE. 0) then
-                info=3
+                info=-3
                 return
             end if
             do i=1,m

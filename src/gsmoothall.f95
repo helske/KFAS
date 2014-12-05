@@ -234,9 +234,9 @@ etahat,etahatvar,thetahat,thetahatvar, ldlsignal,zorig, zorigtv,aug,state,dist,s
 
 
         if(t.GT.1) then
-            call dgemv('t',m,m,1.0d0,tt(:,:,(t-2)*timevar(3)+1),m,rrec,1,0.0d0,rhelp,1,1)
+            call dgemv('t',m,m,1.0d0,tt(:,:,(t-2)*timevar(3)+1),m,rrec,1,0.0d0,rhelp,1)
             rrec = rhelp
-            call dgemv('t',m,m,1.0d0,tt(:,:,(t-2)*timevar(3)+1),m,rrec1,1,0.0d0,rhelp,1,1)
+            call dgemv('t',m,m,1.0d0,tt(:,:,(t-2)*timevar(3)+1),m,rrec1,1,0.0d0,rhelp,1)
             rrec1 = rhelp
             call dgemm('t','n',m,m,m,1.0d0,tt(:,:,(t-2)*timevar(3)+1),m,nrec,m,0.0d0,mm,m) !n*t
             call dgemm('n','n',m,m,m,1.0d0,mm,m,tt(:,:,(t-2)*timevar(3)+1),m,0.0d0,nrec,m) !n_t,p = t'nt
@@ -333,9 +333,9 @@ etahat,etahatvar,thetahat,thetahatvar, ldlsignal,zorig, zorigtv,aug,state,dist,s
 
 
             if(t.GT.1) then
-                call dgemv('t',m,m,1.0d0,tt(:,:,(t-2)*timevar(3)+1),m,rrec,1,0.0d0,rhelp,1,1)
+                call dgemv('t',m,m,1.0d0,tt(:,:,(t-2)*timevar(3)+1),m,rrec,1,0.0d0,rhelp,1)
                 rrec = rhelp
-                call dgemv('t',m,m,1.0d0,tt(:,:,(t-2)*timevar(3)+1),m,rrec1,1,0.0d0,rhelp,1,1)
+                call dgemv('t',m,m,1.0d0,tt(:,:,(t-2)*timevar(3)+1),m,rrec1,1,0.0d0,rhelp,1)
                 rrec1 = rhelp
                 call dgemm('t','n',m,m,m,1.0d0,tt(:,:,(t-2)*timevar(3)+1),m,nrec,m,0.0d0,mm,m) !n*t
                 call dgemm('n','n',m,m,m,1.0d0,mm,m,tt(:,:,(t-2)*timevar(3)+1),m,0.0d0,nrec,m) !n_t,p = t'nt

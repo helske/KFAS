@@ -2,19 +2,19 @@
 
 subroutine isamplefilter(yt, ymiss, timevar, zt, tt, rtv, qt, a1, p1,p1inf, u, dist, &
 p, n, m, r, theta, maxiter,rankp,convtol, nnd,nsim,epsplus,etaplus,&
-aplus1,c,tol,info,antithetics,w,sim,nd,ndl,simwhat,simdim)
+aplus1,c,tol,info,antithetics,w,sim,nd,ndl,simwhat,simdim,stepmax)
 
     implicit none
 
-    integer, intent(in) ::  p,m, r, n,nnd,info,antithetics,nsim&
-    ,ndl,simwhat,simdim
+    integer, intent(in) ::  p,m, r, n,nnd,antithetics,nsim&
+    ,ndl,simwhat,simdim,rankp
     integer, intent(in), dimension(p) :: dist
     integer, intent(in), dimension(n,p) :: ymiss
     integer, intent(in), dimension(ndl) :: nd
     integer, intent(in), dimension(5) :: timevar
-    integer, intent(inout) :: maxiter,rankp
-    integer ::  t, j,i,rankp2,k,maxiter2,maxitermax
-    double precision, intent(in) :: convtol,tol
+    integer, intent(inout) ::info, maxiter
+    integer ::  t, j,i,k,maxiter2,maxitermax,info2
+    double precision, intent(in) :: convtol,tol,stepmax
     double precision, intent(in), dimension(n,p) :: u
     double precision, intent(in), dimension(n,p) :: yt
     double precision, intent(in), dimension(p,m,(n-1)*timevar(1)+1) :: zt
@@ -43,11 +43,12 @@ aplus1,c,tol,info,antithetics,w,sim,nd,ndl,simwhat,simdim)
     double precision, dimension(m,nsim) :: aplus12
     double precision, dimension(simdim,n,3 * nsim * antithetics + nsim) :: sim2
     double precision :: diff
+    double precision :: lik
 
     ht=0.0d0
     ytilde=0.0d0
     w=1.0d0
-    rankp2=rankp
+
     epsplus2 = epsplus
     etaplus2 = etaplus
     aplus12  = aplus1
@@ -57,23 +58,33 @@ aplus1,c,tol,info,antithetics,w,sim,nd,ndl,simwhat,simdim)
     call simgaussian(ymiss2(1,:),timevar, ytilde(1,:), zt(:,:,1), &
     ht(:,:,1), tt(:,:,1), rtv(:,:,1), &
     qt(:,:,1), a1, p1, p1inf, nnd,nsim, epsplus2(:,1,:), etaplus2(:,1,:), aplus12(:,:), &
-    p, 1, m, r, info,rankp2,tol,nd,ndl,sim(:,1,:),c,simwhat,simdim,antithetics)
+    p, 1, m, r, info2,rankp,tol,nd,ndl,sim(:,1,:),c,simwhat,simdim,antithetics)
 
+    if(info2 /= 0) then
+        info = info2
+        return
+    end if
     maxitermax = 0
+
     do i=1,(n-1)
+
         ht=0.0d0
         ytilde=0.0d0
-        rankp2=rankp
+
         maxiter2=maxiter
         ! approximate
         call approx(yt(1:i,:), ymiss(1:i,:), timevar, zt(:,:,1:((i-1)*timevar(1)+1)), &
         tt(:,:,1:((i-1)*timevar(3)+1)), rtv(:,:,1:((i-1)*timevar(4)+1)), ht(:,:,1:i),&
         qt(:,:,1:((i-1)*timevar(5)+1)), a1, p1,p1inf, p,i,m,r,&
-        theta(1:i,:), u(1:i,:), ytilde(1:i,:), dist,maxiter2,tol,rankp2,convtol,diff)
+        theta(1:i,:), u(1:i,:), ytilde(1:i,:), dist,maxiter2,tol,rankp,convtol,diff,lik,stepmax,info)
+
+        if(info .ne. 0 .and. info .ne. 2) then !check for errors in approximating algorithm
+            return
+        end if
+
         if(maxiter2>maxitermax) then
             maxitermax = maxiter2
         end if
-        rankp2=rankp
         epsplus2 = epsplus
         etaplus2 = etaplus
         aplus12  = aplus1
@@ -84,14 +95,15 @@ aplus1,c,tol,info,antithetics,w,sim,nd,ndl,simwhat,simdim)
         call simgaussian(ymiss2(1:(i+1),:),timevar, ytilde(1:(i+1),:), zt(:,:,1:(i*timevar(1)+1)), &
         ht(:,:,1:(i+1)), tt(:,:,1:(i*timevar(3)+1)), rtv(:,:,1:(i*timevar(4)+1)), &
         qt(:,:,1:(i*timevar(5)+1)), a1, p1, p1inf, nnd,nsim, epsplus2(:,1:(i+1),:), &
-        etaplus2(:,1:(i+1),:), aplus12(:,:),p, i+1, m, r, info,rankp2,tol,&
+        etaplus2(:,1:(i+1),:), aplus12(:,:),p, i+1, m, r, info,rankp,tol,&
         nd,ndl,sim2(:,1:(i+1),:),c,simwhat,simdim,antithetics)
 
-        !do t=1,n
-        !   do j=1,p
-         !       theta(t,j) = ddot(m,zt(j,:,(t-1)*timevar(1)+1),1,at(:,t),1)
-        !    end do
-        !end do
+        if(info2 /= 0) then
+            info = info2
+            return
+        end if
+
+
 
         ! compute importance weights
 

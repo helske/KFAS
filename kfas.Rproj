@@ -13,6 +13,6 @@ RnwWeave: knitr
 LaTeX: pdfLaTeX
 
 BuildType: Package
-PackageInstallArgs: --no-multiarch
+PackageUseDevtools: Yes
 PackageCheckArgs: --as-cran
 PackageRoxygenize: rd,namespace

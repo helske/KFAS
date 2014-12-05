@@ -4,12 +4,12 @@ tol,nd,ndl,sim,c,simwhat,simdim,antithetics)
 
     implicit none
     !!! transpoosi simille!!!
-    integer, intent(in) :: p, m, r, n, nsim,nnd,ndl,simdim,simwhat,antithetics
+    integer, intent(in) :: p, m, r, n, nsim,nnd,ndl,simdim,simwhat,antithetics,rankp
     integer, intent(in), dimension(n,p) :: ymiss
     integer, intent(in), dimension(5) :: timevar
     integer, intent(in), dimension(ndl) :: nd
-    integer, intent(inout) :: info,rankp
-    integer ::  t, i, d, j,k,tv,l
+    integer, intent(inout) :: info
+    integer ::  t, i, d, j,k,tv,l,rankp2
     double precision, intent(in) :: tol
     double precision, intent(in), dimension(n,p) :: yt
     double precision, intent(in), dimension(p,m,(n-1)*timevar(1)+1) :: zt
@@ -56,9 +56,9 @@ tol,nd,ndl,sim,c,simwhat,simdim,antithetics)
 
     aplus=0.0d0
 
-
+    rankp2 = rankp
     call smoothsim(yt, ymiss, timevar, zt, ht,tt, rtv,qt,rqr, a1, p1, p1inf, &
-    d, j, p, m, n, r,tol,rankp,ft,finf,kt,kinf,epshat,etahat,rt0,rt1,needeps)
+    d, j, p, m, n, r,tol,rankp2,ft,finf,kt,kinf,epshat,etahat,rt0,rt1,needeps)
         !simwhat = 1: epsilon, 2: eta, 3: both, 4: state, 5: signal, 6: observations
     if(simwhat > 3) then
         ahat = a1
@@ -78,7 +78,7 @@ tol,nd,ndl,sim,c,simwhat,simdim,antithetics)
             !call dgesdd('o',r,r,rcholtmp,r,sigma,u,r,ut,r,work,lwork,iwork,info)
             call ldl(rcholtmp,r,tol,info)
             if(info .NE. 0) then
-                info=2
+                info = -2
                 return
             end if
             do i=1,r
@@ -98,7 +98,7 @@ tol,nd,ndl,sim,c,simwhat,simdim,antithetics)
             cholp1 = p1
             call ldl(cholp1,m,tol,info)
             if(info .NE. 0) then
-                info=3
+                info=-3
                 return
             end if
             do i=1,m
@@ -132,7 +132,7 @@ tol,nd,ndl,sim,c,simwhat,simdim,antithetics)
             call dgemv('n',m,r,1.0d0,rtv(:,:,(t-1)*timevar(4)+1),m,etaplus(:,t,i),1,1.0d0,aplus(:,t+1),1)
         end do
     
-           call smoothsimfast(yplus, ymiss, timevar, zt, ht,tt, rtv,qt,a1, ft,kt,&
+        call smoothsimfast(yplus, ymiss, timevar, zt, ht,tt, rtv,qt,a1, ft,kt,&
         finf, kinf, d, j, p, m, n,r,tol,epsplushat,etaplushat,rt0,rt1,needeps)
 
         !simwhat = 1: epsilon, 2: eta, 3: both, 4: state, 5: signal, 6: observations

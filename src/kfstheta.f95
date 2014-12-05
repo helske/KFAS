@@ -1,12 +1,12 @@
 ! signal smoothing algorithm for simulation
-subroutine kfstheta(yt, ymiss, timevar, zt, ht,tt, rtv,qt,rqr, a1, p1, p1inf, &
-p, n, m, r,tol,rankp,thetahat)
+subroutine kfstheta(yt, ymiss, timevar, zt, ht,tt, rtv,qt,rqr, tv, a1, p1, p1inf, &
+p, n, m, r,tol,rankp,thetahat,lik)
 
     implicit none
 
-    integer, intent(in) ::  p, m, n,r
+    integer, intent(in) ::  p, m, n,r,tv
     integer, intent(inout) :: rankp
-    integer ::  t, i,tv,d, j
+    integer ::  t, i,d, j
     integer, intent(in), dimension(n,p) :: ymiss
     integer, intent(in), dimension(5) :: timevar
     double precision, intent(in), dimension(n,p) :: yt
@@ -15,7 +15,7 @@ p, n, m, r,tol,rankp,thetahat)
     double precision, intent(in), dimension(m,m,(n-1)*timevar(3)+1) :: tt
     double precision, intent(in), dimension(m,r,(n-1)*timevar(4)+1) :: rtv
     double precision, intent(in), dimension(r,r,(n-1)*timevar(5)+1) :: qt
-    double precision, dimension(m,m,(n-1)*max(timevar(4),timevar(5))+1) :: rqr
+    double precision, dimension(m,m,(n-1)*tv+1) :: rqr
     double precision, intent(in), dimension(m) :: a1
     double precision, intent(in), dimension(m,m) ::  p1,p1inf
     double precision, dimension(p,n) :: ft,finf
@@ -27,12 +27,15 @@ p, n, m, r,tol,rankp,thetahat)
     double precision, dimension(m) :: rrec,rrec1,rhelp,help
     double precision, dimension(m,m) :: im,linf,l0,lt
     double precision, dimension(r,n) :: etahat
-    double precision :: meps
+    double precision :: meps,c
     double precision, external :: ddot
-double precision, intent(inout), dimension(n,p) :: thetahat
+    double precision, intent(inout), dimension(n,p) :: thetahat
+    double precision, intent(inout) :: lik
+
+    lik=0.0d0
 
     meps = tiny(meps)
-    tv = max(timevar(4),timevar(5))
+     c = 0.5d0*log(8.0d0*atan(1.0d0))
     pinf = p1inf
     im = 0.0d0
     do i = 1, m
@@ -66,7 +69,7 @@ double precision, intent(inout), dimension(n,p) :: thetahat
                         call dsyr2('u',m,-1.0d0/finf(j,d),kt(:,j,d),1,kinf(:,j,d),1,prec,m) !prec = prec -(kt*kinf'+kinf*kt')/finf
                         !call dger(m,m,(-1.0d0/finf(j,d)),kinf(:,j,d),1,kinf(:,j,d),1,pirec,m)
                         call dsyr('u',m,(-1.0d0/finf(j,d)),kinf(:,j,d),1,pirec,m) !pirec = pirec -kinf*kinf'/finf
-
+ lik = lik - 0.5d0*log(finf(j,d))
                         rankp = rankp -1
                         do i = 1, m
                             if(pirec(i,i) .LT. tol) then
@@ -79,6 +82,7 @@ double precision, intent(inout), dimension(n,p) :: thetahat
                         if(ft(j,d) .GT.  meps) then
                             call daxpy(m,vt(j,d)/ft(j,d),kt(:,j,d),1,arec,1) !a_rec = a_rec + kt(:,i,t)*vt(:,t)/ft(i,t)
                             call dsyr('u',m,(-1.0d0)/ft(j,d),kt(:,j,d),1,prec,m) !prec = prec -kt*kt'/ft
+                            lik = lik - c - 0.5d0*(log(ft(j,d)) + vt(j,d)**2/ft(j,d))
                         else
                             ft(j,d)=0.0d0
                         end if
@@ -115,6 +119,7 @@ double precision, intent(inout), dimension(n,p) :: thetahat
                     if (ft(i,d) .GT.  meps) then
                         call daxpy(m,vt(i,d)/ft(i,d),kt(:,i,d),1,arec,1) !a_rec = a_rec + kt(:,i,t)*vt(:,t)
                         call dsyr('u',m,-1.0d0/ft(i,d),kt(:,i,d),1,prec,m) !p_rec = p_rec - kt*kt'*ft(i,t)
+                         lik = lik - 0.5d0*(log(ft(i,d)) + vt(i,d)**2/ft(i,d))-c
                     else
                         ft(i,d)=0.0d0
                     end if
@@ -156,6 +161,7 @@ double precision, intent(inout), dimension(n,p) :: thetahat
                 if (ft(i,t) .GT.  meps) then
                     call daxpy(m,vt(i,t)/ft(i,t),kt(:,i,t),1,arec,1) !a_rec = a_rec + kt(:,i,t)*vt(:,t)
                     call dsyr('u',m,-1.0d0/ft(i,t),kt(:,i,t),1,prec,m) !p_rec = p_rec - kt*kt'*ft(i,i,t)
+                    lik = lik - 0.5d0*(log(ft(i,t)) + vt(i,t)**2/ft(i,t))-c
                 else
                     ft(i,t)=0.0d0
                 end if
@@ -198,7 +204,7 @@ double precision, intent(inout), dimension(n,p) :: thetahat
         t=d
         call dgemv('t',m,r,1.0d0,rtv(:,:,(t-1)*timevar(4)+1),m,rrec,1,0.0d0,help,1)
         call dsymv('l',r,1.0d0,qt(:,:,(t-1)*timevar(5)+1),r,help,1,0.0d0,etahat(:,t),1)
-        call dgemv('t',m,m,1.0d0,tt(:,:,(t-1)*timevar(3)+1),m,rrec,1,0.0d0,rhelp,1,1)
+        call dgemv('t',m,m,1.0d0,tt(:,:,(t-1)*timevar(3)+1),m,rrec,1,0.0d0,rhelp,1)
         rrec = rhelp
         do i = p, (j+1) , -1
             if(ymiss(t,i).EQ.0) then
@@ -244,9 +250,9 @@ double precision, intent(inout), dimension(n,p) :: thetahat
         do t=(d-1), 1, -1
             call dgemv('t',m,r,1.0d0,rtv(:,:,(t-1)*timevar(4)+1),m,rrec,1,0.0d0,help,1)
             call dsymv('l',r,1.0d0,qt(:,:,(t-1)*timevar(5)+1),r,help,1,0.0d0,etahat(:,t),1)
-            call dgemv('t',m,m,1.0d0,tt(:,:,(t-1)*timevar(3)+1),m,rrec,1,0.0d0,rhelp,1,1)
+            call dgemv('t',m,m,1.0d0,tt(:,:,(t-1)*timevar(3)+1),m,rrec,1,0.0d0,rhelp,1)
             rrec = rhelp
-            call dgemv('t',m,m,1.0d0,tt(:,:,(t-1)*timevar(3)+1),m,rrec1,1,0.0d0,rhelp,1,1)
+            call dgemv('t',m,m,1.0d0,tt(:,:,(t-1)*timevar(3)+1),m,rrec1,1,0.0d0,rhelp,1)
             rrec1 = rhelp
 
             do i = p, 1, -1

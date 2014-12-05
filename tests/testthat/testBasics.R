@@ -18,7 +18,7 @@ test_that("SSModel works properly",{
     ),not(gives_warning()))
   expect_that(print(model),not(gives_warning()))
   expect_that(logLik(model),not(gives_warning()))
-  expect_equal(logLik(model),-443.011122738032,tolerance=tol,check.attributes=FALSE)
+  expect_equal(logLik(model),-431.983860339576,tolerance=tol,check.attributes=FALSE)
   expect_that(out<-KFS(model,filtering=c("state","mean"),smoothing=c("state","mean","disturbance")),
               not(gives_warning()))
   expect_equal(out$d,11)

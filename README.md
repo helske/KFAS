@@ -21,4 +21,3 @@ See
 * help(KFAS) in R for examples
 * [ChangeLog](https://github.com/helske/KFAS/blob/master/ChangeLog) for upcoming, already completed changes
 * [TODO](https://github.com/helske/KFAS/blob/master/TODO) for future changes
-

@@ -1,14 +1,14 @@
 ! Subroutine for computing the log-Likelihood of univariate linear gaussian state space model
 
 subroutine glogliku(yt, ymiss, timevar, zt, ht,tt, rt, qt, a1, p1, p1inf,&
-m, r, n, lik, tol,rankp)
+m, r, n, lik, tol,rankp,marginal)
 
     implicit none
 
     integer, intent(in) ::  m, r, n
     integer, intent(in), dimension(n,1) :: ymiss
     integer, intent(in), dimension(5) :: timevar
-    integer, intent(inout) :: rankp
+    integer, intent(inout) :: rankp,marginal
     integer ::  t, i, d
     double precision, intent(in), dimension(n,1) :: yt
     double precision, intent(in), dimension(1,m,(n-1)*timevar(1)+1) :: zt
@@ -23,7 +23,7 @@ m, r, n, lik, tol,rankp)
     double precision, dimension(m) :: at,arec
     double precision  :: vt,ft,finf
     double precision, dimension(m,1) :: kt,kinf
-    double precision, dimension(m,m) :: pt, pinf,mm,im,prec,pirec
+    double precision, dimension(m,m) :: pt, pinf,mm,prec,pirec
     double precision, dimension(m,r) :: mr
     double precision :: c
     double precision, external :: ddot
@@ -43,10 +43,6 @@ m, r, n, lik, tol,rankp)
 
     pinf=p1inf
 
-    im = 0.0d0
-    do i = 1, m
-        im(i,i) = 1.0d0
-    end do
     d=0
     ! Diffuse initialization
     if(maxval(p1inf) .GT.  0.0d0) then
@@ -81,12 +77,12 @@ m, r, n, lik, tol,rankp)
                     if (ft .GT. meps) then
                         call daxpy(m,vt/ft,kt(:,1),1,arec,1) !a_rec = a_rec + kt(:,i,t)*vt(:,t)/ft(i,t)
                         call dsyr('u',m,(-1.0d0)/ft,kt(:,1),1,prec,m) !prec = prec -kt*kt'/ft
-                        lik = lik - 0.5d0*(log(ft) + vt**2/ft)
+                        lik = lik - c - 0.5d0*(log(ft) + vt**2/ft)
                     end if
                 end if
-                if (ft .GT. meps) then
-                    lik = lik -c
-                end if
+                !if (ft .GT. meps) then
+                !    lik = lik -c
+                !end if
                 if(rankp .EQ. 0) then
                     exit diffuse
                 end if
@@ -157,7 +153,12 @@ m, r, n, lik, tol,rankp)
         prec = pt
     end do
 
-
+    if(marginal==1) then
+        t = int(sum(p1inf))
+        if(t>0) then
+            call marginalxx(p1inf,zt,tt,m,1,n,t,timevar,lik,marginal)
+        end if
+    end if
 
 end subroutine glogliku
 

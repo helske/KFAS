@@ -13,7 +13,6 @@ subroutine ldl(a,n,tol,info)
     do i = 1, n
         di=a(i,i)
         if(abs(di)<=tol) then
-            !a(i,:) = 0.0d0
             a(:,i) = 0.0d0
         else
             do j = i+1, n

@@ -1,14 +1,14 @@
 ! Subroutine for computing the log-Likelihood of general linear gaussian state space model
 
 subroutine gloglik(yt, ymiss, timevar, zt, ht, tt, rt, qt, a1, p1, p1inf,&
-p, m, r, n, lik, tol,rankp)
+p, m, r, n, lik, tol,rankp,marginal)
 
 
     implicit none
 
     integer, intent(in) ::  p, m, r, n
-    integer, intent(inout) :: rankp
-    integer ::  t, i,d,j
+    integer, intent(inout) :: rankp,marginal
+    integer ::  t, i,d,j,tv
     integer, intent(in), dimension(n,p) :: ymiss
     integer, intent(in), dimension(5) :: timevar
     double precision, intent(in), dimension(n,p) :: yt
@@ -24,30 +24,25 @@ p, m, r, n, lik, tol,rankp)
     double precision, dimension(m) :: at,arec
     double precision, dimension(p) :: vt,ft,finf
     double precision, dimension(m,p) :: kt,kinf
-    double precision, dimension(m,m) :: pt,pinf,prec,pirec,im,mm
-    double precision, dimension(m,r) :: mr
+    double precision, dimension(m,m) :: pt,pinf,prec,pirec,mm
+    double precision, dimension(m,r) :: mr    
     double precision :: c
     double precision, external :: ddot
     double precision :: meps
+    double precision, dimension(m,m,(n-1)*max(timevar(4),timevar(5))+1) :: rqr
+
+    tv= max(timevar(4),timevar(5))
+    do t=1, (n-1)*tv+1
+        call dsymm('r','l',m,r,1.0d0,qt(:,:,(t-1)*timevar(5)+1),r,rt(:,:,(t-1)*timevar(4)+1),m,0.0d0,mr,m)
+        call dgemm('n','t',m,m,r,1.0d0,mr,m,rt(:,:,(t-1)*timevar(4)+1),m,0.0d0,rqr(:,:,t),m)
+    end do
 
     meps = tiny(meps)
     c = 0.5d0*log(8.0d0*atan(1.0d0))
-    at=0.0d0
-    pt=0.0d0
-    vt=0.0d0
-    ft=0.0d0
-    kt=0.0d0
-    pinf=0.0d0
-    kinf=0.0d0
-    finf=0.0d0
     lik = 0.0d0
 
     pinf=p1inf
 
-    im = 0.0d0
-    do i = 1, m
-        im(i,i) = 1.0d0
-    end do
     j=0
     d=0
     ! Diffuse initialization
@@ -84,11 +79,8 @@ p, m, r, n, lik, tol,rankp)
                         if (ft(j) .GT. meps) then
                             call daxpy(m,vt(j)/ft(j),kt(:,j),1,arec,1) !a_rec = a_rec + kt(:,i,t)*vt(:,t)/ft(i,t)
                             call dsyr('u',m,(-1.0d0)/ft(j),kt(:,j),1,prec,m) !prec = prec -kt*kt'/ft
-                            lik = lik - 0.5d0*(log(ft(j)) + vt(j)**2/ft(j))
+                            lik = lik - c - 0.5d0*(log(ft(j)) + vt(j)**2/ft(j))
                         end if
-                    end if
-                    if (ft(j) .GT. meps) then
-                        lik = lik -c
                     end if
                     if(rankp .EQ. 0) then
                         exit diffuse
@@ -96,15 +88,11 @@ p, m, r, n, lik, tol,rankp)
                 end if
             end do
            
-            call dgemv('n',m,m,1.0d0,tt(:,:,(d-1)*timevar(3)+1),m,arec,1,0.0d0,at(:),1)
-            call dcopy(m,at(:),1,arec,1) ! a_rec = at(:,t+1)
+            call dgemv('n',m,m,1.0d0,tt(:,:,(d-1)*timevar(3)+1),m,arec,1,0.0d0,at,1)
+            arec = at
             call dsymm('r','u',m,m,1.0d0,prec,m,tt(:,:,(d-1)*timevar(3)+1),m,0.0d0,mm,m)
             call dgemm('n','t',m,m,m,1.0d0,mm,m,tt(:,:,(d-1)*timevar(3)+1),m,0.0d0,pt,m)
-      
-     
-            call dsymm('r','u',m,r,1.0d0,qt(:,:,(d-1)*timevar(5)+1),r,rt(:,:,(d-1)*timevar(4)+1),m,0.0d0,mr,m)
-            call dgemm('n','t',m,m,r,1.0d0,mr,m,rt(:,:,(d-1)*timevar(4)+1),m,1.0d0,pt,m)
-       
+            pt = pt + rqr(:,:,(d-1)*tv+1)
             prec = pt
             call dsymm('r','u',m,m,1.0d0,pirec,m,tt(:,:,(d-1)*timevar(3)+1),m,0.0d0,mm,m)
             call dgemm('n','t',m,m,m,1.0d0,mm,m,tt(:,:,(d-1)*timevar(3)+1),m,0.0d0,pinf,m)
@@ -127,18 +115,13 @@ p, m, r, n, lik, tol,rankp)
                 end if
             end do
    
-            call dgemv('n',m,m,1.0d0,tt(:,:,(d-1)*timevar(3)+1),m,arec,1,0.0d0,at(:),1)
-  
+            call dgemv('n',m,m,1.0d0,tt(:,:,(d-1)*timevar(3)+1),m,arec,1,0.0d0,at,1)
+            arec = at
             call dsymm('r','u',m,m,1.0d0,prec,m,tt(:,:,(d-1)*timevar(3)+1),m,0.0d0,mm,m)
             call dgemm('n','t',m,m,m,1.0d0,mm,m,tt(:,:,(d-1)*timevar(3)+1),m,0.0d0,pt,m)
  
-            call dsymm('r','u',m,r,1.0d0,qt(:,:,(d-1)*timevar(5)+1),r,rt(:,:,(d-1)*timevar(4)+1),m,0.0d0,mr,m)
-            call dgemm('n','t',m,m,r,1.0d0,mr,m,rt(:,:,(d-1)*timevar(4)+1),m,1.0d0,pt,m)
-    
-   
-            call dcopy(m,at(:),1,arec,1)
+            pt = pt + rqr(:,:,(d-1)*tv+1)
             prec = pt
-            pt = prec
         end if
     end if
 
@@ -164,15 +147,22 @@ p, m, r, n, lik, tol,rankp)
                 end if
             end if
         end do
-        call dgemv('n',m,m,1.0d0,tt(:,:,(t-1)*timevar(3)+1),m,arec,1,0.0d0,at(:),1)
+        call dgemv('n',m,m,1.0d0,tt(:,:,(t-1)*timevar(3)+1),m,arec,1,0.0d0,at,1)
+        arec = at
         call dsymm('r','u',m,m,1.0d0,prec,m,tt(:,:,(t-1)*timevar(3)+1),m,0.0d0,mm,m)
         call dgemm('n','t',m,m,m,1.0d0,mm,m,tt(:,:,(t-1)*timevar(3)+1),m,0.0d0,pt,m)
-        call dsymm('r','u',m,r,1.0d0,qt(:,:,(t-1)*timevar(5)+1),r,rt(:,:,(t-1)*timevar(4)+1),m,0.0d0,mr,m)
-        call dgemm('n','t',m,m,r,1.0d0,mr,m,rt(:,:,(t-1)*timevar(4)+1),m,1.0d0,pt,m)
-        call dcopy(m,at(:),1,arec,1)
+        pt = pt + rqr(:,:,(t-1)*tv+1)
         prec = pt
+
+
     end do
 
-
+    if(marginal==1) then
+        t = int(sum(p1inf))
+        if(t>0) then
+            call marginalxx(p1inf,zt,tt,m,p,n,t,timevar,lik,marginal)
+        end if
+    end if
+   
 
 end subroutine gloglik

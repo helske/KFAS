@@ -1,12 +1,13 @@
 #' @rdname SSModel
 #' @export
-SSMtrend <- function(degree = 1, type, Q, index, a1, P1, P1inf, n, ynames) {
+SSMtrend <- 
+  function(degree = 1, type, Q, index, a1, P1, P1inf, n, ynames) {
     if (missing(index)) 
         index <- 1
     p <- length(index)
-    if (!missing(ynames) && !is.null(ynames)){
-      ynames <- paste0(".", ynames)
-    } else ynames<-""
+    if (!missing(ynames) && !is.null(ynames)) {
+        ynames <- paste0(".", ynames)
+    } else ynames <- ""
     if (missing(type)) {
         type <- 1L
     } else {
@@ -16,29 +17,24 @@ SSMtrend <- function(degree = 1, type, Q, index, a1, P1, P1inf, n, ynames) {
     }
     if (!(length(degree) == 1 & degree > 0 & abs(degree - round(degree)) == 0)) 
         stop("Degree of the trend component must be positive integer. ")
-    
-    
     m <- ((p - 1) * (type == 1) + 1) * degree
-    
     Z <- matrix(0, p, m)
     T <- matrix(0, m, m)
-    
     if (type == 2) {
         Z[, 1] <- 1
         p <- 1
-       # state_names <- switch(degree, `1` = "level", `2` = c("level", "slope"), paste0("trend", 1:degree))
+        # state_names <- switch(degree, `1` = 'level', `2` = c('level', 'slope'),
+        # paste0('trend', 1:degree))
     } else {
         for (i in 1:p) Z[i, (i - 1) * degree + 1] <- 1
-
     }
-    state_names <- switch(degree, `1` = paste0("level", ynames), 
-                          `2` = paste0(c("level", "slope"), rep(ynames, each = degree)), 
-                          paste0("trend", rep(1:degree), rep(ynames, each = degree)))
+    state_names <- switch(degree, `1` = paste0("level", ynames), `2` = paste0(c("level", 
+        "slope"), rep(ynames, each = degree)), paste0("trend", rep(1:degree), rep(ynames, 
+        each = degree)))
     dxm <- 1 + 0:(m - 1) * (m + 1)
     T[dxm] <- 1
     if (degree > 1) 
         T[dxm[-m] + m] <- rep(c(rep(1, degree - 1), 0), length = m - 1)
-    
     if (missing(a1)) {
         a1 <- matrix(0, m, 1)
     } else {
@@ -62,36 +58,34 @@ SSMtrend <- function(degree = 1, type, Q, index, a1, P1, P1inf, n, ynames) {
     }
     diag(P1inf)[diag(P1) > 0 || is.na(diag(P1))] <- 0
     a1[diag(P1inf) > 0] <- 0
-    
     if (missing(Q)) {
         k <- 0
         Qm <- R <- NULL
         tvq <- 0
     } else {
-        
         if (type == 1) {
-            if (!is.list(Q)){ 
-              if(degree>1){
-                stop("Q must be a list of length degree, which contains (p x p) matrices, (p x p x 1), or (p x p x n) arrays, where p is the number of series. ")
-              } else Q<-list(Q)
+            if (!is.list(Q)) {
+                if (degree > 1) {
+                  stop("Q must be a list of length degree, which contains (p x p) matrices, (p x p x 1), or (p x p x n) arrays, where p is the number of series. ")
+                } else Q <- list(Q)
             }
             tvq <- max(unlist(sapply(lapply(Q, dim), "[", 3)) > 1, 0, na.rm = TRUE)
-            
             Qm <- array(0, c(m, m, tvq * (n - 1) + 1))
-            if(!is.list(Q))
-              stop("Q must be a list of length degree.")
+            if (!is.list(Q)) 
+                stop("Q must be a list of length degree.")
             for (i in 1:degree) {
-                if ((p>1 && length(Q[[i]]) == 1) || 
-                      (p==1 && length(Q[[i]]) != 1) || (p>1 &&( dim(Q[[i]])[1:2] != p || !(max(1,dim(Q[[i]])[3],na.rm=TRUE) %in% c(1, n)))))
+                if ((p > 1 && length(Q[[i]]) == 1) || (p == 1 && length(Q[[i]]) != 
+                  1) || (p > 1 && (dim(Q[[i]])[1:2] != p || !(max(1, dim(Q[[i]])[3], 
+                  na.rm = TRUE) %in% c(1, n))))) 
                   stop("Q must be a list of length degree, which contains (p x p) matrices, (p x p x 1), or (p x p x n) arrays, where p is the number of series. ")
-                Qm[seq(from = i, by = degree, length = p), seq(from = i, by = degree, length = p), ] <- Q[[i]]
+                Qm[seq(from = i, by = degree, length = p), seq(from = i, by = degree, 
+                  length = p), ] <- Q[[i]]
             }
             k <- dim(Qm)[1]
             R <- diag(k)
-            
         } else {
-            if (is.list(Q) || (length(Q) != degree && is.null(dim(Q))) || 
-                  (any(dim(Q)[1:2] != degree) || !(max(1,dim(Q)[3],na.rm=TRUE) %in% c(1, n, NA))))
+            if (is.list(Q) || (length(Q) != degree && is.null(dim(Q))) || (any(dim(Q)[1:2] != 
+                degree) || !(max(1, dim(Q)[3], na.rm = TRUE) %in% c(1, n, NA)))) 
                 stop("Misspecified Q, argument Q must be a vector of length d, (d x d) matrix, or (d x d x 1)/(d x d x n) array where d is the degree of the trend.")
             if (length(Q) == degree) 
                 Q <- diag(drop(Q), degree)
@@ -99,11 +93,8 @@ SSMtrend <- function(degree = 1, type, Q, index, a1, P1, P1inf, n, ynames) {
             Qm <- Q
             k <- dim(Qm)[1]
             R <- diag(k)
-            
         }
     }
-    
-    list(index = index, m = m, k = k, Z = Z, T = T, R = R, Q = Qm, a1 = a1, P1 = P1, P1inf = P1inf, tvq = tvq, tvr = 0, tvz = 0, 
-        state_names = state_names)
-    
+    list(index = index, m = m, k = k, Z = Z, T = T, R = R, Q = Qm, a1 = a1, P1 = P1, 
+        P1inf = P1inf, tvq = tvq, tvr = 0, tvz = 0, state_names = state_names)
 } 
