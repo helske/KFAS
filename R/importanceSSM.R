@@ -148,7 +148,7 @@ importanceSSM <-
                       epsplus, etaplus, aplus1, c2, model$tol, info = integer(1), as.integer(antithetics), 
                       w = array(0, c(n, 3 * nsim * antithetics + nsim)), 
                       sim = array(0, c(simdim, n, 3 * nsim * antithetics + nsim)), as.integer(zero_P1inf), 
-                      as.integer(length(zero_P1inf)), sim.what, simdim)           
+                      as.integer(length(zero_P1inf)), sim.what, simdim)
     }
     if (maxiter == out$maxiter) 
       warning("Maximum number of iterations reached, the approximation did not converge. ")

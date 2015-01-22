@@ -147,7 +147,7 @@ p, m, r, n, lik, tol,rankp2,kt,kinf,ft,finf,d,j)
 end subroutine pthetafirst
 
 subroutine pthetarest(yt, timevar, zt, tt, a1,&
-p, m, n, lik, tol,kt,kinf,ft,finf,jt,dt)
+p, m, n, lik, tol,kt,kinf,ft,finf,dt,jt)
 
 
     implicit none

@@ -284,7 +284,14 @@ KFS <-
                                 P_mu = array(0, ("mean" %in% filtering) * c(p - 1, p - 1, n - 1) + 1), 
                                 as.integer("state" %in%  filtering), as.integer("signal" %in% filtering),
                                 as.integer("mean" %in%  filtering))
-          print(out$info)
+          if(filterout$info!=0){
+            stop(switch(as.character(filterout$info),
+                        "1" = "Gaussian approximation failed due to non-finite value in linear predictor.",
+                        "2" = "Gaussian approximation failed due to non-finite value of p(theta|y).",
+                        "-2" = "Couldn't compute LDL decomposition of P1.",
+                        "-3" =  "Couldn't compute LDL decomposition of Q."
+            ))  
+          }
           if ("state" %in% filtering) {
             out <- c(out, list(a = ts(t(filterout$a), start = start(model$y), 
                                       frequency = frequency(model$y)), P = filterout$P))

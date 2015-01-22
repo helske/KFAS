@@ -1,31 +1,43 @@
 #' Extract Standardized Residuals from KFS output
 #' @export
-#' @details For object of class KFS with fully Gaussian observations, several types of standardized residuals 
-#' can be computed:
-#' 
-#' \itemize{
-#' 
-#' \item 'recursive': One-step ahead prediction residuals defined as 
-#' \deqn{v_{t,i})/\sqrt{F_{i,t}},}
-#' with residuals being undefined in diffuse phase. Computing these for large non-Gaussian models can be time consuming as filtering is needed.
-#' 
-#' \item 'observation':  Residuals based on the smoothed observation disturbance terms \eqn{\epsilon} are defined as
-#' \deqn{L^{-1}_t \hat \epsilon_t, \quad t=1,\ldots,n,}{L^{-1}[t] \epsilon[t], t=1,\ldots,n,} where 
-#' \eqn{L_t}{L[t]} is the lower triangular matrix from Cholesky decomposition of \eqn{V_{\epsilon,t}}{V[\epsilon,t]}.
-#' 
-#' 
-#' \item 'state':  Residuals based on the smoothed state disturbance terms \eqn{\eta} are defined as
-#' \deqn{L^{-1}_t \hat \eta_t, \quad t=1,\ldots,n,}{L^{-1}[t] \eta[t], t=1,\ldots,n,} where 
-#' \eqn{L_t}{L[t]} is the lower triangular matrix from Cholesky decomposition of \eqn{V_{\eta,t}}{V[\eta,t]}.
-#' 
-#' 
-#' \item 'pearson':  Standardized Pearson residuals
-#' \deqn{L^{-1}_t(y_{t}-\theta_{i}), \quad t=1,\ldots,n,}{L^{-1}[t](y[t]-\theta[t]), t=1,\ldots,n,},
-#' where \eqn{L_t}{L[t]} is the lower triangular matrix from Cholesky decomposition of \eqn{V(y_t)-V(\mu_t)}.
-#' For gaussian models, these coincide with the standardized smoothed \eqn{\epsilon} disturbance residuals, and for generalized linear models
-#' these coincide with the standardized Pearson residuals (hence the name).
-#' 
-#'
+#' @details For object of class KFS with fully Gaussian observations, several 
+#'   types of standardized residuals can be computed:
+#'   
+#'   \item 'recursive': For Gaussian models the one-step ahead prediction
+#'   residuals defined as 
+#'   \deqn{v_{t,i})/\sqrt{F_{i,t}},}{v[t,i])/\sqrt{F[i,t]},} with residuals 
+#'   being undefined in diffuse phase. For non-Gaussian models recursive
+#'   residuals are obtained as 
+#'   \deqn{L^{-1}_t(y_{t}-\mu_{t}),}{L^(-1)[t](y[t]-\mu[t]),} where 
+#'   \eqn{L_t}{L[t]} is the lower triangular matrix from Cholesky decomposition 
+#'   of \eqn{V(y_t)+V(\mu_t)}, and both the variance function V(y_t) and
+#'   V(\mu_t) are based on the filtered means \mu_t$. Computing these for large
+#'   non-Gaussian models can be time consuming as filtering is needed.
+#'   
+#'   \item 'observation':  Residuals based on the smoothed observation 
+#'   disturbance terms \eqn{\epsilon} are defined as \deqn{L^{-1}_t \hat 
+#'   \epsilon_t, \quad t=1,\ldots,n,}{L^{-1}[t] \epsilon[t], t=1,\ldots,n,} 
+#'   where \eqn{L_t}{L[t]} is the lower triangular matrix from Cholesky 
+#'   decomposition of \eqn{V_{\epsilon,t}}{V[\epsilon,t]}.
+#'   
+#'   
+#'   \item 'state':  Residuals based on the smoothed state disturbance terms 
+#'   \eqn{\eta} are defined as \deqn{L^{-1}_t \hat \eta_t, \quad 
+#'   t=1,\ldots,n,}{L^{-1}[t] \eta[t], t=1,\ldots,n,} where \eqn{L_t}{L[t]} is 
+#'   the lower triangular matrix from Cholesky decomposition of 
+#'   \eqn{V_{\eta,t}}{V[\eta,t]}.
+#'   
+#'   
+#'   \item 'pearson':  Standardized Pearson residuals 
+#'   \deqn{L^{-1}_t(y_{t}-\theta_{i}), \quad 
+#'   t=1,\ldots,n,}{L^(-1)[t](y[t]-\theta[t]), t=1,\ldots,n,}, where 
+#'   \eqn{L_t}{L[t]} is the lower triangular matrix from Cholesky decomposition 
+#'   of \eqn{V(y_t)-V(\mu_t)}. For gaussian models, these coincide with the 
+#'   standardized smoothed \eqn{\epsilon} disturbance residuals, and for 
+#'   generalized linear models these coincide with the standardized Pearson 
+#'   residuals (hence the name).
+#'   
+#'   
 
 #' \item 'deviance': Deviance residuals. 
 #' Deprecated. This option was meant to be used only for the GLM comparisons, as their generalization to other models is lacking,
@@ -57,10 +69,24 @@ rstandard.KFS <-
           series[object$d, 1:object$j] <- NA
         } 
       }else {
+        
         dj<-KFS(approxSSM(object$model),filtering="state",smoothing="none")[c("d","j")]
         
         p <- attr(object$model, "p")  
         series<-object$model$y
+        
+        variance <- function(object) {
+          vars <- object$model$y
+          for (i in 1:length(object$model$distribution)){ 
+            vars[, i] <- switch(object$model$distribution[i], 
+                                gaussian = object$u[,i], 
+                                poisson = object$m[, i], 
+                                binomial = object$m[, i] * (1 - object$m[, i])/object$model$u[, i], 
+                                gamma = object$m[, i]^2/object$model$u[,i], 
+                                `negative binomial` = object$m[, i] + object$m[, i]^2/object$model$u[, i])
+          }
+          vars
+        }
         vars<-variance(object)     
         if (sum(bins <- object$model$distribution == "binomial") > 0) 
           series[, bins] <- series[, bins]/object$model$u[, bins]
