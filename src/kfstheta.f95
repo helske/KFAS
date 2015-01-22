@@ -1,4 +1,4 @@
-! signal smoothing algorithm for simulation
+! signal smoothing algorithm for gaussian approximation algorithm
 subroutine kfstheta(yt, ymiss, timevar, zt, ht,tt, rtv,qt,rqr, tv, a1, p1, p1inf, &
 p, n, m, r,tol,rankp,thetahat,lik)
 
@@ -31,11 +31,10 @@ p, n, m, r,tol,rankp,thetahat,lik)
     double precision, external :: ddot
     double precision, intent(inout), dimension(n,p) :: thetahat
     double precision, intent(inout) :: lik
-
     lik=0.0d0
 
     meps = tiny(meps)
-     c = 0.5d0*log(8.0d0*atan(1.0d0))
+    c = 0.5d0*log(8.0d0*atan(1.0d0))
     pinf = p1inf
     im = 0.0d0
     do i = 1, m
@@ -69,7 +68,7 @@ p, n, m, r,tol,rankp,thetahat,lik)
                         call dsyr2('u',m,-1.0d0/finf(j,d),kt(:,j,d),1,kinf(:,j,d),1,prec,m) !prec = prec -(kt*kinf'+kinf*kt')/finf
                         !call dger(m,m,(-1.0d0/finf(j,d)),kinf(:,j,d),1,kinf(:,j,d),1,pirec,m)
                         call dsyr('u',m,(-1.0d0/finf(j,d)),kinf(:,j,d),1,pirec,m) !pirec = pirec -kinf*kinf'/finf
- lik = lik - 0.5d0*log(finf(j,d))
+                        lik = lik - 0.5d0*log(finf(j,d))
                         rankp = rankp -1
                         do i = 1, m
                             if(pirec(i,i) .LT. tol) then
@@ -119,7 +118,7 @@ p, n, m, r,tol,rankp,thetahat,lik)
                     if (ft(i,d) .GT.  meps) then
                         call daxpy(m,vt(i,d)/ft(i,d),kt(:,i,d),1,arec,1) !a_rec = a_rec + kt(:,i,t)*vt(:,t)
                         call dsyr('u',m,-1.0d0/ft(i,d),kt(:,i,d),1,prec,m) !p_rec = p_rec - kt*kt'*ft(i,t)
-                         lik = lik - 0.5d0*(log(ft(i,d)) + vt(i,d)**2/ft(i,d))-c
+                        lik = lik - 0.5d0*(log(ft(i,d)) + vt(i,d)**2/ft(i,d))-c
                     else
                         ft(i,d)=0.0d0
                     end if

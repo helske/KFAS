@@ -1,13 +1,13 @@
 Changes from Version 1.0.4-1 to 1.1.0:
- * Started proper major.minor.patch versioning instead of somewhat arbitrary numbering.
+ * Started proper major.minor.patch versioning instead of somewhat arbitrary numbering. 
+ * fitSSM: Function now allows fixed time varying covariance matrices. 
+ * fitSSM: check.model is set to FALSE when calling logLik.SSModel in all cases. see ?fitSSM for details.
  * predict.SSModel: Corrected bug which caused partial signal prediction of non-Gaussian models to fail.
  * predict.SSModel: Corrected bug which caused prediction of non-Gaussian models with time varying u to fail. 
  * predict.SSModel: Method now correctly uses original times of the model object for the start and 
    end times of the predictions. 
  * approxSSM and related functions: Changed the converge criterion for approximating algorithm. 
-   Previous criterion was missing one term which caused poor (or non-) converge in some non-GLM cases. 
-   New criterion is based on the change of linear predictor which is also slightly faster 
-   than the previous criterion.
+   Previous criterion was missing one term which caused poor (or non-) converge in some cases with non-diffuse states.    
  * approxSSM and related functions: Added a line search as part of approximating algorithm.
    This improves the converge of the algorithm especially in case of poor initial values.
  * logLik.SSModel: Changed constant on Gaussian log-likelihood computation so now adding meaningless predictor 
@@ -17,19 +17,22 @@ Changes from Version 1.0.4-1 to 1.1.0:
  * logLik.SSModel: Added argument 'marginal' for logLik method. If TRUE, additional, 
    often constant term suggested by Francke et al. (2010) is added to the diffuse log-likelihood. 
    See ?logLik.SSModel for details.
- * logLik.SSModel: Changed default value for check.model to TRUE. For large models this adds a small 
-   overhead but prevents R from crashing with improperly (manually) modified model objects.
+ * logLik.SSModel: Changed default value for check.model to TRUE. For large models this adds small 
+   overhead but prevents R from crashing with improperly (manually) modified model objects. 
  * SSModel: Added terms component for update method.
  * SSModel: Corrected a bug relating to the environments which caused error in SSModel when 
    calling it inside a function with index argument defined in nonstandard way. 
  * SSModel: When using SSMregression without data argument, if variables are not found in the environment 
    of the formula, it now searches them from the data argument of SSModel and from the 
-   environment of main formula. 
+   environment of main formula. See examples in ?SSModel.
  * Deprecated subset and 'subset<-' methods for SSModel as these were not in 
    line with the base R's generic function. Use '[.SSModel' instead. Generic 
    replacement via subset with 'subset<-' was also deprecated as it was only 
    used for SSModel object.
- * is.SSModel: With na.check=TRUE, function now also checks for extreme values in H and Q (larger than 1e10).
+ * rtandard.KFS and residuals.KFS: Deprecated deviance residuals.
+ * rtandard.KFS and residuals.KFS: Added support for recursive residuals for non-Gaussian models.
+ * rtandard.KFS: Corrected Pearson residual formulas for non-Gaussian models.
+ * is.SSModel: With na.check=TRUE, function now also checks for extreme values in H and Q (larger than 1e7).
  * Signal filtering now return object t and not theta like it should (see Changes from Version 1.0.2 to 1.0.3).
 
 Changes from Version 1.0.4 to 1.0.4-1:

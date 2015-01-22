@@ -1,3 +1,5 @@
+! subroutine for computing new guess of conditional mode theta for non-Gaussian model given current guess
+
 subroutine approxloop(yt, ymiss, timevar, zt, tt, rtv, ht, qt, rqr, tvrqr, a1, p1,p1inf, p,n,m,r, &
 theta, thetanew, u, ytilde, dist,tol,rankp,lik)
 
@@ -25,7 +27,7 @@ theta, thetanew, u, ytilde, dist,tol,rankp,lik)
     double precision, intent(inout) :: lik
     double precision, external :: ddot
 
-
+    !construct pseudo-observations and variances for gaussian approximating model
     do j=1,p
         select case(dist(j))
             case(1)
@@ -66,7 +68,7 @@ theta, thetanew, u, ytilde, dist,tol,rankp,lik)
         end select
     end do
 
-
+    ! compute new estimate of thetahat
     rankp2 = rankp
     call kfstheta(ytilde, ymiss, timevar, zt, ht,tt, rtv,qt,rqr, tvrqr, a1, p1, p1inf, &
     p, n, m, r,tol,rankp2,thetanew,lik)

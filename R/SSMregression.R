@@ -1,7 +1,7 @@
 #' @rdname SSModel
 #' @export
 SSMregression <- 
-  function(rformula, data, type, Q, index, R, a1, P1, P1inf, n, ynames) {
+  function(rformula, data, type, Q, index, R, a1, P1, P1inf, n, ynames,remove.intercept=TRUE) {
     if (missing(index)) 
       index <- 1
     p <- length(index)
@@ -9,11 +9,8 @@ SSMregression <-
       ynames <- paste0(".", ynames)
     } else ynames <- ""
     if (missing(data)) {
-      data <- environment(formula)
-    } #else {      
-      #if(is.matrix(data))
-      # data<-as.data.frame(data) 
-    #}
+      data <- environment(rformula)
+    }
     if (missing(type)) {
       type <- 1L
     } else {
@@ -25,21 +22,32 @@ SSMregression <-
     options(na.action = "na.pass")
     # case 1, input is formula
     if (inherits(rformula, "formula")) {
-      # data<-cbind(data,'.dummyresponse'=1)
-      if (length(attr(terms(rformula, data = data), "term.labels")) == 0 && attr(terms(rformula, 
-                                                                                       data = data), "intercept") == 1) {
-        X <- matrix(1, nrow = n, ncol = 1)
-        colnames(X) <- "(Intercept)"
+      if(remove.intercept){
+        rformula <- update.formula(rformula, ~. + 1)
+        X <- model.matrix(rformula, data = data)
+        X <- X[, -(colnames(X) == "(Intercept)"), drop = FALSE]
       } else {
-        if (attr(terms(rformula, data = data), "intercept") == 0 && attr(terms(rformula, 
-                                                                               data = data), "factors") != 0) {
-          # any(sapply(data,is.factor))
-          rformula <- update.formula(rformula, ~. + 1)
-          # data<-cbind(data,'(Intercept)'=1)
-          X <- model.matrix(rformula, data = data)
-          X <- X[, -(colnames(X) == "(Intercept)"), drop = FALSE]
-        } else X <- model.matrix(rformula, data = data)
+        if (length(attr(terms(rformula, data = data), "term.labels")) == 0 && 
+                           attr(terms(rformula,  data = data), "intercept") == 1) {
+                       X <- matrix(1, nrow = n, ncol = 1)
+                       colnames(X) <- "(Intercept)"
+        } else  X <- model.matrix(rformula, data = data)
+       
       }
+#       if (length(attr(terms(rformula, data = data), "term.labels")) == 0 && 
+#             attr(terms(rformula,  data = data), "intercept") == 1) {
+#         X <- matrix(1, nrow = n, ncol = 1)
+#         colnames(X) <- "(Intercept)"
+#       } else {
+#         if (attr(terms(rformula, data = data), "intercept") == 0 && attr(terms(rformula, 
+#                                                                                data = data), "factors") != 0) {
+#           # any(sapply(data,is.factor))
+#           rformula <- update.formula(rformula, ~. + 1)
+#           # data<-cbind(data,'(Intercept)'=1)
+#           X <- model.matrix(rformula, data = data)
+#           X <- X[, -(colnames(X) == "(Intercept)"), drop = FALSE]
+#         } else X <- model.matrix(rformula, data = data)
+#       }
       # if(remove_intercept && any(colnames(X)=='(Intercept)'))
       # X<-X[,-(colnames(X)=='(Intercept)')]
       Xnames <- colnames(X)
@@ -69,37 +77,60 @@ SSMregression <-
         if (length(data) != p) 
           stop("Length of the data list is not equal to the number of series.")
         for (i in 1:p) {
-          if (length(attr(terms(rformula[[i]], data = data[[i]]), "term.labels")) == 
-                0 && attr(terms(rformula[[i]], data = data[[i]]), "intercept") == 
-                1) {
-            X[[i]] <- matrix(1, nrow = n, ncol = 1)
-            colnames(X[[i]]) <- "(Intercept)"
-          } else {
-            if (attr(terms(rformula[[i]], data = data[[i]]), "intercept") == 
-                  0 && attr(terms(rformula[[i]], data = data[[i]]), "factors") != 
-                  0) {
-              rformula[[i]] <- update.formula(rformula[[i]], ~. + 1)
-              data[[i]] <- cbind(data[[i]], `(Intercept)` = 1)
-              X[[i]] <- model.matrix(rformula[[i]], data = data[[i]])
-              X[[i]] <- X[[i]][, -(colnames(X[[i]]) == "(Intercept)"), drop = FALSE]
-            } else X[[i]] <- model.matrix(rformula[[i]], data = data[[i]])
+          if(remove.intercept){
+            rformula[[i]] <- update.formula(rformula[[i]], ~. + 1)
+            X[[i]] <- model.matrix(rformula[[i]], data = data[[i]])
+            X[[i]] <- X[[i]][, -(colnames(X[[i]]) == "(Intercept)"), drop = FALSE]
+          }else {
+            if (length(attr(terms(rformula[[i]], data = data[[i]]), "term.labels")) == 0 && 
+                  attr(terms(rformula[[i]],  data = data[[i]]), "intercept") == 1) {
+              X[[i]] <- matrix(1, nrow = n, ncol = 1)
+              colnames(X[[i]]) <- "(Intercept)"
+            } else X[[i]] <- model.matrix(rformula[[i]], data = data[[i]])            
           }
+#           if (length(attr(terms(rformula[[i]], data = data[[i]]), "term.labels")) == 
+#                 0 && attr(terms(rformula[[i]], data = data[[i]]), "intercept") == 
+#                 1) {
+#             X[[i]] <- matrix(1, nrow = n, ncol = 1)
+#             colnames(X[[i]]) <- "(Intercept)"
+#           } else {
+#             if (attr(terms(rformula[[i]], data = data[[i]]), "intercept") == 
+#                   0 && attr(terms(rformula[[i]], data = data[[i]]), "factors") != 
+#                   0) {
+#               rformula[[i]] <- update.formula(rformula[[i]], ~. + 1)
+#               data[[i]] <- cbind(data[[i]], `(Intercept)` = 1)
+#               X[[i]] <- model.matrix(rformula[[i]], data = data[[i]])
+#               X[[i]] <- X[[i]][, -(colnames(X[[i]]) == "(Intercept)"), drop = FALSE]
+#             } else X[[i]] <- model.matrix(rformula[[i]], data = data[[i]])
+#           }
         }
       } else {
         for (i in 1:p) {
-          if (length(attr(terms(rformula[[i]], data = data), "term.labels")) == 
-                0 && attr(terms(rformula[[i]], data = data), "intercept") == 1) {
-            X[[i]] <- matrix(1, nrow = n, ncol = 1)
-            colnames(X[[i]]) <- "(Intercept)"
-          } else {
-            if (attr(terms(rformula[[i]], data = data), "intercept") == 0 && 
-                  attr(terms(rformula[[i]], data = data), "factors") != 0) {
-              rformula[[i]] <- update.formula(rformula[[i]], ~. + 1)
-              data <- cbind(data, `(Intercept)` = 1)
-              X[[i]] <- model.matrix(rformula[[i]], data = data)
-              X[[i]] <- X[[i]][, -(colnames(X[[i]]) == "(Intercept)"), drop = FALSE]
+          if(remove.intercept){
+            rformula[[i]] <- update.formula(rformula[[i]], ~. + 1)
+            X[[i]] <- model.matrix(rformula[[i]], data = data)
+            X[[i]] <- X[[i]][, -(colnames(X[[i]]) == "(Intercept)"), drop = FALSE]
+          }else {
+            if (length(attr(terms(rformula[[i]], data = data), "term.labels")) == 0 && 
+                  attr(terms(rformula[[i]],  data = data), "intercept") == 1) {
+              X[[i]] <- matrix(1, nrow = n, ncol = 1)
+              colnames(X[[i]]) <- "(Intercept)"
             } else X[[i]] <- model.matrix(rformula[[i]], data = data)
           }
+#           if (length(attr(terms(rformula[[i]], data = data), "term.labels")) == 
+#                 0 && attr(terms(rformula[[i]], data = data), "intercept") == 1) {
+#             X[[i]] <- matrix(1, nrow = n, ncol = 1)
+#             colnames(X[[i]]) <- "(Intercept)"
+#           }
+#           } else {
+#             if (attr(terms(rformula[[i]], data = data), "intercept") == 0 && 
+#                   attr(terms(rformula[[i]], data = data), "factors") != 0) {
+#               rformula[[i]] <- update.formula(rformula[[i]], ~. + 1)
+#               data <- cbind(data, `(Intercept)` = 1)
+#               X[[i]] <- model.matrix(rformula[[i]], data = data)
+#               X[[i]] <- X[[i]][, -(colnames(X[[i]]) == "(Intercept)"), drop = FALSE]
+#             } else X[[i]] <- model.matrix(rformula[[i]], data = data)
+#           }
         }
       }
       if (any(sapply(X, is.na))) 

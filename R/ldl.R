@@ -13,5 +13,7 @@ ldl <-
     if (!isSymmetric(x, tol = tol)) 
         stop("Matrix is not symmetric!")
     out <- .Fortran(fldl, x = x, as.integer(dim(x)[1]), tol = tol, info = integer(1))
+    if(info!=0)
+      stop("Matrix x is not positive semidefinite.")
     out$x
 } 

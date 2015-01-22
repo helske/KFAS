@@ -55,7 +55,7 @@ p, m, r, n, lik, tol,rankp,marginal)
         arec = a1
         diffuse: do while(d .LT. n)
             d = d+1
-            do j=1, p !univariate approach
+            do j=1, p !sequential processing
                 if(ymiss(d,j).EQ.0) then
                     vt(j) = yt(d,j) - ddot(m,zt(j,:,(d-1)*timevar(1)+1),1,arec,1)
                     call dsymv('u',m,1.0d0,prec,m,zt(j,:,(d-1)*timevar(1)+1),1,0.0d0,kt(:,j),1) ! kt_t,i = pt_t,i*t(z_t,i)
@@ -70,7 +70,7 @@ p, m, r, n, lik, tol,rankp,marginal)
                         lik = lik - 0.5d0*log(finf(j))
                         rankp = rankp -1
                         do i = 1, m
-                            if(pirec(i,i) .LT. tol) then
+                            if(pirec(i,i) .LT. meps) then
                                 pirec(i,:) = 0.0d0
                                 pirec(:,i) = 0.0d0
                             end if

@@ -6,5 +6,6 @@ src-x64/
 *.o
 *.so
 *.dll
+*.Rproj
 .project
 .settings/org.eclipse.core.resources.prefs

@@ -12,64 +12,75 @@
 \arguments{
 \item{object}{Object of class \code{SSModel}.}
 
-\item{newdata}{A compatible \code{SSModel} object to be added in the end of the old object for
-which the predictions are required. If omitted, predictions are either for the whole data (fitted values),
-or if argument \code{n.ahead} is given, \code{n.ahead} time steps ahead.}
+\item{newdata}{A compatible \code{SSModel} object to be added in the end of
+the old object for which the predictions are required. If omitted,
+predictions are either for the whole data (fitted values), or if argument
+\code{n.ahead} is given, \code{n.ahead} time steps ahead.}
 
-\item{n.ahead}{Number of steps ahead at which to predict. Only used if \code{newdata} is omitted.
-Note that when using \code{n.ahead}, object cannot contain time varying system matrices.}
+\item{n.ahead}{Number of steps ahead at which to predict. Only used if
+\code{newdata} is omitted. Note that when using \code{n.ahead}, object
+cannot contain time varying system matrices.}
 
 \item{interval}{Type of interval calculation.}
 
 \item{level}{Confidence level for intervals.}
 
-\item{type}{Scale of the prediction, \code{'response'} or \code{'link'}.}
+\item{type}{Scale of the prediction, \code{"response"} or \code{"link"}.}
 
-\item{states}{Which states are used in computing the predictions. Either a numeric vector containing the indices of the corresponding states,
-or a character vector defining the types of the corresponding states.
-Possible choices are \dQuote{all}, \dQuote{arima}, \dQuote{custom}, \dQuote{cycle}, \dQuote{seasonal},
-\dQuote{trend}, or \dQuote{regression}. These can be combined. Default is \dQuote{all}.}
+\item{states}{Which states are used in computing the predictions. Either a
+numeric vector containing the indices of the corresponding states, or a
+character vector defining the types of the corresponding states. Possible
+choices are \code{"all"}, \code{"arima"}, \code{"custom"}, \code{"cycle"},
+\code{"seasonal"}, \code{"trend"}, or \code{"regression"}. These can be
+combined. Default is \code{"all"}.}
 
 \item{se.fit}{If TRUE, standard errors are computed. Default is FALSE.}
 
-\item{nsim}{Number of independent samples used in importance sampling. Used only for non-Gaussian models.}
+\item{nsim}{Number of independent samples used in importance sampling. Used
+only for non-Gaussian models.}
 
-\item{prob}{if TRUE (default), the predictions in binomial case are probabilities instead of counts.}
+\item{prob}{if TRUE (default), the predictions in binomial case are
+probabilities instead of counts.}
 
-\item{maxiter}{The maximum number of iterations used in approximation Default is 50.
-Only used for non-Gaussian model.}
+\item{maxiter}{The maximum number of iterations used in approximation Default
+is 50. Only used for non-Gaussian model.}
 
 \item{\dots}{Ignored.}
 }
 \value{
-A matrix or list of matrices containing the predictions, and optionally standard errors.
+A matrix or list of matrices containing the predictions, and
+  optionally standard errors.
 }
 \description{
-Function \code{predict.SSModel} predicts the future observations of a state space model of class \code{\link{SSModel}}
+Function \code{predict.SSModel} predicts the future observations of a state
+space model of class \code{\link{SSModel}}
 }
 \details{
-For non-Gaussian models, the results depend whether importance sampling is used (\code{nsim>0}).
-without simulations, the confidence intervals in response scale are computed in linear predictor scale,
-and then transformed to response scale. The prediction intervals are not supported.
-With importance sampling, the confidence intervals are computed as the empirical quantiles from the weighted sample,
-whereas the prediction intervals contain additional step of simulating the response variables from the sampling distribution \eqn{p(y|\theta^i)}.
+For non-Gaussian models, the results depend whether importance sampling is
+used (\code{nsim>0}). without simulations, the confidence intervals in
+response scale are computed in linear predictor scale, and then transformed
+to response scale. The prediction intervals are not supported. With
+importance sampling, the confidence intervals are computed as the empirical
+quantiles from the weighted sample, whereas the prediction intervals contain
+additional step of simulating the response variables from the sampling
+distribution \eqn{p(y|\theta^i)}.
 
-If no simulations are used, the standard errors in response scale are computed using delta method.
+If no simulations are used, the standard errors in response scale are
+computed using delta method.
 }
 \examples{
-\dontrun{
 set.seed(1)
 x<-runif(n=100,min=1,max=3)
-y<-rpois(n=100,lambda=exp(-1+x))
-model<-SSModel(y~x,distribution='poisson')
+y<-rpois(n=100,lambda=exp(x-1))
+model<-SSModel(y~x,distribution="poisson")
 xnew<-seq(0.5,3.5,by=0.1)
-newdata<-SSModel(rep(NA,length(xnew))~xnew,distribution='poisson')
-pred<-predict(model,newdata=newdata,interval='prediction',level=0.9,nsim=1000)
+newdata<-SSModel(rep(NA,length(xnew))~xnew,distribution="poisson")
+pred<-predict(model,newdata=newdata,interval='prediction',level=0.9,nsim=100)
 plot(x=x,y=y,pch=19,ylim=c(0,25),xlim=c(0.5,3.5))
 matlines(x=xnew,y=pred,col=c(2,2,2),lty=c(1,2,2),type='l')
 
 model<-SSModel(Nile~SSMtrend(1,Q=1469),H=15099)
 pred<-predict(model,n.ahead=10,interval='prediction',level=0.9)
-}
+pred
 }
 

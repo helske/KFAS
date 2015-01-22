@@ -31,14 +31,6 @@ m, r, n, lik, tol,rankp,marginal)
 
     meps = tiny(meps)
     c = 0.5d0*log(8.0d0*atan(1.0d0))
-    at=0.0d0
-    pt=0.0d0
-    vt=0.0d0
-    ft=0.0d0
-    kt=0.0d0
-    pinf=0.0d0
-    kinf=0.0d0
-    finf=0.0d0
     lik = 0.0d0
 
     pinf=p1inf
@@ -67,7 +59,7 @@ m, r, n, lik, tol,rankp,marginal)
                     call dsyr('u',m,-1.0d0/finf,kinf(:,1),1,pirec,m) !pirec = pirec -kinf*kinf'/finf
                     lik = lik - 0.5d0*log(finf)
                     do i = 1, m
-                        if(pirec(i,i) .LT. tol) then
+                        if(pirec(i,i) .LT. meps) then
                             pirec(i,:) = 0.0d0
                             pirec(:,i) = 0.0d0
                         end if
@@ -80,9 +72,6 @@ m, r, n, lik, tol,rankp,marginal)
                         lik = lik - c - 0.5d0*(log(ft) + vt**2/ft)
                     end if
                 end if
-                !if (ft .GT. meps) then
-                !    lik = lik -c
-                !end if
                 if(rankp .EQ. 0) then
                     exit diffuse
                 end if

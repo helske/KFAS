@@ -1,6 +1,6 @@
 #' Extract or Replace Parts of a State Space Model
 #'
-#' S3 methods for extracting or replacing parts of objects of class 
+#' S3 methods for getting and setting parts of object of class 
 #' \code{SSModel}. These methods ensure that dimensions of system matrices are 
 #' not altered. 
 #' 
@@ -33,16 +33,16 @@
 #' @return A selected subset of the chosen element or a value.
 #' @examples
 #' set.seed(1)
-#' model<-SSModel(rnorm(10)~1)
+#' model <- SSModel(rnorm(10) ~ 1)
 #' model['H']
-#' model['H']<-10
+#' model['H'] <- 10
 #' # H is still an array:
 #' model['H']
 #' logLik(model)
-#' model$H<-1
+#' model$H <- 1
 #' # model['H'] throws an error as H is now scalar:
 #' model$H
-#' logLik(model,check.model=TRUE) #with check.model=FALSE (default) R crashes!
+#' logLik(model, check.model = TRUE) #with check.model = FALSE R crashes!
 `[<-.SSModel` <- 
   function(x, element, states, etas, series, times, ..., value) {
     element <- match.arg(arg = element, 
@@ -121,7 +121,7 @@
 #' @export
 #' @rdname Extract.SSModel
 `[.SSModel` <- 
-  function(x, element, states, etas, series, times, drop=FALSE,...) {
+  function(x, element, states, etas, series, times, drop=TRUE,...) {
     
     element <- match.arg(arg = element, 
                          choices = c("y", "Z", "H", "T", "R", "Q", "a1", "P1", 

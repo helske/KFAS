@@ -1,22 +1,29 @@
-#' Transform the SSModel object with multivariate observations
-#'
-#' Function transform.SSModel transforms original model by LDL decomposition or state vector augmentation,
-#'
-#' @details As all the functions in KFAS use univariate approach, \eqn{H_t}{H[t]}, a covariance matrix of
-#' an observation equation needs to be either diagonal or zero matrix. Function transformSSM performs
-#' either the LDL decomposition of the covariance matrix of the observation equation, or augments the state vector with
-#' the disturbances of the observation equation.
-#'
-#' In case of a LDL decomposition, the new \eqn{H_t}{H[t]} contains the diagonal part of the decomposition,
-#' whereas observations \eqn{y_t}{Z[t]} and system matrices \eqn{Z_t}{Z[t]} are multiplied with the inverse of \eqn{L_t}{L[t]}.
-#'
-#'
+#' Transform Multivariate State Space Model for Sequential Processing
+#' 
+#' \code{transformSSM} transforms the observation equation of Gaussian state space model by LDL 
+#' decomposition or state vector augmentation.
+#' 
+#' @details As all the functions in KFAS use univariate approach, \eqn{H_t}{H[t]}, a covariance 
+#'   matrix of an observation equation needs to be either diagonal or zero matrix. Function 
+#'   \code{transformSSM} performs either the LDL decomposition of the covariance matrix of the 
+#'   observation equation, or augments the state vector with the disturbances of the observation 
+#'   equation.
+#'   
+#'   In case of a LDL decomposition, the new \eqn{H_t}{H[t]} contains the diagonal part of the 
+#'   decomposition, whereas observations \eqn{y_t}{y[t]} and system matrices \eqn{Z_t}{Z[t]} are 
+#'   multiplied with the inverse of \eqn{L_t}{L[t]}. Note that although the state estimates and 
+#'   their error covariances obtained by Kalman filtering and smoothing are identical with those 
+#'   obtained from ordinary multivariate filtering, the one step ahead errors and their variances do
+#'   differ.
+#'   
+#'   
 #' @export
 #' @param object State space model object from function SSModel.
-#' @param type Option \code{'ldl'} performs LDL decomposition for covariance
-#' matrix \eqn{H_t}{H[t]}, and multiplies the observation equation with the \eqn{L_t^{-1}}{L[t]^-1}, so
-#' \eqn{\epsilon_t^* \sim N(0,D_t)}{\epsilon[t]* ~ N(0,D[t])}. Option \code{'augment'} adds \eqn{\epsilon_t}{\epsilon[t]} to the state vector, when
-#' \eqn{Q_t}{Q[t]} becomes block diagonal with blocks \eqn{Q_t}{Q[t]} and \eqn{H_t}{H[t]}.
+#' @param type Option \code{"ldl"} performs LDL decomposition for covariance matrix \eqn{H_t}{H[t]},
+#'   and multiplies the observation equation with the \eqn{L_t^{-1}}{L[t]^-1}, so \eqn{\epsilon_t^* 
+#'   \sim N(0,D_t)}{\epsilon[t]* ~ N(0,D[t])}. Option \code{"augment"} adds 
+#'   \eqn{\epsilon_t}{\epsilon[t]} to the state vector, so \eqn{Q_t}{Q[t]} becomes block diagonal 
+#'   with blocks \eqn{Q_t}{Q[t]} and \eqn{H_t}{H[t]}.
 #' @return \item{model}{Transformed model.}
 transformSSM <- 
   function(object, type = c("ldl", "augment")) {
@@ -76,19 +83,23 @@ transformSSM <-
         out <- .Fortran(fldlssm, NAOK = TRUE, yt = yt, ydims = ydims, yobs = yobs, 
                         tv = as.integer(tv), Zt = Z, p = p, m = m, 
                         n = n, ichols = ichols, nh = as.integer(nh), hchol = hchol, 
-                        unidim = as.integer(unidim), info = as.integer(0), hobs = hobs, tol = max(abs(apply(object$H, 
-                                                                                                            3, diag))) * .Machine$double.eps)
-        if (out$info == -1) 
-          stop("Error in diagonalization of H. Matrix is not positive semidefinite.")
+                        unidim = as.integer(unidim), info = as.integer(0), hobs = hobs, 
+                        tol = max(abs(apply(object$H, 3, diag))) * .Machine$double.eps)
+        if(out$info!=0){
+          stop(switch(as.character(out$info),
+                      "1" = "LDL decomposition of H failed.",
+                      "2" = "Computing the inverse of L failed."                     
+          ))  
+        }        
         H <- array(0, c(p, p, ((n - 1) * tv[2] + 1)))
-        for (t in 1:((n - 1) * tv[2] + 1)) diag(H[, , t]) <- diag(out$ichols[, 
-                                                                             , out$hchol[t]])
+        for (t in 1:((n - 1) * tv[2] + 1)) 
+          diag(H[, , t]) <- diag(out$ichols[, , out$hchol[t]])
         attry <- attributes(object$y)
         object$y <- t(out$yt)
         attributes(object$y) <- attry
         object$Z <- out$Z
         object$H <- H
-        attr(object, "tv") <- tv
+        attr(object, "tv") <- as.integer(tv)
       }
     } else {
       T <- array(object$T, dim = c(m, m, (n - 1) * tv[3] + 1))
@@ -123,20 +134,18 @@ transformSSM <-
       object$T <- Tt2
       object$R <- Rt2
       object$Q <- Qt2        
-      if (attr(object, "p") == 1) {
+      if (p == 1) {
         rownames(a12) <- c(rownames(object$a1), "eps")
       } else {
-        rownames(a12) <- c(rownames(object$a1), paste0(rep("eps.", attr(object, 
-                                                                        "p")), 1:attr(object, "p")))
+        rownames(a12) <- c(rownames(object$a1),paste0(rep("eps.", p), 1:p))
       }
       object$a1 <- a12
       object$P1 <- P12
       object$P1inf <- P1inf2
       attr(object, "m") <- m2
       attr(object, "k") <- r2
-      attr(object, "tv") <- tv
+      attr(object, "tv") <- as.integer(tv)
       
-    }
-    
+    }   
     invisible(object)
   } 

@@ -1,7 +1,7 @@
 ! Non-Gaussian log-likelihood computation
 subroutine ngloglik(yt, ymiss, timevar, zt, tt, rtv, qt, a1, p1,p1inf, p,m,&
 r, n, lik, theta, u, dist,maxiter,rankp,convtol, &
-nnd,nsim,epsplus,etaplus,aplus1,c,tol,info,antit,sim,nsim2,nd,ndl,diff,stepmax,marginal)
+nnd,nsim,epsplus,etaplus,aplus1,c,tol,info,antit,sim,nsim2,nd,ndl,diff,marginal)
 
     implicit none
 
@@ -12,7 +12,7 @@ nnd,nsim,epsplus,etaplus,aplus1,c,tol,info,antit,sim,nsim2,nd,ndl,diff,stepmax,m
     integer, intent(in), dimension(5) :: timevar
     integer, intent(inout) :: maxiter,marginal,info
     integer ::  j,t,info2
-    double precision, intent(in) :: convtol,tol,stepmax
+    double precision, intent(in) :: convtol,tol
     double precision, intent(in), dimension(n,p) :: u
     double precision, intent(in), dimension(n,p) :: yt
     double precision, intent(in), dimension(p,m,(n-1)*timevar(1)+1) :: zt
@@ -39,7 +39,7 @@ nnd,nsim,epsplus,etaplus,aplus1,c,tol,info,antit,sim,nsim2,nd,ndl,diff,stepmax,m
 
     !approximate
     call approx(yt, ymiss, timevar, zt, tt, rtv, ht, qt, a1, p1,p1inf, p,n,m,r,&
-    theta, u, ytilde, dist,maxiter,tol,rankp,convtol,diff,lik,stepmax, info)
+    theta, u, ytilde, dist,maxiter,tol,rankp,convtol,diff,lik, info)
 
     if(info .ne. 0 .and. info .ne. 2) then !check for errors in approximating algorithm
         return

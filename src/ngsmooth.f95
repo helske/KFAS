@@ -2,7 +2,7 @@
 
 subroutine ngsmooth(yt, ymiss, timevar, zt, tt, rtv, qt, a1, p1,p1inf, u, theta,&
 dist, p,n, m, r, rankp, nnd,nsim,epsplus,etaplus,aplus1,c,tol,info,maxiter,&
-convtol,nd,ndl,alphahat,alphavar,thetahat,thetavar,yhat,yvar,smootha,smooths,smoothy,stepmax)
+convtol,nd,ndl,alphahat,alphavar,thetahat,thetavar,yhat,yvar,smootha,smooths,smoothy)
 
     implicit none
 
@@ -13,8 +13,8 @@ convtol,nd,ndl,alphahat,alphavar,thetahat,thetavar,yhat,yvar,smootha,smooths,smo
     integer, intent(in), dimension(ndl) :: nd
     integer, intent(inout) :: maxiter,info
     integer ::  t, j
-    double precision, intent(in) :: tol,convtol,stepmax
-        double precision, intent(inout), dimension(n,p) :: theta
+    double precision, intent(in) :: tol,convtol
+    double precision, intent(inout), dimension(n,p) :: theta
     double precision, intent(in), dimension(n,p) :: u
     double precision, intent(in), dimension(n,p) :: yt
     double precision, intent(in), dimension(p,m,(n-1)*timevar(1)+1) :: zt
@@ -43,7 +43,11 @@ convtol,nd,ndl,alphahat,alphavar,thetahat,thetavar,yhat,yvar,smootha,smooths,smo
 
         call isample(yt, ymiss, timevar, zt, tt, rtv, qt, a1, p1,p1inf, u, dist, &
         p, n, m, r, theta, maxiter,rankp,convtol, nnd,nsim,epsplus,etaplus,&
-        aplus1,c,tol,info,1,w,sim,nd,ndl,4,m,stepmax)
+        aplus1,c,tol,info,1,w,sim,nd,ndl,4,m)
+
+        if(info /= 0) then
+            return
+        end if
 
         w = w/sum(w)
 
@@ -82,8 +86,11 @@ convtol,nd,ndl,alphahat,alphavar,thetahat,thetavar,yhat,yvar,smootha,smooths,smo
     else
         call isample(yt, ymiss, timevar, zt, tt, rtv, qt, a1, p1,p1inf, u, dist, &
         p, n, m, r, theta, maxiter,rankp,convtol, nnd,nsim,epsplus,etaplus,&
-        aplus1,c,tol,info,1,w,sim,nd,ndl,5,p,stepmax)
+        aplus1,c,tol,info,1,w,sim,nd,ndl,5,p)
 
+        if(info /= 0) then
+            return
+        end if
         w = w/sum(w)
 
         if(smooths==1) then

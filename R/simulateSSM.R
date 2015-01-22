@@ -1,30 +1,29 @@
-#' Simulation of a gaussian State Space Model
-#'
-#' Function \code{simulateSMM} simulates states, signals, disturbances or missing observations of
-#' the gaussian state space model.
-#'
-#'
-#' Simulation smoother algorithm is based to article by J. Durbin and S.J. Koopman
-#' (2002).
-#'
-#' Function can use two antithetic variables, one for location and other for
-#' scale, so output contains four blocks of simulated values which correlate
-#' which each other (ith block correlates negatively with (i+1)th block, and
-#' positively with (i+2)th block etc.).
-#'
+#' Simulation of a Gaussian State Space Model
+#' 
+#' Function \code{simulateSMM} simulates states, signals, disturbances or missing observations of 
+#' the Gaussian state space model.
+#' 
+#' 
+#' Simulation smoother algorithm is based to article by J. Durbin and S.J. Koopman (2002).
+#' 
+#' Function can use two antithetic variables, one for location and other for scale, so output
+#' contains four blocks of simulated values which correlate which each other (ith block correlates
+#' negatively with (i+1)th block, and positively with (i+2)th block etc.).
+#' 
 #' @export
-#' @param object gaussian state space object.
+#' @param object Gaussian state space object of class \code{SSModel}.
 #' @param type What to simulate.
-#' @param filtered Simulate from \eqn{p(\alpha_t|y_{t-1},...,y_1)} instead of \eqn{p(\alpha|y)}.
+#' @param filtered Simulate from \eqn{p(\alpha_t|y_{t-1},...,y_1)}{p(\alpha[t]|y[t-1],...,y[1])}
+#'   instead of \eqn{p(\alpha|y)}.
 #' @param nsim Number of independent samples. Default is 1.
 #' @param antithetics Use antithetic variables in simulation. Default is FALSE.
-#' @param conditional Simulations are conditional to data.
-#' If FALSE, the initial state \eqn{\alpha_1}{\alpha[1]} is set to \eqn{\hat \alpha_1}{alphahat[1]} computed by \code{KFS},
-#' and all the observations are removed from the model. Default is TRUE.
-#' @return An n x k x nsim array containing the simulated series, where k is number of observations, signals, states or disturbances.
-#' @references Durbin J. and Koopman, S.J. (2002). A simple and efficient
-#' simulation smoother for state space time series analysis, Biometrika, Volume
-#' 89, Issue 3
+#' @param conditional Simulations are conditional to data. If FALSE, the initial state
+#'   \eqn{\alpha_1}{\alpha[1]} is set to \eqn{\hat \alpha_1}{alphahat[1]} computed by \code{KFS}, 
+#'   and all the observations are removed from the model. Default is TRUE.
+#' @return An n x k x nsim array containing the simulated series, where k is number of observations,
+#'   signals, states or disturbances.
+#' @references Durbin J. and Koopman, S.J. (2002). A simple and efficient simulation smoother for
+#'   state space time series analysis, Biometrika, Volume 89, Issue 3
 simulateSSM <- 
   function(object, type = c("states", "signals", "disturbances", "observations", 
     "epsilon", "eta"), filtered = FALSE, nsim = 1, antithetics = FALSE, conditional = TRUE) {

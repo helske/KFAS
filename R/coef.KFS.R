@@ -1,6 +1,6 @@
 #' Extract Estimated States of State Space Model
 #' 
-#' Extracts the estimates states from output of \code{KFS}. For non-Gaussian 
+#' Extracts the estimated states from output of \code{KFS}. For non-Gaussian 
 #' models without simulation, these are estimates of conditional modes of 
 #' states. For Gaussian models and non-Gaussian models with importance sampling,
 #' these are estimates of conditional means of states.
@@ -20,16 +20,14 @@ coef.KFS <-
     if (!filtered) {
         if (!is.null(object$alphahat)) {
             tmp <- object$alphahat
-        } else stop("Input does not contain smoothed estimates for states, rerun
-                    KFS with state smoothing.")
+        } else stop("Input does not contain smoothed estimates for states, rerun KFS with state smoothing.")
     } else {
         if (!is.null(object[["a", exact = TRUE]])) {
             tmp <- object$a
-        } else stop("Input does not contain filtered estimates for states, rerun
-                    KFS with state filtering.")
+        } else stop("Input does not contain filtered estimates for states, rerun KFS with state filtering.")
     }
     tmp <- window(tmp, start = start, end = end)
-    if (start == end && !is.null(start)) 
+    if (!is.null(start) && start == end) 
         tsp(tmp) <- class(tmp) <- NULL
     drop(tmp)
 } 

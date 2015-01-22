@@ -1,56 +1,62 @@
 #' Log-likelihood of the State Space Model.
-#'
+#' 
 #' Function \code{logLik.SSmodel} computes the log-likelihood value of a state 
 #' space model.
 #' 
-#' As KFAS is based on diffuse initialization, the likelihood is also diffuse, which coincides with 
-#' restricted likelihood (REML) in appropriate (mixed) models. However, in typical REML estimation 
-#' constant term \eqn{log|X'X|} is omitted from the log-likelihood formula. Similar term is also 
-#' missing in diffuse likelihood formulations, but unlike in simpler linear models this term is not
-#' necessarily constant. Therefore omitting this term can lead to suboptimal results in model 
-#' estimation if there is unknown parameters in diffuse parts of Zt or Tt (Francke et al. 2010). 
-#' See also Gurka (2006) for model comparison in mixed model settings with and without the additional (constant) term.
-#'  
+#' As KFAS is based on diffuse initialization, the likelihood is also diffuse,
+#' which coincides with restricted likelihood (REML) in appropriate (mixed)
+#' models. However, in typical REML estimation constant term \eqn{log|X'X|} is
+#' omitted from the log-likelihood formula. Similar term is also missing in
+#' diffuse likelihood formulations, but unlike in simpler linear models this
+#' term is not necessarily constant. Therefore omitting this term can lead to
+#' suboptimal results in model estimation if there is unknown parameters in
+#' diffuse parts of Zt or Tt (Francke et al. 2010). See also Gurka (2006) for
+#' model comparison in mixed model settings with and without the additional
+#' (constant) term.
+#' 
 #' Note that for non-Gaussian models with importance sampling derivative-free 
 #' optimization methods such as Nelder-Mead might be more reliable than methods 
 #' which use finite difference approximations. This is due to noise caused by 
-#' the relative stopping criterion used for finding approximating Gaussian model.
+#' the relative stopping criterion used for finding approximating Gaussian
+#' model.
 #' 
 #' @references Francke, M. K., Koopman, S. J. and De Vos, A. F. (2010), 
-#' Likelihood functions for state space models with diffuse initial conditions. 
-#' Journal of Time Series Analysis, 31: 407-414.\cr
-#' 
-#' Gurka, M. J (2006),
-#' Selecting the Best Linear Mixed Model Under REML.
-#' The American Statistician, Vol. 60, Iss. 1.
+#'   Likelihood functions for state space models with diffuse initial
+#'   conditions. Journal of Time Series Analysis, 31: 407--414.\cr
+#'   
+#'   Gurka, M. J (2006), Selecting the Best Linear Mixed Model Under REML. The
+#'   American Statistician, Vol. 60.
 #' 
 #' @export
 #' @aliases logLik logLik.SSModel
 #' @param object State space model of class \code{SSModel}.
-#' @param marginal Logical. Compute marginal instead of diffuse likelihood (see details). 
-#' Default is FALSE.
-#' @param nsim Number of independent samples used in estimating the
-#' log-likelihood of the non-Gaussian state space model. Default is 0, which
-#' gives good starting value for optimization. Only used for non-Gaussian model.
-#' @param antithetics Logical. If TRUE, two antithetic variables are used in
-#' simulations, one for location and another for scale. Default is TRUE. Only used for non-Gaussian model.
-#' @param theta Initial values for conditional mode theta. Only used for non-Gaussian model.
-#' @param check.model Logical. If TRUE, function \code{is.SSModel} is called before computing the likelihood. 
-#' Default is TRUE. Function is slightly faster if no checking is done, but note that if you manually 
-#' modify model object improperly, underlying Fortran code can crash R.
-#' @param transform How to transform the model in case of non-diagonal
-#' covariance matrix \eqn{H}. Defaults to \code{'ldl'}. See function \code{\link{transformSSM}} for
-#' details. 
-#' @param maxiter The maximum number of iterations used in linearisation. Default is 50. Only used for non-Gaussian model.
-#' @param seed The value is used as a seed via set.seed function. Only used for non-Gaussian model.
-#' @param convtol Tolerance parameter for convergence checks for Gaussian approximation.
-#'  Iterations are continued until the scaled norm between three successive iterations is smaller than \code{convtol}.
-#' @param stepmax Maximum stepsize used in Gaussian approximation. Only used for non-Gaussian models.
+#' @param marginal Logical. Compute marginal instead of diffuse likelihood (see
+#'   details). Default is \code{FALSE}.
+#' @param nsim Number of independent samples used in estimating the 
+#'   log-likelihood of the non-Gaussian state space model. Default is 0, which 
+#'   gives good starting value for optimization. Only used for non-Gaussian
+#'   model.
+#' @param antithetics Logical. If TRUE, two antithetic variables are used in 
+#'   simulations, one for location and another for scale. Default is TRUE. Only
+#'   used for non-Gaussian model.
+#' @param theta Initial values for conditional mode theta. Only used for
+#'   non-Gaussian model.
+#' @param check.model Logical. If TRUE, function \code{is.SSModel} is called
+#'   before computing the likelihood. Default is \code{TRUE}.
+#' @param transform How to transform the model in case of non-diagonal 
+#'   covariance matrix \eqn{H}. Defaults to \code{"ldl"}. See function
+#'   \code{\link{transformSSM}} for details.
+#' @param maxiter The maximum number of iterations used in linearisation.
+#'   Default is 50. Only used for non-Gaussian model.
+#' @param seed The value is used as a seed via \code{set.seed} function. Only used for
+#'   non-Gaussian model.
+#' @param convtol Tolerance parameter for convergence checks for Gaussian
+#'   approximation.
 #' @param ... Ignored.
-#' @return \item{}{log-likelihood of the state space model.}
+#' @return log-likelihood of the model.
 logLik.SSModel <- 
   function(object, marginal=FALSE, nsim = 0, antithetics = TRUE, theta, check.model = TRUE, 
-           transform = c("ldl", "augment"), maxiter = 50, seed, convtol = 1e-8, stepmax,...) {
+           transform = c("ldl", "augment"), maxiter = 50, seed, convtol = 1e-8,...) {
     # Check that the model object is of proper form
     if (check.model) {
       if (!is.SSModel(object, na.check = TRUE)) {
@@ -65,8 +71,7 @@ logLik.SSModel <-
     storage.mode(ymiss) <- "integer"
     tv <- attr(object, "tv")
     if (all(object$distribution == "gaussian")) {
-      if (all(c(object$Q, object$H) == 0) || all(c(object$R, object$H) == 0) || 
-            any(!is.finite(c(object$R, object$Q, object$H) == 0))) 
+      if (all(c(object$Q, object$H) == 0) || all(c(object$R, object$H) == 0)) 
         return(-.Machine$double.xmax^0.75)     
       if (p == 1) {
         out <- .Fortran(fglogliku, NAOK = TRUE, object$y, ymiss, tv, 
@@ -75,8 +80,9 @@ logLik.SSModel <-
                         object$tol, as.integer(sum(object$P1inf)),marginal=as.integer(marginal))
       } else {
         if (any(abs(apply(object$H, 3, "[", !diag(p))) > object$tol)) {
-          object <- tryCatch(transformSSM(object, type = match.arg(arg = transform, 
-                                                                   choices = c("ldl", "augment"))), error = function(e) e)
+          object <- 
+            tryCatch(transformSSM(object, type = match.arg(arg = transform, choices = c("ldl", "augment"))), 
+                     error = function(e) e)
           if (!inherits(object, "SSModel")) {
             warning(object$message)
             return(-.Machine$double.xmax^0.75)
@@ -102,9 +108,7 @@ logLik.SSModel <-
         return(-.Machine$double.xmax^0.75)
       if (missing(theta)) {
         theta <- init_theta(object$y, object$u, object$distribution)
-      } else theta <- array(theta, dim = c(n, p))
-      if(missing(stepmax))
-        stepmax<-max(1,sqrt(sum(theta^2)))
+      } else theta <- array(theta, dim = c(n, p))    
       if (nsim == 0) {
         nsim <- 1
         sim <- 0
@@ -153,12 +157,14 @@ logLik.SSModel <-
       out <- .Fortran(fngloglik, NAOK = TRUE, object$y, ymiss, tv, 
                       object$Z, object$T, object$R, object$Q, object$a1, object$P1, object$P1inf, 
                       p, m, k, n, lik = double(1), 
-                      theta = theta, object$u, pmatch(x = object$distribution, table = c("gaussian", 
-                                                                                         "poisson", "binomial", "gamma", "negative binomial"), duplicates.ok = TRUE), 
+                      theta = theta, object$u, 
+                      pmatch(x = object$distribution, 
+                             table = c("gaussian", "poisson", "binomial", "gamma", "negative binomial"), 
+                             duplicates.ok = TRUE), 
                       maxiter = as.integer(maxiter), as.integer(sum(object$P1inf)), convtol, 
                       as.integer(nnd), as.integer(nsim), epsplus, etaplus, aplus1, c2, object$tol, 
                       info = integer(1), as.integer(antithetics), as.integer(sim), nsim2, as.integer(nd), 
-                      as.integer(length(nd)), diff = double(1),stepmax=as.double(stepmax),marginal=as.integer(marginal))
+                      as.integer(length(nd)), diff = double(1),marginal=as.integer(marginal))
       if(out$info!=0){
         if (out$info==1)
           warning("Non-finite value of likelihood or linear predictor in approximation algorithm.")

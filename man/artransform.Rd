@@ -17,4 +17,8 @@ stationary region of \eqn{p}th order autoregressive process using
 parametrization suggested by Jones (1980). Fortran code is a converted from
 stats package's C-function partrans.
 }
+\references{
+\itemize{ \item Jones, R. H (1980), "Maximum likelihood fitting of
+ARMA models to time series with missing observations", Technometrics Vol 22. p. 389--395. }
+}
 

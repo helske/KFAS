@@ -24,7 +24,7 @@ state vector. Default is \code{FALSE}.}
 Multivariate time series containing estimates states.
 }
 \description{
-Extracts the estimates states from output of \code{KFS}. For non-Gaussian
+Extracts the estimated states from output of \code{KFS}. For non-Gaussian
 models without simulation, these are estimates of conditional modes of
 states. For Gaussian models and non-Gaussian models with importance sampling,
 these are estimates of conditional means of states.

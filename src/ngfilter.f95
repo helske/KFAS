@@ -2,7 +2,7 @@
 
 subroutine ngfilter(yt, ymiss, timevar, zt, tt, rtv, qt, a1, p1,p1inf, u, theta,&
 dist, p,n, m, r, rankp, nnd,nsim,epsplus,etaplus,aplus1,c,tol,info,maxiter,&
-convtol,nd,ndl,alphahat,alphavar,thetahat,thetavar,yhat,yvar,smootha,smooths,smoothy,stepmax)
+convtol,nd,ndl,alphahat,alphavar,thetahat,thetavar,yhat,yvar,smootha,smooths,smoothy)
 
     implicit none
 
@@ -13,7 +13,7 @@ convtol,nd,ndl,alphahat,alphavar,thetahat,thetavar,yhat,yvar,smootha,smooths,smo
     integer, intent(in), dimension(ndl) :: nd
     integer, intent(inout) :: info,maxiter
     integer ::  t, j
-    double precision, intent(in) :: tol,convtol,stepmax
+    double precision, intent(in) :: tol,convtol
     double precision, intent(inout), dimension(n,p) :: theta
     double precision, intent(in), dimension(n,p) :: u
     double precision, intent(in), dimension(n,p) :: yt
@@ -43,9 +43,9 @@ convtol,nd,ndl,alphahat,alphavar,thetahat,thetavar,yhat,yvar,smootha,smooths,smo
 
         call isamplefilter(yt, ymiss, timevar, zt, tt, rtv, qt, a1, p1,p1inf, u, dist, &
         p, n, m, r, theta, maxiter,rankp,convtol, nnd,nsim,epsplus,etaplus,&
-        aplus1,c,tol,info,1,w,sim,nd,ndl,4,m,stepmax)
+        aplus1,c,tol,info,1,w,sim,nd,ndl,4,m)
 
-        if(info .ne. 0 .and. info .ne. 2) then !check for errors in approximating algorithm
+        if(info /= 0) then
             return
         end if
 
@@ -90,9 +90,9 @@ convtol,nd,ndl,alphahat,alphavar,thetahat,thetavar,yhat,yvar,smootha,smooths,smo
     else
         call isamplefilter(yt, ymiss, timevar, zt, tt, rtv, qt, a1, p1,p1inf, u, dist, &
         p, n, m, r, theta, maxiter,rankp,convtol, nnd,nsim,epsplus,etaplus,&
-        aplus1,c,tol,info,1,w,sim,nd,ndl,5,p,stepmax)
+        aplus1,c,tol,info,1,w,sim,nd,ndl,5,p)
 
-        if(info .ne. 0 .and. info .ne. 2) then !check for errors in approximating algorithm
+        if(info /= 0) then
             return
         end if
 

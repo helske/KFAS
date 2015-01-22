@@ -11,28 +11,22 @@ fitSSM(model, inits, updatefn, checkfn, ...)
 \item{inits}{Initial values for \code{optim}}
 
 \item{updatefn}{User defined function which updates the model given the
-parameters.
-Must be of form \code{updatefn(pars, model,...)}, i.e. must contain ellipsis
-\code{...}. If not supplied, a default function is used,
+parameters. Must be of form \code{updatefn(pars, model,...)}, i.e. must
+contain ellipsis \code{...}. If not supplied, a default function is used,
 which estimates the values marked as NA in time invariant covariance
 matrices Q and H. Note that the default function cannot be used with
 trigonometric seasonal components as its covariance structure is of form
-\eqn{\sigma}{sigma}I.}
+\eqn{\sigma}{\sigma}I.}
 
-\item{checkfn}{Optional function for model checking.
-If supplied, after updating the model, if \code{checkfn(model)} returns
-TRUE, -log-likelihood is computed, otherwise \code{.Machine$double.xmax} is
-returned. See examples.
-If not supplied, check.model=TRUE is used for checking possible NA or Inf
-values, see ?logLik.SSModel.}
+\item{checkfn}{Optional function for checking the validity of the model. See
+details.}
 
 \item{...}{Further arguments for functions \code{optim}, \code{updatefn} and
 \code{logLik.SSModel}, such as \code{method='BFGS'}.}
 }
 \value{
-A list with elements
-\item{optim.out}{Output from function \code{optim}. }
-\item{model}{Model with estimated parameters. }
+A list with elements \item{optim.out}{Output from function
+ \code{optim}. } \item{model}{Model with estimated parameters. }
 }
 \description{
 Function \code{fitSSM} finds the maximum likelihood estimates for unknown
@@ -44,24 +38,33 @@ This function is simple wrapper around optim. For maximum performance in
 complicated problems, user is suggested to use problem specific codes with
 calls to \code{logLik} method directly.
 
-Note that for non-Gaussian models with importance sampling derivative-free
-optimization methods such as Nelder-Mead might be more reliable than methods
-which use finite difference approximations. This is due to noise caused by
-the relative stopping criterion used for finding approximating Gaussian model.
+After updating the model, if \code{checkfn} is non-missing and
+\code{checkfn(model)==TRUE}, \code{-logLik(model,check.model=FALSE)} is
+computed, otherwise objective function returns \code{.Machine$double.xmax}. If
+\code{checkfn} is missing, checking is done via \code{is.SSModel} by
+\code{-logLik(model,check.model=TRUE)}
+
+Note that for non-Gaussian models derivative-free optimization methods such as
+Nelder-Mead might be more reliable than methods which use finite difference
+approximations. This is due to noise caused by the relative stopping criterion
+used for finding approximating Gaussian model. In most cases this does not
+seem to cause any problems though.
 }
 \examples{
 # Example function for updating covariance matrices H and Q
 # (also used as a default function in fitSSM)
 
 updatefn <- function(pars,model,...){
-Q<-as.matrix(model$Q[,,1])
-naQd  <- which(is.na(diag(Q)))
-naQnd <- which(upper.tri(Q[naQd,naQd]) & is.na(Q[naQd,naQd]))
-Q[naQd,naQd][lower.tri(Q[naQd,naQd])] <- 0
-diag(Q)[naQd] <- exp(0.5 * pars[1:length(naQd)])
-Q[naQd,naQd][naQnd] <- pars[length(naQd)+1:length(naQnd)]
-model$Q[naQd,naQd,1] <- crossprod(Q[naQd,naQd])
-if(!identical(model$H,'Omitted')){
+  if(any(is.na(model$Q))){
+    Q <- as.matrix(model$Q[,,1])
+    naQd  <- which(is.na(diag(Q)))
+    naQnd <- which(upper.tri(Q[naQd,naQd]) & is.na(Q[naQd,naQd]))
+    Q[naQd,naQd][lower.tri(Q[naQd,naQd])] <- 0
+    diag(Q)[naQd] <- exp(0.5 * pars[1:length(naQd)])
+    Q[naQd,naQd][naQnd] <- pars[length(naQd)+1:length(naQnd)]
+    model$Q[naQd,naQd,1] <- crossprod(Q[naQd,naQd])
+  }
+ if(!identical(model$H,'Omitted') && any(is.na(model$H))){#'
    H<-as.matrix(model$H[,,1])
    naHd  <- which(is.na(diag(H)))
    naHnd <- which(upper.tri(H[naHd,naHd]) & is.na(H[naHd,naHd]))
@@ -71,8 +74,7 @@ if(!identical(model$H,'Omitted')){
    H[naHd,naHd][naHnd] <-
      pars[length(naQd)+length(naQnd)+length(naHd)+1:length(naHnd)]
    model$H[naHd,naHd,1] <- crossprod(H[naHd,naHd])
- }
-
+   }
  model
 }
 

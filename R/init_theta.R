@@ -1,3 +1,4 @@
+# Default initial values for linear predictor theta
 init_theta <- 
   function(y, u, distribution) {
     ind<-distribution == "poisson"

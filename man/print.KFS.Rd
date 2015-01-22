@@ -9,7 +9,8 @@
 \arguments{
 \item{x}{output object from function KFS.}
 
-\item{type}{What to print. Possible values are "state" (default), "signal", and "mean". Multiple choices are allowed.}
+\item{type}{What to print. Possible values are \code{"state"} (default),
+\code{"signal"}, and  \code{"mean"}. Multiple choices are allowed.}
 
 \item{digits}{minimum number of digits to be printed.}
 

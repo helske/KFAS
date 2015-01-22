@@ -1,3 +1,4 @@
+!fast filtering algorithm used in simululation filter
 subroutine filtersimfast(yt, ymiss, timevar, zt,tt, &
 a1, ft,kt,finf, kinf, dt, jt, p, m, n,tol,at)
 
@@ -20,7 +21,7 @@ a1, ft,kt,finf, kinf, dt, jt, p, m, n,tol,at)
     double precision :: meps
     double precision, external :: ddot
 
- meps = tiny(meps)
+    meps = tiny(meps)
 
     j=0
     d=0
@@ -73,8 +74,8 @@ a1, ft,kt,finf, kinf, dt, jt, p, m, n,tol,at)
             end if
         end do
    
-call dgemv('n',m,m,1.0d0,tt(:,:,(d-1)*timevar(3)+1),m,arec,1,0.0d0,at(:,d+1),1)
-   call dcopy(m,at(:,d+1),1,arec,1)
+        call dgemv('n',m,m,1.0d0,tt(:,:,(d-1)*timevar(3)+1),m,arec,1,0.0d0,at(:,d+1),1)
+        call dcopy(m,at(:,d+1),1,arec,1)
     end if
 
     if(dt.LT.n) then
@@ -95,8 +96,8 @@ call dgemv('n',m,m,1.0d0,tt(:,:,(d-1)*timevar(3)+1),m,arec,1,0.0d0,at(:,d+1),1)
                 end if
             end do
    
-call dgemv('n',m,m,1.0d0,tt(:,:,(t-1)*timevar(3)+1),m,arec,1,0.0d0,at(:,t+1),1)
-call dcopy(m,at(:,t+1),1,arec,1)
+            call dgemv('n',m,m,1.0d0,tt(:,:,(t-1)*timevar(3)+1),m,arec,1,0.0d0,at(:,t+1),1)
+            call dcopy(m,at(:,t+1),1,arec,1)
         end do
 
     end if

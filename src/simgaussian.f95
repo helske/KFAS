@@ -1,9 +1,10 @@
+!simulate gaussian state space model
 subroutine simgaussian(ymiss,timevar, yt, zt, ht, tt, rtv, qt, a1, p1, &
 p1inf, nnd,nsim, epsplus, etaplus, aplus1, p, n, m, r, info,rankp,&
 tol,nd,ndl,sim,c,simwhat,simdim,antithetics)
 
     implicit none
-    !!! transpoosi simille!!!
+
     integer, intent(in) :: p, m, r, n, nsim,nnd,ndl,simdim,simwhat,antithetics,rankp
     integer, intent(in), dimension(n,p) :: ymiss
     integer, intent(in), dimension(5) :: timevar

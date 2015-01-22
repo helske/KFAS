@@ -1,4 +1,4 @@
-    ! Subroutine for Kalman filtering of linear gaussian state space model
+  ! Subroutine for Kalman filtering of linear gaussian state space model
 
 subroutine kfilter(yt, ymiss, timevar, zt, ht,tt, rt, qt, a1, p1, p1inf, p,n,m,r,d,j,&
 at, pt, vt, ft,kt, pinf, finf, kinf, lik, tol,rankp,theta,thetavar,filtersignal)
@@ -34,7 +34,7 @@ at, pt, vt, ft,kt, pinf, finf, kinf, lik, tol,rankp,theta,thetavar,filtersignal)
     double precision, external :: ddot
     double precision :: meps,finv
 
-    meps = tiny(meps) !was epsilon!
+    meps = tiny(meps)
 
     c = 0.5d0*log(8.0d0*atan(1.0d0))
 
@@ -74,7 +74,7 @@ at, pt, vt, ft,kt, pinf, finf, kinf, lik, tol,rankp,theta,thetavar,filtersignal)
                         rankp = rankp -1
 
                         do i = 1, m
-                            if(pirec(i,i) < tol) then
+                            if(pirec(i,i) < meps) then
                                 pirec(i,:) = 0.0d0
                                 pirec(:,i) = 0.0d0
                             end if
@@ -92,11 +92,7 @@ at, pt, vt, ft,kt, pinf, finf, kinf, lik, tol,rankp,theta,thetavar,filtersignal)
                     if (ft(j,d) <= meps) then
                         ft(j,d)=0.0d0
                     end if
-                    !if (ft(j,d) > meps) then
-                    !    lik = lik -c
-                    !else
-                    !    ft(j,d)=0.0d0
-                    !end if
+
                     if(rankp .EQ. 0) then
                         exit diffuse
                     end if
@@ -149,8 +145,6 @@ at, pt, vt, ft,kt, pinf, finf, kinf, lik, tol,rankp,theta,thetavar,filtersignal)
             else
                 call dsyr('u',m,qt(1,1,(d-1)*timevar(5)+1),rt(:,1,(d-1)*timevar(4)+1),1,pt(:,:,d+1),m)
 
-               ! call dger(m,m,qt(1,1,(d-1)*timevar(5)+1),rt(:,1,(d-1)*timevar(4)+1),1,rt(:,1,(d-1)*timevar(4)+1),1,&
-               ! pt(:,:,d+1),m)
             end if
 
             arec = at(:,d+1)
@@ -192,15 +186,12 @@ at, pt, vt, ft,kt, pinf, finf, kinf, lik, tol,rankp,theta,thetavar,filtersignal)
 
         call dsymm('r','u',m,m,1.0d0,prec,m,tt(:,:,(t-1)*timevar(3)+1),m,0.0d0,mm,m)
         call dgemm('n','t',m,m,m,1.0d0,mm,m,tt(:,:,(t-1)*timevar(3)+1),m,0.0d0,pt(:,:,t+1),m)
-        !call dgemm('n','n',m,m,m,1.0d0,tt(:,:,(t-1)*timevar(3)+1),m,prec,m,0.0d0,mm,m)
-        !call dgemm('n','t',m,m,m,1.0d0,mm,m,tt(:,:,(t-1)*timevar(3)+1),m,0.0d0,pt(:,:,t+1),m)
 
         if(r.GT.1) then
             call dsymm('r','u',m,r,1.0d0,qt(:,:,(t-1)*timevar(5)+1),r,rt(:,:,(t-1)*timevar(4)+1),m,0.0d0,mr,m)
             call dgemm('n','t',m,m,r,1.0d0,mr,m,rt(:,:,(t-1)*timevar(4)+1),m,1.0d0,pt(:,:,t+1),m)
         else
-            !   call dger(m,m,qt(1,1,(t-1)*timevar(5)+1),rt(:,1,(t-1)*timevar(4)+1),1,rt(:,1,(t-1)*timevar(4)+1),&
-            !   1,pt(:,:,t+1),m)
+
             call dsyr('u',m,qt(1,1,(t-1)*timevar(5)+1),rt(:,1,(t-1)*timevar(4)+1),1,pt(:,:,t+1),m)
         end if
 
@@ -221,14 +212,12 @@ at, pt, vt, ft,kt, pinf, finf, kinf, lik, tol,rankp,theta,thetavar,filtersignal)
             do i=1,m-1
                 pt((i+1):m,i,t) =pt(i,(i+1):m,t)
             end do
-            ! pt(:,:,t) =(pt(:,:,t)+transpose(pt(:,:,t)))/2.0d0
         end do
         if(d>0) then
             do t=1, d
                 do i=1,m-1
                     pinf((i+1):m,i,t) =pinf(i,(i+1):m,t)
                 end do
-            !pinf(:,:,t) =(pinf(:,:,t)+transpose(pinf(:,:,t)))/2.0d0
             end do
         end if
     end if

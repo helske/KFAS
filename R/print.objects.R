@@ -26,7 +26,8 @@ print.SSModel <-
 #' 
 #' @export
 #' @param x output object from function KFS.
-#' @param type What to print. Possible values are "state" (default), "signal", and "mean". Multiple choices are allowed.
+#' @param type What to print. Possible values are \code{"state"} (default), 
+#'   \code{"signal"}, and  \code{"mean"}. Multiple choices are allowed.
 #' @param digits minimum number of digits to be printed.
 #' @param ... Ignored.
 print.KFS <- 
@@ -43,12 +44,12 @@ print.KFS <-
       if (is.null(x$alphahat)) { 
         print_this <- cbind(x$a[n + 1,], sqrt(x$P[, , n + 1][mdiag]))
         colnames(print_this) <- c("Estimate", "Std. Error")
-        cat("\n Filtered values of states and standard errors at time n+1:\n")
+        cat(paste("\n Filtered values of states and standard errors at time",n+1,":\n"))
         print.default(format(print_this, digits = digits), quote = FALSE, print.gap = 2)
       } else {        
         print_this <- cbind(x$alphahat[n,], sqrt(x$V[, , n][mdiag]))
         colnames(print_this) <- c("Estimate", "Std. Error")
-        cat("\n Smoothed values of states and standard errors at time n:\n")
+        cat(paste("\n Smoothed values of states and standard errors at time",n,":\n"))
         print.default(format(print_this, digits = digits), quote = FALSE, print.gap = 2)        
       }
     }
@@ -56,12 +57,12 @@ print.KFS <-
       if (is.null(x$thetahat)) { 
         print_this <- cbind(x$t[n + 1,], sqrt(x$P_theta[, , n + 1][pdiag]))
         colnames(print_this) <- c("Estimate", "Std. Error")
-        cat("\n Filtered values of signal and standard errors at time n:\n")
+        cat(paste("\n Filtered values of signal and standard errors at time",n,":\n"))
         print.default(format(print_this, digits = digits), quote = FALSE, print.gap = 2)
       } else {        
         print_this <- cbind(x$thetahat[n,], sqrt(x$V_theta[, , n][pdiag]))
         colnames(print_this) <- c("Estimate", "Std. Error")
-        cat("\n Smoothed values of signal and standard errors at time n:\n")
+        cat(paste("\n Smoothed values of signal and standard errors at time",n,":\n"))
         print.default(format(print_this, digits = digits), quote = FALSE, print.gap = 2)        
       }
     }
@@ -69,12 +70,12 @@ print.KFS <-
       if (is.null(x$muhat)) { 
         print_this <- cbind(x$m[n + 1,], sqrt(x$P_mu[, , n + 1][pdiag]))
         colnames(print_this) <- c("Estimate", "Std. Error")
-        cat("\n Filtered values of mean and standard errors at time n:\n")
+        cat(paste("\n Filtered values of mean and standard errors at time",n,":\n"))
         print.default(format(print_this, digits = digits), quote = FALSE, print.gap = 2)
       } else {        
         print_this <- cbind(x$muhat[n,], sqrt(x$V_mu[, , n][pdiag]))
         colnames(print_this) <- c("Estimate", "Std. Error")
-        cat("\n Smoothed values of mean and standard errors at time n:\n")
+        cat(paste("\n Smoothed values of mean and standard errors at time",n,":\n"))
         print.default(format(print_this, digits = digits), quote = FALSE, print.gap = 2)        
       }
     }    

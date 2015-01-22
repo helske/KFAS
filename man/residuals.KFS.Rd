@@ -3,8 +3,8 @@
 \alias{residuals.KFS}
 \title{Extract Residuals of KFS output}
 \usage{
-\method{residuals}{KFS}(object, type = c("recursive", "deviance", "pearson",
-  "response", "state"), ...)
+\method{residuals}{KFS}(object, type = c("recursive", "pearson", "response",
+  "state", "deviance"), ...)
 }
 \arguments{
 \item{object}{KFS object}
@@ -19,21 +19,24 @@ Extract Residuals of KFS output
 \details{
 For object of class KFS, several types of residuals can be computed:
 
-\itemize{
-\item 'recursive': One-step ahead prediction residuals
-\eqn{v_{t,i}=y_{t_i}-Z_{t_i}a_{t_i}}{v[t,i]=y[t_i]-Z[t_i]a[t_i]},
-with residuals being undefined in diffuse phase. Only supported for fully Gaussian models.
+  \itemize{ \item  \code{"recursive"}: One-step ahead prediction residuals
+  \eqn{v_{t,i}=y_{t_i}-Z_{t_i}a_{t_i}}{v[t,i]=y[t_i]-Z[t_i]a[t_i]}, with
+  residuals being undefined in diffuse phase. Computing these for non-Gaussian models can be time consuming.
 
-\item 'response': Data minus fitted values, \eqn{y-E(y)}{y-E(y)}.
+  \item \code{"response"}: Data minus fitted values, \eqn{y-E(y)}{y-E(y)}.
 
-\item 'pearson':  \deqn{(y_{t,i}-\theta_{t,i})/\sqrt{V(\mu_{t,i})}, \quad i=1,\ldots,p,t=1,\ldots,n,}{(y[t,i]-\theta[t,i])V(\mu[t,i])^(-0.5), i=1,\ldots,p, t=1,\ldots,n,}
-                  where \eqn{V(\mu_{t,i})}{V(\mu[t,i])} is the variance function of the model.
+  \item \code{"pearson"}:  \deqn{(y_{t,i}-\theta_{t,i})/\sqrt{V(\mu_{t,i})},
+  \quad i=1,\ldots,p,t=1,\ldots,n,}{(y[t,i]-\theta[t,i])V(\mu[t,i])^(-0.5),
+  i=1,\ldots,p, t=1,\ldots,n,} where \eqn{V(\mu_{t,i})}{V(\mu[t,i])} is the
+  variance function of the model.
 
-\item 'state':  Residuals based on the smoothed disturbance terms \eqn{\eta} are defined as
-\deqn{\hat \eta_t, \quad t=1,\ldots,n,}{L^{-1}[t] \eta[t], t=1,\ldots,n}.
+  \item \code{"state"}:  Residuals based on the smoothed disturbance terms
+  \eqn{\eta} are defined as \deqn{\hat \eta_t, \quad t=1,\ldots,n,}{L^{-1}[t]
+  \eta[t], t=1,\ldots,n}. Only defined for fully Gaussian models.
 
-\item 'deviance': Deviance residuals.
-Note that these are based on the conditional likelihood p(y|theta), i.e. these are defined as if the hidden states would be fixed.
-}
+  \item \code{"deviance"}: Deviance residuals. Deprecated. This option was
+  meant to be used only for the GLM comparisons, as their generalization to
+  other models is lacking, but these will be completely removed in future in
+  order to avoid misleading results in non-GLM settings. }
 }
 

@@ -6,70 +6,75 @@
 \usage{
 \method{logLik}{SSModel}(object, marginal = FALSE, nsim = 0,
   antithetics = TRUE, theta, check.model = TRUE, transform = c("ldl",
-  "augment"), maxiter = 50, seed, convtol = 1e-08, stepmax, ...)
+  "augment"), maxiter = 50, seed, convtol = 1e-08, ...)
 }
 \arguments{
 \item{object}{State space model of class \code{SSModel}.}
 
-\item{marginal}{Logical. Compute marginal instead of diffuse likelihood (see details).
-Default is FALSE.}
+\item{marginal}{Logical. Compute marginal instead of diffuse likelihood (see
+details). Default is \code{FALSE}.}
 
 \item{nsim}{Number of independent samples used in estimating the
 log-likelihood of the non-Gaussian state space model. Default is 0, which
-gives good starting value for optimization. Only used for non-Gaussian model.}
+gives good starting value for optimization. Only used for non-Gaussian
+model.}
 
 \item{antithetics}{Logical. If TRUE, two antithetic variables are used in
-simulations, one for location and another for scale. Default is TRUE. Only used for non-Gaussian model.}
+simulations, one for location and another for scale. Default is TRUE. Only
+used for non-Gaussian model.}
 
-\item{theta}{Initial values for conditional mode theta. Only used for non-Gaussian model.}
+\item{theta}{Initial values for conditional mode theta. Only used for
+non-Gaussian model.}
 
-\item{check.model}{Logical. If TRUE, function \code{is.SSModel} is called before computing the likelihood.
-Default is TRUE. Function is slightly faster if no checking is done, but note that if you manually
-modify model object improperly, underlying Fortran code can crash R.}
+\item{check.model}{Logical. If TRUE, function \code{is.SSModel} is called
+before computing the likelihood. Default is \code{TRUE}.}
 
 \item{transform}{How to transform the model in case of non-diagonal
-covariance matrix \eqn{H}. Defaults to \code{'ldl'}. See function \code{\link{transformSSM}} for
-details.}
+covariance matrix \eqn{H}. Defaults to \code{"ldl"}. See function
+\code{\link{transformSSM}} for details.}
 
-\item{maxiter}{The maximum number of iterations used in linearisation. Default is 50. Only used for non-Gaussian model.}
+\item{maxiter}{The maximum number of iterations used in linearisation.
+Default is 50. Only used for non-Gaussian model.}
 
-\item{seed}{The value is used as a seed via set.seed function. Only used for non-Gaussian model.}
+\item{seed}{The value is used as a seed via \code{set.seed} function. Only used for
+non-Gaussian model.}
 
-\item{convtol}{Tolerance parameter for convergence checks for Gaussian approximation.
-Iterations are continued until the scaled norm between three successive iterations is smaller than \code{convtol}.}
-
-\item{stepmax}{Maximum stepsize used in Gaussian approximation. Only used for non-Gaussian models.}
+\item{convtol}{Tolerance parameter for convergence checks for Gaussian
+approximation.}
 
 \item{...}{Ignored.}
 }
 \value{
-\item{}{log-likelihood of the state space model.}
+log-likelihood of the model.
 }
 \description{
 Function \code{logLik.SSmodel} computes the log-likelihood value of a state
 space model.
 }
 \details{
-As KFAS is based on diffuse initialization, the likelihood is also diffuse, which coincides with
-restricted likelihood (REML) in appropriate (mixed) models. However, in typical REML estimation
-constant term \eqn{log|X'X|} is omitted from the log-likelihood formula. Similar term is also
-missing in diffuse likelihood formulations, but unlike in simpler linear models this term is not
-necessarily constant. Therefore omitting this term can lead to suboptimal results in model
-estimation if there is unknown parameters in diffuse parts of Zt or Tt (Francke et al. 2010).
-See also Gurka (2006) for model comparison in mixed model settings with and without the additional (constant) term.
+As KFAS is based on diffuse initialization, the likelihood is also diffuse,
+which coincides with restricted likelihood (REML) in appropriate (mixed)
+models. However, in typical REML estimation constant term \eqn{log|X'X|} is
+omitted from the log-likelihood formula. Similar term is also missing in
+diffuse likelihood formulations, but unlike in simpler linear models this
+term is not necessarily constant. Therefore omitting this term can lead to
+suboptimal results in model estimation if there is unknown parameters in
+diffuse parts of Zt or Tt (Francke et al. 2010). See also Gurka (2006) for
+model comparison in mixed model settings with and without the additional
+(constant) term.
 
 Note that for non-Gaussian models with importance sampling derivative-free
 optimization methods such as Nelder-Mead might be more reliable than methods
 which use finite difference approximations. This is due to noise caused by
-the relative stopping criterion used for finding approximating Gaussian model.
+the relative stopping criterion used for finding approximating Gaussian
+model.
 }
 \references{
 Francke, M. K., Koopman, S. J. and De Vos, A. F. (2010),
-Likelihood functions for state space models with diffuse initial conditions.
-Journal of Time Series Analysis, 31: 407-414.\cr
+  Likelihood functions for state space models with diffuse initial
+  conditions. Journal of Time Series Analysis, 31: 407--414.\cr
 
-Gurka, M. J (2006),
-Selecting the Best Linear Mixed Model Under REML.
-The American Statistician, Vol. 60, Iss. 1.
+  Gurka, M. J (2006), Selecting the Best Linear Mixed Model Under REML. The
+  American Statistician, Vol. 60.
 }
 

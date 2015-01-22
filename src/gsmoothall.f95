@@ -318,7 +318,7 @@ etahat,etahatvar,thetahat,thetahatvar, ldlsignal,zorig, zorigtv,aug,state,dist,s
                             call dgemm('n','n',m,m,m,1.0d0,nrec1,m,l0,m,0.0d0,mm,m) !mm = nt1*l0
                             nrec1 = mm
                             call dgemm('n','n',m,m,m,1.0d0,nrec2,m,l0,m,0.0d0,mm,m) !mm = nt1*l0
-                            nrec2 = mm !onko oikein?
+                            nrec2 = mm
                         end if
                     end if
                 end if
@@ -367,10 +367,6 @@ etahat,etahatvar,thetahat,thetahatvar, ldlsignal,zorig, zorigtv,aug,state,dist,s
         do t = d+1, n
             ahat(:,t) = at(:,t)
             call dsymv('u',m,1.0d0,pt(:,:,t),m,rt(:,t),1,1.0d0,ahat(:,t),1) !ahat = ahat+pt*r_t-1
-            !call dgemm('n','n',m,m,m,1.0d0,pt(:,:,t),m,nt(:,:,t),m,0.0d0,mm,m) !pt*n_t-1
-            !call dgemm('n','t',m,m,m,1.0d0,mm,m,pt(:,:,t),m,0.0d0,vvt(:,:,t),m) !pt*n_t-1*pt
-            !vvt(:,:,t) = pt(:,:,t)-vvt(:,:,t)
-            !vvt(:,:,t) = pt(:,:,t)
             call dsymm('l','u',m,m,1.0d0,pt(:,:,t),m,nt(:,:,t),m,0.0d0,mm,m) !pt*n_t-1
             mm = im - mm
             call dsymm('r','u',m,m,1.0d0,pt(:,:,t),m,mm,m,0.0d0,vvt(:,:,t),m) !pt*n_t-1*pt
@@ -383,36 +379,6 @@ etahat,etahatvar,thetahat,thetahatvar, ldlsignal,zorig, zorigtv,aug,state,dist,s
             end do
         end if
     end if
-    !    if(state.EQ.1) then
-    !        do t = 1, d
-    !            call dcopy(m,at(:,t),1,ahat(:,t),1) !ahat = at
-    !            call dgemv('n',m,m,1.0d0,pt(:,:,t),m,rt0(:,t),1,1.0d0,ahat(:,t),1) !ahat = at + pt * rt0_t
-    !            call dgemv('n',m,m,1.0d0,pinf(:,:,t),m,rt1(:,t),1,1.0d0,ahat(:,t),1) !ahat = at + pt * rt0_t + pinf*rt1_t
-    !            vvt(:,:,t) = pt(:,:,t)
-    !            call dgemm('n','n',m,m,m,1.0d0,pt(:,:,t),m,nt0(:,:,t),m,0.0d0,mm,m) !mm = pt*nt0
-    !            call dgemm('n','t',m,m,m,-1.0d0,mm,m,pt(:,:,t),m,1.0d0,vvt(:,:,t),m) !vvt = pt - pt*nt0*pt
-    !            call dgemm('n','n',m,m,m,1.0d0,pinf(:,:,t),m,nt1(:,:,t),m,0.0d0,mm,m) !mm = pinf*nt1
-    !            call dgemm('n','n',m,m,m,-1.0d0,mm,m,pt(:,:,t),m,0.0d0,mm2,m) !mm2 = -pinf*nt1*pt
-    !            vvt(:,:,t) = vvt(:,:,t) + mm2 + transpose(mm2) !vvt = pt - pt*nt0*pt  -pinf*nt1*pt - t(pinf*nt1*pt)
-    !            call dgemm('n','n',m,m,m,1.0d0,pinf(:,:,t),m,nt2(:,:,t),m,0.0d0,mm,m) !mm = pinf*nt2
-    !            call dgemm('n','t',m,m,m,-1.0d0,mm,m,pinf(:,:,t),m,1.0d0,vvt(:,:,t),m) !vvt = vvt - pinf*nt2*pinf
-    !        end do
-    !        do t = d+1, n
-    !            call dcopy(m,at(:,t),1,ahat(:,t),1) !ahat = at
-    !            call dgemv('n',m,m,1.0d0,pt(:,:,t),m,rt(:,t),1,1.0d0,ahat(:,t),1) !ahat = ahat+pt*r_t-1
-    !            !vvt(:,:,t) = pt(:,:,t)
-    !            !call dgemm('n','n',m,m,m,1.0d0,pt(:,:,t),m,nt(:,:,t),m,0.0d0,mm,m) !pt*n_t-1
-    !            !call dgemm('n','n',m,m,m,-1.0d0,mm,m,pt(:,:,t),m,1.0d0,vvt(:,:,t),m) !pt*n_t-1*pt
-    !
-    !            call dgemm('n','n',m,m,m,1.0d0,pt(:,:,t),m,nt(:,:,t),m,0.0d0,mm,m)
-    !            mm = im - mm
-    !            call dgemm('n','n',m,m,m,1.0d0,mm,m,pt(:,:,t),m,0.0d0,vvt(:,:,t),m) !pt*n_t-1*pt
-    !
-    !        end do
-    !        do t= 1,n
-    !            vvt(:,:,t) = (vvt(:,:,t)+transpose(vvt(:,:,t)))/2.0d0
-    !        end do
-    !    end if
 
     if(dist.EQ.1) then
         do t = 1, d

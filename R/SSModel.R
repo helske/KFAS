@@ -1,73 +1,114 @@
 #' Create a State Space Model Object of Class SSModel
-#'
-#' Function \code{SSModel} creates a state space object object of class \code{SSModel}
-#' which can be used as an input object for various functions of \code{KFAS} package.
 #' 
-#' Formula of the model can contain the usual regression part 
-#' and additional functions defining different types of components of the model, named as
-#' \code{SSMarima}, \code{SSMcustom}, \code{SSMcycle}, \code{SSMregression}, \code{SSMseasonal} and \code{SSMtrend}. 
+#' Function \code{SSModel} creates a state space object object of class
+#' \code{SSModel} which can be used as an input object for various functions of
+#' \code{KFAS} package.
+#' 
+#' Formula of the model can contain the usual regression part and additional
+#' functions defining different types of components of the model, named as 
+#' \code{SSMarima}, \code{SSMcustom}, \code{SSMcycle}, \code{SSMregression},
+#' \code{SSMseasonal} and \code{SSMtrend}.
 #' 
 #' 
-#'
+#' 
 #' @export
 #' @rdname SSModel
 #' @name SSModel
 #' @seealso \code{\link{KFAS}} for examples.
-#' @param formula an object of class \code{\link{formula}} containing the symbolic description of the model. 
-#' The intercept term can be removed with \code{-1} as in \code{lm}. 
-#' In case of trend or differenced arima component intercept is removed automatically. 
-#' Note that in order to be compatible with nonstationary elements, first level of each factor is 
-#' always added to intercept, so if intercept is removed via \code{-1}, one level will be missing.
-#' See details and examples in \code{\link{KFAS}} for special functions used in model construction.
-#' @param data an optional data frame, list or environment containing the variables in the model.
-#' @param H covariance matrix or array of disturbance terms \eqn{\epsilon_t}{\epsilon[t]} of observation equation. Omitted in case of non-gaussian distributions. Augment the state vector if you want to add additional noise.
-#' @param u additional parameters for non-gaussian models. See details in \code{\link{KFAS}}.
-#' @param distribution a vector of distributions of the observations. Default is \code{rep('gaussian',p)}.
-#' @param tol a tolerance parameter for a diffuse phase. Smallest value of Finf not counted for zero.
-#'  Defaults to \code{.Machine$double.eps^0.5}. 
-#'  If smoothing gives negative variances for smoothed states, try adjusting this.
-#' 
-#' @param index a vector indicating for which series the corresponding components are constructed.
-#' @param type for cycle, seasonal, trend and regression components, character string defining if \code{'distinct'} or \code{'common'} states are used for different series.
-#' 
-#' @param Q for arima, cycle and seasonal component, a \eqn{p \times p}{p x p} covariance matrix of the disturbances (or in the time varying case \eqn{p \times p \times n}{p x p x n} array), where where p=\code{length(index)}.
-#'  For trend component, list of length \code{degree} containing the \eqn{p \times p} or \eqn{p \times p \times n} covariance matrices. For a custom component, arbitrary covariance matrix or array of disturbance terms \eqn{\eta_t}{\eta[t]}
-#' @param a1 optional \eqn{m \times 1}{m x 1} matrix giving the expected value of the initial state vector \eqn{\alpha_1}{\alpha[1]}.
-#' @param P1 optional \eqn{m \times m}{m x m} matrix giving the covariance matrix of \eqn{\alpha_1}{\alpha[1]}.  In the diffuse case the non-diffuse part of \eqn{P_1}{P[1]}.
-#' @param P1inf optional \eqn{m \times m}{m x m} matrix giving the diffuse part of \eqn{P_1}{P[1]}. Diagonal matrix with ones on diagonal elements which correspond to the unknown initial states.
-#' @param R for a custom and regression components, optional \eqn{m \times k} system matrix or array of transition equation.
-#' @param ar for arima component, a numeric vector containing the autoregressive coeffients.
-#' @param ma for arima component, a numericvector containing the moving average coeffients. 
-#' @param d for arima component, a degree of differencing.  
-#' @param stationary for arima component, logical value indicating whether a stationarity of the arima part is assumed. Defaults to TRUE. 
-#' @param Z for a custom component, system matrix or array of observation equation.
-#' @param T for a custom component, system matrix or array of transition equation.
-#' @param period for a cycle and seasonal components, the length of the cycle/seasonal pattern.
-#' @param sea.type for seasonal component, character string defining whether to use \code{'dummy'} or \code{'trigonometric'} form of the seasonal component.
-#' @param degree for trend component, integer defining the degree of the polynomial trend. 1 corresponds to local level, 2 for local linear trend and so forth.
-#' @param rformula for regression component, right hand side formula or list of of such formulas 
-#' defining the custom regression part.
+#' @param formula an object of class \code{\link{formula}} containing the
+#'   symbolic description of the model. The intercept term can be removed with
+#'   \code{-1} as in \code{lm}. In case of trend or differenced arima component
+#'   intercept is removed automatically. Note that in order to be compatible
+#'   with nonstationary elements, first level of each factor is always added to
+#'   intercept, so if intercept is removed via \code{-1}, one level will be
+#'   missing. See details and examples in \code{\link{KFAS}} for special
+#'   functions used in model construction.
+#' @param data an optional data frame, list or environment containing the
+#'   variables in the model.
+#' @param H covariance matrix or array of disturbance terms
+#'   \eqn{\epsilon_t}{\epsilon[t]} of observation equation. Omitted in case of
+#'   non-gaussian distributions. Augment the state vector if you want to add
+#'   additional noise.
+#' @param u additional parameters for non-gaussian models. See details in
+#'   \code{\link{KFAS}}.
+#' @param distribution a vector of distributions of the observations. Default is
+#'   \code{rep("gaussian",p)}.
+#' @param tol a tolerance parameter for a diffuse phase. Smallest value of Finf
+#'   not counted for zero. Defaults to \code{.Machine$double.eps^0.5}. If
+#'   smoothing gives negative variances for smoothed states, try adjusting this.
+#'   
+#' @param index a vector indicating for which series the corresponding
+#'   components are constructed.
+#' @param type for cycle, seasonal, trend and regression components, character
+#'   string defining if \code{'distinct'} or \code{'common'} states are used for
+#'   different series.
+#'   
+#' @param Q for arima, cycle and seasonal component, a \eqn{p \times p}{p x p}
+#'   covariance matrix of the disturbances (or in the time varying case \eqn{p
+#'   \times p \times n}{p x p x n} array), where where p=\code{length(index)}. 
+#'   For trend component, list of length \code{degree} containing the \eqn{p
+#'   \times p} or \eqn{p \times p \times n} covariance matrices. For a custom
+#'   component, arbitrary covariance matrix or array of disturbance terms
+#'   \eqn{\eta_t}{\eta[t]}
+#' @param a1 optional \eqn{m \times 1}{m x 1} matrix giving the expected value
+#'   of the initial state vector \eqn{\alpha_1}{\alpha[1]}.
+#' @param P1 optional \eqn{m \times m}{m x m} matrix giving the covariance
+#'   matrix of \eqn{\alpha_1}{\alpha[1]}.  In the diffuse case the non-diffuse
+#'   part of \eqn{P_1}{P[1]}.
+#' @param P1inf optional \eqn{m \times m}{m x m} matrix giving the diffuse part
+#'   of \eqn{P_1}{P[1]}. Diagonal matrix with ones on diagonal elements which
+#'   correspond to the unknown initial states.
+#' @param R for a custom and regression components, optional \eqn{m \times k}
+#'   system matrix or array of transition equation.
+#' @param ar for arima component, a numeric vector containing the autoregressive
+#'   coeffients.
+#' @param ma for arima component, a numericvector containing the moving average
+#'   coeffients.
+#' @param d for arima component, a degree of differencing.
+#' @param stationary for arima component, logical value indicating whether a
+#'   stationarity of the arima part is assumed. Defaults to TRUE.
+#' @param Z for a custom component, system matrix or array of observation
+#'   equation.
+#' @param T for a custom component, system matrix or array of transition
+#'   equation.
+#' @param period for a cycle and seasonal components, the length of the
+#'   cycle/seasonal pattern.
+#' @param sea.type for seasonal component, character string defining whether to
+#'   use \code{"dummy"} or \code{"trigonometric"} form of the seasonal
+#'   component.
+#' @param degree for trend component, integer defining the degree of the
+#'   polynomial trend. 1 corresponds to local level, 2 for local linear trend
+#'   and so forth.
+#' @param rformula for regression component, right hand side formula or list of 
+#'   of such formulas defining the custom regression part.
+#' @param remove.intercept Remove intercept term from regression model. Default
+#'   is \code{TRUE}. This tries to ensure that there are no extra intercept
+#'   terms in the model.
 #' @param n length of the series, only used internally for dimensionality check.
 #' @param ynames names of the times series, only used internally.
-#' 
-#' @return object of class \code{SSModel}, which is a list with the following components:
-#' \item{y}{A n x p matrix containing the observations. }
-#' \item{Z}{A p x m x 1 or p x m x n array corresponding to the system matrix of observation equation. }
-#' \item{H}{A p x p x 1 or p x p x n array corresponding to the covariance matrix of observational disturbances epsilon. }
-#' \item{T}{A m x m x 1 or m x m x n array corresponding to the first system matrix of state equation. }
-#' \item{R}{A m x k x 1 or m x k x n array corresponding to the second system matrix of state equation. }
-#' \item{Q}{A k x k x 1 or k x k x n array corresponding to the covariance matrix of state disturbances eta }
-#' \item{a1}{A m x 1 matrix containing the expected values of the initial states. }
-#' \item{P1}{A m x m matrix containing the covariance matrix of the nondiffuse part of the initial state vector. }
-#' \item{P1inf}{A m x m matrix containing the covariance matrix of the diffuse part of the initial state vector. }
-#' \item{u}{A n x p matrix of an additional parameters in case of non-Gaussian model.}
-#' \item{distribution}{A vector of length p giving the distributions of the observations. }
-#' \item{tol}{A tolerance parameter for the diffuse phase. }
-#' \item{call}{Original call to the function. }
-#' In addition, object of class \code{SSModel} contains following attributes:
-#' \item{names}{Names of the list components. }
-#' \item{p, m, k, n}{Integer valued scalars defining the dimensions of the model components. }
-#' \item{state_types}{Types of the states in the model. } 
+#'   
+#' @return object of class \code{SSModel}, which is a list with the following
+#'   components: \item{y}{A n x p matrix containing the observations. } 
+#'   \item{Z}{A p x m x 1 or p x m x n array corresponding to the system matrix
+#'   of observation equation. } \item{H}{A p x p x 1 or p x p x n array
+#'   corresponding to the covariance matrix of observational disturbances
+#'   epsilon. } \item{T}{A m x m x 1 or m x m x n array corresponding to the
+#'   first system matrix of state equation. } \item{R}{A m x k x 1 or m x k x n
+#'   array corresponding to the second system matrix of state equation. } 
+#'   \item{Q}{A k x k x 1 or k x k x n array corresponding to the covariance
+#'   matrix of state disturbances eta } \item{a1}{A m x 1 matrix containing the
+#'   expected values of the initial states. } \item{P1}{A m x m matrix
+#'   containing the covariance matrix of the nondiffuse part of the initial
+#'   state vector. } \item{P1inf}{A m x m matrix containing the covariance
+#'   matrix of the diffuse part of the initial state vector. } \item{u}{A n x p
+#'   matrix of an additional parameters in case of non-Gaussian model.} 
+#'   \item{distribution}{A vector of length p giving the distributions of the
+#'   observations. } \item{tol}{A tolerance parameter for the diffuse phase. } 
+#'   \item{call}{Original call to the function. } In addition, object of class
+#'   \code{SSModel} contains following attributes: \item{names}{Names of the
+#'   list components. } \item{p, m, k, n}{Integer valued scalars defining the
+#'   dimensions of the model components. } \item{state_types}{Types of the
+#'   states in the model. }
 #' @examples
 #' 
 #' # example of using data argument
@@ -94,22 +135,11 @@
 #' SSModel(y~-1+x+SSMregression(f,data=data1))["Z"] # 1 and 2
 #' 
 #' rm(x)
-#' c(SSModel(y~-1+SSMregression(f,data=data1))$Z)
+#' c(SSModel(y~-1+SSMregression(f,data=data1))$Z) # 2
 #' \dontrun{
 #' # This fails as there is no x in the environment of f
 #' c(SSModel(y~-1+SSMregression(f),data=data1)$Z)
-#' #
-#' c(SSModel(y~-1+SSMregression(f,data=data1))$Z) #2
-#' }
-#' \dontrun{ 
-#' # Just an example of more complex function call
-#' examplemodel<-SSModel(cbind(y1,y2,y3)  ~ x1+x2 
-#' + SSMregression(~-1+x3+x4,data=dataset,type='common',index=c(1,3),Q=diag(c(0.05,0.1)))                                   
-#' + SSMtrend(degree=1,Q=list(matrix(0.2)))
-#' + SSMtrend(degree=2,index=2:3,Q=list(matrix(c(0.2,0.1,0.1,0.2),2,2),diag(0.07,2)))
-#' + SSMcycle(period=25,Q=matrix(c(0.3,0.2,0.1,0.2,0.4,0.05,0.1,0.05,0.1),3,3))            
-#' , data=dataset, H=matrix(c(1,0.7,0.7,0.7,1,0.7,0.7,0.7,1),3,3))
-#' }
+#' } 
 SSModel <- 
   function(formula, data, H, u, distribution, tol = .Machine$double.eps^0.5) {
    
@@ -148,10 +178,13 @@ SSModel <-
              isTRUE(eval(attr(all_terms, "variables")[[specials$SSMarima + 1]]$d, 
                          envir = data, enclos=parent.frame()) > 0))){
       mf$formula <- update.formula(mf$formula, . ~ . - 1)
-    } 
+      remove.intercept<-TRUE
+    } else remove.intercept<-FALSE
+    
     mf <- eval(mf, parent.frame())
     y <- model.response(mf, "numeric")
-    mt <- attr(mf, "terms")
+    mt <- attr(mf, "terms")   
+  
     vars <- attr(all_terms, "variables")
     reg_in_formula <- as.integer(dim(model.matrix(mt, mf))[2] > 0)
     specials <- unlist(specials)
@@ -232,8 +265,9 @@ SSModel <-
     if (reg_in_formula) {
       blocks[[1]] <- SSMregression(rformula = formula(delete.response(mt)), data = mf, 
                                    index = 1:p, n = n, ynames = if (p > 1) 
-                                     y_names)
+                                     y_names,remove.intercept=remove.intercept)
       blocks[[1]]$state_types <- "regression"
+      #if(attr(mt, "intercept")==1) remove.intercept<-TRUE
     }
     if (lspecials > 0) 
       for (i in 1:lspecials) {
@@ -248,7 +282,8 @@ SSModel <-
         if (comp[[1]] != "SSMcustom" && p > 1 && 
               is.null(comp$ynames) && (is.null(comp$type) || comp$type != "common")) 
           comp$ynames <- y_names[eval(comp$index,envir=data,enclos=parent.frame())]
-      
+        #if(comp[[1]] == "SSMregression")
+        #  comp$remove.intercept<-remove.intercept
         blocks[[i + reg_in_formula]] <- eval(comp, envir=data,enclos=parent.frame())  ###
         blocks[[i + reg_in_formula]]$state_types <- substr(as.character(comp[[1]]), 
                                                            start = 4, stop = 15L)

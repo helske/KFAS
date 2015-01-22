@@ -1,21 +1,20 @@
-! Importance sampling of the signal of non-gaussian model
+! Importance sampling of non-gaussian model
 
 subroutine isample(yt, ymiss, timevar, zt, tt, rtv, qt, a1, p1,p1inf, u, dist, &
 p, n, m, r, theta, maxiter,rankp,convtol, nnd,nsim,epsplus,etaplus,&
-aplus1,c,tol,info,antithetics,w,sim,nd,ndl,simwhat,simdim,stepmax)
+aplus1,c,tol,info,antithetics,w,sim,nd,ndl,simwhat,simdim)
 
 
     implicit none
 
-    integer, intent(in) ::  p,m, r, n,nnd,antithetics,nsim&
-    ,ndl,simwhat,simdim,rankp
+    integer, intent(in) ::  p,m, r, n,nnd,antithetics,nsim, ndl,simwhat,simdim,rankp
     integer, intent(in), dimension(p) :: dist
     integer, intent(in), dimension(n,p) :: ymiss
     integer, intent(in), dimension(ndl) :: nd
     integer, intent(in), dimension(5) :: timevar
     integer, intent(inout) :: maxiter,info
-    integer ::  t, j,i,info2
-    double precision, intent(in) :: convtol,tol,stepmax
+    integer ::  t, j,i
+    double precision, intent(in) :: convtol,tol
     double precision, intent(in), dimension(n,p) :: u
     double precision, intent(in), dimension(n,p) :: yt
     double precision, intent(in), dimension(p,m,(n-1)*timevar(1)+1) :: zt
@@ -44,19 +43,20 @@ aplus1,c,tol,info,antithetics,w,sim,nd,ndl,simwhat,simdim,stepmax)
 
     ! approximate
     call approx(yt, ymiss, timevar, zt, tt, rtv, ht, qt, a1, p1,p1inf, p,n,m,r,&
-    theta, u, ytilde, dist,maxiter,tol,rankp,convtol,diff,lik,stepmax,info)
+    theta, u, ytilde, dist,maxiter,tol,rankp,convtol,diff,lik,info)
 
-    if(info .ne. 0 .and. info .ne. 2) then
+    if(info .ne. 0 .and. info .ne. 3) then
         return
+    else
+        info = 0
     end if
 
     ! simulate signals
     call simgaussian(ymiss,timevar, ytilde, zt, ht, tt, rtv, qt, a1, p1, &
-    p1inf, nnd,nsim, epsplus, etaplus, aplus1, p, n, m, r, info2,rankp,&
+    p1inf, nnd,nsim, epsplus, etaplus, aplus1, p, n, m, r, info,rankp,&
     tol,nd,ndl,sim,c,simwhat,simdim,antithetics)
 
-    if(info2 /= 0) then
-        info = info2
+    if(info /= 0) then
         return
     end if
 

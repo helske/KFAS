@@ -14,13 +14,24 @@
 Multivariate time series containing hat values.
 }
 \description{
-Extract hat values from KFS output, when \code{KFS} was run with signal (non-Gaussian case)
-or mean smoothing (Gaussian case).
+Extract hat values from KFS output, when \code{KFS} was run with signal
+(non-Gaussian case) or mean smoothing (Gaussian case).
 }
 \details{
-Hat values are defined as the diagonal elements of
-\code{V_t/H_t} where V_t is the covariance matrix of signal/mean at time t and H_t is the
-covariance matrix of disturbance vector \eqn{\epsilon} of (approximating) Gaussian model
-at time t.
+Hat values in \code{KFAS} are defined as the diagonal elements of \code{V_t/H_t} where V_t
+is the covariance matrix of signal/mean at time t and H_t is the covariance
+matrix of disturbance vector \eqn{\epsilon} of (approximating) Gaussian model
+at time t. This definition gives identical results with the standard
+definition in case of GLMs. Note that it is possible to construct a state
+space model where this definition is not meaningful (for example the
+covariance matrix H_t can contain zeros on diagonal).
+}
+\examples{
+model <- SSModel(sr ~ pop15 + pop75 + dpi + ddpi, data = LifeCycleSavings)
+out <- KFS(model, filtering = "state", smoothing = "none")
+# estimate sigma2
+model["H"] <- mean(c(out$v[1:out$d][out$Finf==0]^2/out$F[1:out$d][out$Finf==0],
+                     out$v[-(1:out$d)]^2/out$F[-(1:out$d)]))
+c(hatvalues(KFS(model)))
 }
 

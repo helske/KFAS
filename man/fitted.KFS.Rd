@@ -9,14 +9,16 @@
 \arguments{
 \item{object}{An object of class \code{KFS}.}
 
-\item{start}{The start time of the period of interest. Defaults to first time point of the object.}
+\item{start}{The start time of the period of interest. Defaults to first time
+point of the object.}
 
-\item{end}{The end time of the period of interest. Defaults to the last time point of the object.}
+\item{end}{The end time of the period of interest. Defaults to the last time
+point of the object.}
 
-\item{filtered}{Logical, return filtered instead of smoothed estimates of mean vector.
-Default is \code{FALSE}.}
+\item{filtered}{Logical, return filtered instead of smoothed estimates of
+state vector. Default is \code{FALSE}.}
 
-\item{\dots}{Ignored.}
+\item{...}{Ignored.}
 }
 \value{
 Multivariate time series containing fitted values.

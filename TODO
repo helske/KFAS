@@ -1,9 +1,5 @@
 TODO list
- * Add argument check.result for function ldl which warns if the decomposition was not successful 
-   (due to bad tolerance parameter).
  * Add more tests, at least for structural time series, ARIMA and mixed models and multiple tests 
    for SSModel and auxiliary functions.
- * Check and correct documentations.
-
 TODO in distant future:
  ** Move everything from Fortran to C++ with Rcpp and start using S4 and sparse matrices...

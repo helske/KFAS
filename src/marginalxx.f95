@@ -1,3 +1,4 @@
+! compute the additional term for marginal likelihood
 subroutine marginalxx(p1inf,zt,tt,m,p,n,k,timevar,lik,info)
 
     integer, intent(inout) :: info

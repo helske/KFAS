@@ -1,8 +1,8 @@
-! Importance sampling of the signal of non-gaussian model
+! Importance sampling filtering of non-gaussian model
 
 subroutine isamplefilter(yt, ymiss, timevar, zt, tt, rtv, qt, a1, p1,p1inf, u, dist, &
 p, n, m, r, theta, maxiter,rankp,convtol, nnd,nsim,epsplus,etaplus,&
-aplus1,c,tol,info,antithetics,w,sim,nd,ndl,simwhat,simdim,stepmax)
+aplus1,c,tol,info,antithetics,w,sim,nd,ndl,simwhat,simdim)
 
     implicit none
 
@@ -13,8 +13,8 @@ aplus1,c,tol,info,antithetics,w,sim,nd,ndl,simwhat,simdim,stepmax)
     integer, intent(in), dimension(ndl) :: nd
     integer, intent(in), dimension(5) :: timevar
     integer, intent(inout) ::info, maxiter
-    integer ::  t, j,i,k,maxiter2,maxitermax,info2
-    double precision, intent(in) :: convtol,tol,stepmax
+    integer ::  t, j,i,k,maxiter2,maxitermax
+    double precision, intent(in) :: convtol,tol
     double precision, intent(in), dimension(n,p) :: u
     double precision, intent(in), dimension(n,p) :: yt
     double precision, intent(in), dimension(p,m,(n-1)*timevar(1)+1) :: zt
@@ -58,10 +58,10 @@ aplus1,c,tol,info,antithetics,w,sim,nd,ndl,simwhat,simdim,stepmax)
     call simgaussian(ymiss2(1,:),timevar, ytilde(1,:), zt(:,:,1), &
     ht(:,:,1), tt(:,:,1), rtv(:,:,1), &
     qt(:,:,1), a1, p1, p1inf, nnd,nsim, epsplus2(:,1,:), etaplus2(:,1,:), aplus12(:,:), &
-    p, 1, m, r, info2,rankp,tol,nd,ndl,sim(:,1,:),c,simwhat,simdim,antithetics)
+    p, 1, m, r, info,rankp,tol,nd,ndl,sim(:,1,:),c,simwhat,simdim,antithetics)
 
-    if(info2 /= 0) then
-        info = info2
+
+    if(info /= 0) then
         return
     end if
     maxitermax = 0
@@ -76,10 +76,12 @@ aplus1,c,tol,info,antithetics,w,sim,nd,ndl,simwhat,simdim,stepmax)
         call approx(yt(1:i,:), ymiss(1:i,:), timevar, zt(:,:,1:((i-1)*timevar(1)+1)), &
         tt(:,:,1:((i-1)*timevar(3)+1)), rtv(:,:,1:((i-1)*timevar(4)+1)), ht(:,:,1:i),&
         qt(:,:,1:((i-1)*timevar(5)+1)), a1, p1,p1inf, p,i,m,r,&
-        theta(1:i,:), u(1:i,:), ytilde(1:i,:), dist,maxiter2,tol,rankp,convtol,diff,lik,stepmax,info)
+        theta(1:i,:), u(1:i,:), ytilde(1:i,:), dist,maxiter2,tol,rankp,convtol,diff,lik,info)
 
-        if(info .ne. 0 .and. info .ne. 2) then !check for errors in approximating algorithm
+        if(info .ne. 0 .and. info .ne. 3) then !check for errors in approximating algorithm
             return
+            else
+            info = 0
         end if
 
         if(maxiter2>maxitermax) then
@@ -98,8 +100,7 @@ aplus1,c,tol,info,antithetics,w,sim,nd,ndl,simwhat,simdim,stepmax)
         etaplus2(:,1:(i+1),:), aplus12(:,:),p, i+1, m, r, info,rankp,tol,&
         nd,ndl,sim2(:,1:(i+1),:),c,simwhat,simdim,antithetics)
 
-        if(info2 /= 0) then
-            info = info2
+        if(info /= 0) then
             return
         end if
 

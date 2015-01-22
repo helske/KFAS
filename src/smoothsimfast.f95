@@ -1,3 +1,4 @@
+!fast disturbance smoother for simulation
 subroutine smoothsimfast(yt, ymiss, timevar, zt, ht,tt, rtv,qt,a1, ft,kt,&
 finf, kinf, dt, jt, p, m, n,r,tol,epshat,etahat,rt0,rt1,needeps)
 

@@ -1,4 +1,4 @@
-! Subroutines for mean, covariance and variance computation from weighted sample
+! Subroutines for computation of mean, covariance and variance from weighted sample
 
 subroutine covmeanw(x,w,m,n,k,meanx,covx)
 

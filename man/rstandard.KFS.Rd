@@ -3,8 +3,8 @@
 \alias{rstandard.KFS}
 \title{Extract Standardized Residuals from KFS output}
 \usage{
-\method{rstandard}{KFS}(model, type = c("recursive", "deviance", "pearson",
-  "state"), ...)
+\method{rstandard}{KFS}(model, type = c("recursive", "observation", "state",
+  "deviance", "pearson"), ...)
 }
 \arguments{
 \item{model}{KFS object}
@@ -17,26 +17,35 @@
 Extract Standardized Residuals from KFS output
 }
 \details{
-For object of class KFS, several types of standardized residuals can be computed:
+For object of class KFS with fully Gaussian observations, several types of standardized residuals
+can be computed:
+
 \itemize{
 
 \item 'recursive': One-step ahead prediction residuals defined as
 \deqn{v_{t,i})/\sqrt{F_{i,t}},}
-with residuals being undefined in diffuse phase. Only supported for fully Gaussian models.
+with residuals being undefined in diffuse phase. Computing these for large non-Gaussian models can be time consuming as filtering is needed.
 
-\item 'pearson':  Standardized Pearson residuals
-\deqn{(y_{t,i}-\theta_{t,i})/\sqrt{V(\mu)_{t,i}\phi_i\sqrt{1-h_{t,i}}}, \quad i=1,\ldots,p,t=1,\ldots,n,}{(y[t,i]-\theta[t,i])/(V(\mu)[t,i]\phi[i](1-h[t,i]))^0.5, i=1,\ldots,p, t=1,\ldots,n,}
-                  where \eqn{V(\mu_{t,i})}{V(\mu[t,i])} is the variance function of the model,
-                  \eqn{\phi_i}{\phi[i]} is the dispersion parameter and \eqn{h_{t,i}}{h[t,i]}
-                  is the hat value.  For gaussian models, these coincide with the smoothed
-                  \eqn{\epsilon} disturbance residuals.
+\item 'observation':  Residuals based on the smoothed observation disturbance terms \eqn{\epsilon} are defined as
+\deqn{L^{-1}_t \hat \epsilon_t, \quad t=1,\ldots,n,}{L^{-1}[t] \epsilon[t], t=1,\ldots,n,} where
+\eqn{L_t}{L[t]} is the lower triangular matrix from Cholesky decomposition of \eqn{V_{\epsilon,t}}{V[\epsilon,t]}.
 
-\item 'state':  Residuals based on the smoothed disturbance terms \eqn{\eta} are defined as
+
+\item 'state':  Residuals based on the smoothed state disturbance terms \eqn{\eta} are defined as
 \deqn{L^{-1}_t \hat \eta_t, \quad t=1,\ldots,n,}{L^{-1}[t] \eta[t], t=1,\ldots,n,} where
 \eqn{L_t}{L[t]} is the lower triangular matrix from Cholesky decomposition of \eqn{V_{\eta,t}}{V[\eta,t]}.
 
+
+\item 'pearson':  Standardized Pearson residuals
+\deqn{L^{-1}_t(y_{t}-\theta_{i}), \quad t=1,\ldots,n,}{L^{-1}[t](y[t]-\theta[t]), t=1,\ldots,n,},
+where \eqn{L_t}{L[t]} is the lower triangular matrix from Cholesky decomposition of \eqn{V(y_t)-V(\mu_t)}.
+For gaussian models, these coincide with the standardized smoothed \eqn{\epsilon} disturbance residuals, and for generalized linear models
+these coincide with the standardized Pearson residuals (hence the name).
+
+
 \item 'deviance': Deviance residuals.
-Note that these are based on the conditional likelihood p(y|theta), i.e. these are defined as if the hidden states would be fixed.
+Deprecated. This option was meant to be used only for the GLM comparisons, as their generalization to other models is lacking,
+but these will be completely removed in future in order to avoid misleading results in non-GLM settings.
 }
 }
 

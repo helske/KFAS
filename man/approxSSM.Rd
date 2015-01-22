@@ -3,7 +3,7 @@
 \alias{approxSSM}
 \title{Linear Gaussian Approximation for Exponential Family State Space Model}
 \usage{
-approxSSM(model, theta, maxiter = 50, tol = 1e-08, stepmax)
+approxSSM(model, theta, maxiter = 50, tol = 1e-08)
 }
 \arguments{
 \item{model}{A non-Gaussian state space model object of class \code{SSModel}.}
@@ -13,54 +13,73 @@ approxSSM(model, theta, maxiter = 50, tol = 1e-08, stepmax)
 \item{maxiter}{The maximum number of iterations used in approximation.
 Default is 50.}
 
-\item{tol}{Tolerance parameter for convergence checks.
-Iterations are continued until the scaled norm between three successive iterations is smaller than \code{tol}.}
-
-\item{stepmax}{Maximum stepsize used in Gaussian approximation. Only used for non-Gaussian models.}
+\item{tol}{Tolerance parameter for convergence checks.}
 }
 \value{
 An object which contains the approximating Gaussian state space model
- with following additional components:
-\item{thetahat}{Mode of \eqn{p(\theta|y)}. }
-\item{iterations}{Number of iterations used. }
+  with following additional components:
+  \item{thetahat}{Mode of \eqn{p(\theta|y)}. }
+  \item{iterations}{Number of iterations used. }
+  \item{difference}{Relative difference in the last step of approximation
+  algorithm. }
 }
 \description{
-Function \code{approxSMM} performs the linear Gaussian approximation of a
-state space model where observations follow an exponential
-family distribution.
+Function \code{approxSMM} performs a linear Gaussian approximation of an
+exponential family state space model.
 }
 \details{
 This function is rarely needed itself, it is mainly available for
 illustrative and debugging purposes. The underlying Fortran code is used by
-other functions of KFAS for non-Gaussian modelling.
+other functions of KFAS for non-Gaussian state space modelling.
 
-The linear Gaussian approximating model is defined by
-\deqn{\tilde y_t = Z_t \alpha_t + \epsilon_t,
-\quad \epsilon_t \sim N(0,\tilde H_t),}{
-ytilde[t] = Z[t]\alpha[t] + \epsilon[t], \epsilon[t] ~ N(0,Htilde[t]),}
-\deqn{\alpha_{t+1} = T_t \alpha_t + R_t \eta_t,
-\quad \eta_t \sim N(0,Q_t),}{
+The linear Gaussian approximating model is defined by \deqn{\tilde y_t = Z_t
+\alpha_t + \epsilon_t, \quad \epsilon_t \sim N(0,\tilde H_t),}{ ytilde[t] =
+Z[t]\alpha[t] + \epsilon[t], \epsilon[t] ~ N(0,Htilde[t]),}
+\deqn{\alpha_{t+1} = T_t \alpha_t + R_t \eta_t, \quad \eta_t \sim N(0,Q_t),}{
 \alpha[t+1] = T[t]\alpha[t] + R[t]\eta[t], \eta[t] ~ N(0,Q[t]),}
 
 and \eqn{\alpha_1 \sim N(a_1,P_1)}{\alpha[1] ~ N(a[1],P[1])},
 
 where \eqn{\tilde y}{ytilde} and \eqn{\tilde H}{Htilde} are chosen in a way
-that the linear Gaussian approximating model has the same conditional mode
-of \eqn{\theta=Z\alpha} given the observations \eqn{y} as the original
+that the linear Gaussian approximating model has the same conditional mode of
+\eqn{\theta=Z\alpha} given the observations \eqn{y} as the original
 non-gaussian model. Models also have a same curvature at the mode.
 
 The approximation of the exponential family state space model is based on
-iterative weighted least squares method, see McCullagh and Nelder (1983)
-p.31 and Durbin Koopman (2012) p. 243.
-#'
+iterative weighted least squares method, see McCullagh and Nelder (1983) p.31
+and Durbin Koopman (2012) p. 243.
+}
+\examples{
+# A Gamma example modified from ?glm
+clotting <- data.frame(
+u = c(5,10,15,20,30,40,60,80,100),
+lot1 = c(118,58,42,35,27,25,21,19,18),
+lot2 = c(69,35,26,21,18,16,13,12,12))
+glmfit1 <- glm(lot1 ~ log(u), data = clotting, family = Gamma(link = "log"))
+glmfit2 <- glm(lot2 ~ log(u), data = clotting, family = Gamma(link = "log"))
+
+#note that Gamma distribution is parameterized by 1/dispersion i.e. shape parameter
+model <- SSModel(cbind(lot1, lot2) ~ log(u),
+                u = 1/c(summary(glmfit1)$dispersion, summary(glmfit2)$dispersion),
+                data = clotting, distribution = "gamma")
+approxmodel <- approxSSM(model)
+
+#conditional modes of linear predictor:
+approxmodel$thetahat
+cbind(glmfit1$linear.predictor, glmfit2$linear.predictor)
+
+KFS(approxmodel)
+summary(glmfit1)
+summary(glmfit2)
 }
 \references{
-Koopman, S.J. and Durbin J. (2012).  Time Series Analysis by State Space
-Methods. Second edition. Oxford: Oxford University Press.
+\itemize{ \item McCullagh, P. and Nelder, J. A. (1983).
+  Generalized linear models. Chapman and Hall.
+  \item Koopman, S.J. and Durbin, J. (2012).
+  Time Series Analysis by State Space Methods. Second edition. Oxford University Press. }
 }
 \seealso{
-\code{\link{importanceSSM}},
-\code{\link{SSModel}},
-\code{\link{KFAS}}.
+\code{\link{importanceSSM}}, \code{\link{SSModel}},
+  \code{\link{KFS}}, \code{\link{KFAS}}.
 }
 
