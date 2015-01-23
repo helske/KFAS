@@ -71,12 +71,7 @@ d, j, p, m, n, r,tol,rankp,ft,finf,kt,kinf,epshat,etahat,rt0,rt1,needeps)
                         call dsyr('u',m,(-1.0d0/finf(j,d)),kinf(:,j,d),1,pirec,m) !pirec = pirec -kinf*kinf'/finf
 
                         rankp = rankp -1
-                        do i = 1, m
-                            if(pirec(i,i) .LT. meps) then
-                                pirec(i,:) = 0.0d0
-                                pirec(:,i) = 0.0d0
-                            end if
-                        end do
+
                     else
                         finf(j,d) = 0.0d0
                         if(ft(j,d) .GT.  meps) then
@@ -104,7 +99,12 @@ d, j, p, m, n, r,tol,rankp,ft,finf,kt,kinf,epshat,etahat,rt0,rt1,needeps)
             call dsymm('r','u',m,m,1.0d0,pirec,m,tt(:,:,(d-1)*timevar(3)+1),m,0.0d0,mm,m)
             call dgemm('n','t',m,m,m,1.0d0,mm,m,tt(:,:,(d-1)*timevar(3)+1),m,0.0d0,pinf,m)
             pirec = pinf
-
+            do i = 1, m
+                if(pirec(i,i) .LT. meps) then
+                    pirec(i,:) = 0.0d0
+                    pirec(:,i) = 0.0d0
+                end if
+            end do
 
         end do diffuse
 

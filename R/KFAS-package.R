@@ -218,15 +218,42 @@
 #' # using the the seat belt law dummy only for the front seat passangers, 
 #' # and restricting the rank of the level component by using custom component 
 #' 
-#' # note the small inconvinience in regression component, 
-#' # you must remove the intercept from the additional regression parts manually
-#' 
 #' model<-SSModel(log(cbind(front,rear))~ -1 + log(PetrolPrice) + log(kms)
-#'                + SSMregression(~-1+law,data=Seatbelts,index=1)
+#'                + SSMregression(~law,data=Seatbelts,index=1)
 #'                + SSMcustom(Z=diag(2),T=diag(2),R=matrix(1,2,1),
 #'                            Q=matrix(1),P1inf=diag(2))
 #'                + SSMseasonal(period=12,sea.type='trigonometric'),
 #'                  data=Seatbelts,H=matrix(NA,2,2)) 
+#' 
+#' # An alternative way for defining the rank deficient trend component:
+#' \dontrun{#' 
+#' model<-SSModel(log(cbind(front,rear))~ -1 + log(PetrolPrice) + log(kms)
+#'                + SSMregression(~law,data=Seatbelts,index=1)
+#'                + SSMtrend(degree = 1, Q=list(matrix(0,2,2)))
+#'                + SSMseasonal(period=12,sea.type='trigonometric'),
+#'                  data=Seatbelts,H=matrix(NA,2,2)) 
+#' # Modify model manually:                  
+#' model$Q<-array(1,c(1,1,1))
+#' model$R<-model$R[,-2,,drop=FALSE]
+#' attr(model,"k")<-as.integer(1)
+#' attr(model,"eta_types")<-attr(model,"eta_types")[1]
+#' }
+#' 
+#' likfn<-function(pars,model,estimate=TRUE){
+#'   diag(model$H[,,1])<-exp(0.5*pars[1:2])
+#'   model$H[1,2,1]<-model$H[2,1,1]<-tanh(pars[3])*prod(sqrt(exp(0.5*pars[1:2]))) 
+#'   model$R[28:29]<-exp(pars[4:5])
+#'   if(estimate) return(-logLik(model))
+#'   model
+#' }  
+#' 
+#' model<-SSModel(log(cbind(front,rear))~ -1 + log(PetrolPrice) + log(kms)
+#'                + SSMregression(~law,data=Seatbelts,index=1)
+#'                + SSMtrend(degree = 1, Q=list(matrix(0,2,2)))
+#'                + SSMseasonal(period=12,sea.type='trigonometric'),
+#'                  data=Seatbelts,H=matrix(NA,2,2)) 
+#' 
+#' 
 #' 
 #' likfn<-function(pars,model,estimate=TRUE){
 #'   diag(model$H[,,1])<-exp(0.5*pars[1:2])

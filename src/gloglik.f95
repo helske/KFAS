@@ -69,12 +69,7 @@ p, m, r, n, lik, tol,rankp,marginal)
                         call dsyr('u',m,-1.0d0/finf(j),kinf(:,j),1,pirec,m) !pirec = pirec -kinf*kinf'/finf
                         lik = lik - 0.5d0*log(finf(j))
                         rankp = rankp -1
-                        do i = 1, m
-                            if(pirec(i,i) .LT. meps) then
-                                pirec(i,:) = 0.0d0
-                                pirec(:,i) = 0.0d0
-                            end if
-                        end do
+
                     else
                         if (ft(j) .GT. meps) then
                             call daxpy(m,vt(j)/ft(j),kt(:,j),1,arec,1) !a_rec = a_rec + kt(:,i,t)*vt(:,t)/ft(i,t)
@@ -97,7 +92,12 @@ p, m, r, n, lik, tol,rankp,marginal)
             call dsymm('r','u',m,m,1.0d0,pirec,m,tt(:,:,(d-1)*timevar(3)+1),m,0.0d0,mm,m)
             call dgemm('n','t',m,m,m,1.0d0,mm,m,tt(:,:,(d-1)*timevar(3)+1),m,0.0d0,pinf,m)
             pirec = pinf
-     
+            do i = 1, m
+                if(pirec(i,i) .LT. meps) then
+                    pirec(i,:) = 0.0d0
+                    pirec(:,i) = 0.0d0
+                end if
+            end do
         end do diffuse
         if(rankp .EQ. 0) then
             !non-diffuse filtering begins

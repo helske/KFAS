@@ -31,8 +31,8 @@ For object of class KFS, several types of residuals can be computed:
   variance function of the model.
 
   \item \code{"state"}:  Residuals based on the smoothed disturbance terms
-  \eqn{\eta} are defined as \deqn{\hat \eta_t, \quad t=1,\ldots,n,}{L^{-1}[t]
-  \eta[t], t=1,\ldots,n}. Only defined for fully Gaussian models.
+  \eqn{\eta} are defined as \deqn{\hat \eta_t, \quad t=1,\ldots,n}{\hat\eta[t], t=1,\ldots,n}.
+  Only defined for fully Gaussian models.
 
   \item \code{"deviance"}: Deviance residuals. Deprecated. This option was
   meant to be used only for the GLM comparisons, as their generalization to

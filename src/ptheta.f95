@@ -30,7 +30,7 @@ p, m, r, n, lik, tol,rankp2,kt,kinf,ft,finf,d,j)
     meps = tiny(meps)
 
 
-    pinf=p1inf
+
     rankp = rankp2
     j=0
     d=0
@@ -39,7 +39,7 @@ p, m, r, n, lik, tol,rankp2,kt,kinf,ft,finf,d,j)
 
         pt = p1
         prec = pt
-        pirec = pinf
+        pirec=p1inf
         at = a1
         arec = a1
         diffuse: do while(d .LT. n)
@@ -57,12 +57,7 @@ p, m, r, n, lik, tol,rankp2,kt,kinf,ft,finf,d,j)
                     call dsyr('u',m,-1.0d0/finf(j,d),kinf(:,j,d),1,pirec,m) !pirec = pirec -kinf*kinf'/finf
                     lik = lik - 0.5d0*log(finf(j,d))
                     rankp = rankp -1
-                    do i = 1, m
-                        if(pirec(i,i) .LT. meps) then
-                            pirec(i,:) = 0.0d0
-                            pirec(:,i) = 0.0d0
-                        end if
-                    end do
+
                 else
                     if (ft(j,d) .GT. meps) then
                         call daxpy(m,vt(j)/ft(j,d),kt(:,j,d),1,arec,1) !a_rec = a_rec + kt(:,i,t)*vt(:,t)/ft(i,t)
@@ -85,7 +80,12 @@ p, m, r, n, lik, tol,rankp2,kt,kinf,ft,finf,d,j)
             call dsymm('r','u',m,m,1.0d0,pirec,m,tt(:,:,(d-1)*timevar(3)+1),m,0.0d0,mm,m)
             call dgemm('n','t',m,m,m,1.0d0,mm,m,tt(:,:,(d-1)*timevar(3)+1),m,0.0d0,pinf,m)
             pirec = pinf
-     
+            do i = 1, m
+                if(pirec(i,i) .LT. meps) then
+                    pirec(i,:) = 0.0d0
+                    pirec(:,i) = 0.0d0
+                end if
+            end do
         end do diffuse
         if(rankp .EQ. 0) then
             !non-diffuse filtering begins
@@ -177,38 +177,38 @@ p, m, n, lik, tol,kt,kinf,ft,finf,dt,jt)
             d = d+1
             do j=1, p
 
-                    vt(j) = yt(d,j) - ddot(m,zt(j,:,(d-1)*timevar(1)+1),1,arec,1) !arec
-                    if (finf(j,d) .GT. tol) then
-                        call daxpy(m,vt(j)/finf(j,d),kinf(:,j,d),1,arec,1) !a_rec = a_rec + kinf(:,i,t)*vt(:,t)/finf(j,d)
-                        lik = lik - 0.5d0*log(finf(j,d))
-                    else
-                        if(ft(j,d) .GT. meps) then
-                            call daxpy(m,vt(j)/ft(j,d),kt(:,j,d),1,arec,1) !a_rec = a_rec + kt(:,i,t)*vt(:,t)/ft(i,t)
-                            lik = lik - 0.5d0*(log(ft(j,d)) + vt(j)**2/ft(j,d))
-                        end if
+                vt(j) = yt(d,j) - ddot(m,zt(j,:,(d-1)*timevar(1)+1),1,arec,1) !arec
+                if (finf(j,d) .GT. tol) then
+                    call daxpy(m,vt(j)/finf(j,d),kinf(:,j,d),1,arec,1) !a_rec = a_rec + kinf(:,i,t)*vt(:,t)/finf(j,d)
+                    lik = lik - 0.5d0*log(finf(j,d))
+                else
+                    if(ft(j,d) .GT. meps) then
+                        call daxpy(m,vt(j)/ft(j,d),kt(:,j,d),1,arec,1) !a_rec = a_rec + kt(:,i,t)*vt(:,t)/ft(i,t)
+                        lik = lik - 0.5d0*(log(ft(j,d)) + vt(j)**2/ft(j,d))
                     end if
+                end if
 
             end do
 
-        call dgemv('n',m,m,1.0d0,tt(:,:,(d-1)*timevar(3)+1),m,arec,1,0.0d0,at,1)
-        arec = at
+            call dgemv('n',m,m,1.0d0,tt(:,:,(d-1)*timevar(3)+1),m,arec,1,0.0d0,at,1)
+            arec = at
 
         end do diffuse
 
         d = dt
         do j=1, jt
 
-                vt(j) = yt(d,j) - ddot(m,zt(j,:,(d-1)*timevar(1)+1),1,arec,1) !arec
+            vt(j) = yt(d,j) - ddot(m,zt(j,:,(d-1)*timevar(1)+1),1,arec,1) !arec
 
-                if (finf(j,d) .GT. tol) then
-                    call daxpy(m,vt(j)/finf(j,d),kinf(:,j,d),1,arec,1) !a_rec = a_rec + kinf(:,i,t)*vt(:,t)/finf(j,d)
-                    lik = lik - 0.5d0*log(finf(j,d))
-                else
-                    if(ft(j,d) .GT. meps ) then
-                        call daxpy(m,vt(j)/ft(j,d),kt(:,j,d),1,arec,1) !a_rec = a_rec + kt(:,i,t)*vt(:,t)/ft(i,t)
-                        lik = lik - 0.5d0*(log(ft(j,d)) + vt(j)**2/ft(j,d))
-                    end if
+            if (finf(j,d) .GT. tol) then
+                call daxpy(m,vt(j)/finf(j,d),kinf(:,j,d),1,arec,1) !a_rec = a_rec + kinf(:,i,t)*vt(:,t)/finf(j,d)
+                lik = lik - 0.5d0*log(finf(j,d))
+            else
+                if(ft(j,d) .GT. meps ) then
+                    call daxpy(m,vt(j)/ft(j,d),kt(:,j,d),1,arec,1) !a_rec = a_rec + kt(:,i,t)*vt(:,t)/ft(i,t)
+                    lik = lik - 0.5d0*(log(ft(j,d)) + vt(j)**2/ft(j,d))
                 end if
+            end if
 
         end do
 
@@ -217,11 +217,11 @@ p, m, n, lik, tol,kt,kinf,ft,finf,dt,jt)
 
         do i = jt+1, p
 
-                vt(i) = yt(d,i) - ddot(m,zt(i,:,(d-1)*timevar(1)+1),1,arec,1) !vt
-                if (ft(i,d) .GT.  meps) then !ft.NE.0
-                    call daxpy(m,vt(i)/ft(i,d),kt(:,i,d),1,arec,1) !a_rec = a_rec + kt(:,i,t)*vt(:,t)
-                    lik = lik - 0.5d0*(log(ft(i,d)) + vt(i)**2/ft(i,d))
-                end if
+            vt(i) = yt(d,i) - ddot(m,zt(i,:,(d-1)*timevar(1)+1),1,arec,1) !vt
+            if (ft(i,d) .GT.  meps) then !ft.NE.0
+                call daxpy(m,vt(i)/ft(i,d),kt(:,i,d),1,arec,1) !a_rec = a_rec + kt(:,i,t)*vt(:,t)
+                lik = lik - 0.5d0*(log(ft(i,d)) + vt(i)**2/ft(i,d))
+            end if
 
         end do
 
@@ -240,16 +240,16 @@ p, m, n, lik, tol,kt,kinf,ft,finf,dt,jt)
         do t = dt+1, n
             do i = 1, p
 
-                    vt(i) = yt(t,i) - ddot(m,zt(i,:,(t-1)*timevar(1)+1),1,arec,1) !variate vt
-                    if (ft(i,t) .GT.  meps) then !ft.NE.0
-                        call daxpy(m,vt(i)/ft(i,t),kt(:,i,t),1,arec,1) !a_rec = a_rec + kt(:,i,t)*vt(:,t)
-                        lik = lik - 0.5d0*(log(ft(i,t)) + vt(i)**2/ft(i,t))
-                    end if
+                vt(i) = yt(t,i) - ddot(m,zt(i,:,(t-1)*timevar(1)+1),1,arec,1) !variate vt
+                if (ft(i,t) .GT.  meps) then !ft.NE.0
+                    call daxpy(m,vt(i)/ft(i,t),kt(:,i,t),1,arec,1) !a_rec = a_rec + kt(:,i,t)*vt(:,t)
+                    lik = lik - 0.5d0*(log(ft(i,t)) + vt(i)**2/ft(i,t))
+                end if
 
             end do
 
-        call dgemv('n',m,m,1.0d0,tt(:,:,(t-1)*timevar(3)+1),m,arec,1,0.0d0,at,1)
-        arec = at
+            call dgemv('n',m,m,1.0d0,tt(:,:,(t-1)*timevar(3)+1),m,arec,1,0.0d0,at,1)
+            arec = at
         end do
 
     end if

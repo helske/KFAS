@@ -86,7 +86,9 @@ logLik.SSModel <-
           if (!inherits(object, "SSModel")) {
             warning(object$message)
             return(-.Machine$double.xmax^0.75)
-          }
+          }        
+          m <- attr(object, "m")
+          k <- attr(object, "k")       
           tv <- attr(object, "tv") 
         } 
         

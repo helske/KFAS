@@ -41,13 +41,13 @@ For object of class KFS with fully Gaussian observations, several
 
   \item "state":  Residuals based on the smoothed state disturbance terms
   \eqn{\eta} are defined as \deqn{L^{-1}_t \hat \eta_t, \quad
-  t=1,\ldots,n,}{L^{-1}[t] \eta[t], t=1,\ldots,n,} where \eqn{L_t}{L[t]} is
+  t=1,\ldots,n,}{L^{-1}[t] \hat \eta[t], t=1,\ldots,n,} where \eqn{L_t}{L[t]} is
   the lower triangular matrix from Cholesky decomposition of
   \eqn{V_{\eta,t}}{V[\eta,t]}.
 
 
   \item 'pearson':  Standardized Pearson residuals
-  \deqn{L^{-1}_t(y_{t}-\theta_{i}), \quad t=1,\ldots,n,}{L^(-1)[t](y[t]-\theta[t]), t=1,\ldots,n,}, where
+  \deqn{L^{-1}_t(y_{t}-\theta_{i}), \quad t=1,\ldots,n,}{L^(-1)[t](y[t]-\theta[t]), t=1,\ldots,n,} where
   \eqn{L_t}{L[t]} is the lower triangular matrix from Cholesky decomposition
   of \eqn{V(y_t)-V(\mu_t)}{V(y[t])-V(\mu[t])}. For gaussian models, these coincide with the
   standardized smoothed \eqn{\epsilon} disturbance residuals, and for

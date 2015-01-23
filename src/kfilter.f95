@@ -45,12 +45,11 @@ at, pt, vt, ft,kt, pinf, finf, kinf, lik, tol,rankp,theta,thetavar,filtersignal)
     pinf(:,:,1)=p1inf
 
     ! diffuse initialization
-
     if(rankp > 0) then
 
         pt(:,:,1) = p1
-        prec = pt(:,:,1)
-        pirec = pinf(:,:,1)
+        prec = p1
+        pirec = p1inf
         at(:,1) = a1
         arec = a1
         diffuse: do while(d < n .AND. rankp > 0)
@@ -72,13 +71,6 @@ at, pt, vt, ft,kt, pinf, finf, kinf, lik, tol,rankp,theta,thetavar,filtersignal)
 
                         lik = lik - 0.5d0*log(finf(j,d))
                         rankp = rankp -1
-
-                        do i = 1, m
-                            if(pirec(i,i) < meps) then
-                                pirec(i,:) = 0.0d0
-                                pirec(:,i) = 0.0d0
-                            end if
-                        end do
                     else
                         finf(j,d) = 0.0d0
                         if(ft(j,d) > meps) then
@@ -113,6 +105,13 @@ at, pt, vt, ft,kt, pinf, finf, kinf, lik, tol,rankp,theta,thetavar,filtersignal)
             prec = pt(:,:,d+1)
             call dsymm('r','u',m,m,1.0d0,pirec,m,tt(:,:,(d-1)*timevar(3)+1),m,0.0d0,mm,m)
             call dgemm('n','t',m,m,m,1.0d0,mm,m,tt(:,:,(d-1)*timevar(3)+1),m,0.0d0,pinf(:,:,d+1),m)
+
+            do i = 1, m
+                if(pinf(i,i,d+1) < meps) then
+                    pinf(i,:,d+1) = 0.0d0
+                    pinf(:,i,d+1) = 0.0d0
+                end if
+            end do
             pirec = pinf(:,:,d+1)
 
         end do diffuse
