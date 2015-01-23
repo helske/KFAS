@@ -71,7 +71,7 @@ p, n, m, r,tol,rankp,thetahat,lik)
                         lik = lik - 0.5d0*log(finf(j,d))
                         rankp = rankp -1
                         do i = 1, m
-                            if(pirec(i,i) .LT. tol) then
+                            if(pirec(i,i) .LT. meps) then
                                 pirec(i,:) = 0.0d0
                                 pirec(:,i) = 0.0d0
                             end if

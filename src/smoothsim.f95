@@ -72,7 +72,7 @@ d, j, p, m, n, r,tol,rankp,ft,finf,kt,kinf,epshat,etahat,rt0,rt1,needeps)
 
                         rankp = rankp -1
                         do i = 1, m
-                            if(pirec(i,i) .LT. tol) then
+                            if(pirec(i,i) .LT. meps) then
                                 pirec(i,:) = 0.0d0
                                 pirec(:,i) = 0.0d0
                             end if

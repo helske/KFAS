@@ -1,6 +1,6 @@
 Package: KFAS
 Version: 1.1.0
-Date: 2015-01-22
+Date: 2015-01-23
 Title: Kalman Filter and Smoother for Exponential Family State Space Models
 Author: Jouni Helske <jouni.helske@jyu.fi>
 Maintainer: Jouni Helske <jouni.helske@jyu.fi>
@@ -10,7 +10,7 @@ Imports:
     stats
 Suggests:
     MASS,
-    testthat
+    testthat  
 Description: Functions for Kalman filtering, smoothing,
     forecasting and simulation of multivariate exponential family state space
     models with exact diffuse initialization and sequential processing.
