@@ -104,6 +104,15 @@ approxSSM <-
                maxiter = as.integer(maxiter), model$tol, 
                as.integer(sum(model$P1inf)), 
                as.double(tol), diff = double(1),double(1),info=integer(1))
+    if(out$info!=0){        
+      warning(switch(as.character(out$info),
+                     "-3" = "Couldn't compute LDL decomposition of P1.",
+                     "-2" =  "Couldn't compute LDL decomposition of Q.",
+                     "1" = "Gaussian approximation failed due to non-finite value in linear predictor.",
+                     "2" = "Gaussian approximation failed due to non-finite value of p(theta|y)."
+      )) 
+      if(out$info!=3) return(-.Machine$double.xmax^0.75)
+    }
     if(out$info!=0){
       if (out$info==1) {
         stop("Non-finite value of likelihood or linear predictor in approximation algorithm.")

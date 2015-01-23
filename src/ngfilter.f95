@@ -45,7 +45,7 @@ convtol,nd,ndl,alphahat,alphavar,thetahat,thetavar,yhat,yvar,smootha,smooths,smo
         p, n, m, r, theta, maxiter,rankp,convtol, nnd,nsim,epsplus,etaplus,&
         aplus1,c,tol,info,1,w,sim,nd,ndl,4,m)
 
-        if(info /= 0) then
+        if(info .ne. 0 .and. info .ne. 3) then
             return
         end if
 
@@ -92,7 +92,7 @@ convtol,nd,ndl,alphahat,alphavar,thetahat,thetavar,yhat,yvar,smootha,smooths,smo
         p, n, m, r, theta, maxiter,rankp,convtol, nnd,nsim,epsplus,etaplus,&
         aplus1,c,tol,info,1,w,sim,nd,ndl,5,p)
 
-        if(info /= 0) then
+        if(info .ne. 0 .and. info .ne. 3) then
             return
         end if
 

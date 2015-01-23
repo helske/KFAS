@@ -41,7 +41,7 @@ nnd,nsim,epsplus,etaplus,aplus1,c,tol,info,antit,sim,nsim2,nd,ndl,diff,marginal)
     call approx(yt, ymiss, timevar, zt, tt, rtv, ht, qt, a1, p1,p1inf, p,n,m,r,&
     theta, u, ytilde, dist,maxiter,tol,rankp,convtol,diff,lik, info)
 
-    if(info .ne. 0 .and. info .ne. 2) then !check for errors in approximating algorithm
+    if(info .ne. 0 .and. info .ne. 3) then
         return
     end if
         

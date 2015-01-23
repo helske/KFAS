@@ -13,7 +13,7 @@ aplus1,c,tol,info,antithetics,w,sim,nd,ndl,simwhat,simdim)
     integer, intent(in), dimension(ndl) :: nd
     integer, intent(in), dimension(5) :: timevar
     integer, intent(inout) ::info, maxiter
-    integer ::  t, j,i,k,maxiter2,maxitermax
+    integer ::  t, j,i,k,maxiter2,maxitermax,info2
     double precision, intent(in) :: convtol,tol
     double precision, intent(in), dimension(n,p) :: u
     double precision, intent(in), dimension(n,p) :: yt
@@ -72,16 +72,16 @@ aplus1,c,tol,info,antithetics,w,sim,nd,ndl,simwhat,simdim)
         ytilde=0.0d0
 
         maxiter2=maxiter
+        info2 = 0
         ! approximate
         call approx(yt(1:i,:), ymiss(1:i,:), timevar, zt(:,:,1:((i-1)*timevar(1)+1)), &
         tt(:,:,1:((i-1)*timevar(3)+1)), rtv(:,:,1:((i-1)*timevar(4)+1)), ht(:,:,1:i),&
         qt(:,:,1:((i-1)*timevar(5)+1)), a1, p1,p1inf, p,i,m,r,&
-        theta(1:i,:), u(1:i,:), ytilde(1:i,:), dist,maxiter2,tol,rankp,convtol,diff,lik,info)
+        theta(1:i,:), u(1:i,:), ytilde(1:i,:), dist,maxiter2,tol,rankp,convtol,diff,lik,info2)
 
-        if(info .ne. 0 .and. info .ne. 3) then !check for errors in approximating algorithm
+        if(info2 .ne. 0 .and. info2 .ne. 3) then !check for errors in approximating algorithm
+            info = info2
             return
-            else
-            info = 0
         end if
 
         if(maxiter2>maxitermax) then
@@ -93,14 +93,16 @@ aplus1,c,tol,info,antithetics,w,sim,nd,ndl,simwhat,simdim)
         ymiss2 = ymiss
         ymiss2(i+1,:) = 1
         sim2=0.0d0
+        info2 = 0
         ! simulate signals
         call simgaussian(ymiss2(1:(i+1),:),timevar, ytilde(1:(i+1),:), zt(:,:,1:(i*timevar(1)+1)), &
         ht(:,:,1:(i+1)), tt(:,:,1:(i*timevar(3)+1)), rtv(:,:,1:(i*timevar(4)+1)), &
         qt(:,:,1:(i*timevar(5)+1)), a1, p1, p1inf, nnd,nsim, epsplus2(:,1:(i+1),:), &
-        etaplus2(:,1:(i+1),:), aplus12(:,:),p, i+1, m, r, info,rankp,tol,&
+        etaplus2(:,1:(i+1),:), aplus12(:,:),p, i+1, m, r, info2,rankp,tol,&
         nd,ndl,sim2(:,1:(i+1),:),c,simwhat,simdim,antithetics)
 
-        if(info /= 0) then
+        if(info2 /= 0) then
+            info = info2
             return
         end if
 

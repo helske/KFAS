@@ -283,15 +283,18 @@ KFS <-
                                 mu = array(0, ("mean" %in% filtering) * c(p - 1, n - 1) + 1), 
                                 P_mu = array(0, ("mean" %in% filtering) * c(p - 1, p - 1, n - 1) + 1), 
                                 as.integer("state" %in%  filtering), as.integer("signal" %in% filtering),
-                                as.integer("mean" %in%  filtering))
+                                as.integer("mean" %in%  filtering))          
           if(filterout$info!=0){
-            stop(switch(as.character(filterout$info),
-                        "1" = "Gaussian approximation failed due to non-finite value in linear predictor.",
-                        "2" = "Gaussian approximation failed due to non-finite value of p(theta|y).",
-                        "-2" = "Couldn't compute LDL decomposition of P1.",
-                        "-3" =  "Couldn't compute LDL decomposition of Q."
-            ))  
+            switch(as.character(filterout$info),
+                   stop("-3" = "Couldn't compute LDL decomposition of P1."),
+                   stop("-2" =  "Couldn't compute LDL decomposition of Q."),
+                   stop("1" = "Gaussian approximation failed due to non-finite value in linear predictor."),
+                   stop("2" = "Gaussian approximation failed due to non-finite value of p(theta|y)."),
+                   warning("3" = "Maximum number of iterations reached, the approximation did not converge.")
+            )  
           }
+          
+          
           if ("state" %in% filtering) {
             out <- c(out, list(a = ts(t(filterout$a), start = start(model$y), 
                                       frequency = frequency(model$y)), P = filterout$P))
@@ -485,60 +488,60 @@ KFS <-
                             V_eta = array(0, dim = c(k, k, n)), thetahat = array(0, dim = c(p, n)), 
                             V_theta = array(0, dim = c(p, p, n)), 
                             as.integer(KFS_transform == "ldl" && ("signal" %in% smoothing || "mean" %in% smoothing)), 
-                            {if (KFS_transform == "ldl" && ("signal" %in% smoothing || "mean" %in% smoothing)) 
-                              out$model$Z else double(1)}, as.integer(dim(out$model$Z)[3] > 1), 
-                            as.integer(KFS_transform != "augment"), 
-                            as.integer("state" %in% smoothing), as.integer("disturbance" %in% smoothing), 
-                            as.integer(("signal" %in% smoothing || "mean" %in% smoothing)))
-      
-      if (m > 1 & min(apply(smoothout$V, 3, diag)) < -.Machine$double.eps)
-        warning("Possible error in smoothing: Negative variances in V, try changing the tolerance parameter tol of the model.")
-      
-      if ("state" %in% smoothing) {
-        out$alphahat <- ts(t(smoothout$alphahat), start = start(model$y), frequency = frequency(model$y))
-        colnames(out$alphahat) <- rownames(model$a1)
-        out$V <- smoothout$V
-      }
-      if ("disturbance" %in% smoothing) {
-        out$etahat <- ts(t(smoothout$etahat), start = start(model$y), frequency = frequency(model$y))
-        colnames(out$etahat) <- rownames(model$Q[, , 1])
-        out$V_eta <- smoothout$V_eta
-        if (KFS_transform != "augment") {
-          out$epshat <- ts(t(smoothout$epshat), start = start(model$y), frequency = frequency(model$y))
-          colnames(out$epshat) <- rownames(model$H[, , 1])
-          out$V_eps <- smoothout$V_eps
-        }
-      }
-      if ("signal" %in% smoothing) {
-        out$thetahat <- ts(t(smoothout$thetahat), start = start(model$y), frequency = frequency(model$y))
-        colnames(out$thetahat) <- rownames(model$H[, , 1])
-        out$V_theta <- smoothout$V_theta
-      }
-      if ("mean" %in% smoothing) {
-        out$muhat <- array(NA, c(n, p))
-        out$V_mu <- array(0, c(p, p, n))
-        for (i in 1:p) {
-          out$muhat[, i] <- switch(model$distribution[i], 
-                                   gaussian = smoothout$thetahat[i, ], 
-                                   poisson = exp(smoothout$thetahat[i, ]) * model$u[, i], 
-                                   binomial = exp(smoothout$thetahat[i, ])/(1 + exp(smoothout$thetahat[i, ])), 
-                                   gamma = exp(smoothout$thetahat[i, ]), 
-                                   `negative binomial` = exp(smoothout$thetahat[i, ]))
-          out$V_mu[i, i, ] <- switch(model$distribution[i], 
-                                     gaussian = smoothout$V_theta[i, i, ], 
-                                     poisson = smoothout$V_theta[i, i, ] * out$muhat[, i]^2, 
-                                     binomial = smoothout$V_theta[i, i, ] * 
-                                       (exp(smoothout$thetahat[i, ])/(1 + exp(smoothout$thetahat[i, ]))^2)^2, 
-                                     gamma = smoothout$V_theta[i, i, ] * out$muhat[, i]^2, 
-                                     `negative binomial` = smoothout$V_theta[i, i, ] * out$muhat[, i]^2)
-        }
-        out$muhat <- ts(out$muhat, start = start(model$y), frequency = frequency(model$y))
-      }
-      if (!simplify && all(model$distribution == "gaussian")) 
-        out <- c(out, list(r = smoothout$r, r0 = smoothout$r0, r1 = smoothout$r1, 
-                           N = smoothout$N, N0 = smoothout$N0, N1 = smoothout$N1, N2 = smoothout$N2))
+{if (KFS_transform == "ldl" && ("signal" %in% smoothing || "mean" %in% smoothing)) 
+  out$model$Z else double(1)}, as.integer(dim(out$model$Z)[3] > 1), 
+as.integer(KFS_transform != "augment"), 
+as.integer("state" %in% smoothing), as.integer("disturbance" %in% smoothing), 
+as.integer(("signal" %in% smoothing || "mean" %in% smoothing)))
+
+if (m > 1 & min(apply(smoothout$V, 3, diag)) < -.Machine$double.eps)
+  warning("Possible error in smoothing: Negative variances in V, try changing the tolerance parameter tol of the model.")
+
+if ("state" %in% smoothing) {
+  out$alphahat <- ts(t(smoothout$alphahat), start = start(model$y), frequency = frequency(model$y))
+  colnames(out$alphahat) <- rownames(model$a1)
+  out$V <- smoothout$V
+}
+if ("disturbance" %in% smoothing) {
+  out$etahat <- ts(t(smoothout$etahat), start = start(model$y), frequency = frequency(model$y))
+  colnames(out$etahat) <- rownames(model$Q[, , 1])
+  out$V_eta <- smoothout$V_eta
+  if (KFS_transform != "augment") {
+    out$epshat <- ts(t(smoothout$epshat), start = start(model$y), frequency = frequency(model$y))
+    colnames(out$epshat) <- rownames(model$H[, , 1])
+    out$V_eps <- smoothout$V_eps
+  }
+}
+if ("signal" %in% smoothing) {
+  out$thetahat <- ts(t(smoothout$thetahat), start = start(model$y), frequency = frequency(model$y))
+  colnames(out$thetahat) <- rownames(model$H[, , 1])
+  out$V_theta <- smoothout$V_theta
+}
+if ("mean" %in% smoothing) {
+  out$muhat <- array(NA, c(n, p))
+  out$V_mu <- array(0, c(p, p, n))
+  for (i in 1:p) {
+    out$muhat[, i] <- switch(model$distribution[i], 
+                             gaussian = smoothout$thetahat[i, ], 
+                             poisson = exp(smoothout$thetahat[i, ]) * model$u[, i], 
+                             binomial = exp(smoothout$thetahat[i, ])/(1 + exp(smoothout$thetahat[i, ])), 
+                             gamma = exp(smoothout$thetahat[i, ]), 
+                             `negative binomial` = exp(smoothout$thetahat[i, ]))
+    out$V_mu[i, i, ] <- switch(model$distribution[i], 
+                               gaussian = smoothout$V_theta[i, i, ], 
+                               poisson = smoothout$V_theta[i, i, ] * out$muhat[, i]^2, 
+                               binomial = smoothout$V_theta[i, i, ] * 
+                                 (exp(smoothout$thetahat[i, ])/(1 + exp(smoothout$thetahat[i, ]))^2)^2, 
+                               gamma = smoothout$V_theta[i, i, ] * out$muhat[, i]^2, 
+                               `negative binomial` = smoothout$V_theta[i, i, ] * out$muhat[, i]^2)
+  }
+  out$muhat <- ts(out$muhat, start = start(model$y), frequency = frequency(model$y))
+}
+if (!simplify && all(model$distribution == "gaussian")) 
+  out <- c(out, list(r = smoothout$r, r0 = smoothout$r0, r1 = smoothout$r1, 
+                     N = smoothout$N, N0 = smoothout$N0, N1 = smoothout$N1, N2 = smoothout$N2))
     }
-    out$call <- match.call(expand.dots = FALSE)
-    class(out) <- "KFS"
-    out
+out$call <- match.call(expand.dots = FALSE)
+class(out) <- "KFS"
+out
   } 

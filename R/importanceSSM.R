@@ -149,18 +149,17 @@ importanceSSM <-
                       w = array(0, c(n, 3 * nsim * antithetics + nsim)), 
                       sim = array(0, c(simdim, n, 3 * nsim * antithetics + nsim)), as.integer(zero_P1inf), 
                       as.integer(length(zero_P1inf)), sim.what, simdim)
-    }
-    if (maxiter == out$maxiter) 
-      warning("Maximum number of iterations reached, the approximation did not converge. ")
+    }    
     if(out$info!=0){
-      stop(switch(as.character(out$info),
-             "1" = "Gaussian approximation failed due to non-finite value in linear predictor.",
-             "2" = "Gaussian approximation failed due to non-finite value of p(theta|y).",
-             "-2" = "Couldn't compute LDL decomposition of P1.",
-             "-3" =  "Couldn't compute LDL decomposition of Q."
-      ))  
+      switch(as.character(out$info),
+             stop("-3" = "Couldn't compute LDL decomposition of P1."),
+             stop("-2" =  "Couldn't compute LDL decomposition of Q."),
+             stop("1" = "Gaussian approximation failed due to non-finite value in linear predictor."),
+             stop("2" = "Gaussian approximation failed due to non-finite value of p(theta|y)."),
+             warning("3" = "Maximum number of iterations reached, the approximation did not converge.")
+      )  
     }
-      
+    
     out <- list(samples = aperm(out$sim, c(2, 1, 3)), weights = out$w)
     if (save.model) 
       out$model <- model  
