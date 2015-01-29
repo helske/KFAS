@@ -113,7 +113,7 @@ is.SSModel <-
                max(object$Q)>tol || ifelse(identical(object$u, "Omitted"), max(object$H)>tol,FALSE)))
         stop(paste("System matrices (excluding Z) contain NA or infinite values, or covariance matrices contain values larger than",tol))
       
-      if(all(diag(object$P1inf)%in%c(0,1)) && all(object$P1inf[col(diag(m))!=row(diag(m))]==0))
+      if(!all(diag(object$P1inf)%in%c(0,1)) || !all(object$P1inf[col(diag(m))!=row(diag(m))]==0))
         stop("Matrix P1inf is not a diagonal matrix with zeros and ones on diagonal.")
     }
   } 

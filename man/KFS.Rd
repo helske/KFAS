@@ -67,7 +67,7 @@ What \code{KFS} returns depends on the arguments \code{filtering},
   \item{a}{One step predictions of states, \eqn{a_t=E(\alpha_t | y_{t-1},
   \ldots , y_{1})}{a[t]=E(\alpha[t] | y[t-1], \ldots , y[1])}.  }
 
-  \item{P}{Covariance matrices (of the non-diffuse parts) of predicted
+  \item{P}{Non-diffuse part of covariance matrices of predicted
   states, \eqn{P_t=Cov(\alpha_t | y_{t-1}, \ldots ,
   y_{1})}{P[t]=Cov(\alpha[t] | y[t-1], \ldots , y[1])}.  }
 
@@ -77,12 +77,14 @@ What \code{KFS} returns depends on the arguments \code{filtering},
   \item{t}{Filtered estimates of signals, \eqn{E(Z_t\alpha_t | y_{t-1},
   \ldots , y_{1})}{E(Z[t]\alpha[t] | y[t-1], \ldots , y[1])}. }
 
-  \item{P_theta}{Covariances \eqn{Var(Z[t]\alpha_t | y_{t-1}, \ldots ,
-  y_{1}).}{Var(Z[t]\alpha[t] | y[t-1], \ldots , y[1])}. }
+  \item{P_theta}{Non-diffuse part of \eqn{Cpv(Z[t]\alpha_t | y_{t-1}, \ldots ,
+  y_{1}).}{Cov(Z[t]\alpha[t] | y[t-1], \ldots , y[1])}. }
 
   \item{m}{Filtered estimates of \eqn{f(\theta_t) | y_{t-1}, \ldots ,
   y_{1})}{f(\theta[t]) | y[t-1], \ldots , y[1])}, where \eqn{f} is the
-  inverse link function.  } \item{P_mu}{Covariances \eqn{Cov(f(\theta_t)|
+  inverse link function.  }
+
+  \item{P_mu}{Non-diffuse part of \eqn{Cov(f(\theta_t)|
   y_{t-1}, \ldots , y_{1})}{Cov(f(\theta[t]) | y[t-1], \ldots , y[1])}. If
   \code{nsim=0}, only diagonal elements (variances) are computed, using the
   delta method.  }
@@ -124,7 +126,7 @@ What \code{KFS} returns depends on the arguments \code{filtering},
   diagonalization the off-diagonal elements are zero. }
 
   \item{iterations}{The number of iterations used in linearization of
-  non-Gaussian model. } #'
+  non-Gaussian model. }
 
   \item{v}{Prediction errors \eqn{v_{t,i} = y_{t,i} - Z_{i,t}a_{t,i},
   i=1,\ldots,p}{v[t,i] = y[t,i] - Z[i,t]a[t,i], i=1,\ldots,p}, where
