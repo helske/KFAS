@@ -56,7 +56,8 @@ is.SSModel <-
         identical(dim(object$a1), c(m, one)) &&
         identical(dim(object$P1), c(m, m)) &&
         identical(dim(object$P1inf), c(m, m)) &&
-        (identical(object$u, "Omitted") || identical(dim(object$u), dim(object$y)))
+        (identical(object$u, "Omitted") || identical(dim(object$u), dim(object$y))) &&
+        all(diag(object$P1inf)%in%c(0,1)) && all(object$P1inf[col(diag(m))!=row(diag(m))]==0)
       if (na.check) 
         x <- x &&          
         !any(sapply(c("H", "u", "T", "R", "Q", "a1", "P1", "P1inf"), function(x)
@@ -66,22 +67,10 @@ is.SSModel <-
     } else {
       if (!inherits(object, "SSModel")) 
         stop("Object is not of class 'SSModel'")
+      
       if(!is.integer(c(p,m,k,n,tv)))
         stop("Storage mode of some of the model attributes 'p', 'k', 'm', 'n', 'tv' 
              is not integer.")
-      if (!all(object$distribution %in% 
-                 c("gaussian", "poisson", "binomial", "gamma", 
-                   "negative binomial"))) 
-        stop("The distributions of the observations are not valid. 
-             Possible choices are 'gaussian', 'poisson', 'binomial', 
-             'gamma' and ,'negative binomial'.")
-      
-      if (na.check == TRUE && 
-            (any(sapply(c("H", "u", "T", "R", "Q", "a1", "P1", "P1inf"), 
-                       function(x) any(is.na(object[[x]])) || 
-                         any(is.infinite(object[[x]]))))  ||
-        max(object$Q)>tol || ifelse(identical(object$u, "Omitted"), max(object$H)>tol,FALSE)))
-        stop(paste("System matrices (excluding Z) contain NA or infinite values, or covariance matrices contain values larger than",tol))
       
       components <- c("y", "Z", "H", "T", "R", "Q", "a1", "P1", "P1inf", "u", 
                       "distribution", "tol", "call")      
@@ -91,22 +80,40 @@ is.SSModel <-
                    paste(components[!(components %in% names(object))], 
                          collapse = ", ")))
       
+      if (!all(object$distribution %in% 
+                 c("gaussian", "poisson", "binomial", "gamma", 
+                   "negative binomial"))) 
+        stop("The distributions of the observations are not valid. 
+             Possible choices are 'gaussian', 'poisson', 'binomial', 
+             'gamma' and ,'negative binomial'.")
+      
+      
       if (!(identical(dim(object$y), c(n, p)) &&
-            (identical(dim(object$Z), c(p, m, one)) || 
-               identical(dim(object$Z), c(p, m, n))) &&
-            (identical(object$H, "Omitted") || identical(dim(object$H), c(p, p, one)) ||
-               identical(dim(object$H), c(p, p, n))) &&
-            (identical(dim(object$T), c(m, m, one)) || 
-               identical(dim(object$T), c(m, m, n))) &&
-            (identical(dim(object$R), c(m, k, one)) || 
-               identical(dim(object$R), c(m, k, n))) &&
-            (identical(dim(object$Q), c(k, k, one)) || 
-               identical(dim(object$Q), c(k, k, n))) &&
-            identical(dim(object$a1), c(m, one)) &&
-            identical(dim(object$P1), c(m, m)) &&
-            identical(dim(object$P1inf), c(m, m)) &&
-            (identical(object$u, "Omitted") || identical(dim(object$u), dim(object$y))))) 
-        stop("Model is not a proper object of class 'SSModel'. 
-             Check dimensions of system matrices.")
+              (identical(dim(object$Z), c(p, m, one)) || 
+                 identical(dim(object$Z), c(p, m, n))) &&
+              (identical(object$H, "Omitted") || identical(dim(object$H), c(p, p, one)) ||
+                 identical(dim(object$H), c(p, p, n))) &&
+              (identical(dim(object$T), c(m, m, one)) || 
+                 identical(dim(object$T), c(m, m, n))) &&
+              (identical(dim(object$R), c(m, k, one)) || 
+                 identical(dim(object$R), c(m, k, n))) &&
+              (identical(dim(object$Q), c(k, k, one)) || 
+                 identical(dim(object$Q), c(k, k, n))) &&
+              identical(dim(object$a1), c(m, one)) &&
+              identical(dim(object$P1), c(m, m)) &&
+              identical(dim(object$P1inf), c(m, m)) &&
+              (identical(object$u, "Omitted") || identical(dim(object$u), dim(object$y))))) 
+      stop("Model is not a proper object of class 'SSModel'. 
+           Check dimensions of system matrices.")
+      
+      if (na.check == TRUE && 
+            (any(sapply(c("H", "u", "T", "R", "Q", "a1", "P1", "P1inf"), 
+                        function(x) any(is.na(object[[x]])) || 
+                          any(is.infinite(object[[x]]))))  ||
+               max(object$Q)>tol || ifelse(identical(object$u, "Omitted"), max(object$H)>tol,FALSE)))
+        stop(paste("System matrices (excluding Z) contain NA or infinite values, or covariance matrices contain values larger than",tol))
+      
+      if(all(diag(object$P1inf)%in%c(0,1)) && all(object$P1inf[col(diag(m))!=row(diag(m))]==0))
+        stop("Matrix P1inf is not a diagonal matrix with zeros and ones on diagonal.")
     }
   } 

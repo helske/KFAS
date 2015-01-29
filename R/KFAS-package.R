@@ -226,7 +226,7 @@
 #'                  data=Seatbelts,H=matrix(NA,2,2)) 
 #' 
 #' # An alternative way for defining the rank deficient trend component:
-#' \dontrun{#' 
+#' \dontrun{
 #' model<-SSModel(log(cbind(front,rear))~ -1 + log(PetrolPrice) + log(kms)
 #'                + SSMregression(~law,data=Seatbelts,index=1)
 #'                + SSMtrend(degree = 1, Q=list(matrix(0,2,2)))
@@ -246,24 +246,8 @@
 #'   if(estimate) return(-logLik(model))
 #'   model
 #' }  
-#' 
-#' model<-SSModel(log(cbind(front,rear))~ -1 + log(PetrolPrice) + log(kms)
-#'                + SSMregression(~law,data=Seatbelts,index=1)
-#'                + SSMtrend(degree = 1, Q=list(matrix(0,2,2)))
-#'                + SSMseasonal(period=12,sea.type='trigonometric'),
-#'                  data=Seatbelts,H=matrix(NA,2,2)) 
-#' 
-#' 
-#' 
-#' likfn<-function(pars,model,estimate=TRUE){
-#'   diag(model$H[,,1])<-exp(0.5*pars[1:2])
-#'   model$H[1,2,1]<-model$H[2,1,1]<-tanh(pars[3])*prod(sqrt(exp(0.5*pars[1:2]))) 
-#'   model$R[28:29]<-exp(pars[4:5])
-#'   if(estimate) return(-logLik(model))
-#'   model
-#' }        
 # 
-#' fit<-optim(f=likfn,p=c(-7,-7,1,-1,-3),method='BFGS',model=model)
+#' fit<-optim(f=likfn,p=c(-8,-8,1,-1,-3),method='BFGS',model=model)
 #' model<-likfn(fit$p,model,estimate=FALSE)
 #' model$R[28:29,,1]%*%t(model$R[28:29,,1])
 #' model$H
@@ -277,7 +261,7 @@
 #' ts.plot(pred$front,pred$rear,model$y,col=c(1,2,2,3,4,4,5,6),lty=c(1,2,2,1,2,2,1,1))
 #' }
 #' 
-#'  \dontrun{
+#' \dontrun{
 #' # Poisson model
 #' model<-SSModel(VanKilled~law+SSMtrend(1,Q=list(matrix(NA)))+
 #'                SSMseasonal(period=12,sea.type='dummy',Q=NA),

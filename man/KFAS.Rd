@@ -210,7 +210,7 @@ model<-SSModel(log(cbind(front,rear))~ -1 + log(PetrolPrice) + log(kms)
                  data=Seatbelts,H=matrix(NA,2,2))
 
 # An alternative way for defining the rank deficient trend component:
-\dontrun{#'
+\dontrun{
 model<-SSModel(log(cbind(front,rear))~ -1 + log(PetrolPrice) + log(kms)
                + SSMregression(~law,data=Seatbelts,index=1)
                + SSMtrend(degree = 1, Q=list(matrix(0,2,2)))
@@ -260,7 +260,7 @@ pred <- predict(model,states=c('custom','regression'),interval='prediction')
 ts.plot(pred$front,pred$rear,model$y,col=c(1,2,2,3,4,4,5,6),lty=c(1,2,2,1,2,2,1,1))
 }
 
- \dontrun{
+\dontrun{
 # Poisson model
 model<-SSModel(VanKilled~law+SSMtrend(1,Q=list(matrix(NA)))+
                SSMseasonal(period=12,sea.type='dummy',Q=NA),

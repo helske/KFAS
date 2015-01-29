@@ -4,11 +4,14 @@
 #'   types of standardized residuals can be computed:
 #'   
 #'   \itemize{
-#'   \item "recursive": For Gaussian models the one-step ahead prediction
+#'   \item "recursive": For Gaussian models the one-step ahead prediction 
 #'   residuals defined as 
 #'   \deqn{v_{t,i})/\sqrt{F_{i,t}},}{v[t,i])/\sqrt{F[i,t]},} with residuals 
-#'   being undefined in diffuse phase. For non-Gaussian models recursive
-#'   residuals are obtained as 
+#'   being undefined in diffuse phase. Note that even in multivariate case these
+#'   standardized residuals coincide with the ones obtained from the Kalman
+#'   filter without the sequential processing (which is not true for the
+#'   non-standardized innovations). 
+#'   For non-Gaussian models the recursive residuals are obtained as
 #'   \deqn{L^{-1}_t (y_{t}-\mu_{t}),}{L^(-1)[t](y[t]-\mu[t]),} where 
 #'   \eqn{L_t}{L[t]} is the lower triangular matrix from Cholesky decomposition 
 #'   of \eqn{V(y_t)+V(\mu_t)}{V(y[t])+V(\mu[t])}, and both the variance function \eqn{V(y_t)}{V(y[t])} and
@@ -70,7 +73,7 @@ rstandard.KFS <-
         } 
       }else {
         
-        dj<-KFS(approxSSM(object$model),filtering="state",smoothing="none")[c("d","j")]
+        d<-KFS(approxSSM(object$model),filtering="state",smoothing="none")$d
         
         p <- attr(object$model, "p")  
         series<-object$model$y
@@ -91,16 +94,15 @@ rstandard.KFS <-
         if (sum(bins <- object$model$distribution == "binomial") > 0) 
           series[, bins] <- series[, bins]/object$model$u[, bins]
         series<- series-object[["m", exact = TRUE]]     
-        for(t in (dj$d+1):attr(object$model, "n") ){
+        for(t in (d+1):attr(object$model, "n") ){
           yobs<-which(!is.na(series[t,]))
           if(length(yobs)>0){
             tmp <- chol(diag(vars[t,yobs],p)+object$P_mu[yobs,yobs,t])
             series[t,yobs] <- series[t,yobs]%*%solve(tmp)
           }
         }
-        if(dj$d > 0){
-          series[1:(dj$d - 1), ] <- NA
-          series[dj$d, 1:dj$j] <- NA                           
+        if(d > 0){
+          series[1:d, ] <- NA                                    
         }
       }
       series
