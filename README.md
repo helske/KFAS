@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/helske/KFAS.png?branch=master)](https://travis-ci.org/helske/KFAS)
+
 KFAS: R Package for Exponential Family State Space Models
 ==========================================================================
 
