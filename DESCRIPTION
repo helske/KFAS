@@ -10,7 +10,7 @@ Imports:
     stats
 Suggests:
     MASS,
-    testthat  
+    testthat
 Description: Functions for Kalman filtering, smoothing,
     forecasting and simulation of multivariate exponential family state space
     models with exact diffuse initialization and sequential processing.

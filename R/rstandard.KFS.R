@@ -4,19 +4,28 @@
 #'   types of standardized residuals can be computed:
 #'   
 #'   \itemize{
-#'   \item "recursive": For Gaussian models the one-step ahead prediction 
-#'   residuals defined as 
-#'   \deqn{v_{t,i})/\sqrt{F_{i,t}},}{v[t,i])/\sqrt{F[i,t]},} with residuals 
+#'   \item "recursive1": For Gaussian models the vector standardized one-step ahead prediction 
+#'   residuals are defined as 
+#'   \deqn{v_{t,i}/\sqrt{F_{i,t}},}{v[t,i]/\sqrt{F[i,t]},} with residuals 
 #'   being undefined in diffuse phase. Note that even in multivariate case these
 #'   standardized residuals coincide with the ones obtained from the Kalman
 #'   filter without the sequential processing (which is not true for the
 #'   non-standardized innovations). 
-#'   For non-Gaussian models the recursive residuals are obtained as
+#'   For non-Gaussian models the vector standardized recursive residuals are obtained as
 #'   \deqn{L^{-1}_t (y_{t}-\mu_{t}),}{L^(-1)[t](y[t]-\mu[t]),} where 
 #'   \eqn{L_t}{L[t]} is the lower triangular matrix from Cholesky decomposition 
 #'   of \eqn{V(y_t)+V(\mu_t)}{V(y[t])+V(\mu[t])}, and both the variance function \eqn{V(y_t)}{V(y[t])} and
 #'   \eqn{V(\mu_t)}{V(\mu[t])} are based on the filtered means \eqn{\mu_t}{\mu[t]}$. Computing these for large
 #'   non-Gaussian models can be time consuming as filtering is needed.
+#'   
+#'   \item "recursive2": For Gaussian models the component-wise standardized one-step ahead prediction 
+#'   residuals are defined as 
+#'   \deqn{v_{t}/\sqrt{diag(F_{t})},}{v[t])/\sqrt{diag(F[t])},} where \eqn{v_{t}}{v[t]} and
+#'   \eqn{F_{t}}{F[t]} are based on the standard multivariate processing. 
+#'   For non-Gaussian models these are obtained as
+#'   \deqn{(y_{t}-\mu_{t})/\sqrt{diag(F_t)},}{(y[t]-\mu[t])/\sqrt{diag(F[t])},} where 
+#'   \eqn{F_t=V(y_t)+V(\mu_t)}{F[t]=V(y[t])+V(\mu[t])}, and both the variance function \eqn{V(y_t)}{V(y[t])} and
+#'   \eqn{V(\mu_t)}{V(\mu[t])} are based on the filtered means \eqn{\mu_t}{\mu[t]}$. 
 #'   
 #'   \item "observation":  Residuals based on the smoothed observation 
 #'   disturbance terms \eqn{\epsilon} are defined as 
@@ -51,7 +60,7 @@
 #' @param type Type of residuals. See details.
 #' @param ... Ignored.
 rstandard.KFS <- 
-  function(model, type = c("recursive", "observation","state", "deviance", "pearson"), 
+  function(model, type = c("recursive1", "recursive2", "observation","state", "deviance", "pearson"), 
            ...) {
     type <- match.arg(type)
     if(type=="deviance")
@@ -60,7 +69,7 @@ rstandard.KFS <-
     if (type == "state" && any(model$model$distribution != "gaussian")) 
       stop("State residuals are only supported for fully gaussian models.")
     
-    recursive <- function(object) {
+    recursive1 <- function(object) {
       if(any(object$model$distribution !=  "gaussian") && is.null(object[["m", exact = TRUE]]))
         stop("KFS object does not contain filtered means. ")
       if (all(object$model$distribution ==  "gaussian") && is.null(object[["v", exact = TRUE]])) 
@@ -105,6 +114,46 @@ rstandard.KFS <-
           series[1:d, ] <- NA                                    
         }
       }
+      series
+    }
+    recursive2 <- function(object) {
+      
+      if(any(object$model$distribution !=  "gaussian") && is.null(object[["m", exact = TRUE]]))
+        stop("KFS object does not contain filtered means. ")
+      if (all(object$model$distribution ==  "gaussian") && is.null(object[["v", exact = TRUE]])) 
+        stop("KFS object does not contain filtered means. ")
+      
+      if(all(object$model$distribution ==  "gaussian")){
+        tmp <- mvInnovations(object)[c("v","F")]
+        series <- tmp$v/sqrt(t(apply(tmp$F,3,diag)))
+        d<-object$d
+      } else {
+        d<-KFS(approxSSM(object$model),filtering="state",smoothing="none")$d        
+        variance <- function(object) {
+          vars <- object$model$y
+          for (i in 1:length(object$model$distribution)){ 
+            vars[, i] <- switch(object$model$distribution[i], 
+                                gaussian = object$u[,i], 
+                                poisson = object$m[, i], 
+                                binomial = object$m[, i] * (1 - object$m[, i])/object$model$u[, i], 
+                                gamma = object$m[, i]^2/object$model$u[,i], 
+                                `negative binomial` = object$m[, i] + object$m[, i]^2/object$model$u[, i])
+          }
+          vars
+        }
+        vars<-variance(object)   
+        series<-object$model$y
+        if (sum(bins <- object$model$distribution == "binomial") > 0) 
+          series[, bins] <- series[, bins]/object$model$u[, bins]
+        series<- series-object[["m", exact = TRUE]]     
+        for(t in (d+1):attr(object$model, "n") ){
+          series[t,] <- series[t,]/sqrt(vars[t,]+diag(object$P_mu[,,t]))
+        }
+      }
+      if(d > 0){
+        series[1:d, ] <- NA                                    
+      }
+      
       series
     }
     

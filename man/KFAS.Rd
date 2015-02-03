@@ -210,18 +210,18 @@ model<-SSModel(log(cbind(front,rear))~ -1 + log(PetrolPrice) + log(kms)
                  data=Seatbelts,H=matrix(NA,2,2))
 
 # An alternative way for defining the rank deficient trend component:
-\dontrun{
-model<-SSModel(log(cbind(front,rear))~ -1 + log(PetrolPrice) + log(kms)
-               + SSMregression(~law,data=Seatbelts,index=1)
-               + SSMtrend(degree = 1, Q=list(matrix(0,2,2)))
-               + SSMseasonal(period=12,sea.type='trigonometric'),
-                 data=Seatbelts,H=matrix(NA,2,2))
+
+# model<-SSModel(log(cbind(front,rear))~ -1 + log(PetrolPrice) + log(kms)
+#                + SSMregression(~law,data=Seatbelts,index=1)
+#                + SSMtrend(degree = 1, Q=list(matrix(0,2,2)))
+#                + SSMseasonal(period=12,sea.type='trigonometric'),
+#                  data=Seatbelts,H=matrix(NA,2,2))
 # Modify model manually:
-model$Q<-array(1,c(1,1,1))
-model$R<-model$R[,-2,,drop=FALSE]
-attr(model,"k")<-as.integer(1)
-attr(model,"eta_types")<-attr(model,"eta_types")[1]
-}
+# model$Q<-array(1,c(1,1,1))
+# model$R<-model$R[,-2,,drop=FALSE]
+# attr(model,"k")<-as.integer(1)
+# attr(model,"eta_types")<-attr(model,"eta_types")[1]
+
 
 likfn<-function(pars,model,estimate=TRUE){
   diag(model$H[,,1])<-exp(0.5*pars[1:2])
@@ -408,7 +408,7 @@ Koopman, S.J. and Durbin J. (2003).  Filtering and smoothing of state vector
 for diffuse state space models, Journal of Time Series Analysis, Vol. 24,
 No. 1.
 
-#' Shumway, Robert H. and Stoffer, David S. (2006).  Time Series Analysis and
+Shumway, Robert H. and Stoffer, David S. (2006).  Time Series Analysis and
 Its Applications: With R examples.  \cr
 }
 
