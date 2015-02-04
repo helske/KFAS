@@ -79,10 +79,22 @@ residuals.KFS <-
                        }
                      }, 
                      pearson = {
+                       varianceFunction <- function(object) {
+                         vars <- object$model$y
+                         for (i in 1:length(object$model$distribution)){
+                           vars[, i] <- switch(object$model$distribution[i],
+                                               gaussian = 1,
+                                               poisson = object$muhat[, i],
+                                               binomial = object$muhat[, i] * (1 - object$muhat[, i])/object$model$u[, i],
+                                               gamma = object$muhat[, i]^2,
+                                               `negative binomial` = object$muhat[, i] + object$muhat[, i]^2/object$model$u[, i])
+                         }
+                         vars
+                       }
                        series <- object$model$y
                        if (sum(bins <- object$model$distribution == "binomial") > 0) 
                          series[, bins] <- series[, bins]/object$model$u[, bins]
-                       (series - fitted(object))/sqrt(varianceSmoother(object))
+                       (series - fitted(object))/sqrt(varianceFunction(object))
                      }, 
                      deviance = {
                        series <- object$model$y
