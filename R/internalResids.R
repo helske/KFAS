@@ -32,9 +32,10 @@ recursive_standardized <- function(object,stype) {
   if (all(object$model$distribution ==  "gaussian") && is.null(object[["v", exact = TRUE]])) 
     stop("KFS object does not contain prediction errors v. ")
   
+  p<-attr(object$model,"p")
   
   if(all(object$model$distribution ==  "gaussian")){
-    if(stype=="cholesky"){
+    if(stype=="cholesky" || attr(object$model,"p")==1){
       res <- object$v/sqrt(t(object$F))
       if (object$d > 0) {
         res[1:(object$d - 1), ] <- NA
@@ -55,8 +56,7 @@ recursive_standardized <- function(object,stype) {
       res[, bins] <- res[, bins]/object$model$u[, bins]
     res <- res-object[["m", exact = TRUE]]   
     
-    if(stype=="cholesky"){
-      p <- attr(object$model, "p")  
+    if(stype=="cholesky" || p==1){     
       for(t in (d+1):attr(object$model, "n") ){
         yobs<-which(!is.na(res[t,]))
         if(length(yobs)>0){
@@ -85,13 +85,14 @@ pearson_standardized <- function(object, stype) {
   
   if(is.null(object$muhat))
     stop("KFS object needs to contain smoothed means. ")
+  p<-attr(object$model,"p")
   
   if (all(object$model$distribution == "gaussian")) {              
     
     tv<-dim(object$model$H)[3] > 1
     res<-object$model$y-object$muhat 
     
-    if(stype=="cholesky"){
+    if(stype=="cholesky" || p==1){
       for(t in 1:n){
         yobs<-which(!is.na(res[t,]))
         if(length(yobs)>0){
@@ -108,14 +109,13 @@ pearson_standardized <- function(object, stype) {
       }
     }
     
-  } else {    
-    p <- attr(object$model, "p")  
+  } else {        
     res<-object$model$y
     vars<-varianceSmoother(object)     
     if (sum(bins <- object$model$distribution == "binomial") > 0) 
       res[, bins] <- res[, bins]/object$model$u[, bins]
     res<-res-object$muhat  
-    if(stype == "cholesky"){
+    if(stype == "cholesky" || p==1){
       for(t in 1:n){
         yobs<-which(!is.na(res[t,]))
         if(length(yobs)>0){
@@ -145,7 +145,7 @@ state_standardized <- function(object, stype) {
   k <- attr(object$model, "k")
   n <- attr(object$model, "n")
   eta <- object$etahat
-  if(stype=="cholesky"){
+  if(stype=="cholesky" || k==1){
     if (dim(object$model$Q)[3] == 1) {
       z <- which(object$model$Q[, , 1][1 + 0:(k - 1) * (k + 1)] > 0)   
       if(length(z)>0)
