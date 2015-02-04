@@ -152,11 +152,11 @@ importanceSSM <-
     }    
     if(out$info!=0){
       switch(as.character(out$info),
-             stop("-3" = "Couldn't compute LDL decomposition of P1."),
-             stop("-2" =  "Couldn't compute LDL decomposition of Q."),
-             stop("1" = "Gaussian approximation failed due to non-finite value in linear predictor."),
-             stop("2" = "Gaussian approximation failed due to non-finite value of p(theta|y)."),
-             warning("3" = "Maximum number of iterations reached, the approximation did not converge.")
+             "-3" = stop("Couldn't compute LDL decomposition of P1."),
+             "-2" =  stop("Couldn't compute LDL decomposition of Q."),
+             "1" = stop("Gaussian approximation failed due to non-finite value in linear predictor."),
+             "2" = stop("Gaussian approximation failed due to non-finite value of p(theta|y)."),
+             "3" = warning("Maximum number of iterations reached, the approximation did not converge.")
       )  
     }
     

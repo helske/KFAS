@@ -9,12 +9,14 @@
 #'   non-sequentially. Computing recursive residuals for large non-Gaussian
 #'   models can be time consuming as filtering is needed.
 #'   
-#'   \item \code{"response"}: Data minus fitted values, \eqn{y-E(y)}{y-E(y)}.
+#'   
 #'   
 #'   \item \code{"pearson"}:  \deqn{(y_{t,i}-\theta_{t,i})/\sqrt{V(\mu_{t,i})},
 #'   \quad i=1,\ldots,p,t=1,\ldots,n,}{(y[t,i]-\theta[t,i])V(\mu[t,i])^(-0.5),
 #'   i=1,\ldots,p, t=1,\ldots,n,} where \eqn{V(\mu_{t,i})}{V(\mu[t,i])} is the
 #'   variance function of the model.
+#'   
+#'   \item \code{"response"}: Data minus fitted values, \eqn{y-E(y)}{y-E(y)}.
 #'   
 #'   \item \code{"state"}:  Residuals based on the smoothed disturbance terms
 #'   \eqn{\eta} are defined as \deqn{\hat \eta_t, \quad t=1,\ldots,n}{\hat\eta[t], t=1,\ldots,n}. 
@@ -33,20 +35,8 @@ residuals.KFS <-
     type <- match.arg(type)
     
     if(type=="deviance")
-      .Deprecated(msg="Argument type=\"deviance\" is deprecated.")
+      .Deprecated(msg="Argument type=\"deviance\" is deprecated.")    
     
-    variance <- function(object) {
-      vars <- object$model$y
-      for (i in 1:length(object$model$distribution)){ 
-        vars[, i] <- switch(object$model$distribution[i], 
-                            gaussian = 1, 
-                            poisson = object$muhat[, i], 
-                            binomial = object$muhat[, i] * (1 - object$muhat[, i])/object$model$u[, i], 
-                            gamma = object$muhat[, i]^2, 
-                            `negative binomial` = object$muhat[, i] + object$muhat[, i]^2/object$model$u[, i])
-      }
-      vars
-    }
     
     if ((type == "state") && any(object$model$distribution !=  "gaussian")) 
       stop("State residuals are only supported for fully Gaussian models.")
@@ -92,7 +82,7 @@ residuals.KFS <-
                        series <- object$model$y
                        if (sum(bins <- object$model$distribution == "binomial") > 0) 
                          series[, bins] <- series[, bins]/object$model$u[, bins]
-                       (series - fitted(object))/sqrt(variance(object))
+                       (series - fitted(object))/sqrt(varianceSmoother(object))
                      }, 
                      deviance = {
                        series <- object$model$y

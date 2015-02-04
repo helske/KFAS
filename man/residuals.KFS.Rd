@@ -26,12 +26,14 @@ For object of class KFS, several types of residuals can be computed:
   non-sequentially. Computing recursive residuals for large non-Gaussian
   models can be time consuming as filtering is needed.
 
-  \item \code{"response"}: Data minus fitted values, \eqn{y-E(y)}{y-E(y)}.
+
 
   \item \code{"pearson"}:  \deqn{(y_{t,i}-\theta_{t,i})/\sqrt{V(\mu_{t,i})},
   \quad i=1,\ldots,p,t=1,\ldots,n,}{(y[t,i]-\theta[t,i])V(\mu[t,i])^(-0.5),
   i=1,\ldots,p, t=1,\ldots,n,} where \eqn{V(\mu_{t,i})}{V(\mu[t,i])} is the
   variance function of the model.
+
+  \item \code{"response"}: Data minus fitted values, \eqn{y-E(y)}{y-E(y)}.
 
   \item \code{"state"}:  Residuals based on the smoothed disturbance terms
   \eqn{\eta} are defined as \deqn{\hat \eta_t, \quad t=1,\ldots,n}{\hat\eta[t], t=1,\ldots,n}.

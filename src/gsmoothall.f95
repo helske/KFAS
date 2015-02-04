@@ -383,18 +383,20 @@ etahat,etahatvar,thetahat,thetahatvar, ldlsignal,zorig, zorigtv,aug,state,dist,s
     if(dist.EQ.1) then
         do t = 1, d
             call dgemv('t',m,r,1.0d0,rtv(:,:,(t-1)*timevar(4)+1),m,rt0(:,t+1),1,0.0d0,help,1)
-            call dsymv('l',r,1.0d0,qt(:,:,(t-1)*timevar(5)+1),r,help,1,0.0d0,etahat(:,t),1)
+            call dsymv('u',r,1.0d0,qt(:,:,(t-1)*timevar(5)+1),r,help,1,0.0d0,etahat(:,t),1)
             etahatvar(:,:,t) = qt(:,:,(t-1)*timevar(5)+1)
             call dsymm('r','u',m,r,1.0d0,qt(:,:,(t-1)*timevar(5)+1),r,rtv(:,:,(t-1)*timevar(4)+1),m,0.0d0,mr,m)
-            call dgemm('n','n',m,r,m,1.0d0,nt0(:,:,t+1),m,mr,m,0.0d0,mr2,m)
+            !call dgemm('n','n',m,r,m,1.0d0,nt0(:,:,t+1),m,mr,m,0.0d0,mr2,m)
+             call dsymm('l','u',m,r,1.0d0,nt0(:,:,t+1),m,mr,m,0.0d0,mr2,m)
             call dgemm('t','n',r,r,m,-1.0d0,mr,m,mr2,m,1.0d0,etahatvar(:,:,t),r)
         end do
         do t = d+1, n
             call dgemv('t',m,r,1.0d0,rtv(:,:,(t-1)*timevar(4)+1),m,rt(:,t+1),1,0.0d0,help,1)
-            call dsymv('l',r,1.0d0,qt(:,:,(t-1)*timevar(5)+1),r,help,1,0.0d0,etahat(:,t),1)
+            call dsymv('u',r,1.0d0,qt(:,:,(t-1)*timevar(5)+1),r,help,1,0.0d0,etahat(:,t),1)
             etahatvar(:,:,t) = qt(:,:,(t-1)*timevar(5)+1)
-            call dsymm('r','l',m,r,1.0d0,qt(:,:,(t-1)*timevar(5)+1),r,rtv(:,:,(t-1)*timevar(4)+1),m,0.0d0,mr,m)
-            call dgemm('n','n',m,r,m,1.0d0,nt(:,:,t+1),m,mr,m,0.0d0,mr2,m)
+            call dsymm('r','u',m,r,1.0d0,qt(:,:,(t-1)*timevar(5)+1),r,rtv(:,:,(t-1)*timevar(4)+1),m,0.0d0,mr,m)
+            !call dgemm('n','n',m,r,m,1.0d0,nt(:,:,t+1),m,mr,m,0.0d0,mr2,m)
+            call dsymm('l','u',m,r,1.0d0,nt(:,:,t+1),m,mr,m,0.0d0,mr2,m)
             call dgemm('t','n',r,r,m,-1.0d0,mr,m,mr2,m,1.0d0,etahatvar(:,:,t),r)
         end do
     end if

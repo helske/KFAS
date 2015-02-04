@@ -3,13 +3,16 @@
 \alias{rstandard.KFS}
 \title{Extract Standardized Residuals from KFS output}
 \usage{
-\method{rstandard}{KFS}(model, type = c("recursive1", "recursive2",
-  "observation", "state", "deviance", "pearson"), ...)
+\method{rstandard}{KFS}(model, type = c("recursive", "pearson", "state",
+  "deviance"), standardization_type = c("marginal", "cholesky"), ...)
 }
 \arguments{
 \item{model}{KFS object}
 
 \item{type}{Type of residuals. See details.}
+
+\item{standardization_type}{Type of standardization. Either \code{"marginal"}
+(default) for marginal standardization or  \code{"cholesky"} for Cholesky-type standardization.}
 
 \item{...}{Ignored.}
 }
@@ -18,10 +21,13 @@ Extract Standardized Residuals from KFS output
 }
 \details{
 For object of class KFS with fully Gaussian observations, several
-  types of standardized residuals can be computed:
+  types of standardized residuals can be computed. Also the standardization
+  in for multivariate residuals can be done either by Cholesky decomposition
+  \eqn{L^{-1}_t residual_t,}{L^(-1)[t]residual[t]} or component-wise
+  \eqn{residual_t/sd(residual_t),}{residual[t]/sd(residual[t])}.
 
   \itemize{
-  \item "recursive1": For Gaussian models the vector standardized one-step ahead prediction
+  \item "recursive": For Gaussian models the vector standardized one-step ahead prediction
   residuals are defined as
   \deqn{v_{t,i}/\sqrt{F_{i,t}},}{v[t,i]/\sqrt{F[i,t]},} with residuals
   being undefined in diffuse phase. Note that even in multivariate case these
@@ -35,7 +41,7 @@ For object of class KFS with fully Gaussian observations, several
   \eqn{V(\mu_t)}{V(\mu[t])} are based on the filtered means \eqn{\mu_t}{\mu[t]}$. Computing these for large
   non-Gaussian models can be time consuming as filtering is needed.
 
-  \item "recursive2": For Gaussian models the component-wise standardized one-step ahead prediction
+  For Gaussian models the component-wise standardized one-step ahead prediction
   residuals are defined as
   \deqn{v_{t}/\sqrt{diag(F_{t})},}{v[t])/\sqrt{diag(F[t])},} where \eqn{v_{t}}{v[t]} and
   \eqn{F_{t}}{F[t]} are based on the standard multivariate processing.
@@ -44,32 +50,24 @@ For object of class KFS with fully Gaussian observations, several
   \eqn{F_t=V(y_t)+V(\mu_t)}{F[t]=V(y[t])+V(\mu[t])}, and both the variance function \eqn{V(y_t)}{V(y[t])} and
   \eqn{V(\mu_t)}{V(\mu[t])} are based on the filtered means \eqn{\mu_t}{\mu[t]}$.
 
-  \item "observation":  Residuals based on the smoothed observation
-  disturbance terms \eqn{\epsilon} are defined as
-  \deqn{L^{-1}_t \hat\epsilon_t, \quad t=1,\ldots,n,}{L^{-1}[t] \epsilon[t], t=1,\ldots,n,}
-  where \eqn{L_t}{L[t]} is the lower triangular matrix from Cholesky
-  decomposition of \eqn{V_{\epsilon,t}}{V[\epsilon,t]}.
-
-
   \item "state":  Residuals based on the smoothed state disturbance terms
   \eqn{\eta} are defined as \deqn{L^{-1}_t \hat \eta_t, \quad
   t=1,\ldots,n,}{L^{-1}[t] \hat \eta[t], t=1,\ldots,n,} where \eqn{L_t}{L[t]} is
-  the lower triangular matrix from Cholesky decomposition of
-  \eqn{V_{\eta,t}}{V[\eta,t]}.
-
+  either the lower triangular matrix from Cholesky decomposition of
+  \eqn{Q_t - V_{\eta,t}}{Q[t] - V[\eta,t]}, or the diagonal of the same matrix.
 
   \item 'pearson':  Standardized Pearson residuals
   \deqn{L^{-1}_t(y_{t}-\theta_{i}), \quad t=1,\ldots,n,}{L^(-1)[t](y[t]-\theta[t]), t=1,\ldots,n,} where
   \eqn{L_t}{L[t]} is the lower triangular matrix from Cholesky decomposition
-  of \eqn{V(y_t)-V(\mu_t)}{V(y[t])-V(\mu[t])}. For gaussian models, these coincide with the
-  standardized smoothed \eqn{\epsilon} disturbance residuals, and for
-  generalized linear models these coincide with the standardized Pearson
-  residuals (hence the name).
+  of \eqn{V(y_t)-V(\mu_t)}{V(y[t])-V(\mu[t])}, or the diagonal of the same
+  matrix. For Gaussian models, these coincide with the standardized smoothed
+  \eqn{\epsilon} disturbance residuals, and for generalized linear models
+  these coincide with the standardized Pearson residuals (hence the name).
 
 
-\item 'deviance': Deviance residuals.
-Deprecated. This option was meant to be used only for the GLM comparisons, as their generalization to other models is lacking,
-but these will be completely removed in future in order to avoid misleading results in non-GLM settings.
-}
+\item 'deviance': Deviance residuals. Deprecated. This option was meant to be
+used only for the GLM comparisons, as their generalization to other models is
+lacking, but these will be completely removed in future in order to avoid
+misleading results in non-GLM settings. }
 }
 
