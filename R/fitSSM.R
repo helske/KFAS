@@ -92,7 +92,7 @@ fitSSM <-
           diag(Q)[naQd] <- exp(0.5 * pars[1:length(naQd)])
           Q[naQd, naQd][naQnd] <- pars[length(naQd) + 1:length(naQnd)]
           model$Q[naQd, naQd, 1] <- crossprod(Q[naQd, naQd])
-        }
+        } else naQnd<-naQd<-NULL
         if (estH){
           H <- as.matrix(model$H[, , 1])
           naHd <- which(is.na(diag(H)))

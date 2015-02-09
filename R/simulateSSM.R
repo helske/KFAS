@@ -13,17 +13,22 @@
 #' @export
 #' @param object Gaussian state space object of class \code{SSModel}.
 #' @param type What to simulate.
-#' @param filtered Simulate from \eqn{p(\alpha_t|y_{t-1},...,y_1)}{p(\alpha[t]|y[t-1],...,y[1])}
-#'   instead of \eqn{p(\alpha|y)}.
+#' @param filtered Simulate from 
+#'   \eqn{p(\alpha_t|y_{t-1},...,y_1)}{p(\alpha[t]|y[t-1],...,y[1])} instead of 
+#'   \eqn{p(\alpha|y)}.
 #' @param nsim Number of independent samples. Default is 1.
 #' @param antithetics Use antithetic variables in simulation. Default is FALSE.
-#' @param conditional Simulations are conditional to data. If FALSE, the initial state
-#'   \eqn{\alpha_1}{\alpha[1]} is set to \eqn{\hat \alpha_1}{alphahat[1]} computed by \code{KFS}, 
-#'   and all the observations are removed from the model. Default is TRUE.
-#' @return An n x k x nsim array containing the simulated series, where k is number of observations,
-#'   signals, states or disturbances.
-#' @references Durbin J. and Koopman, S.J. (2002). A simple and efficient simulation smoother for
-#'   state space time series analysis, Biometrika, Volume 89, Issue 3
+#' @param conditional If \code{TRUE} (default), the simulations are conditional 
+#'   to data. If \code{FALSE}, the initial state \eqn{\alpha_1}{\alpha[1]} is 
+#'   set to \eqn{\hat \alpha_1}{alphahat[1]} computed by \code{KFS}, and all the
+#'   observations are removed from the model. This can be used to simulate new
+#'   realizations from the model. The initial state is fixed in order to cope
+#'   with diffuse initialization.
+#' @return An n x k x nsim array containing the simulated series, where k is
+#'   number of observations, signals, states or disturbances.
+#' @references Durbin J. and Koopman, S.J. (2002). A simple and efficient
+#'   simulation smoother for state space time series analysis, Biometrika,
+#'   Volume 89, Issue 3
 simulateSSM <- 
   function(object, type = c("states", "signals", "disturbances", "observations", 
                             "epsilon", "eta"), filtered = FALSE, nsim = 1, antithetics = FALSE, conditional = TRUE) {
@@ -34,7 +39,7 @@ simulateSSM <-
     if (any(object$distribution != "gaussian")) 
       stop("Function is only for gaussian models.")
     if (!conditional) {
-      out <- KFS(object, smoothing = "state")
+      out <- KFS(object, filtering = "none", smoothing = "state")
       object$y[] <- NA
       object$a1[] <- out$alphahat[1, ]
       object$P1inf[] <- 0
