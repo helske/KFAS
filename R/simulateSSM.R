@@ -13,22 +13,17 @@
 #' @export
 #' @param object Gaussian state space object of class \code{SSModel}.
 #' @param type What to simulate.
-#' @param filtered Simulate from 
-#'   \eqn{p(\alpha_t|y_{t-1},...,y_1)}{p(\alpha[t]|y[t-1],...,y[1])} instead of 
-#'   \eqn{p(\alpha|y)}.
+#' @param filtered Simulate from \eqn{p(\alpha_t|y_{t-1},...,y_1)}{p(\alpha[t]|y[t-1],...,y[1])}
+#'   instead of \eqn{p(\alpha|y)}.
 #' @param nsim Number of independent samples. Default is 1.
 #' @param antithetics Use antithetic variables in simulation. Default is FALSE.
-#' @param conditional If \code{TRUE} (default), the simulations are conditional 
-#'   to data. If \code{FALSE}, the initial state \eqn{\alpha_1}{\alpha[1]} is 
-#'   set to \eqn{\hat \alpha_1}{alphahat[1]} computed by \code{KFS}, and all the
-#'   observations are removed from the model. This can be used to simulate new
-#'   realizations from the model. The initial state is fixed in order to cope
-#'   with diffuse initialization.
-#' @return An n x k x nsim array containing the simulated series, where k is
-#'   number of observations, signals, states or disturbances.
-#' @references Durbin J. and Koopman, S.J. (2002). A simple and efficient
-#'   simulation smoother for state space time series analysis, Biometrika,
-#'   Volume 89, Issue 3
+#' @param conditional Simulations are conditional to data. If FALSE, the initial state
+#'   \eqn{\alpha_1}{\alpha[1]} is set to \eqn{\hat \alpha_1}{alphahat[1]} computed by \code{KFS}, 
+#'   and all the observations are removed from the model. Default is TRUE.
+#' @return An n x k x nsim array containing the simulated series, where k is number of observations,
+#'   signals, states or disturbances.
+#' @references Durbin J. and Koopman, S.J. (2002). A simple and efficient simulation smoother for
+#'   state space time series analysis, Biometrika, Volume 89, Issue 3
 simulateSSM <- 
   function(object, type = c("states", "signals", "disturbances", "observations", 
                             "epsilon", "eta"), filtered = FALSE, nsim = 1, antithetics = FALSE, conditional = TRUE) {
@@ -39,7 +34,7 @@ simulateSSM <-
     if (any(object$distribution != "gaussian")) 
       stop("Function is only for gaussian models.")
     if (!conditional) {
-      out <- KFS(object, filtering = "none", smoothing = "state")
+      out <- KFS(object, smoothing = "state")
       object$y[] <- NA
       object$a1[] <- out$alphahat[1, ]
       object$P1inf[] <- 0
@@ -63,6 +58,9 @@ simulateSSM <-
     epsplus <- array(0, c(p, n, nsim))
     etaplus <- array(0, c(k, n, nsim))
     aplus1 <- array(0, dim = c(m, nsim))
+    
+    # simulate error terms from standard normal distribution
+    # transformation to correct distribution is done in Fortran
     x <- array(abs(apply(object$H, 3, diag)) > object$tol, c(p, n)) & (!t(ymiss))
     x <- array(x, c(p, n, nsim))
     dfeps <- sum(x)/nsim
@@ -81,6 +79,7 @@ simulateSSM <-
       etaplus[x2] <- u[(dfeps * nsim + 1):(dfeps * nsim + dfeta * nsim)]
     if (nnd > 0) 
       aplus1[nde, ] <- u[(dfeps * nsim + dfeta * nsim + 1):(dfu * nsim)]
+    # for second antithetic
     c2 <- numeric(nsim)
     if (antithetics) {
       for (i in 1:nsim) {
@@ -93,7 +92,7 @@ simulateSSM <-
     sim.what <- which(c("epsilon", "eta", "disturbances", "states", "signals", "observations") == 
                         sim.what)
     simdim <- as.integer(switch(sim.what, p, k, p + k, m, p, p))
-    if (!filtered) {
+    if (!filtered) { #simulation smoother 
       out <- .Fortran(fsimgaussian, NAOK = TRUE, ymiss, tv, object$y, 
                       object$Z, object$H, object$T, object$R, object$Q, object$a1, object$P1, 
                       object$P1inf, as.integer(nnd), as.integer(nsim), epsplus, etaplus, aplus1, 
@@ -103,7 +102,7 @@ simulateSSM <-
                         if (sim.what == 6) t(object$y) else 0
                       }, c(simdim, n, 3 * nsim * antithetics + nsim)), c2, sim.what, simdim, 
                       as.integer(antithetics))
-    } else {
+    } else { # simulate from predictive distribution
       if (!(sim.what %in% (4:5))) 
         stop("Only state and signal simulation filtering is supported.")
       out <- .Fortran(fsimfilter, NAOK = TRUE, ymiss, tv, object$y, 

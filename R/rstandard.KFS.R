@@ -17,8 +17,7 @@
 #'   For non-Gaussian models the vector standardized recursive residuals are obtained as
 #'   \deqn{L^{-1}_t (y_{t}-\mu_{t}),}{L^(-1)[t](y[t]-\mu[t]),} where 
 #'   \eqn{L_t}{L[t]} is the lower triangular matrix from Cholesky decomposition 
-#'   of \eqn{V(y_t)+V(\mu_t)}{V(y[t])+V(\mu[t])}, and both the variance function \eqn{V(y_t)}{V(y[t])} and
-#'   \eqn{V(\mu_t)}{V(\mu[t])} are based on the filtered means \eqn{\mu_t}{\mu[t]}$. Computing these for large
+#'   of \eqn{Var(y_t|y_{t-1},\ldots,y_1)}{Var(y[t]|y[t-1],\ldots,y[1])}. Computing these for large
 #'   non-Gaussian models can be time consuming as filtering is needed.
 #'   
 #'   For Gaussian models the component-wise standardized one-step ahead prediction 
@@ -27,8 +26,7 @@
 #'   \eqn{F_{t}}{F[t]} are based on the standard multivariate processing. 
 #'   For non-Gaussian models these are obtained as
 #'   \deqn{(y_{t}-\mu_{t})/\sqrt{diag(F_t)},}{(y[t]-\mu[t])/\sqrt{diag(F[t])},} where 
-#'   \eqn{F_t=V(y_t)+V(\mu_t)}{F[t]=V(y[t])+V(\mu[t])}, and both the variance function \eqn{V(y_t)}{V(y[t])} and
-#'   \eqn{V(\mu_t)}{V(\mu[t])} are based on the filtered means \eqn{\mu_t}{\mu[t]}$. 
+#'   \eqn{F_t=Var(y_t|y_{t-1},\ldots,y_1)}{F[t]=Var(y[t]|y[t-1],\ldots,y[1])}. 
 #'      
 #'   \item "state":  Residuals based on the smoothed state disturbance terms 
 #'   \eqn{\eta} are defined as \deqn{L^{-1}_t \hat \eta_t, \quad 
@@ -39,7 +37,7 @@
 #'   \item 'pearson':  Standardized Pearson residuals 
 #'   \deqn{L^{-1}_t(y_{t}-\theta_{i}), \quad t=1,\ldots,n,}{L^(-1)[t](y[t]-\theta[t]), t=1,\ldots,n,} where 
 #'   \eqn{L_t}{L[t]} is the lower triangular matrix from Cholesky decomposition 
-#'   of \eqn{V(y_t)-V(\mu_t)}{V(y[t])-V(\mu[t])}, or the diagonal of the same
+#'   of \eqn{Var(y_t|y_{n},\ldots,y_1)}{Var(y[t]|y[n],\ldots,y[1])}, or the diagonal of the same
 #'   matrix. For Gaussian models, these coincide with the standardized smoothed
 #'   \eqn{\epsilon} disturbance residuals, and for generalized linear models
 #'   these coincide with the standardized Pearson residuals (hence the name).

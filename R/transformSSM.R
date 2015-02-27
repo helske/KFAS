@@ -38,11 +38,14 @@ transformSSM <-
     tv <- attr(object,"tv")
     tvh <- tv[2]    
     if (type == "ldl") {
-      if (p > 1) {
+      if (p > 1) { #do nothing for univariate series
         yt <- t(object$y)
         ymiss <- is.na(yt)
-        tv[1] <- max(tv[1], tv[2])
+        tv[1] <- max(tv[1], tv[2])       
         if (sum(ymiss) > 0) {
+          # find unique combinations of missing observations 
+          # even though H (and Z) becomes time varying in case of partial missingness, 
+          # no need to compute Cholesky for all t
           positions <- unique(ymiss, MARGIN = 2)
           nh <- dim(positions)[2]
           tv[1:2] <- 1
@@ -54,7 +57,8 @@ transformSSM <-
         }
         positions <- as.matrix(positions)
         H <- array(object$H, c(p, p, n))
-        if (tvh) {
+        if (tvh) { 
+          # if H was already time varying, compute cholesky decompositions for all t
           nh <- n
           hchol <- 1:n
           uniqs <- 1:n
@@ -70,7 +74,7 @@ transformSSM <-
         ichols <- H[, , uniqs, drop = FALSE]  
         ydims <- as.integer(colSums(!ymiss))
         yobs <- array(1:p, c(p, n))
-        if (sum(ymiss) > 0) 
+        if (sum(ymiss) > 0) #positions of missing observations 
           for (i in 1:n) {
             if (ydims[i] != p && ydims[i] != 0) 
               yobs[1:ydims[i], i] <- yobs[!ymiss[, i], i]
@@ -80,6 +84,7 @@ transformSSM <-
         unidim <- ydims[uniqs]
         hobs <- yobs[, uniqs, drop = FALSE]
         storage.mode(yobs) <- storage.mode(hobs) <- storage.mode(hchol) <- "integer"
+        # compute the transformations for y, Z and H
         out <- .Fortran(fldlssm, NAOK = TRUE, yt = yt, ydims = ydims, yobs = yobs, 
                         tv = as.integer(tv), Zt = Z, p = p, m = m, 
                         n = n, ichols = ichols, nh = as.integer(nh), hchol = hchol, 
@@ -92,7 +97,7 @@ transformSSM <-
           ))  
         }        
         H <- array(0, c(p, p, ((n - 1) * tv[2] + 1)))
-        for (t in 1:((n - 1) * tv[2] + 1)) 
+        for (t in 1:((n - 1) * tv[2] + 1)) #construct diagonal H
           diag(H[, , t]) <- diag(out$ichols[, , out$hchol[t]])
         attry <- attributes(object$y)
         object$y <- t(out$yt)
@@ -101,7 +106,7 @@ transformSSM <-
         object$H <- H
         attr(object, "tv") <- as.integer(tv)
       }
-    } else {
+    } else { #augmentation, add new states for epsilon disturbances and set H=0
       T <- array(object$T, dim = c(m, m, (n - 1) * tv[3] + 1))
       R <- array(object$R, dim = c(m, r, (n - 1) * tv[4] + 1))
       Q <- array(object$Q, dim = c(r, r, (n - 1) * tv[5] + 1))

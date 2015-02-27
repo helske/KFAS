@@ -86,7 +86,7 @@ predict.SSModel <-
         }
     }
     gaussianmodel <- all(object$distribution == "gaussian")
-    if (!missing(newdata) && !is.null(newdata)) {
+    if (!missing(newdata) && !is.null(newdata)) { #expand model with newdata object
         # Check that the model object is of proper form
         is.SSModel(newdata, na.check = TRUE, return.logical = FALSE)
         if (p != attr(newdata, "p")) 
@@ -112,7 +112,7 @@ predict.SSModel <-
         if (gaussianmodel && (tvo[2] || tvn[2] || !identical(object$H, newdata$H))) {
             object$H <- array(data = c(array(object$H, dim = c(p, p, no)), array(newdata$H, 
                 dim = c(p, p, nn))), dim = c(p, p, n))
-        } else object$u <- rbind(object$u, matrix(newdata$u, nn, p))
+        } else if(!gaussianmodel) object$u <- rbind(object$u, matrix(newdata$u, nn, p))
         if (tvo[3] || tvn[3] || !identical(object$T, newdata$T)) {
             object$T <- array(data = c(array(object$T, dim = c(m, m, no)), array(newdata$T, 
                 dim = c(m, m, nn))), dim = c(m, m, n))
@@ -151,7 +151,7 @@ predict.SSModel <-
             stop("Cannot compute prediction intervals for non-gaussian models without importance sampling.")
     }
     pred <- vector("list", length = p)
-    if (gaussianmodel) {
+    if (gaussianmodel) { #Gaussian case
         if (identical(states, as.integer(1:m))) {
             out <- KFS(model = object, smoothing = "mean")
         } else {
@@ -170,7 +170,7 @@ predict.SSModel <-
                 colnames(pred[[i]])[2:3] <- c("lwr", "upr")
         }
     } else {
-        if (nsim < 1) {
+        if (nsim < 1) { #Using approximating model
             if (identical(states, as.integer(1:m))) {
               out <- KFS(model = object, smoothing = "signal", maxiter = maxiter)
             } else {
@@ -213,7 +213,7 @@ predict.SSModel <-
                     `negative binomial` = exp(pred[[i]]))
                 }
             }
-        } else {
+        } else { # with importance sampling
             if (interval == "none") {
                 imp <- importanceSSM(object, ifelse(identical(states, as.integer(1:m)), 
                   "signal", "states"), nsim = nsim, antithetics = TRUE, maxiter = maxiter)
@@ -256,7 +256,7 @@ predict.SSModel <-
     }
     names(pred) <- colnames(object$y)
     pred <- lapply(pred, ts, end = endtime, frequency = frequency(object$y))
-    if (p == 1) 
+    if (p == 1) #for univariate model return time series instead of list of single time series
         pred <- pred[[1]]
     pred
 } 

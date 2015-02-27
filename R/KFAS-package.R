@@ -68,8 +68,8 @@
 #' \mu[t]^2/u[t]} (see \code{\link{dnbinom}}), then \eqn{\theta_t =
 #' log[\mu_t]}{\theta[t] = log(\mu[t])}.
 #' 
-#' For exponential family models \eqn{u_t=1}{u[t]=1} as a default. For completely Gaussian models, parameter is omitted.
-#'
+#' For exponential family models \eqn{u_t=1}{u[t]=1} as a default. 
+#' For completely Gaussian models, parameter is omitted.#'
 #'
 #' For the unknown elements of initial state vector \eqn{a_1}{a[1]}, KFAS uses
 #' exact diffuse initialization by Koopman and Durbin (2000, 2001, 2003), where

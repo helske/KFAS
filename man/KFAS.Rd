@@ -71,7 +71,7 @@ parameter and \eqn{u_t}{u[t]} is the shape parameter.
 If observations are distributed as \eqn{negative
 binomial(u_t,\mu_t)}{negative binomial(u[t],\mu[t])} with expected value
 \eqn{\mu_t}{\mu[t]} and variance \eqn{\mu_t+ \mu_t^2/u_t}\eqn{\mu[t]+
-\mu[t]^2/u[t]} (see \code{\link{dbinom}}), then \eqn{\theta_t =
+\mu[t]^2/u[t]} (see \code{\link{dnbinom}}), then \eqn{\theta_t =
 log[\mu_t]}{\theta[t] = log(\mu[t])}.
 
 For exponential family models \eqn{u_t=1}{u[t]=1} as a default. For completely Gaussian models, parameter is omitted.
@@ -289,7 +289,7 @@ set.seed(1)
 outsim<-KFS(model,smoothing=c('state','signal','mean'),nsim=1000)
 
 
-## linear
+## linear predictor
 # GLM
 glm.D93$linear.predictor
 # approximate model, this is the posterior mode of p(theta|y)
@@ -305,7 +305,7 @@ fitted(glm.D93)
 # approximate model with backtransform, equals GLM
 c(fitted(outnosim))
 # importance sampling on exp(theta)
-fitted(outsim)
+c(fitted(outsim))
 
 # prediction variances on link scale
 # GLM

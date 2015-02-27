@@ -123,7 +123,7 @@ fitSSM <-
           model <- updatefn(pars, model, ...)
           if (checkfn(model)) {
             return(-logLik(object = model, check.model = FALSE, ...))
-          } else return(.Machine$double.xmax)
+          } else return(.Machine$double.xmax^0.75)
         }
     }
     out <- NULL
