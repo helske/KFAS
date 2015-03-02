@@ -20,7 +20,7 @@ email:
 on_success: change
 on_failure: change
 after_success:
-  - Rscript -e 'covr::coveralls()'
+   - Rscript -e 'library(covr);coveralls()'
 env:
  global:     
    - R_BUILD_ARGS="--no-build-vignettes --no-manual"
