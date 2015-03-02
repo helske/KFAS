@@ -1,5 +1,5 @@
 ! Subroutines for computation of mean, covariance and variance from weighted sample
-
+! All subroutines assume that the weights are normalized i.e. sum(w)=1
 subroutine covmeanw(x,w,m,n,k,meanx,covx)
 
     implicit none
@@ -29,7 +29,7 @@ subroutine covmeanwprotect(x,w,m,n,k,meanx,covx)
     implicit none
     integer, intent(in) :: m, n, k
     integer :: t,i
-    double precision, intent(inout), dimension(m,n,k) :: x
+    double precision, intent(in), dimension(m,n,k) :: x
     double precision, intent(in), dimension(k) :: w
     double precision, intent(inout), dimension(m,n) :: meanx
     double precision, intent(inout), dimension(m,m,n) :: covx

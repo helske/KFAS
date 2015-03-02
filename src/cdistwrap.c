@@ -1,6 +1,6 @@
 #include <R.h>
 #include <Rmath.h>
-
+// Wrappers for R's density functions
 void F77_NAME(dnormf)(double *x,double *mu, double *sigma, double *res);
 void F77_NAME(dpoisf)(double *x,double *lambda, double *res);
 void F77_NAME(dbinomf)(double *x, double *n, double *p, double *res);

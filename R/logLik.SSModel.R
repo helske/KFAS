@@ -72,32 +72,27 @@ logLik.SSModel <-
     tv <- attr(object, "tv")
     if (all(object$distribution == "gaussian")) {
       if (all(c(object$Q, object$H) == 0) || all(c(object$R, object$H) == 0)) 
-        return(-.Machine$double.xmax^0.75)     
-      if (p == 1) {
-        out <- .Fortran(fglogliku, NAOK = TRUE, object$y, ymiss, tv, 
-                        object$Z, object$H, object$T, object$R, object$Q, object$a1, object$P1, 
-                        object$P1inf, m, k, n, lik = double(1), 
-                        object$tol, as.integer(sum(object$P1inf)),marginal=as.integer(marginal))
-      } else {
-        if (any(abs(apply(object$H, 3, "[", !diag(p))) > object$tol)) {
-          object <- 
-            tryCatch(transformSSM(object, type = match.arg(arg = transform, choices = c("ldl", "augment"))), 
-                     error = function(e) e)
-          if (!inherits(object, "SSModel")) {
-            warning(object$message)
-            return(-.Machine$double.xmax^0.75)
-          }        
-          m <- attr(object, "m")
-          k <- attr(object, "k")       
-          tv <- attr(object, "tv") 
-        } 
-        
-        out <- .Fortran(fgloglik, NAOK = TRUE, object$y, ymiss, tv, 
-                        object$Z, object$H, object$T, object$R, object$Q, object$a1, object$P1, 
-                        object$P1inf, p, m, k, n, 
-                        lik = double(1), object$tol, as.integer(sum(object$P1inf)),marginal=as.integer(marginal))
-        
-      }
+        return(-.Machine$double.xmax^0.75)   
+      
+      if (p == 1 && any(abs(apply(object$H, 3, "[", !diag(p))) > object$tol)) {
+        object <- 
+          tryCatch(transformSSM(object, type = match.arg(arg = transform, choices = c("ldl", "augment"))), 
+                   error = function(e) e)
+        if (!inherits(object, "SSModel")) {
+          warning(object$message)
+          return(-.Machine$double.xmax^0.75)
+        }        
+        m <- attr(object, "m")
+        k <- attr(object, "k")       
+        tv <- attr(object, "tv") 
+      } 
+      
+      out <- .Fortran(fgloglik, NAOK = TRUE, object$y, ymiss, tv, 
+                      object$Z, object$H, object$T, object$R, object$Q, object$a1, object$P1, 
+                      object$P1inf, p, m, k, n, 
+                      lik = double(1), object$tol, as.integer(sum(object$P1inf)),marginal=as.integer(marginal))
+      
+      
       if(out$marginal==-1){        
         warning("Computation of marginal likelihood failed, could not compute the additional term.")
         return(-.Machine$double.xmax^0.75)

@@ -1,5 +1,5 @@
 Changes from version 1.0.4-1 to 1.1.0:
- * rstandard.KFS: Added argument standarization_type which defines whether cholesky or marginal standardization is used.
+ * rstandard.KFS: Added argument standardization_type which defines whether cholesky or marginal standardization is used.
  * is.SSModel: Tweaked checks for faster performance for time varying models, added check for P1inf.
  * fitSSM: Function now allows fixed time varying covariance matrices. 
  * fitSSM: check.model is set to FALSE when calling logLik.SSModel in all cases. see ?fitSSM for details.

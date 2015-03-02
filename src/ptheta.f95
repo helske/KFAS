@@ -1,11 +1,11 @@
 ! functions for computing p(theta)
 subroutine pthetafirst(yt, timevar, zt, tt, rqr, a1, p1, p1inf,&
-p, m, r, n, lik, tol,rankp2,kt,kinf,ft,finf,d,j)
+p, m, n, lik, tol,rankp2,kt,kinf,ft,finf,d,j)
 
 
     implicit none
 
-    integer, intent(in) ::  p, m, r, n
+    integer, intent(in) ::  p, m, n
     integer, intent(inout) :: rankp2,d,j
     integer ::  t, i,tv,rankp
     integer, intent(in), dimension(5) :: timevar
@@ -170,6 +170,7 @@ p, m, n, lik, tol,kt,kinf,ft,finf,dt,jt)
 
     j=0
     d=0
+    meps = tiny(meps)
 
     if(dt.GT.0) then
         arec = a1

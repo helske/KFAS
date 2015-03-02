@@ -46,7 +46,7 @@ theta, u, ytilde, dist,maxiter,tol,rankp,convtol,diff,lik,info)
     ! compute log(p(theta|y))
     call pytheta(theta, dist, u, yt, ymiss, devold, p, n)
     if(rankp .NE. m) then ! in case of totally diffuse initialization term p(theta) disappears
-        call pthetafirst(theta, timevar, zt, tt, rqr, a1, p1, p1inf, p, m, r, n, devold, tol,rankp,kt,kinf,ft,finf,dt,jt)
+        call pthetafirst(theta, timevar, zt, tt, rqr, a1, p1, p1inf, p, m, n, devold, tol,rankp,kt,kinf,ft,finf,dt,jt)
     end if
     thetaold = theta
 

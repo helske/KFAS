@@ -13,7 +13,6 @@ static R_FortranMethodDef FortEntries[] = {
 		{"fgsmoothall", (DL_FUNC) &F77_SUB(gsmoothall), 44},
 		{"fngsmooth", (DL_FUNC) &F77_SUB(ngsmooth), 39},
 		{"fkfilter", (DL_FUNC) &F77_SUB(kfilter), 31},
-		{"fglogliku", (DL_FUNC) &F77_SUB(glogliku), 18},
 		{"fgloglik", (DL_FUNC) &F77_SUB(gloglik), 19},
 		{"fngloglik", (DL_FUNC) &F77_SUB(ngloglik), 36},
 		{"fisample", (DL_FUNC) &F77_SUB(isample), 35},
