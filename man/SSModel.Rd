@@ -15,17 +15,18 @@ SSMarima(ar = NULL, ma = NULL, d = 0, Q, stationary = TRUE, index, n,
 
 SSMcustom(Z, T, R, Q, a1, P1, P1inf, index, n)
 
-SSMcycle(period, type, Q, index, a1, P1, P1inf, n, ynames)
+SSMcycle(rformula, Q, R, data, remove.intercept = TRUE, type, index, a1, P1,
+  P1inf, n, ynames)
 
 SSModel(formula, data, H, u, distribution, tol = .Machine$double.eps^0.5)
 
 SSMregression(rformula, data, type, Q, index, R, a1, P1, P1inf, n, ynames,
   remove.intercept = TRUE)
 
-SSMseasonal(period, sea.type = c("dummy", "trigonometric"), type, Q, index,
+SSMseasonal(period, Q, sea.type = c("dummy", "trigonometric"), type, index,
   a1, P1, P1inf, n, ynames)
 
-SSMtrend(degree = 1, type, Q, index, a1, P1, P1inf, n, ynames)
+SSMtrend(degree = 1, Q, type, index, a1, P1, P1inf, n, ynames)
 }
 \arguments{
 \item{ar}{for arima component, a numeric vector containing the autoregressive
@@ -74,8 +75,15 @@ part of \eqn{P_1}{P[1]}.}
 of \eqn{P_1}{P[1]}. Diagonal matrix with ones on diagonal elements which
 correspond to the unknown initial states.}
 
-\item{period}{for a cycle and seasonal components, the length of the
-cycle/seasonal pattern.}
+\item{rformula}{for regression component, right hand side formula or list of
+of such formulas defining the custom regression part.}
+
+\item{data}{an optional data frame, list or environment containing the
+variables in the model.}
+
+\item{remove.intercept}{Remove intercept term from regression model. Default
+is \code{TRUE}. This tries to ensure that there are no extra intercept
+terms in the model.}
 
 \item{type}{for cycle, seasonal, trend and regression components, character
   string defining if \code{'distinct'} or \code{'common'} states are used for
@@ -89,9 +97,6 @@ with nonstationary elements, first level of each factor is always added to
 intercept, so if intercept is removed via \code{-1}, one level will be
 missing. See details and examples in \code{\link{KFAS}} for special
 functions used in model construction.}
-
-\item{data}{an optional data frame, list or environment containing the
-variables in the model.}
 
 \item{H}{covariance matrix or array of disturbance terms
 \eqn{\epsilon_t}{\epsilon[t]} of observation equation. Omitted in case of
@@ -108,12 +113,8 @@ additional noise.}
   not counted for zero. Defaults to \code{.Machine$double.eps^0.5}. If
   smoothing gives negative variances for smoothed states, try adjusting this.}
 
-\item{rformula}{for regression component, right hand side formula or list of
-of such formulas defining the custom regression part.}
-
-\item{remove.intercept}{Remove intercept term from regression model. Default
-is \code{TRUE}. This tries to ensure that there are no extra intercept
-terms in the model.}
+\item{period}{for a cycle and seasonal components, the length of the
+cycle/seasonal pattern.}
 
 \item{sea.type}{for seasonal component, character string defining whether to
 use \code{"dummy"} or \code{"trigonometric"} form of the seasonal

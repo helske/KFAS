@@ -28,28 +28,12 @@ SSMregression <-
         X <- X[, -(colnames(X) == "(Intercept)"), drop = FALSE]
       } else {
         if (length(attr(terms(rformula, data = data), "term.labels")) == 0 && 
-                           attr(terms(rformula,  data = data), "intercept") == 1) {
-                       X <- matrix(1, nrow = n, ncol = 1)
-                       colnames(X) <- "(Intercept)"
+              attr(terms(rformula,  data = data), "intercept") == 1) {
+          X <- matrix(1, nrow = n, ncol = 1)
+          colnames(X) <- "(Intercept)"
         } else  X <- model.matrix(rformula, data = data)
-       
+        
       }
-#       if (length(attr(terms(rformula, data = data), "term.labels")) == 0 && 
-#             attr(terms(rformula,  data = data), "intercept") == 1) {
-#         X <- matrix(1, nrow = n, ncol = 1)
-#         colnames(X) <- "(Intercept)"
-#       } else {
-#         if (attr(terms(rformula, data = data), "intercept") == 0 && attr(terms(rformula, 
-#                                                                                data = data), "factors") != 0) {
-#           # any(sapply(data,is.factor))
-#           rformula <- update.formula(rformula, ~. + 1)
-#           # data<-cbind(data,'(Intercept)'=1)
-#           X <- model.matrix(rformula, data = data)
-#           X <- X[, -(colnames(X) == "(Intercept)"), drop = FALSE]
-#         } else X <- model.matrix(rformula, data = data)
-#       }
-      # if(remove_intercept && any(colnames(X)=='(Intercept)'))
-      # X<-X[,-(colnames(X)=='(Intercept)')]
       Xnames <- colnames(X)
       dims <- dim(X)
       if (missing(n)) {
@@ -88,21 +72,6 @@ SSMregression <-
               colnames(X[[i]]) <- "(Intercept)"
             } else X[[i]] <- model.matrix(rformula[[i]], data = data[[i]])            
           }
-#           if (length(attr(terms(rformula[[i]], data = data[[i]]), "term.labels")) == 
-#                 0 && attr(terms(rformula[[i]], data = data[[i]]), "intercept") == 
-#                 1) {
-#             X[[i]] <- matrix(1, nrow = n, ncol = 1)
-#             colnames(X[[i]]) <- "(Intercept)"
-#           } else {
-#             if (attr(terms(rformula[[i]], data = data[[i]]), "intercept") == 
-#                   0 && attr(terms(rformula[[i]], data = data[[i]]), "factors") != 
-#                   0) {
-#               rformula[[i]] <- update.formula(rformula[[i]], ~. + 1)
-#               data[[i]] <- cbind(data[[i]], `(Intercept)` = 1)
-#               X[[i]] <- model.matrix(rformula[[i]], data = data[[i]])
-#               X[[i]] <- X[[i]][, -(colnames(X[[i]]) == "(Intercept)"), drop = FALSE]
-#             } else X[[i]] <- model.matrix(rformula[[i]], data = data[[i]])
-#           }
         }
       } else {
         for (i in 1:p) {
@@ -117,20 +86,6 @@ SSMregression <-
               colnames(X[[i]]) <- "(Intercept)"
             } else X[[i]] <- model.matrix(rformula[[i]], data = data)
           }
-#           if (length(attr(terms(rformula[[i]], data = data), "term.labels")) == 
-#                 0 && attr(terms(rformula[[i]], data = data), "intercept") == 1) {
-#             X[[i]] <- matrix(1, nrow = n, ncol = 1)
-#             colnames(X[[i]]) <- "(Intercept)"
-#           }
-#           } else {
-#             if (attr(terms(rformula[[i]], data = data), "intercept") == 0 && 
-#                   attr(terms(rformula[[i]], data = data), "factors") != 0) {
-#               rformula[[i]] <- update.formula(rformula[[i]], ~. + 1)
-#               data <- cbind(data, `(Intercept)` = 1)
-#               X[[i]] <- model.matrix(rformula[[i]], data = data)
-#               X[[i]] <- X[[i]][, -(colnames(X[[i]]) == "(Intercept)"), drop = FALSE]
-#             } else X[[i]] <- model.matrix(rformula[[i]], data = data)
-#           }
         }
       }
       if (any(sapply(X, is.na))) 
@@ -208,8 +163,8 @@ SSMregression <-
         R <- diag(m)[, 1:k, drop = FALSE]
       } else R <- NULL
     } else {
-      if (isTRUE(!(dim(R)[1] == m)) || isTRUE(dim(R)[2] != k) || !(max(dim(R)[3], 
-                                                                       1, na.rm = TRUE) %in% c(1, n))) 
+      if (isTRUE(!(dim(R)[1] == m)) || isTRUE(dim(R)[2] != k) || 
+            !(max(dim(R)[3], 1, na.rm = TRUE) %in% c(1, n))) 
         stop("Misspecified R, argument R must be (m x k) matrix, (m x k x 1), or (m x k x n) array where m is the number of states and k is the number of disturbance terms.")
       tvr <- max(dim(R)[3] == n, 0, na.rm = TRUE)
     }

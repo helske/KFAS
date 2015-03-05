@@ -2,7 +2,7 @@
 
 varianceFilter <- function(object) {
   vars <- object$model$y
-  for (i in 1:length(object$model$distribution)){ 
+  for (i in 1:length(object$model$distribution)){
     vars[, i] <- switch(object$model$distribution[i], 
                         gaussian = object$u[,i], 
                         poisson = object$m[, i], 
@@ -14,7 +14,7 @@ varianceFilter <- function(object) {
 }
 varianceSmoother <- function(object) {
   vars <- object$model$y
-  for (i in 1:length(object$model$distribution)){ 
+  for (i in 1:length(object$model$distribution)){
     vars[, i] <- switch(object$model$distribution[i], 
                         gaussian = object$u[,i], 
                         poisson = object$muhat[, i], 
@@ -46,29 +46,29 @@ recursive_standardized <- function(object,stype) {
       res <- tmp$v/sqrt(t(apply(tmp$F,3,diag)))
       res[1:object$d, ] <- NA      
     }
-  } else {    
+  } else {
     d<-KFS(approxSSM(object$model),filtering="state",smoothing="none")$d  
     
     vars<-varianceFilter(object)    
     
     res<-object$model$y  
-    if (sum(bins <- object$model$distribution == "binomial") > 0) 
+    if (sum(bins <- object$model$distribution == "binomial") > 0)
       res[, bins] <- res[, bins]/object$model$u[, bins]
     res <- res-object[["m", exact = TRUE]]   
     
-    if(stype=="cholesky" || p==1){     
-      for(t in (d+1):attr(object$model, "n") ){
-        yobs<-which(!is.na(res[t,]))
+    if(stype=="cholesky" || p==1){
+      for(i in (d+1):attr(object$model, "n") ){
+        yobs<-which(!is.na(res[i,]))
         if(length(yobs)>0){
-          tmp <- chol(diag(vars[t,yobs],p)+object$P_mu[yobs,yobs,t])
-          res[t,yobs] <- res[t,yobs]%*%solve(tmp)
+          tmp <- chol(diag(vars[i,yobs],p)+object$P_mu[yobs,yobs,i])
+          res[i,yobs] <- res[i,yobs]%*%solve(tmp)
         }        
       }
     } else {        
-      for(t in (d+1):attr(object$model, "n") ){
-        yobs<-which(!is.na(res[t,]))
+      for(i in (d+1):attr(object$model, "n") ){
+        yobs<-which(!is.na(res[i,]))
         if(length(yobs)>0){
-          res[t,yobs] <- res[t,yobs]/sqrt(vars[t,yobs]+diag(object$P_mu[yobs,yobs,t]))
+          res[i,yobs] <- res[i,yobs]/sqrt(vars[i,yobs]+diag(object$P_mu[yobs,yobs,i]))
         }
       }      
     }
@@ -80,14 +80,14 @@ recursive_standardized <- function(object,stype) {
   res
 }
 
-pearson_standardized <- function(object, stype) {     
+pearson_standardized <- function(object, stype) {
   n <- attr(object$model, "n")
   
   if(is.null(object$muhat))
     stop("KFS object needs to contain smoothed means. ")
   p<-attr(object$model,"p")
   
-  if (all(object$model$distribution == "gaussian")) {              
+  if (all(object$model$distribution == "gaussian")) {
     
     tv<-dim(object$model$H)[3] > 1
     res<-object$model$y-object$muhat 
@@ -101,7 +101,7 @@ pearson_standardized <- function(object, stype) {
         }
       }
     } else {
-      for(t in 1:n){  
+      for(t in 1:n){
         yobs<-which(!is.na(res[t,]))
         if(length(yobs)>0){
           res[t,yobs] <- res[t,yobs]/sqrt(diag(object$model$H[yobs,yobs,(t-1)*tv+1]-object$V_mu[yobs,yobs,t]))
@@ -109,7 +109,7 @@ pearson_standardized <- function(object, stype) {
       }
     }
     
-  } else {        
+  } else {
     res<-object$model$y
     vars<-varianceSmoother(object)     
     if (sum(bins <- object$model$distribution == "binomial") > 0) 
@@ -149,15 +149,15 @@ state_standardized <- function(object, stype) {
     if (dim(object$model$Q)[3] == 1) {
       z <- which(object$model$Q[, , 1][1 + 0:(k - 1) * (k + 1)] > 0)   
       if(length(z)>0)
-      for (i in 1:(n - 1)) {
-        eta[i, z] <- eta[i, z] %*% solve(chol(object$model$Q[z, z, 1] - object$V_eta[z,z, i]))          
-      }
+        for (i in 1:(n - 1)) {
+          eta[i, z] <- eta[i, z] %*% solve(chol(object$model$Q[z, z, 1] - object$V_eta[z,z, i]))          
+        }
       
-    } else {     
-      for (i in 1:(n - 1)){        
+    } else {
+      for (i in 1:(n - 1)){
         z <- which(object$model$Q[, , i][1 + 0:(k - 1) * (k + 1)] > 0) 
         if(length(z)>0)
-        eta[i, z] <- eta[i, z] %*% solve(chol(object$model$Q[z, z, i] - object$V_eta[z,z, i]))        
+          eta[i, z] <- eta[i, z] %*% solve(chol(object$model$Q[z, z, i] - object$V_eta[z,z, i]))        
         
       }
     }    
@@ -165,15 +165,15 @@ state_standardized <- function(object, stype) {
     if (dim(object$model$Q)[3] == 1) {
       z <- which(object$model$Q[, , 1][1 + 0:(k - 1) * (k + 1)] > 0)   
       if(length(z)>0)
-      for (i in 1:(n - 1)) {
-        eta[i, z] <- eta[i, z]/sqrt(diag(object$model$Q[z, z, 1] - object$V_eta[z,z, i]))
-      }
+        for (i in 1:(n - 1)) {
+          eta[i, z] <- eta[i, z]/sqrt(diag(object$model$Q[z, z, 1] - object$V_eta[z,z, i]))
+        }
       
-    } else {     
+    } else {
       for (i in 1:(n - 1)){        
         z <- which(object$model$Q[, , i][1 + 0:(k - 1) * (k + 1)] > 0)  
         if(length(z)>0)
-        eta[i, z] <- eta[i, z]/sqrt(diag(object$model$Q[z, z, i] - object$V_eta[z,z, i]))        
+          eta[i, z] <- eta[i, z]/sqrt(diag(object$model$Q[z, z, i] - object$V_eta[z,z, i]))        
         
       }
     }
@@ -191,7 +191,8 @@ deviance_standardized <- function(object) {
                 attr(object$model, "p"), byrow = TRUE)
   } else {
     w <- matrix(0, attr(object$model, "n"), attr(object$model, "p"))
-    for (i in 1:attr(object$model, "p")) w[, i] <- 
+    for (i in 1:attr(object$model, "p")) 
+      w[, i] <- 
       switch(object$model$distribution[i], 
              gaussian = object$model$u[, i], 
              poisson = 1, 

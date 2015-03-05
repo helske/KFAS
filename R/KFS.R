@@ -54,9 +54,6 @@
 #'   approximation. Default is 50. Only used for non-Gaussian model.
 #' @param convtol Tolerance parameter for convergence checks for Gaussian
 #'   approximation. Only used for non-Gaussian models.
-#' @param marginal Logical. Use marginal instead of diffuse likelihood in
-#'   approximating algorithm (see \code{\link{logLik.SSModel}} for details). 
-#' Default is FALSE.
 #' @return What \code{KFS} returns depends on the arguments \code{filtering}, 
 #'   \code{smoothing} and \code{simplify}, and whether the model is Gaussian or 
 #'   not:
@@ -186,7 +183,7 @@
 KFS <- 
   function(model, filtering, smoothing, simplify = TRUE, 
            transform = c("ldl", "augment"), nsim = 0, theta, maxiter = 50, 
-           convtol = 1e-08,marginal=FALSE) {
+           convtol = 1e-08) {
     # Check that the model object is of proper form
     is.SSModel(model, na.check = TRUE, return.logical = FALSE)
     if (missing(filtering)) {

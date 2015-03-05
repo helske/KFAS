@@ -6,8 +6,7 @@
 Family State Space Models}
 \usage{
 KFS(model, filtering, smoothing, simplify = TRUE, transform = c("ldl",
-  "augment"), nsim = 0, theta, maxiter = 50, convtol = 1e-08,
-  marginal = FALSE)
+  "augment"), nsim = 0, theta, maxiter = 50, convtol = 1e-08)
 }
 \arguments{
 \item{model}{Object of class \code{SSModel}.}
@@ -48,10 +47,6 @@ approximation. Default is 50. Only used for non-Gaussian model.}
 
 \item{convtol}{Tolerance parameter for convergence checks for Gaussian
 approximation. Only used for non-Gaussian models.}
-
-\item{marginal}{Logical. Use marginal instead of diffuse likelihood in
-  approximating algorithm (see \code{\link{logLik.SSModel}} for details).
-Default is FALSE.}
 }
 \value{
 What \code{KFS} returns depends on the arguments \code{filtering},

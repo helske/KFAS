@@ -177,4 +177,3 @@ logLik.SSModel <-
     } 
     out$lik
   }
-

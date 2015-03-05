@@ -1,7 +1,7 @@
 #' @rdname SSModel
 #' @export
 SSMtrend <- 
-  function(degree = 1, type, Q, index, a1, P1, P1inf, n, ynames) {
+  function(degree = 1, Q, type, index, a1, P1, P1inf, n, ynames) {
     if (missing(index)) 
         index <- 1
     p <- length(index)

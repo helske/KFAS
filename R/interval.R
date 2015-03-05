@@ -2,8 +2,9 @@
 # models. 
 # Used by predict.SSModel method.
 interval <- 
-  function(model, interval = c("confidence", "prediction"), level, type = c("response", 
-                                                                            "link"), states = NULL, nsim, se.fit = TRUE, timespan, prob = TRUE, maxiter = 50) {
+  function(model, interval = c("confidence", "prediction"), level, 
+           type = c("response",  "link"), states = NULL, nsim, se.fit = TRUE, 
+           timespan, prob = TRUE, maxiter = 50) {
     interval <- match.arg(interval)
     
     type <- match.arg(type)
@@ -12,7 +13,6 @@ interval <-
     m <- attr(model, "m")
     n <- as.integer(length(timespan))
     p <- attr(model, "p")
-    n2 <- as.integer(length(timespan))
     # Generate sample via importance sampling
     imp <- importanceSSM(model, ifelse(identical(states, as.integer(1:m)), "signal", 
                                        "states"), nsim = nsim, antithetics = TRUE, maxiter = maxiter)
@@ -22,8 +22,8 @@ interval <-
     if (!identical(states, 1:attr(model, "m"))) 
       imp$samples <- .Fortran(fzalpha, as.integer(dim(model$Z)[3] > 1), 
                               model$Z[, if (dim(model$Z)[3] > 1) timespan else 1, drop = FALSE], 
-                              imp$samples[timespan, , drop = FALSE], signal = array(0, c(n2, p, nsim)),
-                              p, n2, m, nsim, as.integer(length(states)), states)$signal
+                              imp$samples[timespan, , drop = FALSE], signal = array(0, c(n, p, nsim)),
+                              p, n, m, nsim, as.integer(length(states)), states)$signal
     for (j in 1:p) if (model$distribution[j] == "poisson") 
       imp$samples[timespan, j, ] <- imp$samples[timespan, j, ] + log(model$u[timespan, j])
     # compute intervals using weighted sample
@@ -58,7 +58,7 @@ interval <-
           sapply(timespan, function(i) {
             sample_mu <- sample(imp$samples[i, j, ], size = nsim, replace = TRUE, 
                                 prob = w)
-            q <- quantile(switch(model$distribution[j], 
+            quantile(switch(model$distribution[j], 
                                  gaussian = rnorm(n = nsim, mean = sample_mu, sd = model$u[i, j]), 
                                  poisson = rpois(n = nsim, lambda = sample_mu), 
                                  binomial = rbinom(n = nsim, size = (if (!prob) model$u[i, j] else 1), 
@@ -73,8 +73,8 @@ interval <-
         })
       }
     }
-    varmean <- .Fortran(fvarmeanw, imp$samples[timespan, , ], w, p, n2, 
-                        nsim, mean = array(0, c(n2, p)), var = array(0, c(n2, p)), as.integer(se.fit))
+    varmean <- .Fortran(fvarmeanw, imp$samples[timespan, , ], w, p, n, 
+                        nsim, mean = array(0, c(n, p)), var = array(0, c(n, p)), as.integer(se.fit))
     if (se.fit) {
       pred <- lapply(1:p, function(j) cbind(fit = cbind(varmean$mean[, j], 
                                                         lwr = int[[j]][1, ], upr = int[[j]][2, ]), 

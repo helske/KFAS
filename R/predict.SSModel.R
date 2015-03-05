@@ -245,7 +245,7 @@ predict.SSModel <-
                   pred <- lapply(1:p, function(j) cbind(fit = varmean$mean[, j], 
                     se.fit = sqrt(varmean$var[, j])))
                 } else {
-                  pred <- lapply(1:p, function(j) fit <- varmean$mean[, j])
+                  pred <- lapply(1:p, function(j) varmean$mean[, j])
                 }
             } else {
                 pred <- interval(object, interval = interval, level = level, type = type, 
