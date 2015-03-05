@@ -1,7 +1,7 @@
 #' @rdname SSModel
 #' @export
 SSMcycle <- 
-  function(rformula, Q, R, data, remove.intercept = TRUE, type, index, a1, P1, P1inf, n, ynames) {
+  function(period, Q, type, index, a1, P1, P1inf, n, ynames) {
     if (missing(index)) 
         index <- 1
     p <- length(index)
