@@ -97,8 +97,8 @@ transformSSM <-
           ))  
         }        
         H <- array(0, c(p, p, ((n - 1) * tv[2] + 1)))
-        for (t in 1:((n - 1) * tv[2] + 1)) #construct diagonal H
-          diag(H[, , t]) <- diag(out$ichols[, , out$hchol[t]])
+        for (i in 1:((n - 1) * tv[2] + 1)) #construct diagonal H
+          diag(H[, , i]) <- diag(out$ichols[, , out$hchol[i]])
         attry <- attributes(object$y)
         object$y <- t(out$yt)
         attributes(object$y) <- attry
