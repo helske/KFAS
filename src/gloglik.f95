@@ -31,6 +31,8 @@ p, m, r, n, lik, tol,rankp,marginal)
     double precision :: meps
     double precision, dimension(m,m,(n-1)*max(timevar(4),timevar(5))+1) :: rqr
 
+    external dgemm, dsymm, dgemv, dsymv, daxpy, dsyr, dsyr2
+
     ! compute RQR'
     tv= max(timevar(4),timevar(5))
     do t=1, (n-1)*tv+1

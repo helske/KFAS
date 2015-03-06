@@ -34,6 +34,8 @@ theta, u, ytilde, dist,maxiter,tol,rankp,convtol,diff,lik,info)
     double precision, dimension(p,n) :: ft,finf
     double precision, dimension(m,p,n) :: kt,kinf
 
+    external dgemm
+
     !compute rqr
     tvrqr = max(timevar(4),timevar(5))
     do i=1, (n-1)*tvrqr+1
@@ -74,7 +76,7 @@ theta, u, ytilde, dist,maxiter,tol,rankp,convtol,diff,lik,info)
                     !backtrack
                     theta = 0.5d0*(thetaold+theta)
                     call approxloop(yt, ymiss, timevar, zt, tt, rtv, ht, qt, rqr, tvrqr, a1, p1,p1inf, p,n,m,r, &
-                    theta, thetanew, u, ytilde, dist,tol,rankp,lik)
+                          theta, thetanew, u, ytilde, dist,tol,rankp,lik)
 
                     call pytheta(thetanew, dist, u, yt, ymiss, dev, p, n)
                     if(rankp .NE. m) then

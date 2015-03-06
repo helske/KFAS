@@ -26,22 +26,22 @@
 #'                      out$v[-(1:out$d)]^2/out$F[-(1:out$d)]))
 #' c(hatvalues(KFS(model)))
 #' 
-hatvalues.KFS <- 
-  function(model, ...) {
-    if (any(model$model$distribution != "gaussian")) {
-        app <- approxSSM(model$model, ...)
-        if (is.null(model$V_theta)) 
-            stop("KFS was run without signal smoothing, cannot compute hat values.")
-        hatv <- matrix(apply(model$V_theta/app$H, 3, diag), attr(model$model, "n"), 
-            attr(model$model, "p"), byrow = TRUE)
-    } else {
-        if (is.null(model$V_mu)) 
-            stop("KFS was run without mean smoothing, cannot compute hat values.")
-        hatv <- matrix(apply(model$V_mu, 3, diag), attr(model$model, "n"), attr(model$model, 
-            "p"), byrow = TRUE)/matrix(apply(model$model$H, 3, diag), attr(model$model, 
-            "n"), attr(model$model, "p"), byrow = TRUE)
-    }
-    attributes(hatv) <- attributes(model$model$y)
-    hatv[is.na(model$model$y)]<-NA
-    hatv
+hatvalues.KFS <- function(model, ...) {
+  if (any(model$model$distribution != "gaussian")) {
+    app <- approxSSM(model$model, ...)
+    if (is.null(model$V_theta)) 
+      stop("KFS was run without signal smoothing, cannot compute hat values.")
+    hatv <- matrix(apply(model$V_theta/app$H, 3, diag), attr(model$model, "n"), 
+                   attr(model$model, "p"), byrow = TRUE)
+  } else {
+    if (is.null(model$V_mu)) 
+      stop("KFS was run without mean smoothing, cannot compute hat values.")
+    hatv <- matrix(apply(model$V_mu, 3, diag), 
+                   attr(model$model, "n"), attr(model$model,"p"), byrow = TRUE)/
+      matrix(apply(model$model$H, 3, diag), attr(model$model, "n"), 
+             attr(model$model, "p"), byrow = TRUE)
+  }
+  attributes(hatv) <- attributes(model$model$y)
+  hatv[is.na(model$model$y)]<-NA
+  hatv
 } 

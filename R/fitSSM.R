@@ -73,61 +73,60 @@
 #'   inherits(try(ldl(model$Q[,,1]),TRUE),'try-error')
 #' }
 #'
-fitSSM <- 
-  function(model, inits, updatefn, checkfn,...) {
-   
-    if (missing(updatefn)) {
-      # use default updating function, only for time invariant covariance matrices
-      estH <- !identical(model$H, "Omitted") && any(is.na(model$H))
-      estQ <- any(is.na(model$Q))
-      if ((dim(model$H)[3]>1 && estH || (dim(model$Q)[3] > 1) && estQ)) 
-        stop("No model updating function supplied, but cannot use default 
+fitSSM <- function(model, inits, updatefn, checkfn,...) {
+  
+  if (missing(updatefn)) {
+    # use default updating function, only for time invariant covariance matrices
+    estH <- !identical(model$H, "Omitted") && any(is.na(model$H))
+    estQ <- any(is.na(model$Q))
+    if ((dim(model$H)[3]>1 && estH || (dim(model$Q)[3] > 1) && estQ)) 
+      stop("No model updating function supplied, but cannot use default 
              function as the covariance matrices are time varying.")
-      updatefn <- function(pars, model, ...) {
-        if(estQ){
-          Q <- as.matrix(model$Q[, , 1])
-          naQd <- which(is.na(diag(Q)))
-          naQnd <- which(upper.tri(Q[naQd, naQd]) & is.na(Q[naQd, naQd]))
-          Q[naQd, naQd][lower.tri(Q[naQd, naQd])] <- 0
-          diag(Q)[naQd] <- exp(0.5 * pars[1:length(naQd)])
-          Q[naQd, naQd][naQnd] <- pars[length(naQd) + 1:length(naQnd)]
-          model$Q[naQd, naQd, 1] <- crossprod(Q[naQd, naQd])
-        } else naQnd<-naQd<-NULL
-        if (estH){
-          H <- as.matrix(model$H[, , 1])
-          naHd <- which(is.na(diag(H)))
-          naHnd <- which(upper.tri(H[naHd, naHd]) & is.na(H[naHd, naHd]))
-          H[naHd, naHd][lower.tri(H[naHd, naHd])] <- 0
-          diag(H)[naHd] <- exp(0.5 * pars[length(naQd) + length(naQnd) + 
-                                            1:length(naHd)])
-          H[naHd, naHd][naHnd] <- pars[length(naQd) + length(naQnd) + 
-                                         length(naHd) + 1:length(naHnd)]
-          model$H[naHd, naHd, 1] <- crossprod(H[naHd, naHd])
-          
-        }
-        model
+    updatefn <- function(pars, model, ...) {
+      if(estQ){
+        Q <- as.matrix(model$Q[, , 1])
+        naQd <- which(is.na(diag(Q)))
+        naQnd <- which(upper.tri(Q[naQd, naQd]) & is.na(Q[naQd, naQd]))
+        Q[naQd, naQd][lower.tri(Q[naQd, naQd])] <- 0
+        diag(Q)[naQd] <- exp(0.5 * pars[1:length(naQd)])
+        Q[naQd, naQd][naQnd] <- pars[length(naQd) + 1:length(naQnd)]
+        model$Q[naQd, naQd, 1] <- crossprod(Q[naQd, naQd])
+      } else naQnd<-naQd<-NULL
+      if (estH){
+        H <- as.matrix(model$H[, , 1])
+        naHd <- which(is.na(diag(H)))
+        naHnd <- which(upper.tri(H[naHd, naHd]) & is.na(H[naHd, naHd]))
+        H[naHd, naHd][lower.tri(H[naHd, naHd])] <- 0
+        diag(H)[naHd] <- exp(0.5 * pars[length(naQd) + length(naQnd) + 
+                                          1:length(naHd)])
+        H[naHd, naHd][naHnd] <- pars[length(naQd) + length(naQnd) + 
+                                       length(naHd) + 1:length(naHnd)]
+        model$H[naHd, naHd, 1] <- crossprod(H[naHd, naHd])
+        
       }
+      model
     }
-    # Check that the model object is of proper form
-    is.SSModel(updatefn(inits, model, ...), na.check = TRUE, 
-               return.logical = FALSE)
-    
-    # use is.SSModel as default checking function
-    if (missing(checkfn)) {
-      likfn <- function(pars, model, ...) {
-        model <- updatefn(pars, model, ...)
-         -logLik(object = model, check.model = TRUE, ...)       
-      }
-    } else {
-        likfn <- function(pars, model, ...) {
-          model <- updatefn(pars, model, ...)
-          if (checkfn(model)) {
-            return(-logLik(object = model, check.model = FALSE, ...))
-          } else return(.Machine$double.xmax^0.75)
-        }
+  }
+  # Check that the model object is of proper form
+  is.SSModel(updatefn(inits, model, ...), na.check = TRUE, 
+             return.logical = FALSE)
+  
+  # use is.SSModel as default checking function
+  if (missing(checkfn)) {
+    likfn <- function(pars, model, ...) {
+      model <- updatefn(pars, model, ...)
+      -logLik(object = model, check.model = TRUE, ...)       
     }
-    out <- NULL
-    out$optim.out <- optim(par = inits, fn = likfn, model = model, ...)
-    out$model <- updatefn(out$opt$par, model, ...)
-    out
-  } 
+  } else {
+    likfn <- function(pars, model, ...) {
+      model <- updatefn(pars, model, ...)
+      if (checkfn(model)) {
+        return(-logLik(object = model, check.model = FALSE, ...))
+      } else return(.Machine$double.xmax^0.75)
+    }
+  }
+  out <- NULL
+  out$optim.out <- optim(par = inits, fn = likfn, model = model, ...)
+  out$model <- updatefn(out$opt$par, model, ...)
+  out
+} 

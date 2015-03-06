@@ -104,51 +104,23 @@ logLik.SSModel <-
             any(!is.finite(c(object$R, object$Q, object$u) == 0))) 
         return(-.Machine$double.xmax^0.75)
       if (missing(theta)) {
-        theta <- init_theta(object$y, object$u, object$distribution)
+        theta <- initTheta(object$y, object$u, object$distribution)
       } else theta <- array(theta, dim = c(n, p))    
       if (nsim == 0) {
         nsim <- 1
-        sim <- 0
-        epsplus <- array(0, c(1, 1, 1))
-        etaplus <- array(0, c(1, 1, 1))
-        aplus1 <- array(0, dim = c(1, 1))
-        c2 <- numeric(1)
-        nnd <- 0
-        nd <- which(diag(object$P1inf) == 0)
+        sim <- 0        
+        simtmp <- list(epsplus = array(0, c(1, 1, 1)), etaplus = array(0, c(1, 1, 1)),
+                       aplus1 = array(0, dim = c(1, 1)), c2 = numeric(1),
+                       nonzeroP1 = which(diag(object$P1) > object$tol), 
+                       nNonzeroP1 = length(which(diag(object$P1) > object$tol)),
+                       zeroP1inf = which(diag(object$P1inf) > 0), 
+                       nNonzeroP1inf = as.integer(sum(object$P1inf)))
       } else {
         sim <- 1
-        epsplus <- array(0, c(p, n, nsim))
-        etaplus <- array(0, c(k, n, nsim))
-        aplus1 <- array(0, dim = c(m, nsim))
-        c2 <- numeric(nsim)
-        x <- array(t(!ymiss), c(p, n, nsim))
-        dfeps <- sum(x)/nsim
-        x2 <- array(apply(object$Q, 3, diag) > object$tol, c(k, (n - 1) * tv[5] + 
-                                                               1))
-        x2 <- array(x2, c(k, n, nsim))
-        dfeta <- sum(x2)/nsim
-        nde <- which(diag(object$P1) > object$tol)
-        nnd <- length(nde)
-        nd <- which(diag(object$P1inf) == 0)
-        dfu <- dfeps + dfeta + nnd
         if (missing(seed)) 
           seed <- 123
         set.seed(seed)
-        u <- rnorm(n = dfu * nsim, mean = 0, sd = 1)
-        if (dfeps > 0) 
-          epsplus[x] <- u[1:(dfeps * nsim)]
-        if (dfeta > 0) 
-          etaplus[x2] <- u[(dfeps * nsim + 1):(dfeps * nsim + dfeta * nsim)]
-        if (nnd > 0) 
-          aplus1[nde, ] <- u[(dfeps * nsim + dfeta * nsim + 1):(dfu * nsim)]
-        if (antithetics) {
-          for (i in 1:nsim) {
-            u <- c(etaplus[, , i], epsplus[, , i], aplus1[, i])
-            c2[i] <- t(u) %*% c(u)
-          }
-          q <- pchisq(c2, df = dfu)
-          c2 <- sqrt(qchisq(1 - q, dfu)/c2)
-        }
+        simtmp <- simHelper(object, ymiss, antithetics, nsim)
       }
       nsim2 <- as.integer(max(sim * (3 * antithetics * nsim + nsim), 1))
       out <- .Fortran(fngloglik, NAOK = TRUE, object$y, ymiss, tv, 
@@ -158,10 +130,12 @@ logLik.SSModel <-
                       pmatch(x = object$distribution, 
                              table = c("gaussian", "poisson", "binomial", "gamma", "negative binomial"), 
                              duplicates.ok = TRUE), 
-                      maxiter = as.integer(maxiter), as.integer(sum(object$P1inf)), convtol, 
-                      as.integer(nnd), as.integer(nsim), epsplus, etaplus, aplus1, c2, object$tol, 
-                      info = integer(1), as.integer(antithetics), as.integer(sim), nsim2, as.integer(nd), 
-                      as.integer(length(nd)), diff = double(1),marginal=as.integer(marginal))     
+                      maxiter = as.integer(maxiter), simtmp$nNonzeroP1inf, convtol, 
+                      simtmp$nNonzeroP1, as.integer(nsim), simtmp$epsplus, simtmp$etaplus, 
+                      simtmp$aplus1, simtmp$c2, object$tol, 
+                      info = integer(1), as.integer(antithetics), as.integer(sim), nsim2, 
+                      simtmp$zeroP1inf, length(simtmp$zeroP1inf), diff = double(1), 
+                      marginal = as.integer(marginal))     
       
       if(out$info!=0){        
         warning(switch(as.character(out$info),

@@ -12,6 +12,7 @@ subroutine marginalxx(p1inf,zt,tt,m,p,n,k,timevar,lik,info)
     double precision, dimension(m,k) :: a,a2
     double precision, dimension(k,k) :: s
     double precision, dimension(p,k) :: v
+    external dgemm, dpotrf
     
     a=0.0d0
     j=1

@@ -35,9 +35,7 @@ etahat,etahatvar,thetahat,thetahatvar, ldlsignal,zorig, zorigtv,aug,state,dist,s
     double precision, intent(inout), dimension(r*dist,r*dist,n*dist) :: etahatvar
     double precision, intent(inout), dimension(p*signal,n*signal) :: thetahat
     double precision, intent(inout), dimension(p*signal,p*signal,n*signal) :: thetahatvar
-
     double precision, intent(in), dimension(ldlsignal*p,ldlsignal*m,ldlsignal*((n-1)*zorigtv+1)) :: zorig
-
     double precision, dimension(m,m) :: linf,l0
     double precision, dimension(m,m) :: nrec,nrec1,nrec2,im,mm,mm2
     double precision, dimension(m) :: rrec,rrec1,rhelp, help
@@ -46,6 +44,7 @@ etahat,etahatvar,thetahat,thetahatvar, ldlsignal,zorig, zorigtv,aug,state,dist,s
     double precision, dimension(p,n) ::  ftinv
     double precision, dimension(p,d) ::  finfinv
     double precision, external :: ddot
+    external dgemm, dsymm, dgemv, dsymv, dger, dcopy
 
     if(aug.EQ.1 .AND. dist.EQ.1) then
         do i = 1, p

@@ -76,7 +76,6 @@ tol,nd,ndl,sim,c,simwhat,simdim,antithetics)
             cholqt(1,1,t)=sqrt(qt(1,1,t))
         else
             rcholtmp = qt(:,:,t)
-            !call dgesdd('o',r,r,rcholtmp,r,sigma,u,r,ut,r,work,lwork,iwork,info)
             call ldl(rcholtmp,r,tol,info)
             if(info .NE. 0) then
                 info = -2

@@ -64,75 +64,74 @@
 #' KFS(approxmodel)
 #' summary(glmfit1)
 #' summary(glmfit2)
-approxSSM <-
-  function(model, theta, maxiter = 50, tol = 1e-08) {
-
-    if(maxiter < 1)
-      stop("Argument maxiter must a positive integer. ")
-    if(tol < 0)
-      stop("Argument tol must be non-negative. ")
-
-    # Check that the model object is of proper form
-    is.SSModel(model, na.check = TRUE, return.logical = FALSE)
-    if (all(model$distribution == "gaussian"))
-      stop("Model is completely Gaussian, nothing to approximate.")
-
-    p <- attr(model, "p")
-    m <- attr(model, "m")
-    k <- attr(model, "k")
-    n <- attr(model, "n")
-    tv <- attr(model, "tv")
-    ymiss <- is.na(model$y)
-    storage.mode(ymiss) <- "integer"
-
-    # Initial values for linear predictor theta
-    if (missing(theta) || is.null(theta)) {
-      theta <- init_theta(model$y, model$u, model$distribution)
-    } else theta <- array(theta, dim = c(n, p))
-
-    dist <- pmatch(x = model$distribution, duplicates.ok = TRUE,
-                   table = c("gaussian", "poisson",
-                             "binomial", "gamma", "negative binomial"))
-
-    # Call Fortran subroutine for model approximation
-    out <-
-      .Fortran(fapprox, NAOK = TRUE, model$y, ymiss, tv, model$Z, model$T,
-               model$R, Htilde = array(0, c(p, p, n)), model$Q, model$a1,
-               model$P1, model$P1inf, p, n, m, k, theta = theta, model$u,
-               ytilde = array(0, dim = c(n, p)), dist,
-               maxiter = as.integer(maxiter), model$tol,
-               as.integer(sum(model$P1inf)), as.double(tol), diff = double(1),
-               double(1),info=integer(1))
-    if(out$info != 0){
-
-      warning(switch(as.character(out$info),
-                     "-3" = "Couldn't compute LDL decomposition of P1.",
-                     "-2" =  "Couldn't compute LDL decomposition of Q.",
-                     "1" = paste0("Gaussian approximation failed due to ",
-                                  "non-finite value in linear predictor."),
-                     "2" =  paste0("Gaussian approximation failed due to ",
-                                   "non-finite value of p(theta|y).")
-      ))
-      if(out$info != 3) return(-.Machine$double.xmax ^ 0.75)
-    }
-    if(out$info != 0){
-      if (out$info == 1){
-        stop(paste0("Non-finite value of likelihood or linear predictor in ",
-                    "approximation algorithm."))
-      }
-      if(out$info == 2){
-        warning(paste0("Maximum number of iterations reached, latest ",
-                       "difference was ", signif(out$diff,3)))
-      }
-    }
-
-    model$distribution <- rep("gaussian", p)
-    model$y[] <- out$ytilde
-    model$y[as.logical(ymiss)] <- NA
-    model$H <- out$Htilde
-    model$thetahat <- out$theta
-    model$iterations <- out$maxiter
-    model$difference <- out$diff
-    class(model) <- c("approxSSM", "SSModel")
-    invisible(model)
+approxSSM <- function(model, theta, maxiter = 50, tol = 1e-08) {
+  
+  if(maxiter < 1)
+    stop("Argument maxiter must a positive integer. ")
+  if(tol < 0)
+    stop("Argument tol must be non-negative. ")
+  
+  # Check that the model object is of proper form
+  is.SSModel(model, na.check = TRUE, return.logical = FALSE)
+  if (all(model$distribution == "gaussian"))
+    stop("Model is completely Gaussian, nothing to approximate.")
+  
+  p <- attr(model, "p")
+  m <- attr(model, "m")
+  k <- attr(model, "k")
+  n <- attr(model, "n")
+  tv <- attr(model, "tv")
+  ymiss <- is.na(model$y)
+  storage.mode(ymiss) <- "integer"
+  
+  # Initial values for linear predictor theta
+  if (missing(theta) || is.null(theta)) {
+    theta <- initTheta(model$y, model$u, model$distribution)
+  } else theta <- array(theta, dim = c(n, p))
+  
+  dist <- pmatch(x = model$distribution, duplicates.ok = TRUE,
+                 table = c("gaussian", "poisson",
+                           "binomial", "gamma", "negative binomial"))
+  
+  # Call Fortran subroutine for model approximation
+  out <-
+    .Fortran(fapprox, NAOK = TRUE, model$y, ymiss, tv, model$Z, model$T,
+             model$R, Htilde = array(0, c(p, p, n)), model$Q, model$a1,
+             model$P1, model$P1inf, p, n, m, k, theta = theta, model$u,
+             ytilde = array(0, dim = c(n, p)), dist,
+             maxiter = as.integer(maxiter), model$tol,
+             as.integer(sum(model$P1inf)), as.double(tol), diff = double(1),
+             double(1),info=integer(1))
+  if(out$info != 0){
+    
+    warning(switch(as.character(out$info),
+                   "-3" = "Couldn't compute LDL decomposition of P1.",
+                   "-2" =  "Couldn't compute LDL decomposition of Q.",
+                   "1" = paste0("Gaussian approximation failed due to ",
+                                "non-finite value in linear predictor."),
+                   "2" =  paste0("Gaussian approximation failed due to ",
+                                 "non-finite value of p(theta|y).")
+    ))
+    if(out$info != 3) return(-.Machine$double.xmax ^ 0.75)
   }
+  if(out$info != 0){
+    if (out$info == 1){
+      stop(paste0("Non-finite value of likelihood or linear predictor in ",
+                  "approximation algorithm."))
+    }
+    if(out$info == 2){
+      warning(paste0("Maximum number of iterations reached, latest ",
+                     "difference was ", signif(out$diff,3)))
+    }
+  }
+  
+  model$distribution <- rep("gaussian", p)
+  model$y[] <- out$ytilde
+  model$y[as.logical(ymiss)] <- NA
+  model$H <- out$Htilde
+  model$thetahat <- out$theta
+  model$iterations <- out$maxiter
+  model$difference <- out$diff
+  class(model) <- c("approxSSM", "SSModel")
+  invisible(model)
+}

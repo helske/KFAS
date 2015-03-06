@@ -31,8 +31,9 @@ p, n, m, r,tol,rankp,thetahat,lik)
     double precision, external :: ddot
     double precision, intent(inout), dimension(n,p) :: thetahat
     double precision, intent(inout) :: lik
-    lik=0.0d0
+    external dgemm, dsymm, dgemv, dsymv, daxpy, dsyr, dsyr2
 
+    lik=0.0d0
     meps = tiny(meps)
     c = 0.5d0*log(8.0d0*atan(1.0d0))
     pinf = p1inf
@@ -298,7 +299,6 @@ p, n, m, r,tol,rankp,thetahat,lik)
     call dgemv('n',p,m,1.0d0,zt(:,:,1),p,at,1,0.0d0,thetahat(1,:),1)
 
     do t = 2, n
-
         call dgemv('n',m,m,1.0d0,tt(:,:,(t-2)*timevar(3)+1),m,at,1,0.0d0,help,1)
         at=help
         call dgemv('n',m,r,1.0d0,rtv(:,:,(t-2)*timevar(4)+1),m,etahat(:,t-1),1,1.0d0,at,1)

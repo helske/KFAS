@@ -21,25 +21,22 @@ subset(x, ...) <- value
 \arguments{
 \item{x}{Object of class \code{SSModel}.}
 
-\item{element}{Which element is chosen. Possible choices are
-'y','Z','H','T','R','Q','a1','P1','P1inf', and 'u'.}
+\item{element}{Which element is chosen. Possible choices are \code{"y"}, \code{"Z"}, \code{"H"},
+\code{"T"}, \code{"R"}, \code{"Q"}, \code{"a1"}, \code{"P1"}, \code{"P1inf"}, and \code{"u"}.}
 
-\item{states}{Which states are chosen. Either a numeric vector containing
-the indices of the states, or a character vector defining the
-types of the states.
-Possible choices are \dQuote{all}, \dQuote{arima}, \dQuote{custom},
-\dQuote{cycle}, \dQuote{seasonal}, \dQuote{trend}, or \dQuote{regression}.
-These can be combined. Default is \dQuote{all}.}
+\item{states}{Which states are chosen. Either a numeric vector containing the indices of the
+states, or a character vector defining the types of the states. Possible choices are
+\code{"all"}, \code{"arima"}, \code{"custom"}, \code{"cycle"}, \code{"seasonal"},
+\code{"trend"}, or \code{"regression"}. These can be combined. Default is \code{"all"}.}
 
-\item{etas}{Which disturbances eta are chosen. Used for elements \dQuote{R}
-and \dQuote{Q}. Either a numeric vector containing the indices of the
-etas, or a character vector defining the types of the etas.
-Possible choices are \dQuote{all}, \dQuote{arima}, \dQuote{custom},
-\dQuote{cycle}, \dQuote{seasonal}, \dQuote{trend}, or \dQuote{regression}.
+\item{etas}{Which disturbances eta are chosen. Used for elements \code{"R"} and \code{"Q"}.
+  Either a numeric vector containing the indices of the etas, or a character vector defining the
+  types of the etas. Possible choices are \code{"all"}, \code{"arima"}, \code{"custom"},
+  \code{"cycle"}, \code{"seasonal"}, \code{"trend"}, or \code{"regression"}.
 These can be combined.}
 
 \item{series}{Numeric. Which series are chosen. Used for elements
-\dQuote{y}, \dQuote{Z}, and \dQuote{u}.}
+\code{"y"}, \code{"Z"}, and \code{"u"}.}
 
 \item{times}{Numeric. Which time points are chosen.}
 

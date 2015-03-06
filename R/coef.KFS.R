@@ -15,19 +15,18 @@
 #' state vector. Default is \code{FALSE}.
 #' @param \dots Ignored.
 #' @return Multivariate time series containing estimates states.
-coef.KFS <-
-  function(object, start = NULL, end = NULL, filtered = FALSE, ...) {
-    if (!filtered) {
-        if (!is.null(object$alphahat)) {
-            tmp <- object$alphahat
-        } else stop("Input does not contain smoothed estimates for states, rerun KFS with state smoothing.")
-    } else {
-        if (!is.null(object[["a", exact = TRUE]])) {
-            tmp <- object$a
-        } else stop("Input does not contain filtered estimates for states, rerun KFS with state filtering.")
-    }
-    tmp <- window(tmp, start = start, end = end)
-    if (!is.null(start) && start == end) 
-        tsp(tmp) <- class(tmp) <- NULL
-    drop(tmp)
+coef.KFS <- function(object, start = NULL, end = NULL, filtered = FALSE, ...) {
+  if (!filtered) {
+    if (!is.null(object$alphahat)) {
+      tmp <- object$alphahat
+    } else stop("Input does not contain smoothed estimates for states, rerun KFS with state smoothing.")
+  } else {
+    if (!is.null(object[["a", exact = TRUE]])) {
+      tmp <- object$a
+    } else stop("Input does not contain filtered estimates for states, rerun KFS with state filtering.")
+  }
+  tmp <- window(tmp, start = start, end = end)
+  if (!is.null(start) && start == end) 
+    tsp(tmp) <- class(tmp) <- NULL
+  drop(tmp)
 } 

@@ -33,6 +33,7 @@ at, pt, vt, ft,kt, pinf, finf, kinf, lik, tol,rankp,theta,thetavar,filtersignal)
     double precision :: c
     double precision, external :: ddot
     double precision :: meps,finv
+    external dgemm, dsymm, dgemv, dsymv, daxpy, dsyr, dsyr2
 
     meps = tiny(meps)
 

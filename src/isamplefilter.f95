@@ -66,12 +66,12 @@ aplus1,c,tol,info,antithetics,w,sim,nd,ndl,simwhat,simdim)
     end if
     maxitermax = 0
 
-    do i=1,(n-1)
+    do i = 1, (n-1) ! increase time
 
-        ht=0.0d0
-        ytilde=0.0d0
+        ht = 0.0d0
+        ytilde = 0.0d0
 
-        maxiter2=maxiter
+        maxiter2 = maxiter
         info2 = 0
         ! approximate
         call approx(yt(1:i,:), ymiss(1:i,:), timevar, zt(:,:,1:((i-1)*timevar(1)+1)), &

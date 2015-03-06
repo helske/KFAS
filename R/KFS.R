@@ -221,49 +221,24 @@ KFS <-
     n <- attr(model, "n")
     tv <- attr(model, "tv")    
     ymiss <- is.na(model$y)
+    storage.mode(ymiss) <- "integer"
     out <- list(model = model)
     
     # non-Gaussian case
     if (any(model$distribution != "gaussian")) {
+      
       if(maxiter<1)
         stop("Argument maxiter must a positive integer. ")
       
       # initial values for theta
       if (missing(theta)) {
-        theta <- init_theta(model$y, model$u, model$distribution)
-      } else theta <- array(theta, dim = c(n, p))     
+        theta <- initTheta(model$y, model$u, model$distribution)
+      } else theta <- array(theta, dim = c(n, p)) 
+      
+      
       if (nsim > 0) {
-        # generate standard normal variables for importance sampling
-        epsplus <- array(0, c(p, n, nsim))
-        etaplus <- array(0, c(k, n, nsim))
-        aplus1 <- array(0, dim = c(m, nsim))
-        c2 <- numeric(nsim)
-        x <- array(t(!ymiss), c(p, n, nsim))
-        df_eps <- sum(x)/nsim
-        x2 <- array(abs(apply(model$Q, 3, diag)) > model$tol, c(k, (n - 1) * 
-                                                                  tv[5] + 1))
-        x2 <- array(x2, c(k, n, nsim))
-        df_eta <- sum(x2)/nsim
-        nondiffuse_elements <- which(diag(model$P1) > model$tol)
-        nondiffuse_elements_length <- length(nondiffuse_elements)
-        nd <- which(diag(model$P1inf) == 0)
-        df_total <- df_eps + df_eta + nondiffuse_elements_length
-        std_normal_sample <- rnorm(df_total * nsim, mean = 0, sd = 1)
-        if (df_eps > 0) 
-          epsplus[x] <- std_normal_sample[1:(df_eps * nsim)]
-        if (df_eta > 0) 
-          etaplus[x2] <- 
-          std_normal_sample[(df_eps * nsim + 1):(df_eps * nsim + df_eta * nsim)]
-        if (nondiffuse_elements_length > 0) 
-          aplus1[nondiffuse_elements, ] <- 
-          std_normal_sample[(df_eps * nsim + df_eta * nsim + 1):(df_total * nsim)]
-        for (i in 1:nsim) {
-          std_normal_sample <- c(etaplus[, , i], epsplus[, , i], aplus1[, i])
-          c2[i] <- t(std_normal_sample) %*% c(std_normal_sample)
-        }
-        q <- pchisq(c2, df = df_total)
-        c2 <- sqrt(qchisq(1 - q, df_total)/c2)
-        storage.mode(ymiss) <- "integer"
+        simtmp <- simHelper(model, ymiss, nsim, TRUE)       
+        
         if (!("none" %in% filtering)) {
           filterout <- .Fortran(fngfilter, NAOK = TRUE, model$y, ymiss, tv, 
                                 model$Z, model$T, model$R, model$Q, model$a1, model$P1, model$P1inf, 
@@ -271,10 +246,11 @@ KFS <-
                                 pmatch(x = model$distribution,
                                        table = c("gaussian", "poisson", "binomial", "gamma", "negative binomial"), 
                                        duplicates.ok = TRUE), 
-                                p, n, m, k, as.integer(sum(model$P1inf)), 
-                                as.integer(nondiffuse_elements_length), as.integer(nsim), epsplus, 
-                                etaplus, aplus1, c2, model$tol, info = integer(1), maxiter = as.integer(maxiter), 
-                                convtol = convtol, as.integer(nd), as.integer(length(nd)),
+                                p, n, m, k, simtmp$nNonzeroP1inf, 
+                                simtmp$nNonzeroP1, as.integer(nsim), simtmp$epsplus, 
+                                simtmp$etaplus, simtmp$aplus1, simtmp$c2, model$tol, info = integer(1), 
+                                maxiter = as.integer(maxiter), 
+                                convtol = convtol, simtmp$zeroP1inf, length(simtmp$zeroP1inf),
                                 a = array(0, ("state" %in% filtering) * c(m - 1, n - 1) + 1),
                                 P = array(0, ("state" %in% filtering) * c(m - 1, m - 1, n - 1) + 1), 
                                 theta = array(0, ("signal" %in% filtering) * c(p - 1, n - 1) + 1), 
@@ -287,7 +263,7 @@ KFS <-
             switch(as.character(filterout$info),
                    "-3" = stop("Couldn't compute LDL decomposition of P1."),
                    "-2" =  stop("Couldn't compute LDL decomposition of Q."),
-                  "1" =  stop("Gaussian approximation failed due to non-finite value in linear predictor."),
+                   "1" =  stop("Gaussian approximation failed due to non-finite value in linear predictor."),
                    "2" = stop("Gaussian approximation failed due to non-finite value of p(theta|y)."),
                    "3" = warning("Maximum number of iterations reached, the approximation did not converge.")
             )  
@@ -319,10 +295,11 @@ KFS <-
                      pmatch(x = model$distribution, 
                             table = c("gaussian", "poisson", "binomial", "gamma", "negative binomial"), 
                             duplicates.ok = TRUE), 
-                     p, n, m, k, as.integer(sum(model$P1inf)), as.integer(nondiffuse_elements_length), 
-                     as.integer(nsim), epsplus, etaplus, aplus1, c2, model$tol, info = integer(1), 
-                     maxiter = as.integer(maxiter),  convtol = convtol, as.integer(nd), 
-                     as.integer(length(nd)), 
+                     p, n, m, k, simtmp$nNonzeroP1inf, simtmp$nNonzeroP1, 
+                     as.integer(nsim), simtmp$epsplus, simtmp$etaplus, simtmp$aplus1, simtmp$c2, 
+                     model$tol, info = integer(1), 
+                     maxiter = as.integer(maxiter),  convtol = convtol, 
+                     simtmp$zeroP1inf, length(simtmp$zeroP1inf), 
                      alphahat = array(0, ("state" %in% smoothing) * c(m - 1, n - 1) + 1), 
                      V = array(0, ("state" %in% smoothing) * c(m - 1, m - 1, n - 1) + 1), 
                      thetahat = array(0, ("signal" %in% smoothing) * c(p - 1, n - 1) + 1), 
@@ -356,7 +333,7 @@ KFS <-
         return(out)
       } else {
         # Approximating model       
-        storage.mode(ymiss) <- "integer"
+        
         app <- .Fortran(fapprox, NAOK = TRUE, model$y, ymiss, tv, 
                         model$Z, model$T, model$R, Htilde = array(0, c(p, p, n)), model$Q, 
                         model$a1, model$P1, model$P1inf, p, n, m, 
@@ -382,6 +359,7 @@ KFS <-
         
       }
     }
+    
     if (all(model$distribution == "gaussian")) {
       transform <- match.arg(arg = transform, choices = c("ldl", "augment"))
       # Deal with the possible non-diagonality of H
@@ -393,8 +371,9 @@ KFS <-
         k <- attr(model, "k")
       } else KFS_transform <- "none"
     } else KFS_transform <- "none"
+    
     filtersignal <- ("signal" %in% filtering) || ("mean" %in% filtering)
-    storage.mode(ymiss) <- "integer"
+    
     filterout <- .Fortran(fkfilter, NAOK = TRUE, model$y, ymiss, tv, 
                           model$Z, model$H, model$T, model$R, model$Q, model$a1, P1 = model$P1, model$P1inf, 
                           p, n, m, k, d = integer(1), j = integer(1), a = array(0, dim = c(m, n + 1)), 
@@ -404,6 +383,7 @@ KFS <-
                           Kinf = array(0, dim = c(m, p, n)), lik = double(1), model$tol,
                           as.integer(sum(model$P1inf)), theta = array(0, c(filtersignal * n, p)),
                           P_theta = array(0, c(p, p, filtersignal * n)), as.integer(filtersignal))
+    
     if (filterout$d == n & filterout$j == p) 
       warning("Model is degenerate, diffuse phase did not end.")
     if (filterout$d > 0 & m > 1 & min(apply(filterout$Pinf, 3, diag)) < 0) 
@@ -418,7 +398,10 @@ KFS <-
       filterout$Finf <- filterout$Kinf <- NA
     }
     out$KFS_transform <- KFS_transform
+    
+    
     if (!("none" %in% filtering)) {
+      
       if (all(model$distribution == "gaussian")) {
         filterout$v[as.logical(t(ymiss))] <- NA
         out$logLik <- filterout$lik
@@ -470,7 +453,13 @@ KFS <-
         }
       }
     }
+    
+    
     if (!("none" %in% smoothing)) {
+      transformedZ <- KFS_transform == "ldl" && ("signal" %in% smoothing || "mean" %in% smoothing)
+      if (transformedZ){ 
+        originalZ <- originalZ
+      } else originalZ <- double(1)
       smoothout <- .Fortran(fgsmoothall, NAOK = TRUE, ymiss, tv, model$Z, 
                             model$H, model$T, model$R, model$Q, p, n, m, 
                             k, filterout$d, filterout$j, filterout$a, filterout$P, filterout$v, 
@@ -486,61 +475,60 @@ KFS <-
                             V_eps = array(0, dim = c(p, n)), etahat = array(0, dim = c(k, n)), 
                             V_eta = array(0, dim = c(k, k, n)), thetahat = array(0, dim = c(p, n)), 
                             V_theta = array(0, dim = c(p, p, n)), 
-                            as.integer(KFS_transform == "ldl" && ("signal" %in% smoothing || "mean" %in% smoothing)), 
-{if (KFS_transform == "ldl" && ("signal" %in% smoothing || "mean" %in% smoothing)) 
-  out$model$Z else double(1)}, as.integer(dim(out$model$Z)[3] > 1), 
-as.integer(KFS_transform != "augment"), 
-as.integer("state" %in% smoothing), as.integer("disturbance" %in% smoothing), 
-as.integer(("signal" %in% smoothing || "mean" %in% smoothing)))
-
-if (m > 1 & min(apply(smoothout$V, 3, diag)) < -.Machine$double.eps)
-  warning("Possible error in smoothing: Negative variances in V, try changing the tolerance parameter tol of the model.")
-
-if ("state" %in% smoothing) {
-  out$alphahat <- ts(t(smoothout$alphahat), start = start(model$y), frequency = frequency(model$y))
-  colnames(out$alphahat) <- rownames(model$a1)
-  out$V <- smoothout$V
-}
-if ("disturbance" %in% smoothing) {
-  out$etahat <- ts(t(smoothout$etahat), start = start(model$y), frequency = frequency(model$y))
-  colnames(out$etahat) <- rownames(model$Q[, , 1])
-  out$V_eta <- smoothout$V_eta
-  if (KFS_transform != "augment") {
-    out$epshat <- ts(t(smoothout$epshat), start = start(model$y), frequency = frequency(model$y))
-    colnames(out$epshat) <- rownames(model$H[, , 1])
-    out$V_eps <- smoothout$V_eps
-  }
-}
-if ("signal" %in% smoothing) {
-  out$thetahat <- ts(t(smoothout$thetahat), start = start(model$y), frequency = frequency(model$y))
-  colnames(out$thetahat) <- rownames(model$H[, , 1])
-  out$V_theta <- smoothout$V_theta
-}
-if ("mean" %in% smoothing) {
-  out$muhat <- array(NA, c(n, p))
-  out$V_mu <- array(0, c(p, p, n))
-  for (i in 1:p) {
-    out$muhat[, i] <- switch(model$distribution[i], 
-                             gaussian = smoothout$thetahat[i, ], 
-                             poisson = exp(smoothout$thetahat[i, ]) * model$u[, i], 
-                             binomial = exp(smoothout$thetahat[i, ])/(1 + exp(smoothout$thetahat[i, ])), 
-                             gamma = exp(smoothout$thetahat[i, ]), 
-                             `negative binomial` = exp(smoothout$thetahat[i, ]))
-    out$V_mu[i, i, ] <- switch(model$distribution[i], 
-                               gaussian = smoothout$V_theta[i, i, ], 
-                               poisson = smoothout$V_theta[i, i, ] * out$muhat[, i]^2, 
-                               binomial = smoothout$V_theta[i, i, ] * 
-                                 (exp(smoothout$thetahat[i, ])/(1 + exp(smoothout$thetahat[i, ]))^2)^2, 
-                               gamma = smoothout$V_theta[i, i, ] * out$muhat[, i]^2, 
-                               `negative binomial` = smoothout$V_theta[i, i, ] * out$muhat[, i]^2)
-  }
-  out$muhat <- ts(out$muhat, start = start(model$y), frequency = frequency(model$y))
-}
-if (!simplify && all(model$distribution == "gaussian")) 
-  out <- c(out, list(r = smoothout$r, r0 = smoothout$r0, r1 = smoothout$r1, 
-                     N = smoothout$N, N0 = smoothout$N0, N1 = smoothout$N1, N2 = smoothout$N2))
+                            as.integer(transformedZ), 
+                            originalZ, as.integer(dim(out$model$Z)[3] > 1), 
+                            as.integer(KFS_transform != "augment"), 
+                            as.integer("state" %in% smoothing), as.integer("disturbance" %in% smoothing), 
+                            as.integer(("signal" %in% smoothing || "mean" %in% smoothing)))
+      
+      if (m > 1 & min(apply(smoothout$V, 3, diag)) < -.Machine$double.eps)
+        warning("Possible error in smoothing: Negative variances in V, try changing the tolerance parameter tol of the model.")
+      
+      if ("state" %in% smoothing) {
+        out$alphahat <- ts(t(smoothout$alphahat), start = start(model$y), frequency = frequency(model$y))
+        colnames(out$alphahat) <- rownames(model$a1)
+        out$V <- smoothout$V
+      }
+      if ("disturbance" %in% smoothing) {
+        out$etahat <- ts(t(smoothout$etahat), start = start(model$y), frequency = frequency(model$y))
+        colnames(out$etahat) <- rownames(model$Q[, , 1])
+        out$V_eta <- smoothout$V_eta
+        if (KFS_transform != "augment") {
+          out$epshat <- ts(t(smoothout$epshat), start = start(model$y), frequency = frequency(model$y))
+          colnames(out$epshat) <- rownames(model$H[, , 1])
+          out$V_eps <- smoothout$V_eps
+        }
+      }
+      if ("signal" %in% smoothing) {
+        out$thetahat <- ts(t(smoothout$thetahat), start = start(model$y), frequency = frequency(model$y))
+        colnames(out$thetahat) <- rownames(model$H[, , 1])
+        out$V_theta <- smoothout$V_theta
+      }
+      if ("mean" %in% smoothing) {
+        out$muhat <- array(NA, c(n, p))
+        out$V_mu <- array(0, c(p, p, n))
+        for (i in 1:p) {
+          out$muhat[, i] <- switch(model$distribution[i], 
+                                   gaussian = smoothout$thetahat[i, ], 
+                                   poisson = exp(smoothout$thetahat[i, ]) * model$u[, i], 
+                                   binomial = exp(smoothout$thetahat[i, ])/(1 + exp(smoothout$thetahat[i, ])), 
+                                   gamma = exp(smoothout$thetahat[i, ]), 
+                                   `negative binomial` = exp(smoothout$thetahat[i, ]))
+          out$V_mu[i, i, ] <- switch(model$distribution[i], 
+                                     gaussian = smoothout$V_theta[i, i, ], 
+                                     poisson = smoothout$V_theta[i, i, ] * out$muhat[, i]^2, 
+                                     binomial = smoothout$V_theta[i, i, ] * 
+                                       (exp(smoothout$thetahat[i, ])/(1 + exp(smoothout$thetahat[i, ]))^2)^2, 
+                                     gamma = smoothout$V_theta[i, i, ] * out$muhat[, i]^2, 
+                                     `negative binomial` = smoothout$V_theta[i, i, ] * out$muhat[, i]^2)
+        }
+        out$muhat <- ts(out$muhat, start = start(model$y), frequency = frequency(model$y))
+      }
+      if (!simplify && all(model$distribution == "gaussian")) 
+        out <- c(out, list(r = smoothout$r, r0 = smoothout$r0, r1 = smoothout$r1, 
+                           N = smoothout$N, N0 = smoothout$N0, N1 = smoothout$N1, N2 = smoothout$N2))
     }
-out$call <- match.call(expand.dots = FALSE)
-class(out) <- "KFS"
-out
+    out$call <- match.call(expand.dots = FALSE)
+    class(out) <- "KFS"
+    out
   } 

@@ -14,6 +14,7 @@ subroutine mvfilter(tvz, zt, p, m, n, d, at, pt, pinf, vt, ft,finf)
     double precision, intent(in), dimension(m,m,n) :: pt
     double precision, intent(in), dimension(m,m,d) :: pinf
     double precision, dimension(p,m) :: pm
+    external dgemv, dgemm, dsymm
 
     do t = 1,d
         call dgemv('n',p,m,-1.0d0,zt(:,:,(t-1)*tvz+1),p,at(t,:),1,1.0d0,vt(t,:),1)

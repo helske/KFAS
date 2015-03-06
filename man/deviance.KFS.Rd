@@ -15,12 +15,13 @@
 The value of the deviance extracted from object.
 }
 \description{
-Returns the deviance of a object of class \code{KFS} defined as the sum of squared deviance residuals.
+Returns the deviance of a object of class \code{KFS} defined as the sum of squared deviance
+residuals.
 }
 \details{
-This function is deprecated.
-Note that this is NOT a $-2*(logL-logL*)$ where $L$ is the likelihood and $L*$ is the saturated likelihood.
-Instead this is based on the conditional likelihood $p(y|theta)$ i.e. it disregards the effect of hidden states.
-Therefore the value returned by this function might not make sense for non-GLM setting.
+This function is deprecated. Note that this is NOT a \eqn{-2*(logL-logL*)} where \eqn{L} is the
+likelihood and \eqn{L*} is the saturated likelihood. Instead this is based on the conditional
+likelihood \eqn{p(y|theta)} i.e. it disregards the effect of hidden states. Therefore the value
+returned by this function might not make sense for non-GLM setting.
 }
 

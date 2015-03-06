@@ -9,7 +9,7 @@ subroutine covmeanw(x,w,m,n,k,meanx,covx)
     double precision, intent(in), dimension(k) :: w
     double precision, intent(inout), dimension(m,n) :: meanx
     double precision, intent(inout), dimension(m,m,n) :: covx
-
+    external dgemm
 
     do i = 1, k
         meanx = meanx + x(:,:,i)*w(i)
@@ -33,8 +33,8 @@ subroutine covmeanwprotect(x,w,m,n,k,meanx,covx)
     double precision, intent(in), dimension(k) :: w
     double precision, intent(inout), dimension(m,n) :: meanx
     double precision, intent(inout), dimension(m,m,n) :: covx
-
     double precision, dimension(m,n,k) :: x2
+    external dgemm
 
     x2 = x
     do i = 1, k

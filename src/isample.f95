@@ -4,7 +4,6 @@ subroutine isample(yt, ymiss, timevar, zt, tt, rtv, qt, a1, p1,p1inf, u, dist, &
 p, n, m, r, theta, maxiter,rankp,convtol, nnd,nsim,epsplus,etaplus,&
 aplus1,c,tol,info,antithetics,w,sim,nd,ndl,simwhat,simdim)
 
-
     implicit none
 
     integer, intent(in) ::  p,m, r, n,nnd,antithetics,nsim, ndl,simwhat,simdim,rankp
