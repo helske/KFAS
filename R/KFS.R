@@ -458,7 +458,7 @@ KFS <-
     if (!("none" %in% smoothing)) {
       transformedZ <- KFS_transform == "ldl" && ("signal" %in% smoothing || "mean" %in% smoothing)
       if (transformedZ){ 
-        originalZ <- originalZ
+        originalZ <- out$model$Z
       } else originalZ <- double(1)
       smoothout <- .Fortran(fgsmoothall, NAOK = TRUE, ymiss, tv, model$Z, 
                             model$H, model$T, model$R, model$Q, p, n, m, 
