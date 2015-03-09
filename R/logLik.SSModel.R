@@ -120,7 +120,7 @@ logLik.SSModel <-
         if (missing(seed)) 
           seed <- 123
         set.seed(seed)
-        simtmp <- simHelper(object, ymiss, antithetics, nsim)
+        simtmp <- simHelper(object, ymiss, nsim, antithetics)
       }
       nsim2 <- as.integer(max(sim * (3 * antithetics * nsim + nsim), 1))
       out <- .Fortran(fngloglik, NAOK = TRUE, object$y, ymiss, tv, 

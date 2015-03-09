@@ -56,7 +56,7 @@ simulateSSM <-
     ymiss <- is.na(object$y)
     storage.mode(ymiss) <- "integer"    
     
-    simtmp <- simHelper(object, ymiss, antithetics, nsim)
+    simtmp <- simHelper(object, ymiss, nsim, antithetics)
     
     sim.what <- which(c("epsilon", "eta", "disturbances", "states", "signals", "observations") == 
                         sim.what)
