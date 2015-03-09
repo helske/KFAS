@@ -45,6 +45,8 @@ aplus1,c,tol,info,antithetics,w,sim,nd,ndl,simwhat,simdim)
     double precision :: diff
     double precision :: lik
 
+    external approx, simgaussian
+
     ht=0.0d0
     ytilde=0.0d0
     w=1.0d0

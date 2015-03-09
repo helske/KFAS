@@ -43,10 +43,10 @@ tol,nd,ndl,sim,c,simwhat,simdim,antithetics)
     double precision, dimension(1,p) :: theta
     double precision, dimension(p,p,1) :: thetavar
 
-
     double precision, external :: ddot
-    external kfilter
-    external filtersimfast
+
+    external kfilter, filtersimfast, ldl, dtrmv, dgemv
+
 
     at=0.0d0
     call kfilter(yt, ymiss, timevar, zt, ht,tt, rtv, qt, a1, p1, p1inf, &

@@ -39,6 +39,8 @@ convtol,nd,ndl,alphahat,alphavar,thetahat,thetavar,yhat,yvar,smootha,smooths,smo
     double precision, dimension(p,m) :: pm
     double precision, external :: ddot
 
+    external isamplefilter, covmeanwprotect, dgemv, dsymm, dgemm, covmeanw
+
     if(smootha==1) then
 
         call isamplefilter(yt, ymiss, timevar, zt, tt, rtv, qt, a1, p1,p1inf, u, dist, &

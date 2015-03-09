@@ -38,6 +38,8 @@ aplus1,c,tol,info,antithetics,w,sim,nd,ndl,simwhat,simdim)
     double precision, external :: ddot
     double precision :: lik
 
+    external approx, simgaussian
+
     ht=0.0d0
 
     ! approximate

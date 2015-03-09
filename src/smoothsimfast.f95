@@ -28,15 +28,17 @@ finf, kinf, dt, jt, p, m, n,r,tol,epshat,etahat,rt0,rt1,needeps)
     double precision :: meps
     double precision, external :: ddot
 
+    external daxpy, dgemv, dger, dsymv
+
  meps = tiny(meps)
 
-    j=0
-    d=0
+    j = 0
+    d = 0
     if(dt.GT.0) then
         arec = a1
         diffuse: do while(d .LT. (dt-1))
             d = d+1
-            do j=1, p
+            do j = 1, p
                 if(ymiss(d,j).EQ.0) then
                     vt(j,d) = yt(d,j) - ddot(m,zt(j,:,(d-1)*timevar(1)+1),1,arec,1) !arec
                     if (finf(j,d) .GT. tol) then
@@ -54,7 +56,7 @@ finf, kinf, dt, jt, p, m, n,r,tol,epshat,etahat,rt0,rt1,needeps)
         end do diffuse
 
         d = dt
-        do j=1, jt
+        do j = 1, jt
             if(ymiss(d,j).EQ.0) then
                 vt(j,d) = yt(d,j) - ddot(m,zt(j,:,(d-1)*timevar(1)+1),1,arec,1) !arec
       
@@ -181,7 +183,7 @@ finf, kinf, dt, jt, p, m, n,r,tol,epshat,etahat,rt0,rt1,needeps)
                     l0=0.0d0
                     call dger(m,m,(1.0d0/finf(i,t)),rhelp,1,zt(i,:,(t-1)*timevar(1)+1),1,l0,m) !l0
                     call dgemv('t',m,m,1.0d0,linf,m,rrec1,1,0.0d0,rhelp,1) !rt1
-                    call dcopy(m,rhelp,1,rrec1,1)
+                    rrec1 = rhelp
                     call dgemv('t',m,m,1.0d0,l0,m,rrec,1,1.0d0,rrec1,1)
                     call daxpy(m,(vt(i,t)/finf(i,t)),zt(i,:,(t-1)*timevar(1)+1),1,rrec1,1)
                     call dgemv('t',m,m,1.0d0,linf,m,rrec,1,0.0d0,rhelp,1) !rt0
@@ -228,7 +230,7 @@ finf, kinf, dt, jt, p, m, n,r,tol,epshat,etahat,rt0,rt1,needeps)
                         call dger(m,m,(1.0d0/finf(i,t)),rhelp,1,zt(i,:,(t-1)*timevar(1)+1),1,l0,m) !l0
 
                         call dgemv('t',m,m,1.0d0,linf,m,rrec1,1,0.0d0,rhelp,1) !rt1
-                        call dcopy(m,rhelp,1,rrec1,1)
+                        rrec1 = rhelp
                         call dgemv('t',m,m,1.0d0,l0,m,rrec,1,1.0d0,rrec1,1)
                         call daxpy(m,vt(i,t)/finf(i,t),zt(i,:,(t-1)*timevar(1)+1),1,rrec1,1)
                         call dgemv('t',m,m,1.0d0,linf,m,rrec,1,0.0d0,rhelp,1) !rt0

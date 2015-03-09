@@ -13,6 +13,8 @@ subroutine pytheta(theta, dist, u, yt, ymiss, dev, p, n)
     double precision, intent(in), dimension(n,p) :: theta
     double precision, intent(inout) :: dev
 
+    external dpoisf, dbinomf, dgammaf, dnbinomf
+
     dev = 0.0d0
     do j=1,p
         select case(dist(j))

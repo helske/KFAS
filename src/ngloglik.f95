@@ -36,7 +36,7 @@ nnd,nsim,epsplus,etaplus,aplus1,c,tol,info,antit,sim,nsim2,nd,ndl,diff,marginal)
     double precision, intent(inout) :: diff
     double precision, external :: ddot
 
-
+    external approx, marginalxx, dpoisf, dnormf, dbinomf, dgammaf, dnbinomf, simgaussian
     !approximate
     call approx(yt, ymiss, timevar, zt, tt, rtv, ht, qt, a1, p1,p1inf, p,n,m,r,&
     theta, u, ytilde, dist,maxiter,tol,rankp,convtol,diff,lik, info)
@@ -147,7 +147,7 @@ nnd,nsim,epsplus,etaplus,aplus1,c,tol,info,antit,sim,nsim2,nd,ndl,diff,marginal)
             end do
 
 
-            lik= lik+log(sum(w)/nsim2)
+            lik= lik+log(sum(w)/dble(nsim2))
         else
             info = info2
             return

@@ -27,6 +27,8 @@ theta, thetanew, u, ytilde, dist,tol,rankp,lik)
     double precision, intent(inout) :: lik
     double precision, external :: ddot
 
+    external kfstheta
+
     !construct pseudo-observations and variances for gaussian approximating model
     do j=1,p
         select case(dist(j))

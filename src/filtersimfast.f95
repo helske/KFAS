@@ -1,4 +1,4 @@
-!fast filtering algorithm used in simululation filter
+!fast filtering algorithm used in simulation filter
 subroutine filtersimfast(yt, ymiss, timevar, zt,tt, &
 a1, ft,kt,finf, kinf, dt, jt, p, m, n,tol,at)
 
@@ -21,6 +21,7 @@ a1, ft,kt,finf, kinf, dt, jt, p, m, n,tol,at)
     double precision :: meps
     double precision, external :: ddot
 
+    external daxpy, dgemv
     meps = tiny(meps)
 
     j=0
@@ -43,7 +44,7 @@ a1, ft,kt,finf, kinf, dt, jt, p, m, n,tol,at)
             end do
            
             call dgemv('n',m,m,1.0d0,tt(:,:,(d-1)*timevar(3)+1),m,arec,1,0.0d0,at(:,d+1),1)
-            call dcopy(m,at(:,d+1),1,arec,1)
+           arec = at(:,d+1)
             
         end do diffuse
 
@@ -75,7 +76,7 @@ a1, ft,kt,finf, kinf, dt, jt, p, m, n,tol,at)
         end do
    
         call dgemv('n',m,m,1.0d0,tt(:,:,(d-1)*timevar(3)+1),m,arec,1,0.0d0,at(:,d+1),1)
-        call dcopy(m,at(:,d+1),1,arec,1)
+        arec = at(:,d+1)
     end if
 
     if(dt.LT.n) then
@@ -97,7 +98,7 @@ a1, ft,kt,finf, kinf, dt, jt, p, m, n,tol,at)
             end do
    
             call dgemv('n',m,m,1.0d0,tt(:,:,(t-1)*timevar(3)+1),m,arec,1,0.0d0,at(:,t+1),1)
-            call dcopy(m,at(:,t+1),1,arec,1)
+            arec = at(:,t+1)
         end do
 
     end if

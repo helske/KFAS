@@ -47,6 +47,8 @@ tol,nd,ndl,sim,c,simwhat,simdim,antithetics)
     double precision, external :: ddot
     logical needeps
 
+    external dsymm, dgemm, smoothsim, dsymv, ldl, dtrmv,smoothsimfast, dgemv
+
     needeps = simwhat==1 .or. simwhat==3
     !compute rqr
     tv= max(timevar(4),timevar(5))

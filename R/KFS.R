@@ -398,13 +398,16 @@ KFS <-
       filterout$Finf <- filterout$Kinf <- NA
     }
     out$KFS_transform <- KFS_transform
+    out$d <- filterout$d
+    out$j <- filterout$j
     
-    
+    if (all(model$distribution == "gaussian"))     
+      out$logLik <- filterout$lik
+      
     if (!("none" %in% filtering)) {
       
       if (all(model$distribution == "gaussian")) {
-        filterout$v[as.logical(t(ymiss))] <- NA
-        out$logLik <- filterout$lik
+        filterout$v[as.logical(t(ymiss))] <- NA        
         if ("state" %in% filtering) {
           rownames(filterout$a) <- rownames(model$a1)
           out <- c(out, list(a = ts(t(filterout$a), start = start(model$y), 
@@ -416,7 +419,7 @@ KFS <-
                                     frequency = frequency(model$y)), P_mu = filterout$P_theta))
         }
         out <- c(out, list(v = ts(t(filterout$v), start = start(model$y), frequency = frequency(model$y)), 
-                           F = filterout$F, Finf = filterout$Finf, d = filterout$d, j = filterout$j))
+                           F = filterout$F, Finf = filterout$Finf))
         if (!simplify) 
           out <- c(out, list(K = filterout$K, Kinf = filterout$Kinf))
       } else {

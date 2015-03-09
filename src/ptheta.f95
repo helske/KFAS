@@ -29,6 +29,8 @@ p, m, n, lik, tol,rankp2,kt,kinf,ft,finf,d,j)
     double precision :: meps
     double precision, intent(inout), dimension(m,m,(n-1)*max(timevar(4),timevar(5))+1) :: rqr
 
+    external dgemm, dsymm, dgemv, dsymv, daxpy, dsyr, dsyr2
+
     tv= max(timevar(4),timevar(5))
 
     meps = tiny(meps)
@@ -164,6 +166,8 @@ p, m, n, lik, tol,kt,kinf,ft,finf,dt,jt)
     double precision, intent(in), dimension(m,p,n) :: kt,kinf
     double precision, external :: ddot
     double precision :: meps
+
+    external dgemv, daxpy
 
     j=0
     d=0

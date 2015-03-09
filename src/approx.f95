@@ -34,7 +34,7 @@ theta, u, ytilde, dist,maxiter,tol,rankp,convtol,diff,lik,info)
     double precision, dimension(p,n) :: ft,finf
     double precision, dimension(m,p,n) :: kt,kinf
 
-    external dgemm
+    external dgemm, pytheta, pthetafirst, approxloop, pthetarest
 
     !compute rqr
     tvrqr = max(timevar(4),timevar(5))
