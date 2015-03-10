@@ -57,7 +57,7 @@ tol,nd,ndl,sim,c,simwhat,simdim,antithetics)
         call dgemm('n','t',m,m,r,1.0d0,mr,m,rtv(:,:,(t-1)*timevar(4)+1),m,0.0d0,rqr(:,:,t),m)
     end do
 
-    aplus=0.0d0
+
 
     rankp2 = rankp
     call smoothsim(yt, ymiss, timevar, zt, ht,tt, rtv,qt,rqr, a1, p1, p1inf, &
@@ -113,7 +113,7 @@ tol,nd,ndl,sim,c,simwhat,simdim,antithetics)
     end if
   
     do i = 1, nsim
-
+        aplus = 0.0d0
         if(ndl.GT.0) then
             aplus(nd,1) = a1(nd)
         end if

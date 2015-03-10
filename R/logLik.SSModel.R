@@ -74,7 +74,7 @@ logLik.SSModel <-
       if (all(c(object$Q, object$H) == 0) || all(c(object$R, object$H) == 0)) 
         return(-.Machine$double.xmax^0.75)   
       
-      if (p == 1 && any(abs(apply(object$H, 3, "[", !diag(p))) > object$tol)) {
+      if (p > 1 && any(abs(apply(object$H, 3, "[", !diag(p))) > object$tol)) {
         object <- 
           tryCatch(transformSSM(object, type = match.arg(arg = transform, choices = c("ldl", "augment"))), 
                    error = function(e) e)
