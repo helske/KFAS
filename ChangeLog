@@ -1,4 +1,6 @@
 Changes from version 1.0.4-1 to 1.1.0:
+ * simulateSSM: Corrected bug which gave wrong variances for epsilon disturbances.
+ * simulateSSM: Corrected bug which gave wrong variances for the initial states.
  * rstandard.KFS: Added argument standardization_type which defines whether cholesky or marginal standardization is used.
  * is.SSModel: Tweaked checks for faster performance for time varying models, added check for P1inf.
  * fitSSM: Function now allows fixed time varying covariance matrices. 
