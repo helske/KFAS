@@ -22,7 +22,7 @@ test_that("FitSSM works",{
 
 test_that("transformSSM with augmentation works",{
     expect_that(mod <- transformSSM(fit$model, "augment"),not(gives_warning()))
-}
+})
 
 test_that("simulateSSM works",{
   set.seed(123)  
@@ -46,8 +46,4 @@ test_that("simulateSSM works",{
   expect_equal(var(sim[1,3,]), 1.122758,tolerance=tol,check.attributes=FALSE)
   expect_equal(apply(sim[192,1:2,],1,var), out$V_eps[,192],tolerance=0.1,check.attributes=FALSE)
   expect_equal(var(sim[192,3,]), 0.7674087,tolerance=tol,check.attributes=FALSE)
-  
-#   expect_that(sim <- simulateSSM(fit$model,"observations",nsim=5000,antithetics=TRUE),not(gives_warning()))
-#   
-#   expect_equal(apply(sim,1:2,mean), unclass(signal(out)$signal), check.attributes=FALSE)
 })
