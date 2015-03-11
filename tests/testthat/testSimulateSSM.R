@@ -14,7 +14,7 @@ test_that("FitSSM, transformSSM and simulateSSM works",{
     model$R[28:29]<-exp(pars[4:5])   
     model
   }
-  expect_that(fit<-fitSSM(model=model,updatefn=updatefn,inits=c(-10,-9,0.7,-4,-4),method="BFGS"),not(gives_warning()))
+  expect_that(fit<-fitSSM(model=model,updatefn=updatefn,inits=c(-10,-10,0.7,-4,-4),method="BFGS"),not(gives_warning()))
   expect_equal(fit$optim.out$p,c(-10.431,-9.460,0.732,-4.182,-4.218),tolerance=1e-4,check.attributes=FALSE)
   expect_equal(fit$optim.out$value,-337.3011,tolerance=1e-6,check.attributes=FALSE)
   
