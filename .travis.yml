@@ -7,4 +7,4 @@ after_success:
    - Rscript -e 'library(covr);coveralls()'
 
 r_build_args: "--no-build-vignettes --no-manual"
-r_check_args: "--no-build-vignettes --no-manual --as-cran"
+r_check_args: "--no-build-vignettes --no-manual --as-cran --use-valgrind"

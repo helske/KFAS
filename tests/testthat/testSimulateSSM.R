@@ -1,4 +1,4 @@
-test_that("FitSSM works",{
+test_that("FitSSM, transformSSM and simulateSSM works",{
   tol<-1e-4
   
   model<-SSModel(log(cbind(front,rear))~ -1 + log(PetrolPrice) + log(kms)
@@ -18,13 +18,8 @@ test_that("FitSSM works",{
   expect_equal(fit$optim.out$p,c(-10.431,-9.460,0.732,-4.182,-4.218),tolerance=1e-4,check.attributes=FALSE)
   expect_equal(fit$optim.out$value,-337.3011,tolerance=1e-6,check.attributes=FALSE)
   
-})
-
-test_that("transformSSM with augmentation works",{
-    expect_that(mod <- transformSSM(fit$model, "augment"),not(gives_warning()))
-})
-
-test_that("simulateSSM works",{
+  expect_that(mod <- transformSSM(fit$model, "augment"),not(gives_warning()))
+  
   set.seed(123)  
   
   expect_that(out <- KFS(mod,smoothing="state"),not(gives_warning()))  
