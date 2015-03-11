@@ -124,9 +124,8 @@ tol,nd,ndl,sim,c,simwhat,simdim,antithetics)
 
         do t = 1, n
             do k = 1, p
+                epsplus(k,t,i) = epsplus(k,t,i)*sqrt(ht(k,k,(t-1)*timevar(2)+1))
                 if(ymiss(t,k).EQ.0) then
-                   ! yplus(t,k) = epsplus(k,t,i)*sqrt(ht(k,k,(t-1)*timevar(2)+1)) + &
-                   epsplus(k,t,i) = epsplus(k,t,i)*sqrt(ht(k,k,(t-1)*timevar(2)+1))
                    yplus(t,k) = epsplus(k,t,i) + ddot(m,zt(k,:,(t-1)*timevar(1)+1),1,aplus(:,t),1)
                 end if
             end do
@@ -237,15 +236,11 @@ tol,nd,ndl,sim,c,simwhat,simdim,antithetics)
 
                 alphatmp(:,1,1) = ahat - aplushat + aplus(:,1)
                 etatmp(:,:,1) = etahat(:,1:(n-1)) - etaplushat(:,1:(n-1)) + etaplus(:,1:(n-1),i)
-                !call dgemv('n',p,m,1.0d0,zt(:,:,1),p,alphatmp(:,1,1),1,0.0d0,sim(:,1,i),1)
 
                 if(antithetics == 1) then
                     alphatmp(:,1,2) = ahat + aplushat - aplus(:,1)
                     alphatmp(:,1,3) = ahat+ c(i)*(alphatmp(:,1,1)-ahat)
                     alphatmp(:,1,4) = ahat+ c(i)*(alphatmp(:,1,2)-ahat)
-                    !call dgemv('n',p,m,1.0d0,zt(:,:,1),p,alphatmp(:,1,2),1,0.0d0,sim(:,1,i+nsim),1)
-                    !call dgemv('n',p,m,1.0d0,zt(:,:,1),p,alphatmp(:,1,3),1,0.0d0,sim(:,1,i+2*nsim),1)
-                    !call dgemv('n',p,m,1.0d0,zt(:,:,1),p,alphatmp(:,1,4),1,0.0d0,sim(:,1,i+3*nsim),1)
 
                     etatmp(:,:,2) = etahat(:,1:(n-1)) + etaplushat(:,1:(n-1)) - etaplus(:,1:(n-1),i)
                     etatmp(:,:,3) = etahat(:,1:(n-1)) + c(i)*(etatmp(:,:,1)-etahat(:,1:(n-1)))
@@ -256,8 +251,6 @@ tol,nd,ndl,sim,c,simwhat,simdim,antithetics)
                     do l = 1, p
                         if(ymiss(1,l).GT.0) then
                             sim(l,1,i+(k-1)*nsim) = ddot(m,zt(l,:,1),1,alphatmp(:,1,k),1)
-                        !else
-                        !    sim(l,t,i+(k-1)*nsim) = yt(t,l)
                         end if
                     end do
                     do t = 2, n
@@ -268,12 +261,8 @@ tol,nd,ndl,sim,c,simwhat,simdim,antithetics)
                         do l = 1, p
                             if(ymiss(t,l).GT.0) then
                                 sim(l,t,i+(k-1)*nsim) = ddot(m,zt(l,:,(t-1)*timevar(1)+1),1,alphatmp(:,t,k),1)
-                            !else
-                            !    sim(l,t,i+(k-1)*nsim) = yt(t,l)
                             end if
                         end do
-
-                        !call dgemv('n',p,m,1.0d0,zt(:,:,(t-1)*timevar(1)+1),p,alphatmp(t,:,k),1,0.0d0,sim(t,:,i+(k-1)*nsim),1)
                     end do
                 end do
         end select
