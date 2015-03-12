@@ -70,9 +70,7 @@ interval <-
                             gamma = rgamma(n = nsim, shape = model$u[i, j], 
                                            scale = sample_mu/model$u[i, j]), 
                             `negative binomial` = rnbinom(n = nsim, size = model$u[i,j], mu = sample_mu)), 
-                     prob = c((1 - level)/2, 1 - (1 - level)/2), 
-                     type = switch(model$distribution[j], gaussian = , gamma = 7, 
-                                   poisson = , binomial = , `negative binomial` = 1))
+                     prob = c((1 - level)/2, 1 - (1 - level)/2))
           })
         })
       }
