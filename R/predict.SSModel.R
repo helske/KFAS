@@ -100,9 +100,10 @@ predict.SSModel <-
       no <- attr(object, "n")
       nn <- attr(newdata, "n")
       n <- attr(object, "n") <- no + nn
-      timespan <- (no + 1):n
-      endtime <- end(object$y)+c(nrow(newdata$y), 0)
-      object$y <- rbind(object$y, newdata$y)       
+      timespan <- (no + 1):n     
+      object$y <- ts(rbind(object$y, newdata$y), 
+                     start = start(object$y), frequency = frequency(object$y))
+      endtime <- end(object$y)
       tvo <- attr(object, "tv")
       tvn <- attr(newdata, "tv")         
       if (tvo[1] || tvn[1] || !identical(object$Z, newdata$Z)) {
@@ -132,8 +133,8 @@ predict.SSModel <-
           stop("Model contains time varying system matrices, cannot use argument 'n.ahead'. Use 'newdata' instead.")
         timespan <- attr(object, "n") + 1:n.ahead
         n <- attr(object, "n") <- attr(object, "n") + as.integer(n.ahead)
-        endtime<-end(object$y) + c(n.ahead, 0)
-        object$y <- window(object$y, end = endtime, extend = TRUE)  #!!
+        endtime<-end(object$y) + c(0, n.ahead)
+        object$y <- window(object$y, end = endtime, extend = TRUE)
         if (any(object$distribution != "gaussian")) 
           object$u <- rbind(object$u, matrix(object$u[1, ], nrow = n.ahead, 
                                              ncol = ncol(object$u), byrow = TRUE))
