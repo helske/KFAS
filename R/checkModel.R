@@ -9,15 +9,16 @@
 #' also have NA value. In this case \code{Z[i,,t]} is not referenced in 
 #' filtering and smoothing, and algorithms works properly.
 #' 
-#' Function also checks for large values (>1e7) in covariance matrices \code{H} 
-#' and \code{Q} which could cause large rounding errors in filtering. 
-#' Positive semidefiniteness of these matrices is not checked.
 #' 
 #' @export
 #' @rdname checkModel
 #' @aliases is.SSModel
 #' @param object An object to be tested.
-#' @param na.check Test the system matrices for NA and infinite values. Default
+#' @param na.check Test the system matrices for NA and infinite values. Also checks for large 
+#' values (>1e7) in covariance matrices \code{H} 
+#' and \code{Q} which could cause large rounding errors in filtering. 
+#' Degenerate case with H=Q=0 for all t is also checked.
+#' Positive semidefiniteness of these matrices is not checked. Default
 #'   is \code{FALSE}.
 #' @param return.logical If \code{FALSE}, error is given if the the model is not
 #'   a valid \code{SSModel} object. Otherwise logical value is returned. Default
@@ -67,7 +68,9 @@ is.SSModel <- function(object, na.check = FALSE, return.logical = TRUE) {
                             function(x) any(is.na(object[[x]])) ||
                               any(is.infinite(object[[x]])))) &&
       max(object$Q) <= tol &&
-      ifelse(identical(object$u, "Omitted"), max(object$H) <= tol, TRUE)
+      ifelse(identical(object$u, "Omitted"), max(object$H) <= tol, TRUE) &&
+      ifelse(identical(object$u, "Omitted"), !all(c(object$H,object$Q) < .Machine$double.eps^0.75), 
+             !all(object$Q < .Machine$double.eps^0.75))
     x
   } else{
     if (!inherits(object, "SSModel"))
@@ -118,10 +121,12 @@ is.SSModel <- function(object, na.check = FALSE, return.logical = TRUE) {
                       function(x) any(is.na(object[[x]])) ||
                         any(is.infinite(object[[x]])))) ||
              max(object$Q) > tol || ifelse(identical(object$u, "Omitted"),
-                                           max(object$H) > tol, FALSE)))
+                                           max(object$H) > tol, FALSE)) &&
+          ifelse(identical(object$u, "Omitted"), all(c(object$H,object$Q) < .Machine$double.eps^0.75), 
+                 all(object$Q < .Machine$double.eps^0.75)))
       stop(paste0("System matrices (excluding Z) contain NA or infinite ",
-                  "values, or covariance matrices contain values larger ",
-                  "than ",tol))
+                  "values, covariance matrices contain values larger ",
+                  "than ",tol, " or H=Q=0 for all time points"))
     
     if(!all(diag(object$P1inf) %in% c(0,1)) ||
          !all(object$P1inf[col(diag(m)) != row(diag(m))] == 0))

@@ -63,8 +63,8 @@ theta, u, ytilde, dist,maxiter,tol,rankp,convtol,diff,lik,info)
         if(rankp .NE. m) then
             call pthetarest(thetanew, timevar, zt, tt, a1, p, m, n, dev, tol,kt,kinf,ft,finf,dt,jt)
         end if
-
-        if(finitex(sum(thetanew))==0 .OR. finitex(maxval(exp(thetanew)))==0 ) then !non-finite value in linear predictor or muhat
+!non-finite value in linear predictor or muhat
+        if(finitex(sum(thetanew))==0 .OR. finitex(maxval(exp(thetanew)))==0 ) then 
             if(k>1) then
                 kk = 0
                 do while(finitex(sum(thetanew))==0 .OR. finitex(maxval(exp(thetanew)))==0)
@@ -117,9 +117,9 @@ theta, u, ytilde, dist,maxiter,tol,rankp,convtol,diff,lik,info)
 
 
         ! decreasing deviance
-        if((dev - devold)/(0.1d0 + abs(dev)) < convtol .AND. k > 1) then
+        if((dev - devold)/(0.1d0 + abs(dev)) < -convtol .AND. k > 1) then
             kk = 0
-            do while((dev - devold)/(0.1d0 + abs(dev)) < 0.0d0 .AND. kk < maxiter)
+            do while((dev - devold)/(0.1d0 + abs(dev)) < convtol .AND. kk < maxiter)
                 kk = kk + 1
                 ! previous theta produced too 'big' thetanew
                 ! new guess by halving the last try
