@@ -102,27 +102,17 @@ approxSSM <- function(model, theta, maxiter = 50, tol = 1e-08) {
              maxiter = as.integer(maxiter), model$tol,
              as.integer(sum(model$P1inf)), as.double(tol), diff = double(1),
              double(1),info=integer(1))
-  if(out$info != 0){
-    
+  if(out$info != 0){    
     warning(switch(as.character(out$info),
                    "-3" = "Couldn't compute LDL decomposition of P1.",
                    "-2" =  "Couldn't compute LDL decomposition of Q.",
                    "1" = paste0("Gaussian approximation failed due to ",
                                 "non-finite value in linear predictor."),
-                   "2" =  paste0("Gaussian approximation failed due to ",
-                                 "non-finite value of p(theta|y).")
+                   "2" = paste0("Gaussian approximation failed due to ",
+                                "non-finite value of p(theta|y)."),
+                   "3" = paste0("Maximum number of iterations reached, latest ", 
+                                "difference was ", signif(out$diff, 3))
     ))
-    if(out$info != 3) return(-.Machine$double.xmax ^ 0.75)
-  }
-  if(out$info != 0){
-    if (out$info == 1){
-      stop(paste0("Non-finite value of likelihood or linear predictor in ",
-                  "approximation algorithm."))
-    }
-    if(out$info == 2){
-      warning(paste0("Maximum number of iterations reached, latest ",
-                     "difference was ", signif(out$diff,3)))
-    }
   }
   
   model$distribution <- rep("gaussian", p)
