@@ -26,11 +26,13 @@ p, m, r, n, lik, tol,rankp,marginal)
     double precision, dimension(m,p) :: kt,kinf
     double precision, dimension(m,m) :: pt,pinf,mm
     double precision, dimension(m,r) :: mr    
-    double precision :: c
+    double precision :: c, meps
     double precision, external :: ddot
     double precision, dimension(m,m,(n-1)*max(timevar(4),timevar(5))+1) :: rqr
 
     external dgemm, dsymm, dgemv, dsymv, daxpy, dsyr, dsyr2, marginalxx
+
+meps = epsilon(meps)
 
     ! compute RQR'
     tv= max(timevar(4),timevar(5))
@@ -89,12 +91,12 @@ p, m, r, n, lik, tol,rankp,marginal)
             pt = pt + rqr(:,:,(d-1)*tv+1)
             call dsymm('r','u',m,m,1.0d0,pinf,m,tt(:,:,(d-1)*timevar(3)+1),m,0.0d0,mm,m)
             call dgemm('n','t',m,m,m,1.0d0,mm,m,tt(:,:,(d-1)*timevar(3)+1),m,0.0d0,pinf,m)
-            do i = 1, m ! try to deal with possible rounding errors, non-diffuse states should have zeros in pinf
-                if(pinf(i,i) .LT. tol) then
-                    pinf(i,:) = 0.0d0
-                    pinf(:,i) = 0.0d0
-                end if
-            end do
+          do i = 1, m ! try to deal with possible rounding errors, non-diffuse states should have zeros in pinf
+                if(pinf(i,i) .LT. meps) then
+                     pinf(i,:) = 0.0d0
+                     pinf(:,i) = 0.0d0
+                 end if
+             end do
         end do diffuse
         if(rankp .EQ. 0) then
             !non-diffuse filtering begins

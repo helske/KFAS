@@ -27,12 +27,13 @@ p, n, m, r,tol,rankp,thetahat,lik)
     double precision, dimension(m) :: rrec,rrec1,rhelp,help
     double precision, dimension(m,m) :: im,linf,l0,lt
     double precision, dimension(r,n) :: etahat
-    double precision :: c
+    double precision :: c, meps
     double precision, external :: ddot
     double precision, intent(inout), dimension(n,p) :: thetahat
     double precision, intent(inout) :: lik
     external dgemm, dsymm, dgemv, dsymv, daxpy, dsyr, dsyr2, dger
 
+    meps = epsilon(meps)
     lik=0.0d0
     c = 0.5d0*log(8.0d0*atan(1.0d0))
 
@@ -98,7 +99,7 @@ p, n, m, r,tol,rankp,thetahat,lik)
             call dsymm('r','u',m,m,1.0d0,pirec,m,tt(:,:,(d-1)*timevar(3)+1),m,0.0d0,mm,m)
             call dgemm('n','t',m,m,m,1.0d0,mm,m,tt(:,:,(d-1)*timevar(3)+1),m,0.0d0,pirec,m)
             do i = 1, m
-                if(pirec(i,i) .LT. tol) then
+                if(pirec(i,i) .LT. meps) then
                     pirec(i,:) = 0.0d0
                     pirec(:,i) = 0.0d0
                 end if

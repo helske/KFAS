@@ -31,10 +31,12 @@ d, j, p, m, n, r,tol,rankp,ft,finf,kt,kinf,epshat,etahat,rt0,rt1,needeps)
     double precision, intent(inout), dimension(r,n) :: etahat
     double precision, intent(inout), dimension(p,n) :: epshat
     double precision, intent(inout), dimension(m) :: rt0,rt1
+double precision :: meps
     double precision, external :: ddot
 
     external dgemm, dsymm, dgemv, dsymv, daxpy, dsyr, dsyr2, dger
-
+ 
+meps = epsilon(meps)
     tv = max(timevar(4),timevar(5))
 
     im = 0.0d0
@@ -98,11 +100,11 @@ d, j, p, m, n, r,tol,rankp,ft,finf,kt,kinf,epshat,etahat,rt0,rt1,needeps)
             call dgemm('n','t',m,m,m,1.0d0,mm,m,tt(:,:,(d-1)*timevar(3)+1),m,0.0d0,pirec,m)
 
             do i = 1, m
-                if(pirec(i,i) .LT. tol) then
-                    pirec(i,:) = 0.0d0
-                    pirec(:,i) = 0.0d0
-                end if
-            end do
+                 if(pirec(i,i) .LT. meps) then
+                     pirec(i,:) = 0.0d0
+                     pirec(:,i) = 0.0d0
+                 end if
+             end do
 
         end do diffuse
 

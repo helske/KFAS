@@ -27,9 +27,12 @@ p, m, n, lik, tol,rankp2,kt,kinf,ft,finf,d,j)
     double precision, dimension(m,m) :: pt,pinf,mm
     double precision, external :: ddot
     double precision, intent(inout), dimension(m,m,(n-1)*max(timevar(4),timevar(5))+1) :: rqr
+double precision :: meps
+ 
 
     external dgemm, dsymm, dgemv, dsymv, daxpy, dsyr, dsyr2
 
+meps = epsilon(meps)
     tv= max(timevar(4),timevar(5))
 
 
@@ -82,11 +85,11 @@ p, m, n, lik, tol,rankp2,kt,kinf,ft,finf,d,j)
             call dsymm('r','u',m,m,1.0d0,pinf,m,tt(:,:,(d-1)*timevar(3)+1),m,0.0d0,mm,m)
             call dgemm('n','t',m,m,m,1.0d0,mm,m,tt(:,:,(d-1)*timevar(3)+1),m,0.0d0,pinf,m)
             do i = 1, m
-                if(pinf(i,i) .LT. tol) then
-                    pinf(i,:) = 0.0d0
-                    pinf(:,i) = 0.0d0
-                end if
-            end do
+                 if(pinf(i,i) .LT. meps) then
+                     pinf(i,:) = 0.0d0
+                     pinf(:,i) = 0.0d0
+                 end if
+             end do
         end do diffuse
         if(rankp .EQ. 0) then
             !non-diffuse filtering begins

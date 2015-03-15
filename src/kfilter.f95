@@ -30,12 +30,12 @@ at, pt, vt, ft,kt, pinf, finf, kinf, lik, tol,rankp,theta,thetavar,filtersignal)
     double precision, dimension(m,m) ::pirec,mm,prec
     double precision, dimension(m,r) :: mr
     double precision, dimension(p,m) :: pm
-    double precision :: c
+    double precision :: c,meps
     double precision, external :: ddot
     double precision :: finv
     external dgemm, dsymm, dgemv, dsymv, daxpy, dsyr, dsyr2
 
-
+meps = epsilon(meps)
     c = 0.5d0*log(8.0d0*atan(1.0d0))
 
     lik = 0.0d0
@@ -107,7 +107,7 @@ at, pt, vt, ft,kt, pinf, finf, kinf, lik, tol,rankp,theta,thetavar,filtersignal)
             call dgemm('n','t',m,m,m,1.0d0,mm,m,tt(:,:,(d-1)*timevar(3)+1),m,0.0d0,pinf(:,:,d+1),m)
 
             do i = 1, m
-                if(pinf(i,i,d+1) < tol) then
+                if(pinf(i,i,d+1) < meps) then
                     pinf(i,:,d+1) = 0.0d0
                     pinf(:,i,d+1) = 0.0d0
                 end if
