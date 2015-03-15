@@ -308,8 +308,8 @@ KFS <-
                      V_mu = array(0, ("mean" %in% smoothing) * c(p - 1, p - 1, n - 1) + 1), 
                      as.integer("state" %in%  smoothing), as.integer("signal" %in% smoothing), 
                      as.integer("mean" %in% smoothing))
-          if(out$info!=0){
-            switch(as.character(filterout$info),
+          if(smoothout$info!=0){
+            switch(as.character(smoothout$info),
                    "-3" = stop("Couldn't compute LDL decomposition of P1."),
                    "-2" =  stop("Couldn't compute LDL decomposition of Q."),
                    "1" =  stop("Gaussian approximation failed due to non-finite value in linear predictor."),
@@ -353,7 +353,7 @@ KFS <-
                         convtol, diff = double(1),lik=double(1), info=integer(1))
         
         if(app$info!=0){
-          switch(as.character(filterout$info),
+          switch(as.character(app$info),
                  "-3" = stop("Couldn't compute LDL decomposition of P1."),
                  "-2" =  stop("Couldn't compute LDL decomposition of Q."),
                  "1" =  stop("Gaussian approximation failed due to non-finite value in linear predictor."),
