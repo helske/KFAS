@@ -68,9 +68,7 @@ is.SSModel <- function(object, na.check = FALSE, return.logical = TRUE) {
                             function(x) any(is.na(object[[x]])) ||
                               any(is.infinite(object[[x]])))) &&
       max(object$Q) <= tol &&
-      ifelse(identical(object$u, "Omitted"), max(object$H) <= tol, TRUE) &&
-      ifelse(identical(object$u, "Omitted"), !all(c(object$H,object$Q) < .Machine$double.eps^0.75), 
-             !all(object$Q < .Machine$double.eps^0.75))
+      ifelse(identical(object$u, "Omitted"), max(object$H) <= tol, TRUE)
     x
   } else{
     if (!inherits(object, "SSModel"))
@@ -121,12 +119,10 @@ is.SSModel <- function(object, na.check = FALSE, return.logical = TRUE) {
                       function(x) any(is.na(object[[x]])) ||
                         any(is.infinite(object[[x]])))) ||
              max(object$Q) > tol || ifelse(identical(object$u, "Omitted"),
-                                           max(object$H) > tol, FALSE)) &&
-          ifelse(identical(object$u, "Omitted"), all(c(object$H,object$Q) < .Machine$double.eps^0.75), 
-                 all(object$Q < .Machine$double.eps^0.75)))
+                                           max(object$H) > tol, FALSE)))
       stop(paste0("System matrices (excluding Z) contain NA or infinite ",
                   "values, covariance matrices contain values larger ",
-                  "than ",tol, " or H=Q=0 for all time points"))
+                  "than ",tol))
     
     if(!all(diag(object$P1inf) %in% c(0,1)) ||
          !all(object$P1inf[col(diag(m)) != row(diag(m))] == 0))

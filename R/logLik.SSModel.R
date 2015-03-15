@@ -71,7 +71,8 @@ logLik.SSModel <-
     storage.mode(ymiss) <- "integer"
     tv <- attr(object, "tv")
     if (all(object$distribution == "gaussian")) {
-      if (all(c(object$Q, object$H) == 0) || all(c(object$R, object$H) == 0)) 
+      # degenerate case
+      if (all(c(object$Q, object$H) < .Machine$double.eps) || all(c(object$R, object$H) < .Machine$double.eps)) 
         return(-.Machine$double.xmax^0.75)   
       
       if (p > 1 && any(abs(apply(object$H, 3, "[", !diag(p))) > object$tol)) {

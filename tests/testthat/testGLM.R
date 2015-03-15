@@ -6,7 +6,7 @@ model<-SSModel(y~1,dist="binomial")
 expect_equivalent(coef(KFS(model,theta=7.1)),coef(KFS(model)))
 expect_equivalent(coef(KFS(model,theta=-4.6)),coef(KFS(model)))
 
-tol<-1e-3
+tol<-1e-4
 require(MASS)
 # Test for Gaussian
 ctl <- c(4.17,5.58,5.18,6.11,4.50,4.61,5.17,4.53,5.33,5.14)
