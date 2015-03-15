@@ -44,14 +44,13 @@ theta, u, ytilde, dist,maxiter,tol,rankp,convtol,diff,lik,info)
         call dgemm('n','t',m,m,r,1.0d0,mr,m,rtv(:,:,(i-1)*timevar(4)+1),m,0.0d0,rqr(:,:,i),m)
     end do
 
-    k=0
-    ! compute log(p(theta|y))
-    call pytheta(theta, dist, u, yt, ymiss, devold, p, n)
+
     if(rankp .NE. m) then ! in case of totally diffuse initialization term p(theta) disappears
         call pthetafirst(theta, timevar, zt, tt, rqr, a1, p1, p1inf, p, m, n, devold, tol,rankp,kt,kinf,ft,finf,dt,jt)
     end if
     thetaold = theta
-
+devold = -huge(devold)
+    k=0
     do while(k < maxiter)
 
         k=k+1
