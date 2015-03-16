@@ -12,7 +12,6 @@ is.SSModel(object, na.check = FALSE, return.logical = TRUE)
 \item{na.check}{Test the system matrices for NA and infinite values. Also checks for large
 values (>1e7) in covariance matrices \code{H}
 and \code{Q} which could cause large rounding errors in filtering.
-Degenerate case with H=Q=0 for all t is also checked.
 Positive semidefiniteness of these matrices is not checked. Default
   is \code{FALSE}.}
 

@@ -47,7 +47,8 @@
 #'   model. Default is 0, which computes the approximating Gaussian model by 
 #'   \code{\link{approxSSM}} and performs the usual Gaussian smoothing so that 
 #'   the smoothed state estimates equals to the conditional mode of 
-#'   \eqn{p(\alpha_t|y)}{p(\alpha[t]|y)}.
+#'   \eqn{p(\alpha_t|y)}{p(\alpha[t]|y)}. 
+#'   In case of \code{nsim=0}, the mean estimates and their covariance matrices are computed using Delta method.
 #' @param theta Initial values for conditional mode theta. Only used for 
 #'   non-Gaussian models.
 #' @param maxiter The maximum number of iterations used in Gaussian 
@@ -109,7 +110,7 @@
 #'   
 #'   \item{V_mu}{Covariances \eqn{Cov(f(\theta_t)| y_1, \ldots , 
 #'   y_n)}{Cov(f(\theta[t]) | y[1], \ldots , y[n])}. If \code{nsim=0}, only 
-#'   diagonal elements (variances) are computed, using the delta method.  }
+#'   diagonal elements (variances) are computed, using the Delta method.  }
 #'   
 #'   
 #'   \item{etahat}{Smoothed disturbance terms \eqn{E(\eta_t | y_1, \ldots , 
@@ -443,26 +444,25 @@ KFS <-
           out <- c(out, list(t = ts(filterout$theta, start = start(model$y), 
                                     frequency = frequency(model$y)), P_theta = filterout$P_theta))
         }
-        if ("mean" %in% filtering) {
-          mu <- out$model$y
-          P_mu <- array(0, c(p, p, n))
+        if ("mean" %in% filtering) {  
+          out$mu <- out$model$y
+          out$P_mu <- array(0, c(p, p, n))
           for (i in 1:p) {
-            P_mu[i, i, ] <- switch(model$distribution[i], 
+            out$mu[, i] <- switch(model$distribution[i], 
+                                  gaussian = filterout$theta[, i], 
+                                  poisson = exp(filterout$theta[, i]) * model$u[, i], 
+                                  binomial = exp(filterout$theta[, i])/(1 + exp(filterout$theta[, i])), 
+                                  gamma = exp(filterout$theta[, i]), 
+                                  `negative binomial` = exp(filterout$theta[, i]))
+            out$P_mu[i, i, ] <- switch(model$distribution[i], 
                                    gaussian = filterout$P_theta[i, i, ], 
-                                   poisson = filterout$P_theta[i, i, ] * (exp(filterout$theta[, i]) * model$u[, i])^2, 
+                                   poisson = filterout$P_theta[i, i, ] * out$mu[,i]^2, 
                                    binomial = filterout$P_theta[i, i, ] * 
                                      (exp(filterout$theta[, i])/(1 + exp(filterout$theta[, i]))^2)^2, 
-                                   gamma = filterout$P_theta[i, i, ] * exp(filterout$theta[, i])^2, 
+                                   gamma = filterout$P_theta[i, i, ] * out$mu[,i]^2, 
                                    `negative binomial` = filterout$P_theta[i, i, ] * 
-                                     exp(filterout$theta[, i])^2)
-            mu[, i] <- switch(model$distribution[i], 
-                              gaussian = filterout$theta[, i], 
-                              poisson = exp(filterout$theta[, i]) * model$u[, i], 
-                              binomial = exp(filterout$theta[, i])/(1 + exp(filterout$theta[, i])), 
-                              gamma = exp(filterout$theta[, i]), 
-                              `negative binomial` = exp(filterout$theta[, i]))
+                                     out$mu[,i]^2)
           }
-          out <- c(out, list(m = mu, P_mu = P_mu))
         }
       }
     }
@@ -518,7 +518,7 @@ KFS <-
         out$V_theta <- smoothout$V_theta
       }
       if ("mean" %in% smoothing) {
-        out$muhat <- array(NA, c(n, p))
+        out$muhat <- out$model$y
         out$V_mu <- array(0, c(p, p, n))
         for (i in 1:p) {
           out$muhat[, i] <- switch(model$distribution[i], 
@@ -534,8 +534,7 @@ KFS <-
                                        (exp(smoothout$thetahat[i, ])/(1 + exp(smoothout$thetahat[i, ]))^2)^2, 
                                      gamma = smoothout$V_theta[i, i, ] * out$muhat[, i]^2, 
                                      `negative binomial` = smoothout$V_theta[i, i, ] * out$muhat[, i]^2)
-        }
-        out$muhat <- ts(out$muhat, start = start(model$y), frequency = frequency(model$y))
+        }       
       }
       if (!simplify && all(model$distribution == "gaussian")) 
         out <- c(out, list(r = smoothout$r, r0 = smoothout$r0, r1 = smoothout$r1, 
