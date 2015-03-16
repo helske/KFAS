@@ -21,6 +21,6 @@ test_that("StructTS and KFS give equivalent results",{
   
   model<-SSModel(trees~SSMtrend(degree=1,Q=NA),H=NA)
   fit2<-fitSSM(model,inits=c(0,0),method="BFGS")
-  expect_equal(c(fit2$model$H),fit$coef[2],tolerance=tol, check.attributes=FALSE)
-  expect_less_than(abs(c(fit2$model$Q)-fit$coef[1]),1e-9)
+  expect_equal(c(fit2$model["H"]),fit$coef[2],tolerance=tol, check.attributes=FALSE)
+  expect_less_than(abs(c(fit2$model["Q"])-fit$coef[1]),1e-9)
 })

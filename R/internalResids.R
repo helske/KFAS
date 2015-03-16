@@ -4,7 +4,7 @@ varianceFilter <- function(object) {
   vars <- object$model$y
   for (i in 1:length(object$model$distribution)){
     vars[, i] <- switch(object$model$distribution[i], 
-                        gaussian = object$u[,i], 
+                        gaussian = object$model$u[,i], 
                         poisson = object$m[, i], 
                         binomial = object$m[, i] * (1 - object$m[, i])/object$model$u[, i], 
                         gamma = object$m[, i]^2/object$model$u[,i], 
@@ -16,7 +16,7 @@ varianceSmoother <- function(object) {
   vars <- object$model$y
   for (i in 1:length(object$model$distribution)){
     vars[, i] <- switch(object$model$distribution[i], 
-                        gaussian = object$u[,i], 
+                        gaussian = object$model$u[,i], 
                         poisson = object$muhat[, i], 
                         binomial = object$muhat[, i] * (1 - object$muhat[, i])/object$model$u[, i], 
                         gamma = object$muhat[, i]^2/object$model$u[,i], 

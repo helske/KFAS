@@ -18,6 +18,11 @@ test_that("predict.SSModel works",{
               not(gives_warning()))
   
   set.seed(1)
+  expect_that(predict(model2, states = c("trend", "regression"), nsim=5,
+                      newdata = SSModel(ts(rep(NA,24),frequency=12) ~ law + SSMtrend(1, 0.001) +
+                                          SSMseasonal(period = 12, sea.type = "dummy", Q = 0),
+                                        data = data.frame(law=rep(1,24)), distribution = "poisson")),
+              not(gives_warning()))
   expect_that(predict(model2, states = c("trend", "regression"),  interval = "confidence", nsim=5,
                       newdata = SSModel(ts(rep(NA,24),frequency=12) ~ law + SSMtrend(1, 0.001) +
                                           SSMseasonal(period = 12, sea.type = "dummy", Q = 0),

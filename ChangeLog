@@ -1,11 +1,11 @@
 Changes from version 1.0.4-1 to 1.1.0:
- * simulateSSM: Corrected bug which gave wrong variances for epsilon disturbances.
- * simulateSSM: Corrected bug which gave wrong variances for the initial states.
+ * simulateSSM: Corrected a bug which gave wrong variances for epsilon disturbances.
+ * simulateSSM: Corrected a bug which gave wrong variances for the initial states.
  * rstandard.KFS: Added argument standardization_type which defines whether cholesky or marginal standardization is used.
  * is.SSModel: Tweaked checks for faster performance for time varying models, added check for P1inf.
  * fitSSM: Function now allows fixed time varying covariance matrices. 
  * fitSSM: check.model is set to FALSE when calling logLik.SSModel in all cases. see ?fitSSM for details.
- * predict.SSModel: Corrected bug which caused partial signal prediction of non-Gaussian models to fail.
+ * predict.SSModel: Corrected bug which caused partial signal prediction to fail.
  * predict.SSModel: Corrected bug which caused prediction of non-Gaussian models with time varying u to fail. 
  * predict.SSModel: Method now correctly uses original times of the model object for the start and 
    end times of the predictions. 
