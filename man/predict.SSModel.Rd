@@ -35,7 +35,7 @@ choices are \code{"all"}, \code{"arima"}, \code{"custom"}, \code{"cycle"},
 \code{"seasonal"}, \code{"trend"}, or \code{"regression"}. These can be
 combined. Default is \code{"all"}.}
 
-\item{se.fit}{If TRUE, standard errors are computed. Default is FALSE.}
+\item{se.fit}{If TRUE, standard errors of fitted values are computed. Default is FALSE.}
 
 \item{nsim}{Number of independent samples used in importance sampling. Used
 only for non-Gaussian models.}

@@ -16,8 +16,7 @@
 #' @param object An object to be tested.
 #' @param na.check Test the system matrices for NA and infinite values. Also checks for large 
 #' values (>1e7) in covariance matrices \code{H} 
-#' and \code{Q} which could cause large rounding errors in filtering. 
-#' Degenerate case with H=Q=0 for all t is also checked.
+#' and \code{Q} which could cause large rounding errors in filtering.
 #' Positive semidefiniteness of these matrices is not checked. Default
 #'   is \code{FALSE}.
 #' @param return.logical If \code{FALSE}, error is given if the the model is not

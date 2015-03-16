@@ -168,7 +168,6 @@ ts.plot(cbind(model$y,coef(out)),col=1:3)
 legend('bottomright',legend=c(colnames(GlobalTemp), 'Smoothed signal'), col=1:3, lty=1)
 
 
-
 # Seatbelts data
 \dontrun{
 model<-SSModel(log(drivers)~SSMtrend(1,Q=list(NA))+
@@ -257,10 +256,10 @@ fit<-fitSSM(inits=c(-4,-7), model=model,method='BFGS')
 
 model<-fit$model
 
-# use approximating model, gives posterior mode of the signal and the linear predictor
-out_nosim<-KFS(model,smoothing=c('signal','mean'),nsim=0)
+# use approximating model, gives posterior modes, but the variances might not be reliable
+out_nosim<-KFS(model,nsim=0)
 # State smoothing via importance sampling
-out_sim<-KFS(model,smoothing=c('signal','mean'),nsim=1000)
+out_sim<-KFS(model,nsim=1000)
 
 out_nosim
 out_sim

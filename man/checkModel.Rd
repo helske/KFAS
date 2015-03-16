@@ -9,8 +9,12 @@ is.SSModel(object, na.check = FALSE, return.logical = TRUE)
 \arguments{
 \item{object}{An object to be tested.}
 
-\item{na.check}{Test the system matrices for NA and infinite values. Default
-is \code{FALSE}.}
+\item{na.check}{Test the system matrices for NA and infinite values. Also checks for large
+values (>1e7) in covariance matrices \code{H}
+and \code{Q} which could cause large rounding errors in filtering.
+Degenerate case with H=Q=0 for all t is also checked.
+Positive semidefiniteness of these matrices is not checked. Default
+  is \code{FALSE}.}
 
 \item{return.logical}{If \code{FALSE}, error is given if the the model is not
 a valid \code{SSModel} object. Otherwise logical value is returned. Default
@@ -30,9 +34,5 @@ These can contain NA values (but not infinite values),  with condition that
 when \code{Z[i,,t]} contains NA value, the corresponding \code{y[t,i]} must
 also have NA value. In this case \code{Z[i,,t]} is not referenced in
 filtering and smoothing, and algorithms works properly.
-
-Function also checks for large values (>1e7) in covariance matrices \code{H}
-and \code{Q} which could cause large rounding errors in filtering.
-Positive semidefiniteness of these matrices is not checked.
 }
 
