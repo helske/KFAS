@@ -25,8 +25,8 @@ test_that("FitSSM, transformSSM and simulateSSM works",{
   expect_that(out <- KFS(mod,smoothing="state"),not(gives_warning()))  
   expect_that(sim <- simulateSSM(mod,"states",nsim=25,antithetics=TRUE),not(gives_warning()))
   
-  expect_equal(rowMeans(sim[192,,]), out$alpha[192,])
-  expect_equal(rowMeans(sim[1,,]), out$alpha[1,])
+  expect_equal(rowMeans(sim[192,,]), out$alpha[192,],tolerance=tol)
+  expect_equal(rowMeans(sim[1,,]), out$alpha[1,],tolerance=tol)
   expect_equal(cov(t(sim[1,,])), out$V[,,1],tolerance=1e-2,check.attributes=FALSE)
   expect_equal(var(sim[1,29,]), 1.102994,tolerance=tol,check.attributes=FALSE)
   expect_equal(cov(t(sim[192,,])), out$V[,,192],tolerance=1e-2,check.attributes=FALSE)

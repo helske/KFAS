@@ -308,6 +308,15 @@ KFS <-
                      V_mu = array(0, ("mean" %in% smoothing) * c(p - 1, p - 1, n - 1) + 1), 
                      as.integer("state" %in%  smoothing), as.integer("signal" %in% smoothing), 
                      as.integer("mean" %in% smoothing))
+          if(smoothout$info!=0){
+            switch(as.character(smoothout$info),
+                   "-3" = stop("Couldn't compute LDL decomposition of P1."),
+                   "-2" =  stop("Couldn't compute LDL decomposition of Q."),
+                   "1" =  stop("Gaussian approximation failed due to non-finite value in linear predictor."),
+                   "2" = stop("Gaussian approximation failed due to non-finite value of p(theta|y)."),
+                   "3" = warning("Maximum number of iterations reached, the approximation did not converge.")
+            )  
+          }
           if ("state" %in% smoothing) {
             out <- c(out, list(alphahat = ts(t(smoothout$alphahat), start = start(model$y), 
                                              frequency = frequency(model$y)), V = smoothout$V))
@@ -326,8 +335,7 @@ KFS <-
           if ("none" %in% filtering) 
             out <- c(out, iterations = smoothout$maxiter)
         }
-        if (maxiter == out$iterations) 
-          warning("Maximum number of iterations reached, the linearization did not converge.")
+        
         out$call <- match.call(expand.dots = FALSE)
         class(out) <- "KFS"
         return(out)
@@ -344,13 +352,15 @@ KFS <-
                         maxiter = as.integer(maxiter), model$tol, as.integer(sum(model$P1inf)), 
                         convtol, diff = double(1),lik=double(1), info=integer(1))
         
-        if (app$info==1)
-          stop("Non-finite value of likelihood or linear predictor in approximation algorithm.")
-        
-        if(app$info==2)
-          warning(paste("Maximum number of iterations reached, \n 
-                    the approximation algorithm did not converge. 
-                    Latest difference was", signif(app$diff,3)))
+        if(app$info!=0){
+          switch(as.character(app$info),
+                 "-3" = stop("Couldn't compute LDL decomposition of P1."),
+                 "-2" =  stop("Couldn't compute LDL decomposition of Q."),
+                 "1" =  stop("Gaussian approximation failed due to non-finite value in linear predictor."),
+                 "2" = stop("Gaussian approximation failed due to non-finite value of p(theta|y)."),
+                 "3" = warning("Maximum number of iterations reached, the approximation did not converge.")
+          )  
+        }
         
         
         tsp(app$ytilde) <- tsp(model$y)

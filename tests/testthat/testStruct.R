@@ -1,26 +1,22 @@
 context("Structural time series tests")
 
-tol<-1e-3
+tol<-1e-5
 
-test_that("StructTS and KFS give equivalent results",{
-  require(graphics)
-  trees <- window(treering, start = 0)
-  fit <- StructTS(trees, type = "level")
+test_that("StructTS and KFS give equivalent results",{  
+  # This only works for models with one state, as StructTS defines initial covariance matrix weirdly
+  y <- Nile
+  y[c(2,15,16,50,100)] <-NA
+  fit <- StructTS(y, type = "level")
   # Construct model per StructTS:
-  model<-SSModel(trees~SSMtrend(degree=1,Q=fit$coef[1],P1=fit$model0$P,a1=fit$model0$a),H=fit$coef[2])
-  out<-KFS(model)
+  model<-SSModel(y ~ SSMtrend(1, fit$coef[1], P1 = fit$model0$P, a1 = fit$model0$a), H = fit$coef[2])
+  out<-KFS(model,filtering="state",smoothing="none")
   expect_equal(c(fitted(fit)),coef(out,filtered=TRUE)[-1],tolerance=tol, check.attributes=FALSE)
-  expect_equal(fit$loglik,logLik(model),tolerance=tol, check.attributes=FALSE)
   
-  fit2 <- StructTS(trees, type = "level",fixed=c(NA,1e-15))
-  model<-SSModel(trees~SSMtrend(degree=1,Q=fit2$coef[1],P1=fit2$model0$P,a1=fit2$model0$a),H=fit2$coef[2])
-  expect_less_than(abs(fit2$loglik-logLik(model)),1e-4)
-  fit2 <- StructTS(trees, type = "level",fixed=c(1e-15,NA))
-  model<-SSModel(trees~SSMtrend(degree=1,Q=fit2$coef[1],P1=fit2$model0$P,a1=fit2$model0$a),H=fit2$coef[2])
-  expect_less_than(abs(fit2$loglik-logLik(model)),1e-11)
-  
-  model<-SSModel(trees~SSMtrend(degree=1,Q=NA),H=NA)
-  fit2<-fitSSM(model,inits=c(0,0),method="BFGS")
-  expect_equal(c(fit2$model["H"]),fit$coef[2],tolerance=tol, check.attributes=FALSE)
-  expect_less_than(abs(c(fit2$model["Q"])-fit$coef[1]),1e-9)
+  model<-SSModel(y~SSMtrend(degree=1,Q=NA),H=NA)
+  fit2<-fitSSM(model,inits=c(7,10),method="BFGS")
+  expect_equal(fit2$model["Q"],fit$coef[1],tolerance=tol, check.attributes=FALSE)
+  expect_equal(fit2$model["H"],fit$coef[2],tolerance=tol, check.attributes=FALSE)
+
+  pred <- predict(fit, n.ahead = 5)
+  expect_equal(pred$pred, predict(fit2$model, n.ahead = 5),tolerance=tol, check.attributes=FALSE)  
 })

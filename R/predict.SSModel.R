@@ -36,7 +36,7 @@
 #'   combined. Default is \code{"all"}.
 #' @param nsim Number of independent samples used in importance sampling. Used
 #'   only for non-Gaussian models.
-#' @param se.fit If TRUE, standard errors are computed. Default is FALSE.
+#' @param se.fit If TRUE, standard errors of fitted values are computed. Default is FALSE.
 #' @param prob if TRUE (default), the predictions in binomial case are
 #'   probabilities instead of counts.
 #' @param maxiter The maximum number of iterations used in approximation Default
