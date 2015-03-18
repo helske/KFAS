@@ -37,7 +37,8 @@ covariance matrix \code{H}. Defaults to \code{"ldl"}. See function
 model. Default is 0, which computes the approximating Gaussian model by
 \code{\link{approxSSM}} and performs the usual Gaussian smoothing so that
 the smoothed state estimates equals to the conditional mode of
-\eqn{p(\alpha_t|y)}{p(\alpha[t]|y)}.}
+\eqn{p(\alpha_t|y)}{p(\alpha[t]|y)}.
+In case of \code{nsim=0}, the mean estimates and their covariance matrices are computed using Delta method.}
 
 \item{theta}{Initial values for conditional mode theta. Only used for
 non-Gaussian models.}
@@ -104,7 +105,7 @@ What \code{KFS} returns depends on the arguments \code{filtering},
 
   \item{V_mu}{Covariances \eqn{Cov(f(\theta_t)| y_1, \ldots ,
   y_n)}{Cov(f(\theta[t]) | y[1], \ldots , y[n])}. If \code{nsim=0}, only
-  diagonal elements (variances) are computed, using the delta method.  }
+  diagonal elements (variances) are computed, using the Delta method.  }
 
 
   \item{etahat}{Smoothed disturbance terms \eqn{E(\eta_t | y_1, \ldots ,
