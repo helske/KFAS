@@ -39,17 +39,17 @@ theta, u, ytilde, dist,maxiter,tol,rankp,convtol,diff,lik,info)
     !compute rqr
     tvrqr = max(timevar(4),timevar(5))
     do i=1, (n-1)*tvrqr+1
-        call dgemm('n','n',m,r,r,1.0d0,rtv(:,:,(i-1)*timevar(4)+1),m,&
-        qt(:,:,(i-1)*timevar(5)+1),r,0.0d0,mr,m)
+        call dgemm('n','n',m,r,r,1.0d0,rtv(:,:,(i-1)*timevar(4)+1),m,qt(:,:,(i-1)*timevar(5)+1),r,0.0d0,mr,m)
         call dgemm('n','t',m,m,r,1.0d0,mr,m,rtv(:,:,(i-1)*timevar(4)+1),m,0.0d0,rqr(:,:,i),m)
     end do
 
-
-    if(rankp .NE. m) then ! in case of totally diffuse initialization term p(theta) disappears
+    ! compute logp(theta) for the first time, no need to compute kt/kinf and ft/finf in successive calls
+    ! in case of totally diffuse initialization term p(theta)=0 for all theta
+    if(rankp .NE. m) then
         call pthetafirst(theta, timevar, zt, tt, rqr, a1, p1, p1inf, p, m, n, devold, tol,rankp,kt,kinf,ft,finf,dt,jt)
     end if
     thetaold = theta
-devold = -huge(devold)
+    devold = -huge(devold)
     k=0
     do while(k < maxiter)
 
@@ -62,12 +62,12 @@ devold = -huge(devold)
         if(rankp .NE. m) then
             call pthetarest(thetanew, timevar, zt, tt, a1, p, m, n, dev, tol,kt,kinf,ft,finf,dt,jt)
         end if
-!non-finite value in linear predictor or muhat
+        !non-finite value in linear predictor or muhat
         if(finitex(sum(thetanew))==0 .OR. finitex(maxval(exp(thetanew)))==0 ) then 
             if(k>1) then
                 kk = 0
                 do while(finitex(sum(thetanew))==0 .OR. finitex(maxval(exp(thetanew)))==0)
-                kk = kk + 1
+                    kk = kk + 1
                     if(kk>maxiter) then
                         info = 1
                         return
@@ -75,7 +75,7 @@ devold = -huge(devold)
                     !backtrack
                     theta = 0.5d0*(thetaold+theta)
                     call approxloop(yt, ymiss, timevar, zt, tt, rtv, ht, qt, rqr, tvrqr, a1, p1,p1inf, p,n,m,r, &
-                          theta, thetanew, u, ytilde, dist,tol,rankp,lik)
+                    theta, thetanew, u, ytilde, dist,tol,rankp,lik)
 
                     call pytheta(thetanew, dist, u, yt, ymiss, dev, p, n)
                     if(rankp .NE. m) then

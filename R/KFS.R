@@ -445,10 +445,10 @@ KFS <-
                                     frequency = frequency(model$y)), P_theta = filterout$P_theta))
         }
         if ("mean" %in% filtering) {  
-          out$mu <- out$model$y
+          out$m <- out$model$y
           out$P_mu <- array(0, c(p, p, n))
           for (i in 1:p) {
-            out$mu[, i] <- switch(model$distribution[i], 
+            out$m[, i] <- switch(model$distribution[i], 
                                   gaussian = filterout$theta[, i], 
                                   poisson = exp(filterout$theta[, i]) * model$u[, i], 
                                   binomial = exp(filterout$theta[, i])/(1 + exp(filterout$theta[, i])), 
