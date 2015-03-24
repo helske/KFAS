@@ -30,10 +30,11 @@ cannot contain time varying system matrices.}
 
 \item{states}{Which states are used in computing the predictions. Either a
 numeric vector containing the indices of the corresponding states, or a
-character vector defining the types of the corresponding states. Possible
-choices are \code{"all"}, \code{"arima"}, \code{"custom"}, \code{"cycle"},
-\code{"seasonal"}, \code{"trend"}, or \code{"regression"}. These can be
-combined. Default is \code{"all"}.}
+character vector defining the types of the corresponding states. Possible choices are
+\code{"all"},  \code{"level"}, \code{"slope"},
+\code{"trend"},  \code{"regression"}, \code{"arima"}, \code{"custom"},
+\code{"cycle"} or \code{"seasonal"}, where \code{"trend"} extracts all states relating to trend.
+ These can be combined. Default is \code{"all"}.}
 
 \item{se.fit}{If TRUE, standard errors of fitted values are computed. Default is FALSE.}
 

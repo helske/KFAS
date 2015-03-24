@@ -26,14 +26,17 @@ subset(x, ...) <- value
 
 \item{states}{Which states are chosen. Either a numeric vector containing the indices of the
 states, or a character vector defining the types of the states. Possible choices are
-\code{"all"}, \code{"arima"}, \code{"custom"}, \code{"cycle"}, \code{"seasonal"},
-\code{"trend"}, or \code{"regression"}. These can be combined. Default is \code{"all"}.}
+\code{"all"},  \code{"level"}, \code{"slope"},
+\code{"trend"},  \code{"regression"}, \code{"arima"}, \code{"custom"},
+\code{"cycle"} or \code{"seasonal"}, where \code{"trend"} extracts all states relating to trend.
+ These can be combined. Default is \code{"all"}.}
 
 \item{etas}{Which disturbances eta are chosen. Used for elements \code{"R"} and \code{"Q"}.
   Either a numeric vector containing the indices of the etas, or a character vector defining the
-  types of the etas. Possible choices are \code{"all"}, \code{"arima"}, \code{"custom"},
-  \code{"cycle"}, \code{"seasonal"}, \code{"trend"}, or \code{"regression"}.
-These can be combined.}
+  types of the etas. Possible choices are \code{"all"},  \code{"level"}, \code{"slope"},
+  \code{"trend"},  \code{"regression"}, \code{"arima"}, \code{"custom"},
+  \code{"cycle"} or \code{"seasonal"}, where \code{"trend"} extracts all etas relating to trend.
+These can be combined. Default is \code{"all"}.}
 
 \item{series}{Numeric. Which series are chosen. Used for elements
 \code{"y"}, \code{"Z"}, and \code{"u"}.}

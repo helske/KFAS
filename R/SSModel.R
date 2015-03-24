@@ -284,9 +284,13 @@ SSModel <-
           comp$ynames <- y_names[eval(comp$index,envir=data,enclos=parent.frame())]
         #if(comp[[1]] == "SSMregression")
         #  comp$remove.intercept<-remove.intercept
-        blocks[[i + reg_in_formula]] <- eval(comp, envir=data,enclos=parent.frame())  ###
-        blocks[[i + reg_in_formula]]$state_types <- substr(as.character(comp[[1]]), 
-                                                           start = 4, stop = 15L)
+        blocks[[i + reg_in_formula]] <- eval(comp, envir=data,enclos=parent.frame())
+        # use level and slope instead of generic trend
+        if((s_type <- substr(as.character(comp[[1]]), 
+                            start = 4, stop = 15L))=="trend"){
+          s_type <- substr(blocks[[i + reg_in_formula]]$state_names, start = 1, stop = 5L)
+        }
+        blocks[[i + reg_in_formula]]$state_types <- s_type
       }
    
     # building combined model arrays

@@ -11,10 +11,11 @@ signal(object, states = "all", filtered = FALSE)
 
 \item{states}{Which states are combined? Either a numeric vector containing
 the indices of the corresponding states, or a character vector defining the
-types of the corresponding states. Possible choices are \code{"all"},
-\code{"arima"}, \code{"custom"}, \code{"cycle"}, \code{"seasonal"},
-\code{"trend"}, or \code{"regression"}. These can be combined. Default is
-\code{"all"}.}
+types of the corresponding states. Possible choices are
+ \code{"all"},  \code{"level"}, \code{"slope"},
+ \code{"trend"},  \code{"regression"}, \code{"arima"}, \code{"custom"},
+ \code{"cycle"} or \code{"seasonal"}, where \code{"trend"} extracts states relating to trend.
+  These can be combined. Default is \code{"all"}.}
 
 \item{filtered}{If \code{TRUE}, filtered signal is used. Otherwise smoothed signal is
 used.}

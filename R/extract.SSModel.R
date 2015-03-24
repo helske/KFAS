@@ -14,13 +14,16 @@
 #'   \code{"T"}, \code{"R"}, \code{"Q"}, \code{"a1"}, \code{"P1"}, \code{"P1inf"}, and \code{"u"}.
 #' @param states Which states are chosen. Either a numeric vector containing the indices of the
 #'   states, or a character vector defining the types of the states. Possible choices are
-#'   \code{"all"}, \code{"arima"}, \code{"custom"}, \code{"cycle"}, \code{"seasonal"},
-#'   \code{"trend"}, or \code{"regression"}. These can be combined. Default is \code{"all"}.
+#'   \code{"all"},  \code{"level"}, \code{"slope"}, 
+#'   \code{"trend"},  \code{"regression"}, \code{"arima"}, \code{"custom"}, 
+#'   \code{"cycle"} or \code{"seasonal"}, where \code{"trend"} extracts all states relating to trend.
+#'    These can be combined. Default is \code{"all"}.
 #' @param etas Which disturbances eta are chosen. Used for elements \code{"R"} and \code{"Q"}.
 #'   Either a numeric vector containing the indices of the etas, or a character vector defining the
-#'   types of the etas. Possible choices are \code{"all"}, \code{"arima"}, \code{"custom"}, 
-#'   \code{"cycle"}, \code{"seasonal"}, \code{"trend"}, or \code{"regression"}.
-#' These can be combined. 
+#'   types of the etas. Possible choices are \code{"all"},  \code{"level"}, \code{"slope"}, 
+#'   \code{"trend"},  \code{"regression"}, \code{"arima"}, \code{"custom"}, 
+#'   \code{"cycle"} or \code{"seasonal"}, where \code{"trend"} extracts all etas relating to trend.
+#' These can be combined. Default is \code{"all"}.
 #' @param series Numeric. Which series are chosen. Used for elements 
 #' \code{"y"}, \code{"Z"}, and \code{"u"}.
 #' @param times Numeric. Which time points are chosen.
@@ -57,8 +60,10 @@
         } else {
           states <- match.arg(arg = states, 
                               choices = c("all", "arima", "custom", "cycle", 
-                                          "seasonal", "trend", "regression"), 
+                                          "seasonal", "trend", "level", "slope", "regression"), 
                               several.ok = TRUE)
+          if("trend" %in% states)
+            states <- c(states, "level", "slope")
           if ("all" %in% states) {
             states <- 1:attr(x, "m")
           } else states <- which(attr(x, "state_types") %in% states)
@@ -77,8 +82,10 @@
         } else {
           etas <- match.arg(arg = etas, 
                             choices = c("all", "arima", "custom", "cycle", 
-                                        "seasonal", "trend", "regression"), 
+                                        "seasonal", "trend", "level", "slope", "regression"), 
                             several.ok = TRUE)
+          if("trend" %in% etas)
+            etas <- c(etas, "level", "slope")
           if ("all" %in% etas) {
             etas <- 1:attr(x, "k")
           } else etas <- which(attr(x, "eta_types") %in% etas)
@@ -136,8 +143,10 @@
         } else {
           states <- match.arg(arg = states, 
                               choices = c("all", "arima", "custom", "cycle", 
-                                          "seasonal", "trend", "regression"), 
+                                          "seasonal", "trend", "level", "slope","regression"), 
                               several.ok = TRUE)
+          if("trend" %in% states)
+            states <- c(states, "level", "slope")
           if ("all" %in% states) {
             states <- 1:attr(x, "m")
           } else states <- which(attr(x, "state_types") %in% states)
@@ -155,9 +164,11 @@
                  which are modified.")
         } else {
           etas <- match.arg(arg = etas, 
-                            choices = c("all", "arima", "custom", 
-                                        "cycle", "seasonal", "trend", "regression"), 
+                            choices = c("all", "arima", "custom", "cycle", 
+                                        "seasonal", "trend", "level", "slope", "regression"), 
                             several.ok = TRUE)
+          if("trend" %in% etas)
+            etas <- c(etas, "level", "slope")
           if ("all" %in% etas) {
             etas <- 1:attr(x, "k")
           } else etas <- which(attr(x, "eta_types") %in% etas)

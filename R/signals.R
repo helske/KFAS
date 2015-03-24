@@ -7,10 +7,11 @@
 #'@param object Object of class \code{KFS}.
 #'@param states Which states are combined? Either a numeric vector containing
 #'  the indices of the corresponding states, or a character vector defining the
-#'  types of the corresponding states. Possible choices are \code{"all"},
-#'  \code{"arima"}, \code{"custom"}, \code{"cycle"}, \code{"seasonal"}, 
-#'  \code{"trend"}, or \code{"regression"}. These can be combined. Default is
-#'  \code{"all"}.
+#'  types of the corresponding states. Possible choices are
+#'   \code{"all"},  \code{"level"}, \code{"slope"}, 
+#'   \code{"trend"},  \code{"regression"}, \code{"arima"}, \code{"custom"}, 
+#'   \code{"cycle"} or \code{"seasonal"}, where \code{"trend"} extracts states relating to trend.
+#'    These can be combined. Default is \code{"all"}.
 #'@param filtered If \code{TRUE}, filtered signal is used. Otherwise smoothed signal is
 #'  used.
 #'@return 
@@ -27,8 +28,11 @@ signal <-
         if (min(states) < 1 | max(states) > attr(object$model, "m")) 
             stop("Vector states should contain the indices or names of the states which are combined.")
     } else {
-        states <- match.arg(arg = states, choices = c("all", "arima", "custom", "cycle", 
-            "seasonal", "trend", "regression"), several.ok = TRUE)
+        states <- match.arg(arg = states, choices = c("all", "arima", "custom", "level","slope",
+                                                      "cycle", "seasonal", "trend", "regression"),
+                            several.ok = TRUE)
+        if("trend" %in% states)
+          states <- c(states, "level", "slope")
         if ("all" %in% states) {
             states <- as.integer(1:attr(object$model, "m"))
         } else states <- which(attr(object$model, "state_types") %in% states)
