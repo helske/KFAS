@@ -31,11 +31,13 @@ signal <-
         states <- match.arg(arg = states, choices = c("all", "arima", "custom", "level","slope",
                                                       "cycle", "seasonal", "trend", "regression"),
                             several.ok = TRUE)
-        if("trend" %in% states)
-          states <- c(states, "level", "slope")
         if ("all" %in% states) {
-            states <- as.integer(1:attr(object$model, "m"))
-        } else states <- which(attr(object$model, "state_types") %in% states)
+          states <- as.integer(1:attr(object$model, "m"))
+        } else {
+          if("trend" %in% states)
+            states <- c(states, "level", "slope")
+          states <- which(attr(object$model, "state_types") %in% states)
+        }
     }
     if (!isTRUE(length(states) > 0)) 
         stop("Selected states not in the model.")

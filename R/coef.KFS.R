@@ -13,9 +13,16 @@
 #' point of the object.
 #' @param filtered Logical, return filtered instead of smoothed estimates of 
 #' state vector. Default is \code{FALSE}.
+#' @param states Which states to extract? Either a numeric vector containing
+#'  the indices of the corresponding states, or a character vector defining the
+#'  types of the corresponding states. Possible choices are
+#'   \code{"all"},  \code{"level"}, \code{"slope"}, 
+#'   \code{"trend"},  \code{"regression"}, \code{"arima"}, \code{"custom"}, 
+#'   \code{"cycle"} or \code{"seasonal"}, where \code{"trend"} extracts states relating to trend.
+#'    These can be combined. Default is \code{"all"}.
 #' @param \dots Ignored.
 #' @return Multivariate time series containing estimates states.
-coef.KFS <- function(object, start = NULL, end = NULL, filtered = FALSE, ...) {
+coef.KFS <- function(object, start = NULL, end = NULL, filtered = FALSE, states = "all", ...) {
   if (!filtered) {
     if (!is.null(object$alphahat)) {
       tmp <- object$alphahat
@@ -25,7 +32,18 @@ coef.KFS <- function(object, start = NULL, end = NULL, filtered = FALSE, ...) {
       tmp <- object$a
     } else stop("Input does not contain filtered estimates for states, rerun KFS with state filtering.")
   }
-  tmp <- window(tmp, start = start, end = end)
+  states <- match.arg(arg = states, choices = c("all", "arima", "custom", "level","slope",
+                                                "cycle", "seasonal", "trend", "regression"),
+                      several.ok = TRUE)
+  
+  if ("all" %in% states) {
+    states <- as.integer(1:attr(object$model, "m"))
+  } else {
+    if("trend" %in% states)
+      states <- c(states, "level", "slope")
+    states <- which(attr(object$model, "state_types") %in% states)
+  }
+  tmp <- window(tmp[,states], start = start, end = end)
   if (!is.null(start) && start == end) 
     tsp(tmp) <- class(tmp) <- NULL
   drop(tmp)

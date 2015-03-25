@@ -60,13 +60,15 @@
         } else {
           states <- match.arg(arg = states, 
                               choices = c("all", "arima", "custom", "cycle", 
-                                          "seasonal", "trend", "level", "slope", "regression"), 
-                              several.ok = TRUE)
-          if("trend" %in% states)
-            states <- c(states, "level", "slope")
+                                          "seasonal", "trend", "level", "slope", "regression"),                               several.ok = TRUE)
+          
           if ("all" %in% states) {
             states <- 1:attr(x, "m")
-          } else states <- which(attr(x, "state_types") %in% states)
+          } else {
+            if("trend" %in% states)
+              states <- c(states, "level", "slope")
+            states <- which(attr(x, "state_types") %in% states)
+          } 
         }
       }
     }
@@ -84,11 +86,14 @@
                             choices = c("all", "arima", "custom", "cycle", 
                                         "seasonal", "trend", "level", "slope", "regression"), 
                             several.ok = TRUE)
-          if("trend" %in% etas)
-            etas <- c(etas, "level", "slope")
+          
           if ("all" %in% etas) {
             etas <- 1:attr(x, "k")
-          } else etas <- which(attr(x, "eta_types") %in% etas)
+          } else {
+            if("trend" %in% etas)
+              etas <- c(etas, "level", "slope")
+            etas <- which(attr(x, "eta_types") %in% etas)
+          }
         }
       }
     }
@@ -145,11 +150,14 @@
                               choices = c("all", "arima", "custom", "cycle", 
                                           "seasonal", "trend", "level", "slope","regression"), 
                               several.ok = TRUE)
-          if("trend" %in% states)
-            states <- c(states, "level", "slope")
+          
           if ("all" %in% states) {
             states <- 1:attr(x, "m")
-          } else states <- which(attr(x, "state_types") %in% states)
+          } else {
+            if("trend" %in% states)
+              states <- c(states, "level", "slope")
+            states <- which(attr(x, "state_types") %in% states)
+          }
         }
       }
     }
@@ -167,11 +175,14 @@
                             choices = c("all", "arima", "custom", "cycle", 
                                         "seasonal", "trend", "level", "slope", "regression"), 
                             several.ok = TRUE)
-          if("trend" %in% etas)
-            etas <- c(etas, "level", "slope")
+          
           if ("all" %in% etas) {
             etas <- 1:attr(x, "k")
-          } else etas <- which(attr(x, "eta_types") %in% etas)
+          } else {
+            if("trend" %in% etas)
+              etas <- c(etas, "level", "slope")
+            etas <- which(attr(x, "eta_types") %in% etas)
+          }
         }
       }
     }

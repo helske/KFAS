@@ -81,11 +81,13 @@ predict.SSModel <- function(object, newdata, n.ahead, interval = c("none", "conf
       states <- match.arg(arg = states, choices = c("all", "arima", "custom", "level","slope",
                                                     "cycle", "seasonal", "trend", "regression"),
                           several.ok = TRUE)
-      if("trend" %in% states)
-        states <- c(states, "level", "slope")
       if ("all" %in% states) {
-        states <- as.integer(1:m)
-      } else states <- which(attr(object, "state_types") %in% states)
+        states <- as.integer(1:attr(object, "m"))
+      } else {
+        if("trend" %in% states)
+          states <- c(states, "level", "slope")
+        states <- which(attr(object, "state_types") %in% states)
+      }
     }
   }
   gaussianmodel <- all(object$distribution == "gaussian")

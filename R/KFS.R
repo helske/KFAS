@@ -456,12 +456,12 @@ KFS <-
                                   `negative binomial` = exp(filterout$theta[, i]))
             out$P_mu[i, i, ] <- switch(model$distribution[i], 
                                    gaussian = filterout$P_theta[i, i, ], 
-                                   poisson = filterout$P_theta[i, i, ] * out$mu[,i]^2, 
+                                   poisson = filterout$P_theta[i, i, ] * out$m[,i]^2, 
                                    binomial = filterout$P_theta[i, i, ] * 
                                      (exp(filterout$theta[, i])/(1 + exp(filterout$theta[, i]))^2)^2, 
-                                   gamma = filterout$P_theta[i, i, ] * out$mu[,i]^2, 
+                                   gamma = filterout$P_theta[i, i, ] * out$m[,i]^2, 
                                    `negative binomial` = filterout$P_theta[i, i, ] * 
-                                     out$mu[,i]^2)
+                                     out$m[,i]^2)
           }
         }
       }

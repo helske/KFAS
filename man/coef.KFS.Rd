@@ -5,7 +5,7 @@
 \title{Extract Estimated States of State Space Model}
 \usage{
 \method{coef}{KFS}(object, start = NULL, end = NULL, filtered = FALSE,
-  ...)
+  states = "all", ...)
 }
 \arguments{
 \item{object}{An object of class \code{KFS}.}
@@ -18,6 +18,14 @@ point of the object.}
 
 \item{filtered}{Logical, return filtered instead of smoothed estimates of
 state vector. Default is \code{FALSE}.}
+
+\item{states}{Which states to extract? Either a numeric vector containing
+the indices of the corresponding states, or a character vector defining the
+types of the corresponding states. Possible choices are
+ \code{"all"},  \code{"level"}, \code{"slope"},
+ \code{"trend"},  \code{"regression"}, \code{"arima"}, \code{"custom"},
+ \code{"cycle"} or \code{"seasonal"}, where \code{"trend"} extracts states relating to trend.
+  These can be combined. Default is \code{"all"}.}
 
 \item{\dots}{Ignored.}
 }
