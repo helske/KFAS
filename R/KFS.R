@@ -398,9 +398,13 @@ KFS <-
     if (filterout$d == n & filterout$j == p) 
       warning("Model is degenerate, diffuse phase did not end.")
     if (filterout$d > 0 & m > 1 & min(apply(filterout$Pinf, 3, diag)) < 0) 
-      warning("Possible error in diffuse filtering: Negative variances in Pinf, try changing the tolerance parameter tol of the model.")
+      warning(paste0("Possible error in diffuse filtering: Negative variances in Pinf, ",
+                     "check the model or try changing the tolerance parameter tol or P1/P1inf of the model."))
     if (sum(filterout$Finf > 0) != sum(diag(model$P1inf))) 
-      warning("Possible error in diffuse filtering: Number of nonzero elements in Finf is not equal to the number of diffuse states. \n Either model is degenerate or numerical errors occured. \n  Check the model or change the tolerance parameter tol of the model.")
+      warning(paste0("Possible error in diffuse filtering: Number of nonzero elements in ",
+                     "Finf is not equal to the number of diffuse states. \n",
+                     "Either model is degenerate or numerical errors occured. ",
+                     "Check the model or try changing the tolerance parameter tol or P1/P1inf of the model."))
     filterout$Pinf <- filterout$Pinf[1:m, 1:m, 1:(filterout$d + 1), drop = FALSE]
     if (filterout$d > 0) {
       filterout$Finf <- filterout$Finf[, 1:filterout$d, drop = FALSE]
@@ -414,7 +418,7 @@ KFS <-
     
     if (all(model$distribution == "gaussian"))     
       out$logLik <- filterout$lik
-      
+    
     if (!("none" %in% filtering)) {
       
       if (all(model$distribution == "gaussian")) {
@@ -449,19 +453,19 @@ KFS <-
           out$P_mu <- array(0, c(p, p, n))
           for (i in 1:p) {
             out$m[, i] <- switch(model$distribution[i], 
-                                  gaussian = filterout$theta[, i], 
-                                  poisson = exp(filterout$theta[, i]) * model$u[, i], 
-                                  binomial = exp(filterout$theta[, i])/(1 + exp(filterout$theta[, i])), 
-                                  gamma = exp(filterout$theta[, i]), 
-                                  `negative binomial` = exp(filterout$theta[, i]))
+                                 gaussian = filterout$theta[, i], 
+                                 poisson = exp(filterout$theta[, i]) * model$u[, i], 
+                                 binomial = exp(filterout$theta[, i])/(1 + exp(filterout$theta[, i])), 
+                                 gamma = exp(filterout$theta[, i]), 
+                                 `negative binomial` = exp(filterout$theta[, i]))
             out$P_mu[i, i, ] <- switch(model$distribution[i], 
-                                   gaussian = filterout$P_theta[i, i, ], 
-                                   poisson = filterout$P_theta[i, i, ] * out$m[,i]^2, 
-                                   binomial = filterout$P_theta[i, i, ] * 
-                                     (exp(filterout$theta[, i])/(1 + exp(filterout$theta[, i]))^2)^2, 
-                                   gamma = filterout$P_theta[i, i, ] * out$m[,i]^2, 
-                                   `negative binomial` = filterout$P_theta[i, i, ] * 
-                                     out$m[,i]^2)
+                                       gaussian = filterout$P_theta[i, i, ], 
+                                       poisson = filterout$P_theta[i, i, ] * out$m[,i]^2, 
+                                       binomial = filterout$P_theta[i, i, ] * 
+                                         (exp(filterout$theta[, i])/(1 + exp(filterout$theta[, i]))^2)^2, 
+                                       gamma = filterout$P_theta[i, i, ] * out$m[,i]^2, 
+                                       `negative binomial` = filterout$P_theta[i, i, ] * 
+                                         out$m[,i]^2)
           }
         }
       }
@@ -498,8 +502,8 @@ KFS <-
                             as.integer(("signal" %in% smoothing || "mean" %in% smoothing)))
       
       if (m > 1 & min(apply(smoothout$V, 3, diag)) < -.Machine$double.eps)
-        warning("Possible error in smoothing: Negative variances in V, try changing the tolerance parameter tol of the model.")
-      
+       warning(paste0("Possible error in smoothing: Negative variances in V, ",
+                     "check the model or try changing the tolerance parameter tol or P1/P1inf of the model."))
       if ("state" %in% smoothing) {
         out$alphahat <- ts(t(smoothout$alphahat), start = start(model$y), frequency = frequency(model$y))
         colnames(out$alphahat) <- rownames(model$a1)

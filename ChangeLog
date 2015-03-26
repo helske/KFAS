@@ -1,4 +1,6 @@
 Changes from version 1.0.4-1 to 1.1.0:
+ * Added state types level and slope for easier extraction of states in multiple functions.
+ * coef.KFS: Added argument states for partial state vector extraction.
  * simulateSSM: Corrected a bug which gave wrong variances for epsilon disturbances.
  * simulateSSM: Corrected a bug which gave wrong variances for the initial states.
  * rstandard.KFS: Added argument standardization_type which defines whether cholesky or marginal standardization is used.

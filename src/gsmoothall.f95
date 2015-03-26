@@ -84,18 +84,14 @@ etahat,etahatvar,thetahat,thetahatvar, ldlsignal,zorig, zorigtv,aug,state,dist,s
 
                     rhelp = -zt(i,:,(t-1)*timevar(1)+1)*ftinv(i,t)
                     l0 = im
-                    call dgemm('n','n',m,m,1,1.0d0,kt(:,i,t),&
-                    m,rhelp,1,1.0d0,l0,m)
+                    call dgemm('n','n',m,m,1,1.0d0,kt(:,i,t), m,rhelp,1,1.0d0,l0,m)
 
 
                     call dgemv('t',m,m,1.0d0,l0,m,rrec,1,0.0d0,rhelp,1)
                     rrec = rhelp + vt(i,t)*ftinv(i,t)*zt(i,:,(t-1)*timevar(1)+1)
                     call dgemm('t','n',m,m,m,1.0d0,l0,m,nrec,m,0.0d0,mm,m) !n = l'nl
-                    call dgemm('n','n',m,m,m,1.0d0,mm,m,l0,m,0.0d0,nrec,m)
-                    call dgemm('t','n',m,m,1,1.0d0,zt(i,:,(t-1)*timevar(1)+1),&
-                    1,zt(i,:,(t-1)*timevar(1)+1),1,0.0d0,mm,m)
-                    nrec = nrec+mm*ftinv(i,t)
-
+                     call dgemm('n','n',m,m,m,1.0d0,mm,m,l0,m,0.0d0,nrec,m)
+                    call dger(m,m,ftinv(i,t),zt(i,:,(t-1)*timevar(1)+1),1,zt(i,:,(t-1)*timevar(1)+1),1,nrec,m) ! n = n+z'z/f
                 end if
             end if
         end do
@@ -103,11 +99,11 @@ etahat,etahatvar,thetahat,thetahatvar, ldlsignal,zorig, zorigtv,aug,state,dist,s
         rt(:,t) =rrec
         nt(:,:,t) = nrec !n_t-1 = n_t,0
 
-        if(t.GT.1) then
+        if(t.GT. 1) then
             call dgemv('t',m,m,1.0d0,tt(:,:,(t-2)*timevar(3)+1),m,rrec,1,0.0d0,rhelp,1) !r_t,p=t_t-1'*r_t+1
             rrec = rhelp
-            call dgemm('t','n',m,m,m,1.0d0,tt(:,:,(t-2)*timevar(3)+1),m,nrec,m,0.0d0,mm,m) !n*t
-            call dgemm('n','n',m,m,m,1.0d0,mm,m,tt(:,:,(t-2)*timevar(3)+1),m,0.0d0,nrec,m) !n_t,p = t'nt
+            call dsymm('l','u',m,m,1.0d0,nrec,m,tt(:,:,(t-2)*timevar(3)+1),m,0.0d0,mm,m) !n*t
+            call dgemm('t','n',m,m,m,1.0d0,tt(:,:,(t-2)*timevar(3)+1),m,mm,m,0.0d0,nrec,m) !n_t,p = t'nt
         end if
 
     end do
@@ -219,7 +215,7 @@ etahat,etahatvar,thetahat,thetahatvar, ldlsignal,zorig, zorigtv,aug,state,dist,s
                         call dgemm('n','n',m,m,m,1.0d0,nrec1,m,l0,m,0.0d0,mm,m) !mm = nt1*l0
                         nrec1 = mm
                         call dgemm('n','n',m,m,m,1.0d0,nrec2,m,l0,m,0.0d0,mm,m) !mm = nt1*l0
-                        nrec2 = mm !onko oikein?
+                        nrec2 = mm
                     end if
                 end if
             end if
@@ -385,7 +381,6 @@ etahat,etahatvar,thetahat,thetahatvar, ldlsignal,zorig, zorigtv,aug,state,dist,s
             call dsymv('u',r,1.0d0,qt(:,:,(t-1)*timevar(5)+1),r,help,1,0.0d0,etahat(:,t),1)
             etahatvar(:,:,t) = qt(:,:,(t-1)*timevar(5)+1)
             call dsymm('r','u',m,r,1.0d0,qt(:,:,(t-1)*timevar(5)+1),r,rtv(:,:,(t-1)*timevar(4)+1),m,0.0d0,mr,m)
-            !call dgemm('n','n',m,r,m,1.0d0,nt0(:,:,t+1),m,mr,m,0.0d0,mr2,m)
              call dsymm('l','u',m,r,1.0d0,nt0(:,:,t+1),m,mr,m,0.0d0,mr2,m)
             call dgemm('t','n',r,r,m,-1.0d0,mr,m,mr2,m,1.0d0,etahatvar(:,:,t),r)
         end do
@@ -394,7 +389,6 @@ etahat,etahatvar,thetahat,thetahatvar, ldlsignal,zorig, zorigtv,aug,state,dist,s
             call dsymv('u',r,1.0d0,qt(:,:,(t-1)*timevar(5)+1),r,help,1,0.0d0,etahat(:,t),1)
             etahatvar(:,:,t) = qt(:,:,(t-1)*timevar(5)+1)
             call dsymm('r','u',m,r,1.0d0,qt(:,:,(t-1)*timevar(5)+1),r,rtv(:,:,(t-1)*timevar(4)+1),m,0.0d0,mr,m)
-            !call dgemm('n','n',m,r,m,1.0d0,nt(:,:,t+1),m,mr,m,0.0d0,mr2,m)
             call dsymm('l','u',m,r,1.0d0,nt(:,:,t+1),m,mr,m,0.0d0,mr2,m)
             call dgemm('t','n',r,r,m,-1.0d0,mr,m,mr2,m,1.0d0,etahatvar(:,:,t),r)
         end do
