@@ -3,13 +3,10 @@
 #' @details For object of class KFS, several types of residuals can be computed:
 #'   
 #'   \itemize{ \item  \code{"recursive"}: One-step ahead prediction residuals 
-#'   \eqn{v_{t,i}=y_{t,i}-Z_{t,i}a_{t,i}}{v[t,i]=y[t,i]-Z[t,i]a[t,i]}, with 
-#'   residuals being undefined in diffuse phase. For non-Gaussian case recursive
+#'   \eqn{v_{t,i}=y_{t,i}-Z_{t,i}a_{t,i}}{v[t,i]=y[t,i]-Z[t,i]a[t,i]}. For non-Gaussian case recursive
 #'   residuals are computed as \eqn{y_{t}-f(Z_{t}a_{t})}{y[t]-Z[t]a[t]}, i.e.
 #'   non-sequentially. Computing recursive residuals for large non-Gaussian
-#'   models can be time consuming as filtering is needed.
-#'   
-#'   
+#'   models can be time consuming as filtering is needed.   
 #'   
 #'   \item \code{"pearson"}:  \deqn{(y_{t,i}-\theta_{t,i})/\sqrt{V(\mu_{t,i})},
 #'   \quad i=1,\ldots,p,t=1,\ldots,n,}{(y[t,i]-\theta[t,i])V(\mu[t,i])^(-0.5),
@@ -48,19 +45,11 @@ residuals.KFS <-
                        if (all(object$model$distribution ==  "gaussian") && is.null(object[["v", exact = TRUE]])) 
                          stop("KFS object does not contain prediction errors v. ")
                        if(all(object$model$distribution ==  "gaussian")){
-                         series <- object$v
-                         if (object$d > 0) {
-                           series[1:(object$d - 1), ] <- NA
-                           series[object$d, 1:object$j] <- NA
-                         } 
+                         series <- object$v                         
                        }else {
                          if (sum(bins <- object$model$distribution == "binomial") > 0) 
                            series[, bins] <- series[, bins]/object$model$u[, bins]
-                         series <- object$model$y-object[["m", exact = TRUE]]
-                         d<-KFS(approxSSM(object$model),filtering="state",smoothing="none")$d
-                         if(d > 0){
-                           series[1:d, ] <- NA                          
-                         }
+                         series <- object$model$y-object[["m", exact = TRUE]]                         
                        }
                        series
                      }, 

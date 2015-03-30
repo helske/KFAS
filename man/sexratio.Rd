@@ -6,7 +6,7 @@
 \title{Number of males and females born in Finland from 1751 to 2011}
 \format{A time series object containing the number of males and females born in Finland from 1751 to 2011.}
 \source{
-Statistics Finland
+Statistics Finland,  \url{http://pxweb2.stat.fi/database/StatFin/vrm/synt/synt_en.asp}
 }
 \description{
 A time series object containing the number of males and females born in Finland from 1751 to 2011.

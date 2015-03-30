@@ -21,13 +21,10 @@ Extract Residuals of KFS output
 For object of class KFS, several types of residuals can be computed:
 
   \itemize{ \item  \code{"recursive"}: One-step ahead prediction residuals
-  \eqn{v_{t,i}=y_{t,i}-Z_{t,i}a_{t,i}}{v[t,i]=y[t,i]-Z[t,i]a[t,i]}, with
-  residuals being undefined in diffuse phase. For non-Gaussian case recursive
+  \eqn{v_{t,i}=y_{t,i}-Z_{t,i}a_{t,i}}{v[t,i]=y[t,i]-Z[t,i]a[t,i]}. For non-Gaussian case recursive
   residuals are computed as \eqn{y_{t}-f(Z_{t}a_{t})}{y[t]-Z[t]a[t]}, i.e.
   non-sequentially. Computing recursive residuals for large non-Gaussian
   models can be time consuming as filtering is needed.
-
-
 
   \item \code{"pearson"}:  \deqn{(y_{t,i}-\theta_{t,i})/\sqrt{V(\mu_{t,i})},
   \quad i=1,\ldots,p,t=1,\ldots,n,}{(y[t,i]-\theta[t,i])V(\mu[t,i])^(-0.5),

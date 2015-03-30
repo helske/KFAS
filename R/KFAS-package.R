@@ -448,6 +448,19 @@ NULL
 #' @name sexratio
 #' @docType data
 #' @format A time series object containing the number of males and females born in Finland from 1751 to 2011.
-#' @source Statistics Finland
+#' @source Statistics Finland,  \url{http://pxweb2.stat.fi/database/StatFin/vrm/synt/synt_en.asp}
+#' @keywords datasets
+NULL 
+#' Alcohol related deaths in Finland 1969--2013
+#'
+#' A multivariate time series object containing the population sizes and number of alcohol related
+#' deaths in Finland in four age groups.
+#' 
+#' @name alcohol
+#' @docType data
+#' @format A multivariate time series object with 45 times 8 observations.
+#' @source Statistics Finland:
+#' \url{http://pxweb2.stat.fi/database/StatFin/ter/ksyyt/ksyyt_en.asp} and 
+#' \url{pxweb2.stat.fi/database/StatFin/vrm/vaerak/vaerak_en.asp}
 #' @keywords datasets
 NULL 

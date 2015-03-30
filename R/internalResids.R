@@ -47,10 +47,8 @@ recursive_standardized <- function(object,stype) {
       res[1:object$d, ] <- NA      
     }
   } else {
-    d<-KFS(approxSSM(object$model),filtering="state",smoothing="none")$d  
-    
-    vars<-varianceFilter(object)    
-    
+    d<-KFS(approxSSM(object$model),filtering="state",smoothing="none")$d      
+    vars<-varianceFilter(object)
     res<-object$model$y  
     if (sum(bins <- object$model$distribution == "binomial") > 0)
       res[, bins] <- res[, bins]/object$model$u[, bins]
