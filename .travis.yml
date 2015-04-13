@@ -1,4 +1,5 @@
 language: r
+sudo: required
 
 r_check_revdep: true
 
