@@ -43,10 +43,10 @@
 #' sexratio.ci <- matrix(0, length(model$y), 2)
 #' w <- imp$w/sum(imp$w)
 #' for(i in 1:length(model$y)){
-#' sexr<-exp(imp$sample[i,1,])
-#' sexratio.smooth[i]<-sum(sexr*w)
-#' oo<-order(sexr)
-#' sexratio.ci[i,]<-c(sexr[oo][which.min(abs(cumsum(w[oo]) - 0.05))], 
+#'   sexr <- exp(imp$sample[i,1,])
+#'   sexratio.smooth[i]<-sum(sexr*w)
+#'   oo <- order(sexr)
+#'   sexratio.ci[i,] <- c(sexr[oo][which.min(abs(cumsum(w[oo]) - 0.05))], 
 #'                    sexr[oo][which.min(abs(cumsum(w[oo]) - 0.95))])
 #' }
 #' 
@@ -57,15 +57,15 @@
 #' sexratio.fci <- matrix(NA, length(model$y), 2) 
 #' w <- impf$w/rowSums(impf$w)
 #' for(i in 2:length(model$y)){
-#' sexr<-exp(impf$sample[i,1,])
-#' sexratio.filter[i]<-sum(sexr*w[i,])
-#' oo<-order(sexr)
-#' sexratio.fci[i,]<-c(sexr[oo][which.min(abs(cumsum(w[i,oo]) - 0.05))],
+#'   sexr <- exp(impf$sample[i,1,])
+#'   sexratio.filter[i] <- sum(sexr*w[i,])
+#'   oo<-order(sexr)
+#'   sexratio.fci[i,] <- c(sexr[oo][which.min(abs(cumsum(w[i,oo]) - 0.05))],
 #'                     sexr[oo][which.min(abs(cumsum(w[i,oo]) - 0.95))])
 #' }
 #' 
 #' ts.plot(cbind(sexratio.smooth,sexratio.ci,sexratio.filter,sexratio.fci),
-#' col=c(1,1,1,2,2,2),lty=c(1,2,2,1,2,2))
+#'         col=c(1,1,1,2,2,2),lty=c(1,2,2,1,2,2))
 #' }
 importanceSSM <- 
   function(model, type = c("states", "signals"), filtered = FALSE, 

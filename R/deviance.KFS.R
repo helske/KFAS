@@ -1,6 +1,6 @@
 #' Deviance of a State Space Model
 #' 
-#' Returns the deviance of a object of class \code{KFS} defined as the sum of squared deviance
+#' Returns the deviance of an object of class \code{KFS} defined as the sum of squared deviance
 #' residuals.
 #' 
 #' This function is deprecated. Note that this is NOT a \eqn{-2*(logL-logL*)} where \eqn{L} is the

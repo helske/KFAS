@@ -22,54 +22,62 @@
 #' Covariance matrices H and Q has to be positive semidefinite (although this is
 #' not checked).
 #' 
-#' Dimensions of system matrices are
-#'
-#' \tabular{rl}{
-#'  \code{Z} \tab \eqn{p \times m \times 1}{p*m*1} or \eqn{p \times m \times n}{p*m*n} in time varying case \cr
-#'  \code{H} \tab \eqn{p \times p \times 1}{p*p*1} or \eqn{p \times p \times n}{p*p*n} in time varying case (Omitted in non-gaussian models) \cr
-#'  \code{T} \tab \eqn{m \times m \times 1}{m*m*1} or \eqn{m \times m \times n}{m*m*n} in time varying case \cr
-#'  \code{R} \tab \eqn{m \times k \times 1}{m*k*1} or \eqn{m \times k \times n}{m*k*n} in time varying case \cr
-#'  \code{Q} \tab \eqn{k \times k \times 1}{k*k*1} or \eqn{k \times k \times n}{k*k*n} in time varying case \cr
-#'  \code{u} \tab \eqn{n \times p}{p*n} (Omitted in gaussian models) \cr
-#'  }
-#' 
-#' In case of any of the series in model is defined as non-gaussian, the 
+#' Model components in \code{KFAS} are defined as
+#'\describe{
+#'   \item{y}{A n x p matrix containing the observations. }
+#'   \item{Z}{A p x m x 1 or p x m x n array corresponding to the system matrix
+#'   of observation equation. } 
+#'   \item{H}{A p x p x 1 or p x p x n array
+#'   corresponding to the covariance matrix of observational disturbances
+#'   epsilon. } 
+#'   \item{T}{A m x m x 1 or m x m x n array corresponding to the
+#'   first system matrix of state equation. } 
+#'   \item{R}{A m x k x 1 or m x k x n array corresponding to the second system matrix of state equation. } 
+#'   \item{Q}{A k x k x 1 or k x k x n array corresponding to the covariance
+#'   matrix of state disturbances eta } 
+#'   \item{a1}{A m x 1 matrix containing the
+#'   expected values of the initial states. } 
+#'   \item{P1}{A m x m matrix
+#'   containing the covariance matrix of the nondiffuse part of the initial
+#'   state vector. } 
+#'   \item{P1inf}{A m x m matrix containing the covariance
+#'   matrix of the diffuse part of the initial state vector. } 
+#'   \item{u}{A n x p
+#'   matrix of an additional parameters in case of non-Gaussian model.} 
+#' }
+#' In case of any of the series in model is defined as non-Gaussian, the 
 #' observation equation is of form \deqn{\prod_i^p 
-#' p_i(y_{i,t}|\theta_t)}{\prod[i]^p p(y[i,t]|\theta[t]),} with 
-#' \eqn{\theta_{i,t}=Z_{i,t}\alpha_t}{\theta[i,t]=Z[i,t]\alpha[t]} being one of 
+#' p_i(y_{t,p}|\theta_t)}{\prod[i]^p p(y[t,i]|\theta[t]),} with 
+#' \eqn{\theta_{t,i}=Z_{i,t}\alpha_t}{\theta[t,i]=Z[i,t]\alpha[t]} being one of 
 #' the following:
 #' 
-#' If observations \eqn{y_{i,1},\ldots,y_{i,n}}{y[i,1],\ldots,y[i,n]} are 
-#' distributed as \eqn{N(\mu_t,u_t)}{N(\mu[t],u[t])}, then
-#' \eqn{\theta_t=\mu_t}{\theta[t]=\mu[t]}. Note that now variances are defined
-#' using \code{u}, not \code{H}. If the correlation between Gaussian observation
-#' equations is needed, one can use \eqn{u_t=0}{u[t]=0} and add correlating
-#' disturbances into state equation (although care is then needed when making
-#' inferences about signal which contains the error terms also).
+#' \itemize{
+#'\item \eqn{y_t \sim N(\mu_t,u_t),}{y[t]~N(\mu[t],u[t]),} with identity link \eqn{\theta_t=\mu_t}{\theta[t]=\mu[t]}. 
+#' Note that now variances are defined using \eqn{u_t}, not \eqn{H_t}. 
+#' If the correlation between Gaussian observation equations is needed, one can use 
+#' \eqn{u_t=0}{u[t]=0} and add correlating disturbances into state equation (although care is 
+#' then needed when making inferences about signal which contains the error terms also).
 #' 
-#' If observations are distributed as
-#' \eqn{Poisson(u_t\lambda_t)}{Poisson(u[t]\lambda[t])}, where \eqn{u_t}{u[t]}
-#' is an offset term, then \eqn{\theta_t = 
-#' log(u_t\lambda_t)}{\theta[t]=log(u[t]\lambda[t])}.
+#'\item \eqn{y_t \sim \textrm{Poisson}(u_t\lambda_t),}{y[t]~Poisson(u[t]\lambda[t]),} where \eqn{u_t}{u[t]}
+#' is an offset term, with \eqn{\theta_t = log(u_t\lambda_t)}{\theta[t]=log(u[t]\lambda[t])}.
 #' 
-#' If observations are distributed as
-#' \eqn{binomial(u_t,\pi_t)}{binomial(u[t],\pi[t])}, then \eqn{\theta_t =
+#'\item \eqn{y_t \sim \textrm{binomial}(u_t,\pi_t),}{y[t]~binomial(u[t],\pi[t]),} with \eqn{\theta_t =
 #' log[\pi_t/(1-\pi_t)]}{\theta[t] = log(\pi[t]/(1-\pi[t]))}, where
 #' \eqn{\pi_t}{\pi[t]} is the probability of success at time \eqn{t}.
 #' 
-#' If observations are distributed as
-#' \eqn{gamma(u_t,\mu_t)}{gamma(u[t],\mu[t])}, then \eqn{\theta_t =
+#' \item \eqn{y_t \sim \textrm{gamma}(u_t,\mu_t),}{y[t]~gamma(u[t],\mu[t]),} with \eqn{\theta_t =
 #' log(\mu_t)}{[\theta[t] = log(\mu[t])]}, where \eqn{\mu_t}{\mu[t]} is the mean
 #' parameter and \eqn{u_t}{u[t]} is the shape parameter.
 #' 
-#' If observations are distributed as \eqn{negative
-#' binomial(u_t,\mu_t)}{negative binomial(u[t],\mu[t])} with expected value
-#' \eqn{\mu_t}{\mu[t]} and variance \eqn{\mu_t+ \mu_t^2/u_t}\eqn{\mu[t]+
+#' \item \eqn{y_t \sim \textrm{negative binomial}(u_t,\mu_t),}{y[t]~negative binomial(u[t],\mu[t]),}
+#'  with expected value \eqn{\mu_t}{\mu[t]} and variance \eqn{\mu_t+ \mu_t^2/u_t}{\mu[t]+
 #' \mu[t]^2/u[t]} (see \code{\link{dnbinom}}), then \eqn{\theta_t =
 #' log[\mu_t]}{\theta[t] = log(\mu[t])}.
-#' 
+#' }
+#'
 #' For exponential family models \eqn{u_t=1}{u[t]=1} as a default. 
-#' For completely Gaussian models, parameter is omitted.#'
+#' For completely Gaussian models, parameter is omitted. Note that series can 
+#' have different distributions in case of multivariate models.
 #'
 #' For the unknown elements of initial state vector \eqn{a_1}{a[1]}, KFAS uses
 #' exact diffuse initialization by Koopman and Durbin (2000, 2001, 2003), where
@@ -80,12 +88,12 @@
 #' elements corresponding to unknown initial states.
 #' 
 #' This method is basically a equivalent of setting uninformative priors for the
-#' initial states in a Bayesian setting. Note that although the states are set 
-#' as independent a priori, this effect vanishes quickly.
+#' initial states in a Bayesian setting.
 #' 
 #' Diffuse phase is continued until rank of \eqn{P_{\infty,t}}{P[inf,t]} becomes
-#' zero. Rank of \eqn{P_{\infty}}{P[inf]} decreases by 1, if 
-#' \eqn{F_\infty>tol>0}{F[inf]>tol>0}. Usually the number of diffuse time points
+#' zero. Rank of \eqn{P_{\infty,t}}{P[inf,t]} decreases by 1, if 
+#' \eqn{F_{\infty,t}>\xi_t>0}{F[inf,t]>\xi[t]>0}, where \eqn{\xi_t}{\xi[t]} is by default 
+#' \code{.Machine$double.eps^0.5*max(Z[,,t]^2)}. Usually the number of diffuse time points
 #' equals the number unknown elements of initial state vector, but missing 
 #' observations or time-varying system matrices can affect this. See Koopman and
 #' Durbin (2000, 2001, 2003) for details for exact diffuse and non-diffuse 
@@ -101,13 +109,13 @@
 #' processing, see Anderson and Moore (1979)) which is from Koopman and Durbin
 #' (2000, 2001). In univariate approach the observations are introduced one
 #' element at the time. Therefore the prediction error variance matrices F and
-#' Finf does not need to be non-singular, as there is no matrix inversions in
-#' univariate approach algorithm.  This provides more stable and possibly more
+#' Finf do not need to be non-singular, as there is no matrix inversions in
+#' univariate approach algorithm.  This provides possibly more
 #' faster filtering and smoothing than normal multivariate Kalman filter
-#' algorithm. If covariance matrix H is not diagonal, it is possible to
-#' transform the model by either using LDL decomposition on H, or augmenting the
-#' state vector with \eqn{\epsilon} disturbances. See \code{\link{transformSSM}}
-#' for more details.
+#' algorithm, and simplifies the formulas for diffuse filtering and smoothing. 
+#' If covariance matrix H is not diagonal, it is possible to transform the model by either using 
+#' LDL decomposition on H, or augmenting the state vector with \eqn{\epsilon} disturbances. 
+#' See \code{\link{transformSSM}} for more details.
 #' 
 #' 
 #' @references Koopman, S.J. and Durbin J. (2000).  Fast filtering and
@@ -257,6 +265,8 @@
 #' 
 #' # For confidence or prediction intervals, use predict on the original model
 #' pred <- predict(model,states=c('custom','regression'),interval='prediction')
+#' # Note that even though the intervals were computed without seasonal pattern, 
+#' # PetrolPrice induces seasonal pattern to predictions
 #' ts.plot(pred$front,pred$rear,model$y,col=c(1,2,2,3,4,4,5,6),lty=c(1,2,2,1,2,2,1,1))
 #' }
 #' 
@@ -345,6 +355,7 @@
 #' suppressWarnings(glm(formula = y ~ 1, family = binomial(link = "logit"), start = 2))
 #' model<-SSModel(y~1,dist="binomial")
 #' KFS(model,theta=2)
+#' KFS(model,theta=7)
 #' 
 #' \dontrun{
 #' data(sexratio)

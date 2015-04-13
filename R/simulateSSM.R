@@ -18,7 +18,7 @@
 #' @param nsim Number of independent samples. Default is 1.
 #' @param antithetics Use antithetic variables in simulation. Default is FALSE.
 #' @param conditional Simulations are conditional to data. If FALSE, the initial state
-#'   \eqn{\alpha_1}{\alpha[1]} is set to \eqn{\hat \alpha_1}{alphahat[1]} computed by \code{KFS}, 
+#'   \eqn{\alpha_1}{\alpha[1]} is set to \code{alphahat[1,]} computed by \code{KFS}, 
 #'   and all the observations are removed from the model. Default is TRUE.
 #' @return An n x k x nsim array containing the simulated series, where k is number of observations,
 #'   signals, states or disturbances.

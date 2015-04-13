@@ -9,3 +9,4 @@ src-x64/
 *.Rproj
 .project
 .settings/org.eclipse.core.resources.prefs
+inst/doc

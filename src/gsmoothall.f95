@@ -28,7 +28,7 @@ etahat,etahatvar,thetahat,thetahatvar, ldlsignal,zorig, zorigtv,aug,state,dist,s
     double precision, intent(inout), dimension(m,d+1) :: rt0,rt1
     double precision, intent(inout), dimension(m,m,d+1) :: nt0,nt1,nt2
     double precision, intent(inout), dimension(m*state,n*state) :: ahat
-    double precision, intent(inout), dimension(m*state,m*state,n*state) :: vvt
+    double precision, intent(inout), dimension(m,m,n) :: vvt
     double precision, intent(inout), dimension(p*dist*aug,n*dist*aug) :: epshat
     double precision, intent(inout), dimension(p*dist*aug,n*dist*aug) :: epshatvar
     double precision, intent(inout), dimension(r*dist,n*dist) :: etahat

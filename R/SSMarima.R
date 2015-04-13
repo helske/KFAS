@@ -1,5 +1,5 @@
 #' @rdname SSModel
-#' @seealso artransform
+#' @seealso \code{artransform}
 #' @export
 SSMarima <- 
   function(ar = NULL, ma = NULL, d = 0, Q, stationary = TRUE, index, n, 

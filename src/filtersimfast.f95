@@ -31,10 +31,10 @@ a1, ft,kt,finf, kinf, dt, jt, p, m, n,tol,at)
             do j=1, p
                 if(ymiss(d,j).EQ.0) then
                     vt(j,d) = yt(d,j) - ddot(m,zt(j,:,(d-1)*timevar(1)+1),1,arec,1) !arec
-                    if (finf(j,d) .GT. tol*maxval(zt(j,:,(d-1)*timevar(1)+1))**2) then
+                    if (finf(j,d) .GT. tol*maxval(zt(j,:,(d-1)*timevar(1)+1)**2)) then
                         call daxpy(m,vt(j,d)/finf(j,d),kinf(:,j,d),1,arec,1) !a_rec = a_rec + kinf(:,i,t)*vt(:,t)/finf(j,d)
                     else
-                        if(ft(j,d) .GT. tol*maxval(zt(j,:,(d-1)*timevar(1)+1))**2) then
+                        if(ft(j,d) .GT. tol*maxval(zt(j,:,(d-1)*timevar(1)+1)**2)) then
                             call daxpy(m,vt(j,d)/ft(j,d),kt(:,j,d),1,arec,1) !a_rec = a_rec + kt(:,i,t)*vt(:,t)/ft(i,t)
                         end if
                     end if
@@ -51,10 +51,10 @@ a1, ft,kt,finf, kinf, dt, jt, p, m, n,tol,at)
             if(ymiss(d,j).EQ.0) then
                 vt(j,d) = yt(d,j) - ddot(m,zt(j,:,(d-1)*timevar(1)+1),1,arec,1) !arec
       
-                if (finf(j,d) .GT. tol*maxval(zt(j,:,(d-1)*timevar(1)+1))**2) then
+                if (finf(j,d) .GT. tol*maxval(zt(j,:,(d-1)*timevar(1)+1)**2)) then
                     call daxpy(m,vt(j,d)/finf(j,d),kinf(:,j,d),1,arec,1) !a_rec = a_rec + kinf(:,i,t)*vt(:,t)/finf(j,d)
                 else
-                    if(ft(j,d) .GT. tol*maxval(zt(j,:,(d-1)*timevar(1)+1))**2 ) then
+                    if(ft(j,d) .GT. tol*maxval(zt(j,:,(d-1)*timevar(1)+1)**2)) then
                         call daxpy(m,vt(j,d)/ft(j,d),kt(:,j,d),1,arec,1) !a_rec = a_rec + kt(:,i,t)*vt(:,t)/ft(i,t)
                     end if
                 end if
@@ -67,7 +67,7 @@ a1, ft,kt,finf, kinf, dt, jt, p, m, n,tol,at)
         do i = jt+1, p
             if(ymiss(d,i).EQ.0) then
                 vt(i,d) = yt(d,i) - ddot(m,zt(i,:,(d-1)*timevar(1)+1),1,arec,1) !vt
-                if (ft(i,d) .GT. tol*maxval(zt(i,:,(d-1)*timevar(1)+1))**2) then !ft.NE.0
+                if (ft(i,d) .GT. tol*maxval(zt(i,:,(d-1)*timevar(1)+1)**2)) then !ft.NE.0
                     call daxpy(m,vt(i,d)/ft(i,d),kt(:,i,d),1,arec,1) !a_rec = a_rec + kt(:,i,t)*vt(:,t)
                 end if
             end if
@@ -89,7 +89,7 @@ a1, ft,kt,finf, kinf, dt, jt, p, m, n,tol,at)
             do i = 1, p
                 if(ymiss(t,i).EQ.0) then
                     vt(i,t) = yt(t,i) - ddot(m,zt(i,:,(t-1)*timevar(1)+1),1,arec,1) !variate vt
-                    if (ft(i,t) .GT. tol*maxval(zt(i,:,(t-1)*timevar(1)+1))**2) then !ft.NE.0
+                    if (ft(i,t) .GT. tol*maxval(zt(i,:,(t-1)*timevar(1)+1)**2)) then !ft.NE.0
                         call daxpy(m,vt(i,t)/ft(i,t),kt(:,i,t),1,arec,1) !a_rec = a_rec + kt(:,i,t)*vt(:,t)
                     end if
                 end if

@@ -27,4 +27,7 @@ Multivariate time series containing fitted values.
 \description{
 Extracts fitted values from output of \code{KFS}.
 }
+\seealso{
+\code{\link{signal}} for partial signals and their covariances.
+}
 

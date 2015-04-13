@@ -63,7 +63,7 @@ meps = epsilon(meps)
                     ft(j) = ddot(m,zt(j,:,(d-1)*timevar(1)+1),1,kt(:,j),1)+ ht(j,j,(d-1)*timevar(2)+1)
                     call dsymv('u',m,1.0d0,pinf,m,zt(j,:,(d-1)*timevar(1)+1),1,0.0d0,kinf(:,j),1) ! kinf_t,i = pinf_t,i*t(z_t,i)
                     finf(j) = ddot(m,zt(j,:,(d-1)*timevar(1)+1),1,kinf(:,j),1)
-                    if (finf(j)  > tol*maxval(zt(j,:,(d-1)*timevar(1)+1))**2) then
+                    if (finf(j)  > tol*maxval(zt(j,:,(d-1)*timevar(1)+1)**2)) then
                         call daxpy(m,vt(j)/finf(j),kinf(:,j),1,arec,1) !a_rec = a_rec + kinf(:,i,t)*vt(:,t)/finf(j,d)
                         call dsyr('u',m,ft(j)/finf(j)**2,kinf(:,j),1,pt,m) !pt = pt +  kinf*kinf'*ft/finf^2
                         call dsyr2('u',m,-1.0d0/finf(j),kt(:,j),1,kinf(:,j),1,pt,m) !pt = pt -(kt*kinf'+kinf*kt')/finf
@@ -72,7 +72,7 @@ meps = epsilon(meps)
                         rankp = rankp -1
 
                     else
-                        if (ft(j) > tol*maxval(zt(j,:,(d-1)*timevar(1)+1))**2) then
+                        if (ft(j) > tol*maxval(zt(j,:,(d-1)*timevar(1)+1)**2)) then
                             call daxpy(m,vt(j)/ft(j),kt(:,j),1,arec,1) !a_rec = a_rec + kt(:,i,t)*vt(:,t)/ft(i,t)
                             call dsyr('u',m,-1.0d0/ft(j),kt(:,j),1,pt,m) !pt = pt -kt*kt'/ft
                             lik = lik - c - 0.5d0*(log(ft(j)) + vt(j)**2/ft(j))
@@ -105,7 +105,7 @@ meps = epsilon(meps)
                     vt(i) = yt(d,i) - ddot(m,zt(i,:,(d-1)*timevar(1)+1),1,arec,1)
                     call dsymv('u',m,1.0d0,pt,m,zt(i,:,(d-1)*timevar(1)+1),1,0.0d0,kt(:,i),1)
                     ft(i) = ddot(m,zt(i,:,(d-1)*timevar(1)+1),1,kt(:,i),1) + ht(i,i,(d-1)*timevar(2)+1)
-                    if (ft(i)> tol*maxval(zt(i,:,(d-1)*timevar(1)+1))**2) then !ft.NE.0
+                    if (ft(i)> tol*maxval(zt(i,:,(d-1)*timevar(1)+1)**2)) then !ft.NE.0
                         call daxpy(m,vt(i)/ft(i),kt(:,i),1,arec,1) !a_rec = a_rec + kt(:,i,t)*vt(:,t)
                         call dsyr('u',m,-1.0d0/ft(i),kt(:,i),1,pt,m) !p_rec = p_rec - kt*kt'*ft(i,t)
                         lik = lik - 0.5d0*(log(ft(i)) + vt(i)**2/ft(i))-c
@@ -131,7 +131,7 @@ meps = epsilon(meps)
                 vt(i) = yt(t,i) - ddot(m,zt(i,:,(t-1)*timevar(1)+1),1,arec,1)
                 call dsymv('u',m,1.0d0,pt,m,zt(i,:,(t-1)*timevar(1)+1),1,0.0d0,kt(:,i),1)
                 ft(i) = ddot(m,zt(i,:,(t-1)*timevar(1)+1),1,kt(:,i),1) + ht(i,i,(t-1)*timevar(2)+1)
-                if (ft(i)> tol*maxval(zt(i,:,(t-1)*timevar(1)+1))**2) then
+                if (ft(i)> tol*maxval(zt(i,:,(t-1)*timevar(1)+1)**2)) then
                     call daxpy(m,vt(i)/ft(i),kt(:,i),1,arec,1) !a_rec = a_rec + kt(:,i,t)*vt(:,t)
                     call dsyr('u',m,-1.0d0/ft(i),kt(:,i),1,pt,m) !pt = pt - kt*kt'*ft(i,i,t)
                     lik = lik - 0.5d0*(log(ft(i)) + vt(i)**2/ft(i))-c

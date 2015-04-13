@@ -9,10 +9,10 @@
 #'calls to \code{logLik} method directly.
 #'
 #'After updating the model, if \code{checkfn} is non-missing and 
-#'\code{checkfn(model)==TRUE}, \code{-logLik(model,check.model=FALSE)} is 
-#'computed, otherwise objective function returns \code{.Machine$double.xmax}. If
+#'\code{checkfn(model)==TRUE}, log-likelihood is computed using a call \code{-logLik(model,check.model=FALSE)}. 
+#'Otherwise objective function returns \code{.Machine$double.xmax}. If
 #'\code{checkfn} is missing, checking is done via \code{is.SSModel} by 
-#'\code{-logLik(model,check.model=TRUE)}
+#'\code{-logLik(model,check.model=TRUE)}.
 #'
 #'Note that for non-Gaussian models derivative-free optimization methods such as
 #'Nelder-Mead might be more reliable than methods which use finite difference

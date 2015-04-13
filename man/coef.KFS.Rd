@@ -34,8 +34,8 @@ Multivariate time series containing estimates states.
 }
 \description{
 Extracts the estimated states from output of \code{KFS}. For non-Gaussian
-models without simulation, these are estimates of conditional modes of
+models without simulation, these are the estimates of conditional modes of
 states. For Gaussian models and non-Gaussian models with importance sampling,
-these are estimates of conditional means of states.
+these are the estimates of conditional means of states.
 }
 

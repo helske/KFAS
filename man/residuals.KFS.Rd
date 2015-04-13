@@ -29,12 +29,12 @@ For object of class KFS, several types of residuals can be computed:
   \item \code{"pearson"}:  \deqn{(y_{t,i}-\theta_{t,i})/\sqrt{V(\mu_{t,i})},
   \quad i=1,\ldots,p,t=1,\ldots,n,}{(y[t,i]-\theta[t,i])V(\mu[t,i])^(-0.5),
   i=1,\ldots,p, t=1,\ldots,n,} where \eqn{V(\mu_{t,i})}{V(\mu[t,i])} is the
-  variance function of the model.
+  variance function of the series \eqn{i}
 
   \item \code{"response"}: Data minus fitted values, \eqn{y-E(y)}{y-E(y)}.
 
   \item \code{"state"}:  Residuals based on the smoothed disturbance terms
-  \eqn{\eta} are defined as \deqn{\hat \eta_t, \quad t=1,\ldots,n}{\hat\eta[t], t=1,\ldots,n}.
+  \eqn{\eta} are defined as \deqn{\hat \eta_t, \quad t=1,\ldots,n.}{\hat \eta[t], t=1,\ldots,n.}
   Only defined for fully Gaussian models.
 
   \item \code{"deviance"}: Deviance residuals. Deprecated. This option was

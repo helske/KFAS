@@ -1,5 +1,7 @@
 language: r
 
+r_check_revdep: true
+
 r_github_packages:
  - jimhester/covr
  

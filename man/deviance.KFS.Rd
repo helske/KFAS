@@ -15,7 +15,7 @@
 The value of the deviance extracted from object.
 }
 \description{
-Returns the deviance of a object of class \code{KFS} defined as the sum of squared deviance
+Returns the deviance of an object of class \code{KFS} defined as the sum of squared deviance
 residuals.
 }
 \details{

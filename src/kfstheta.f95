@@ -73,7 +73,7 @@ p, n, m, r,tol,rankp,thetahat,lik)
 
                     else
                         finf(j,d) = 0.0d0
-                        if(ft(j,d)> tol*maxval(zt(j,:,(d-1)*timevar(1)+1))**2) then
+                        if(ft(j,d)> tol*maxval(zt(j,:,(d-1)*timevar(1)+1)**2)) then
                             call daxpy(m,vt(j,d)/ft(j,d),kt(:,j,d),1,arec,1) !a_rec = a_rec + kt(:,i,t)*vt(:,t)/ft(i,t)
                             call dsyr('u',m,(-1.0d0)/ft(j,d),kt(:,j,d),1,prec,m) !prec = prec -kt*kt'/ft
                             lik = lik - c - 0.5d0*(log(ft(j,d)) + vt(j,d)**2/ft(j,d))
@@ -114,7 +114,7 @@ p, n, m, r,tol,rankp,thetahat,lik)
                     vt(i,d) = yt(d,i) - ddot(m,zt(i,:,(d-1)*timevar(1)+1),1,arec,1) !vt
                     call dsymv('u',m,1.0d0,prec,m,zt(i,:,(d-1)*timevar(1)+1),1,0.0d0,kt(:,i,d),1) ! p symmetric!
                     ft(i,d) = ddot(m,zt(i,:,(d-1)*timevar(1)+1),1,kt(:,i,d),1)  +  ht(i,i,(d-1)*timevar(2)+1)
-                    if (ft(i,d)> tol*maxval(zt(i,:,(d-1)*timevar(1)+1))**2) then
+                    if (ft(i,d)> tol*maxval(zt(i,:,(d-1)*timevar(1)+1)**2)) then
                         call daxpy(m,vt(i,d)/ft(i,d),kt(:,i,d),1,arec,1) !a_rec = a_rec + kt(:,i,t)*vt(:,t)
                         call dsyr('u',m,-1.0d0/ft(i,d),kt(:,i,d),1,prec,m) !p_rec = p_rec - kt*kt'*ft(i,t)
                         lik = lik - 0.5d0*(log(ft(i,d)) + vt(i,d)**2/ft(i,d))-c
@@ -149,7 +149,7 @@ p, n, m, r,tol,rankp,thetahat,lik)
                 vt(i,t) = yt(t,i) - ddot(m,zt(i,:,(t-1)*timevar(1)+1),1,arec,1)
                 call dsymv('u',m,1.0d0,prec,m,zt(i,:,(t-1)*timevar(1)+1),1,0.0d0,kt(:,i,t),1)
                 ft(i,t) = ddot(m,zt(i,:,(t-1)*timevar(1)+1),1,kt(:,i,t),1) +  ht(i,i,(t-1)*timevar(2)+1)
-                if (ft(i,t)> tol*maxval(zt(i,:,(t-1)*timevar(1)+1))**2) then
+                if (ft(i,t)> tol*maxval(zt(i,:,(t-1)*timevar(1)+1)**2)) then
                     call daxpy(m,vt(i,t)/ft(i,t),kt(:,i,t),1,arec,1) !a_rec = a_rec + kt(:,i,t)*vt(:,t)
                     call dsyr('u',m,-1.0d0/ft(i,t),kt(:,i,t),1,prec,m) !p_rec = p_rec - kt*kt'*ft(i,i,t)
                     lik = lik - 0.5d0*(log(ft(i,t)) + vt(i,t)**2/ft(i,t))-c

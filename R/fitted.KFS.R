@@ -4,6 +4,7 @@
 #' @export
 #' @inheritParams coef.KFS
 #' @return Multivariate time series containing fitted values.
+#' @seealso \code{\link{signal}} for partial signals and their covariances.
 fitted.KFS <- function(object, start = NULL, end = NULL, filtered = FALSE, ...) {
   if (!filtered) {
     if (!is.null(object$muhat)) {

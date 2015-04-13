@@ -18,25 +18,21 @@
 #' @param formula an object of class \code{\link{formula}} containing the
 #'   symbolic description of the model. The intercept term can be removed with
 #'   \code{-1} as in \code{lm}. In case of trend or differenced arima component
-#'   intercept is removed automatically. Note that in order to be compatible
-#'   with nonstationary elements, first level of each factor is always added to
-#'   intercept, so if intercept is removed via \code{-1}, one level will be
-#'   missing. See details and examples in \code{\link{KFAS}} for special
-#'   functions used in model construction.
+#'   intercept is removed automatically in order to keep the model identifiable.
+#'   See details and examples in \code{\link{KFAS}} for special functions used in model construction.
 #' @param data an optional data frame, list or environment containing the
 #'   variables in the model.
 #' @param H covariance matrix or array of disturbance terms
 #'   \eqn{\epsilon_t}{\epsilon[t]} of observation equation. Omitted in case of
 #'   non-gaussian distributions. Augment the state vector if you want to add
 #'   additional noise.
-#' @param u additional parameters for non-gaussian models. See details in
+#' @param u additional parameters for non-Gaussian models. See details in
 #'   \code{\link{KFAS}}.
 #' @param distribution a vector of distributions of the observations. Default is
-#'   \code{rep("gaussian",p)}.
-#' @param tol a tolerance parameter for a diffuse phase. Smallest value of Finf
-#'   not counted for zero. Defaults to \code{.Machine$double.eps^0.5}. If
-#'   smoothing gives negative variances for smoothed states, try adjusting this.
-#'   
+#'   \code{rep("gaussian",p)}, where \code{p} is the number of series.
+#' @param tol a tolerance parameter used in checking whether \code{Finf} or \code{F} is numerically zero.
+#'   Defaults to \code{.Machine$double.eps^0.5}. Ifsmoothing gives negative variances for 
+#'   smoothed states, try adjusting this.#'   
 #' @param index a vector indicating for which series the corresponding
 #'   components are constructed.
 #' @param type for cycle, seasonal, trend and regression components, character
@@ -109,14 +105,18 @@
 #'   list components. } \item{p, m, k, n}{Integer valued scalars defining the
 #'   dimensions of the model components. } \item{state_types}{Types of the
 #'   states in the model. }
+#'   \item{eta_types}{Types of the
+#'   state disturbances in the model. }
+#'   \item{tv}{Integer vector stating whether \code{Z},\code{H},\code{T},\code{R} or \code{Q} is
+#'    time-varying (indicated by 1 in \code{tv} and 0 otherwise). }
 #' @examples
 #' 
 #' # example of using data argument
-#' y<-x<-rep(1,3)
-#' data1<-data.frame(x=rep(2,3))
-#' data2<-data.frame(x=rep(3,3))
+#' y <- x <- rep(1,3)
+#' data1 <- data.frame(x=rep(2,3))
+#' data2 <- data.frame(x=rep(3,3))
 #' 
-#' f<-formula(~-1+x)
+#' f <- formula(~-1+x)
 #' # With data missing the environment of formula is checked,
 #' # and if not found in there a calling environment via parent.frame is checked.
 #' 

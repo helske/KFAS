@@ -84,11 +84,8 @@ cycle/seasonal pattern.}
 \item{formula}{an object of class \code{\link{formula}} containing the
 symbolic description of the model. The intercept term can be removed with
 \code{-1} as in \code{lm}. In case of trend or differenced arima component
-intercept is removed automatically. Note that in order to be compatible
-with nonstationary elements, first level of each factor is always added to
-intercept, so if intercept is removed via \code{-1}, one level will be
-missing. See details and examples in \code{\link{KFAS}} for special
-functions used in model construction.}
+intercept is removed automatically in order to keep the model identifiable.
+See details and examples in \code{\link{KFAS}} for special functions used in model construction.}
 
 \item{data}{an optional data frame, list or environment containing the
 variables in the model.}
@@ -98,15 +95,15 @@ variables in the model.}
 non-gaussian distributions. Augment the state vector if you want to add
 additional noise.}
 
-\item{u}{additional parameters for non-gaussian models. See details in
+\item{u}{additional parameters for non-Gaussian models. See details in
 \code{\link{KFAS}}.}
 
 \item{distribution}{a vector of distributions of the observations. Default is
-\code{rep("gaussian",p)}.}
+\code{rep("gaussian",p)}, where \code{p} is the number of series.}
 
-\item{tol}{a tolerance parameter for a diffuse phase. Smallest value of Finf
-  not counted for zero. Defaults to \code{.Machine$double.eps^0.5}. If
-  smoothing gives negative variances for smoothed states, try adjusting this.}
+\item{tol}{a tolerance parameter used in checking whether \code{Finf} or \code{F} is numerically zero.
+Defaults to \code{.Machine$double.eps^0.5}. Ifsmoothing gives negative variances for
+smoothed states, try adjusting this.#'}
 
 \item{rformula}{for regression component, right hand side formula or list of
 of such formulas defining the custom regression part.}
@@ -146,6 +143,10 @@ object of class \code{SSModel}, which is a list with the following
   list components. } \item{p, m, k, n}{Integer valued scalars defining the
   dimensions of the model components. } \item{state_types}{Types of the
   states in the model. }
+  \item{eta_types}{Types of the
+  state disturbances in the model. }
+  \item{tv}{Integer vector stating whether \code{Z},\code{H},\code{T},\code{R} or \code{Q} is
+   time-varying (indicated by 1 in \code{tv} and 0 otherwise). }
 }
 \description{
 Function \code{SSModel} creates a state space object object of class
@@ -160,11 +161,11 @@ functions defining different types of components of the model, named as
 }
 \examples{
 # example of using data argument
-y<-x<-rep(1,3)
-data1<-data.frame(x=rep(2,3))
-data2<-data.frame(x=rep(3,3))
+y <- x <- rep(1,3)
+data1 <- data.frame(x=rep(2,3))
+data2 <- data.frame(x=rep(3,3))
 
-f<-formula(~-1+x)
+f <- formula(~-1+x)
 # With data missing the environment of formula is checked,
 # and if not found in there a calling environment via parent.frame is checked.
 
@@ -190,7 +191,7 @@ c(SSModel(y~-1+SSMregression(f),data=data1)$Z)
 }
 }
 \seealso{
-artransform
+\code{artransform}
 
 \code{\link{KFAS}} for examples.
 }

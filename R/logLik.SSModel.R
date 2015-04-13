@@ -53,7 +53,7 @@
 #' @param convtol Tolerance parameter for convergence checks for Gaussian
 #'   approximation.
 #' @param ... Ignored.
-#' @return log-likelihood of the model.
+#' @return Log-likelihood of the model.
 logLik.SSModel <- 
   function(object, marginal=FALSE, nsim = 0, antithetics = TRUE, theta, check.model = TRUE, 
            transform = c("ldl", "augment"), maxiter = 50, seed, convtol = 1e-8,...) {

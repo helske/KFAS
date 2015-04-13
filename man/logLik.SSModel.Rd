@@ -46,7 +46,7 @@ approximation.}
 \item{...}{Ignored.}
 }
 \value{
-log-likelihood of the model.
+Log-likelihood of the model.
 }
 \description{
 Function \code{logLik.SSmodel} computes the log-likelihood value of a state

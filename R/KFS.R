@@ -14,9 +14,10 @@
 #' 
 #' In rare cases of a diffuse initialization phase with highly correlated
 #' states, cumulative rounding errors in computing \code{Finf} and \code{Pinf}
-#' can sometimes cause the diffuse phase end too early. Changing the tolerance
+#' can sometimes cause the diffuse phase end too early, 
+#' or the backward smoothing gives negative variances. Changing the tolerance
 #' parameter \code{tol} of the model (see \code{\link{SSModel}}) to smaller (or
-#' larger) should help.
+#' larger), or redefining the prior state distribution to more informative can sometimes help.
 #' 
 #' In case of non-Gaussian models with \code{nsim=0}, the smoothed estimates
 #' relate the conditional mode of \eqn{p(\alpha|y)}, and are equivalent with the
@@ -28,12 +29,11 @@
 #' @param filtering Types of filtering. Possible choices are \code{"state"},
 #'   \code{"signal"}, \code{"mean"}, and \code{"none"}. Default is
 #'   \code{"state"} for Gaussian and \code{"none"} for non-Gaussian models.
-#'   Multiple values are allowed. For Gaussian models, the signal is mean.
+#'   Multiple values are allowed. For Gaussian models, the signal is the mean.
 #'   Note that filtering for non-Gaussian models with importance sampling can be
-#'   very slow with large models. Also in approximating mean filtering only
-#'   diagonals of \code{P_mu} are returned.
+#'   very slow with large models.
 #' @param smoothing Types of smoothing. Possible choices are \code{"state"},
-#'   \code{"signal"}, \code{"mean"},\code{"disturbance"}, and \code{"none"}. Default is \code{"state"} and \code{"mean"}. For
+#'   \code{"signal"}, \code{"mean"}, \code{"disturbance"}, and \code{"none"}. Default is \code{"state"} and \code{"mean"}. For
 #'   non-Gaussian models, option \code{"disturbance"} is not supported, and for
 #'   Gaussian models option \code{"mean"} is identical to \code{"signal"}. Multiple values are
 #'   allowed.
@@ -43,12 +43,12 @@
 #' @param transform How to transform the model in case of non-diagonal 
 #'   covariance matrix \code{H}. Defaults to \code{"ldl"}. See function 
 #'   \code{\link{transformSSM}} for details.
-#' @param nsim The number of independent samples. Only used for non-Gaussian 
+#' @param nsim The number of independent samples in importance sampling. Only used for non-Gaussian 
 #'   model. Default is 0, which computes the approximating Gaussian model by 
 #'   \code{\link{approxSSM}} and performs the usual Gaussian smoothing so that 
 #'   the smoothed state estimates equals to the conditional mode of 
 #'   \eqn{p(\alpha_t|y)}{p(\alpha[t]|y)}. 
-#'   In case of \code{nsim=0}, the mean estimates and their covariance matrices are computed using Delta method.
+#'   In case of \code{nsim=0}, the mean estimates and their variances are computed using Delta method.
 #' @param theta Initial values for conditional mode theta. Only used for 
 #'   non-Gaussian models.
 #' @param maxiter The maximum number of iterations used in Gaussian 
@@ -69,8 +69,7 @@
 #'   \item{a}{One step predictions of states, \eqn{a_t=E(\alpha_t | y_{t-1}, 
 #'   \ldots , y_{1})}{a[t]=E(\alpha[t] | y[t-1], \ldots , y[1])}.  }
 #'   
-#'   \item{P}{Non-diffuse part of covariance matrices of predicted 
-#'   states, \eqn{P_t=Cov(\alpha_t | y_{t-1}, \ldots , 
+#'   \item{P}{Non-diffuse part of \eqn{P_t=Cov(\alpha_t | y_{t-1}, \ldots , 
 #'   y_{1})}{P[t]=Cov(\alpha[t] | y[t-1], \ldots , y[1])}.  }
 #'   
 #'   \item{Pinf}{Diffuse part of \eqn{P_t}{P[t]}. Only returned for Gaussian 
@@ -132,7 +131,7 @@
 #'   
 #'   \item{v}{Prediction errors \eqn{v_{t,i} = y_{t,i} - Z_{i,t}a_{t,i}, 
 #'   i=1,\ldots,p}{v[t,i] = y[t,i] - Z[i,t]a[t,i], i=1,\ldots,p}, where 
-#'   \eqn{a_{t,i}=E(\alpha_t | y_{t,i-1}, \ldots, y_{t,1}, \ldots , 
+#'   \deqn{a_{t,i}=E(\alpha_t | y_{t,i-1}, \ldots, y_{t,1}, \ldots , 
 #'   y_{1,1})}{a[t,i]=E(\alpha[t] | y[t,i-1], \ldots, y[t,1], \ldots , y[1,1])}.
 #'   Only returned for Gaussian models.  }
 #'   
@@ -488,7 +487,7 @@ KFS <-
                             N1 = array(0, dim = c(m, m, filterout$d + 1)), 
                             N2 = array(0, dim = c(m, m, filterout$d + 1)), filterout$Pinf, filterout$Kinf, 
                             filterout$Finf, model$tol, alphahat = array(0, dim = c(m, n)*("state" %in% smoothing)), 
-                            V = array(0, dim = c(m, m, n)*("state" %in% smoothing)), 
+                            V = array(0, dim = c(m, m, n)), 
                             epshat = array(0, dim = c(p, n)*("disturbance" %in% smoothing)), 
                             V_eps = array(0, dim = c(p, n)*("disturbance" %in% smoothing)), 
                             etahat = array(0, dim = c(k, n)*("disturbance" %in% smoothing)), 
