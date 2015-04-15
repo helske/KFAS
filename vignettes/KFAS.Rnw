@@ -533,7 +533,7 @@ Another issue in case of non-Gaussian models is the fact that the likelihood com
 Using function \code{KFS} we can compute the smoothed estimates of states:
 
 <<'KFS'>>=
-out <- KFS(fit$model, nsim = 1000)
+out <- KFS(fit$model, nsim = 250)
 out
 @
 
@@ -548,7 +548,7 @@ Note the large drop in noise component which relates to possible outlier in 1973
 
 <<'diagnostics1',fig.pos = '!ht', fig.cap = 'Autocorrelations and cross-correlations of recursive residuals.',out.width='\\linewidth'>>=
 res <- rstandard(KFS(fit$model, filtering = "mean", 
-                     smoothing = "none", nsim = 1000))
+                     smoothing = "none", nsim = 250))
 acf(res, na.action = na.pass)
 @
 
@@ -562,7 +562,7 @@ pred<-predict(fit$model, newdata =
                         + SSMcustom(Z = fit$model$Z, T = fit$model$T, 
                                     R = fit$model$R, Q = fit$model$Q), u = 1, 
                         distribution= "poisson"),
-              interval = "confidence", nsim = 10000)
+              interval = "confidence", nsim = 2500)
 @
 <<'predictplot',fig.pos = '!ht', fig.cap = 'Observed number of alcohol related deaths per 100,000 persons in Finland (black), fitted values (red) and intensity predictions for years 2008--2012 together with 95\\% prediction intervals (green).',out.width='\\linewidth'>>=
 trend <- exp(signal(out, "trend")$signal)

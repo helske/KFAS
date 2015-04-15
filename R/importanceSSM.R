@@ -38,7 +38,7 @@
 #' # Computing confidence intervals for sex ratio
 #' # Uses importance sampling on response scale (1000 samples with antithetics)
 #' set.seed(1)
-#' imp <- importanceSSM(fit$model, nsim = 250, antithetics = TRUE)#' 
+#' imp <- importanceSSM(fit$model, nsim = 250, antithetics = TRUE)
 #' sexratio.smooth <- numeric(length(model$y))
 #' sexratio.ci <- matrix(0, length(model$y), 2)
 #' w <- imp$w/sum(imp$w)
