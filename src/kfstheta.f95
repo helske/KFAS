@@ -53,7 +53,6 @@ p, n, m, r,tol,rankp,thetahat,lik)
             d = d+1
             do j=1, p
                 if(ymiss(d,j).EQ.0) then
-
                     vt(j,d) = yt(d,j) - ddot(m,zt(j,:,(d-1)*timevar(1)+1),1,arec,1) !arec
                     call dsymv('u',m,1.0d0,prec,m,zt(j,:,(d-1)*timevar(1)+1),1,0.0d0,kt(:,j,d),1) ! kt_t,i = pt_t,i*t(z_t,i)
                     ft(j,d) = ddot(m,zt(j,:,(d-1)*timevar(1)+1),1,kt(:,j,d),1)  + ht(j,j,(d-1)*timevar(2)+1)
@@ -136,9 +135,6 @@ p, n, m, r,tol,rankp,thetahat,lik)
     end if
 
     !Non-diffuse filtering continues from t=d+1, i=1
-
-
-
     if(d .EQ. n .AND. j .EQ. p+1) then
         j = p
     end if

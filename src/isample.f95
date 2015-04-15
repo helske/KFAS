@@ -31,7 +31,6 @@ aplus1,c,tol,info,antithetics,w,sim,nd,ndl,simwhat,simdim)
     double precision, intent(inout), dimension(simdim,n,3 * nsim * antithetics + nsim) :: sim
     double precision, dimension(p,(3 * nsim * antithetics + nsim)*(5-simwhat)) :: tsim
     double precision, dimension(n,p) :: ytilde
-    double precision, dimension(n,p) :: dn
     double precision, dimension(n) :: tmp
     double precision, dimension(3 * nsim * antithetics + nsim) :: w
     double precision :: diff
@@ -63,7 +62,6 @@ aplus1,c,tol,info,antithetics,w,sim,nd,ndl,simwhat,simdim)
 
     ! compute importance weights
 
-    where(ymiss .EQ. 0) dn=(ytilde-theta)**2
     w=1.0d0
 
     if(simwhat==5) then
@@ -76,7 +74,7 @@ aplus1,c,tol,info,antithetics,w,sim,nd,ndl,simwhat,simdim)
 
                             w = w*exp(yt(t,j)*(sim(j,t,:)-theta(t,j))-&
                             u(t,j)*(exp(sim(j,t,:))-tmp(t)))/&
-                            exp(-0.5d0/ht(j,j,t)*( (ytilde(t,j)-sim(j,t,:))**2 - dn(t,j)))
+                            exp(-0.5d0/ht(j,j,t)*( (ytilde(t,j)-sim(j,t,:))**2 - (ytilde(t,j)-theta(t,j))**2))
                      
                         end if
                     end do
@@ -87,7 +85,7 @@ aplus1,c,tol,info,antithetics,w,sim,nd,ndl,simwhat,simdim)
                        
                             w = w*exp( yt(t,j)*(sim(j,t,:)-theta(t,j))-&
                             u(t,j)*(log(1.0d0+exp(sim(j,t,:)))-tmp(t)))/&
-                            exp(-0.5d0/ht(j,j,t)*( (ytilde(t,j)-sim(j,t,:))**2 -dn(t,j)))
+                            exp(-0.5d0/ht(j,j,t)*( (ytilde(t,j)-sim(j,t,:))**2 -(ytilde(t,j)-theta(t,j))**2))
                      
                         end if
                     end do
@@ -96,7 +94,7 @@ aplus1,c,tol,info,antithetics,w,sim,nd,ndl,simwhat,simdim)
                     do t=1,n
                         if(ymiss(t,j) .EQ. 0) then
                             w = w*exp( u(t,j)*(yt(t,j)*(tmp(t)-exp(-sim(j,t,:)))+theta(t,j)-sim(j,t,:)))/&
-                            exp(-0.5d0/ht(j,j,t)*( (ytilde(t,j)-sim(j,t,:))**2 -dn(t,j)))
+                            exp(-0.5d0/ht(j,j,t)*( (ytilde(t,j)-sim(j,t,:))**2 - (ytilde(t,j)-theta(t,j))**2))
                         end if
                     end do
                 case(5) !negbin
@@ -105,7 +103,7 @@ aplus1,c,tol,info,antithetics,w,sim,nd,ndl,simwhat,simdim)
                         if(ymiss(t,j) .EQ. 0) then
                             w = w*exp(yt(t,j)*(sim(j,t,:)-theta(t,j)) +&
                             (yt(t,j)+u(t,j))*log((u(t,j)+tmp(t))/(u(t,j)+exp(sim(j,t,:)))))/&
-                            exp(-0.5d0/ht(j,j,t)*( (ytilde(t,j)-sim(j,t,:))**2 -dn(t,j)))
+                            exp(-0.5d0/ht(j,j,t)*( (ytilde(t,j)-sim(j,t,:))**2 -(ytilde(t,j)-theta(t,j))**2))
 
                         end if
                     end do
@@ -124,7 +122,7 @@ aplus1,c,tol,info,antithetics,w,sim,nd,ndl,simwhat,simdim)
                             end do
                             w = w*exp(yt(t,j)*(tsim(j,:)-theta(t,j))-&
                             u(t,j)*(exp(tsim(j,:))-tmp(t)))/&
-                            exp(-0.5d0/ht(j,j,t)*( (ytilde(t,j)-tsim(j,:))**2 - dn(t,j)))
+                            exp(-0.5d0/ht(j,j,t)*( (ytilde(t,j)-tsim(j,:))**2 - (ytilde(t,j)-theta(t,j))**2))
 
                         end if
                     end do
@@ -137,7 +135,7 @@ aplus1,c,tol,info,antithetics,w,sim,nd,ndl,simwhat,simdim)
                             end do
                             w = w*exp( yt(t,j)*(tsim(j,:)-theta(t,j))-&
                             u(t,j)*(log(1.0d0+exp(tsim(j,:)))-tmp(t)))/&
-                            exp(-0.5d0/ht(j,j,t)*( (ytilde(t,j)-tsim(j,:))**2 -dn(t,j)))
+                            exp(-0.5d0/ht(j,j,t)*( (ytilde(t,j)-tsim(j,:))**2 - (ytilde(t,j)-theta(t,j))**2))
 
                         end if
                     end do
@@ -149,7 +147,7 @@ aplus1,c,tol,info,antithetics,w,sim,nd,ndl,simwhat,simdim)
                                 tsim(j,i) = ddot(m,zt(j,:,(t-1)*timevar(1)+1),1,sim(:,t,i),1)
                             end do
                             w = w*exp( u(t,j)*(yt(t,j)*(tmp(t)-exp(-tsim(j,:)))+theta(t,j)-tsim(j,:)))/&
-                            exp(-0.5d0/ht(j,j,t)*( (ytilde(t,j)-tsim(j,:))**2 -dn(t,j)))
+                            exp(-0.5d0/ht(j,j,t)*( (ytilde(t,j)-tsim(j,:))**2 -(ytilde(t,j)-theta(t,j))**2))
                         end if
                     end do
                 case(5) !negbin
@@ -161,7 +159,7 @@ aplus1,c,tol,info,antithetics,w,sim,nd,ndl,simwhat,simdim)
                             end do
                             w = w*exp(yt(t,j)*(tsim(j,:)-theta(t,j)) +&
                             (yt(t,j)+u(t,j))*log((u(t,j)+tmp(t))/(u(t,j)+exp(tsim(j,:)))))/&
-                            exp(-0.5d0/ht(j,j,t)*( (ytilde(t,j)-tsim(j,:))**2 -dn(t,j)))
+                            exp(-0.5d0/ht(j,j,t)*( (ytilde(t,j)-tsim(j,:))**2 - (ytilde(t,j)-theta(t,j))**2))
                         end if
                     end do
             end select

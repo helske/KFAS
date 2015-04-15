@@ -32,7 +32,6 @@ aplus1,c,tol,info,antithetics,w,sim,nd,ndl,simwhat,simdim)
     double precision, intent(inout), dimension(simdim,n,3 * nsim * antithetics + nsim) :: sim
     double precision, dimension(p,(3 * nsim * antithetics + nsim)*(5-simwhat)) :: tsim
     double precision, dimension(n,p) :: ytilde
-    double precision, dimension(n,p) :: dn
     double precision, dimension(n) :: tmp
     double precision, dimension(n,3 * nsim * antithetics + nsim) :: w
     double precision, external :: ddot
@@ -112,48 +111,46 @@ aplus1,c,tol,info,antithetics,w,sim,nd,ndl,simwhat,simdim)
 
         ! compute importance weights
 
-        where(ymiss2(1:i,:) .EQ. 0) dn=(ytilde(1:i,:)-theta(1:i,:))**2
-
 
         if(simwhat==5) then
             do j=1,p
                 select case(dist(j))
                     case(2)    !poisson
-                        tmp = exp(theta(1:i,j))
+                        tmp(1:i) = exp(theta(1:i,j))
                         do t=1,i
                             if(ymiss2(t,j) .EQ. 0) then
                                 w(i+1,:) = w(i+1,:)*exp(yt(t,j)*(sim2(j,t,:)-theta(t,j))-&
                                 u(t,j)*(exp(sim2(j,t,:))-tmp(t)))/&
-                                exp(-0.5d0/ht(j,j,t)*( (ytilde(t,j)-sim2(j,t,:))**2 - dn(t,j)))
+                                exp(-0.5d0/ht(j,j,t)*( (ytilde(t,j)-sim2(j,t,:))**2 - (ytilde(t,j)-theta(t,j))**2))
                             end if
                         end do
                     case(3) !binomial
-                        tmp = log(1.0d0+exp(theta(1:i,j)))
+                        tmp(1:i) = log(1.0d0+exp(theta(1:i,j)))
                         do t=1,i
                             if(ymiss2(t,j) .EQ. 0) then
                        
                                 w(i+1,:) = w(i+1,:)*exp( yt(t,j)*(sim2(j,t,:)-theta(t,j))-&
                                 u(t,j)*(log(1.0d0+exp(sim2(j,t,:)))-tmp(t)))/&
-                                exp(-0.5d0/ht(j,j,t)*( (ytilde(t,j)-sim2(j,t,:))**2 -dn(t,j)))
+                                exp(-0.5d0/ht(j,j,t)*( (ytilde(t,j)-sim2(j,t,:))**2 -(ytilde(t,j)-theta(t,j))**2))
                      
                             end if
                         end do
                     case(4) ! gamma
-                        tmp = exp(-theta(1:i,j))
+                        tmp(1:i) = exp(-theta(1:i,j))
                         do t=1,i
                             if(ymiss2(t,j) .EQ. 0) then
                                 w(i+1,:) = w(i+1,:)*exp( u(t,j)*(yt(t,j)*(tmp(t)-exp(-sim2(j,t,:)))&
                                 +theta(t,j)-sim2(j,t,:)))/&
-                                exp(-0.5d0/ht(j,j,t)*( (ytilde(t,j)-sim2(j,t,:))**2 -dn(t,j)))
+                                exp(-0.5d0/ht(j,j,t)*( (ytilde(t,j)-sim2(j,t,:))**2 - (ytilde(t,j)-theta(t,j))**2))
                             end if
                         end do
                     case(5) !negbin
-                        tmp = exp(theta(1:i,j))
+                        tmp(1:i) = exp(theta(1:i,j))
                         do t=1,i
                             if(ymiss2(t,j) .EQ. 0) then
                                 w(i+1,:) = w(i+1,:)*exp(yt(t,j)*(sim2(j,t,:)-theta(t,j)) +&
                                 (yt(t,j)+u(t,j))*log((u(t,j)+tmp(t))/(u(t,j)+exp(sim2(j,t,:)))))/&
-                                exp(-0.5d0/ht(j,j,t)*( (ytilde(t,j)-sim2(j,t,:))**2 -dn(t,j)))
+                                exp(-0.5d0/ht(j,j,t)*( (ytilde(t,j)-sim2(j,t,:))**2 - (ytilde(t,j)-theta(t,j))**2))
                             end if
                         end do
                 end select
@@ -163,7 +160,7 @@ aplus1,c,tol,info,antithetics,w,sim,nd,ndl,simwhat,simdim)
             do j=1,p
                 select case(dist(j))
                     case(2)    !poisson
-                        tmp = exp(theta(1:i,j))
+                        tmp(1:i) = exp(theta(1:i,j))
                         do t=1,i
                             if(ymiss2(t,j) .EQ. 0) then
                                 do k=1,3 * nsim * antithetics + nsim
@@ -171,12 +168,12 @@ aplus1,c,tol,info,antithetics,w,sim,nd,ndl,simwhat,simdim)
                                 end do
                                 w(i+1,:) = w(i+1,:)*exp(yt(t,j)*(tsim(j,:)-theta(t,j))-&
                                 u(t,j)*(exp(tsim(j,:))-tmp(t)))/&
-                                exp(-0.5d0/ht(j,j,t)*( (ytilde(t,j)-tsim(j,:))**2 - dn(t,j)))
+                                exp(-0.5d0/ht(j,j,t)*( (ytilde(t,j)-tsim(j,:))**2 - (ytilde(t,j)-theta(t,j))**2))
 
                             end if
                         end do
                     case(3) !binomial
-                        tmp = log(1.0d0+exp(theta(1:i,j)))
+                        tmp(1:i) = log(1.0d0+exp(theta(1:i,j)))
                         do t=1,i
                             if(ymiss2(t,j) .EQ. 0) then
                                 do k=1,3 * nsim * antithetics + nsim
@@ -184,23 +181,23 @@ aplus1,c,tol,info,antithetics,w,sim,nd,ndl,simwhat,simdim)
                                 end do
                                 w(i+1,:) = w(i+1,:)*exp( yt(t,j)*(tsim(j,:)-theta(t,j))-&
                                 u(t,j)*(log(1.0d0+exp(tsim(j,:)))-tmp(t)))/&
-                                exp(-0.5d0/ht(j,j,t)*( (ytilde(t,j)-tsim(j,:))**2 -dn(t,j)))
+                                exp(-0.5d0/ht(j,j,t)*( (ytilde(t,j)-tsim(j,:))**2 - (ytilde(t,j)-theta(t,j))**2))
 
                             end if
                         end do
                     case(4) ! gamma
-                        tmp = exp(-theta(1:i,j))
+                        tmp(1:i) = exp(-theta(1:i,j))
                         do t=1,i
                             if(ymiss2(t,j) .EQ. 0) then
                                 do k=1,3 * nsim * antithetics + nsim
                                     tsim(j,k) = ddot(m,zt(j,:,(t-1)*timevar(1)+1),1,sim2(:,t,k),1)
                                 end do
                                 w(i+1,:) = w(i+1,:)*exp( u(t,j)*(yt(t,j)*(tmp(t)-exp(-tsim(j,:)))+theta(t,j)-tsim(j,:)))/&
-                                exp(-0.5d0/ht(j,j,t)*( (ytilde(t,j)-tsim(j,:))**2 -dn(t,j)))
+                                exp(-0.5d0/ht(j,j,t)*( (ytilde(t,j)-tsim(j,:))**2 - (ytilde(t,j)-theta(t,j))**2))
                             end if
                         end do
                     case(5) !negbin
-                        tmp = exp(theta(1:i,j))
+                        tmp(1:i) = exp(theta(1:i,j))
                         do t=1,i
                             if(ymiss2(t,j) .EQ. 0) then
                                 do k=1,3 * nsim * antithetics + nsim
@@ -208,7 +205,7 @@ aplus1,c,tol,info,antithetics,w,sim,nd,ndl,simwhat,simdim)
                                 end do
                                 w(i+1,:) = w(i+1,:)*exp(yt(t,j)*(tsim(j,:)-theta(t,j)) +&
                                 (yt(t,j)+u(t,j))*log((u(t,j)+tmp(t))/(u(t,j)+exp(tsim(j,:)))))/&
-                                exp(-0.5d0/ht(j,j,t)*( (ytilde(t,j)-tsim(j,:))**2 -dn(t,j)))
+                                exp(-0.5d0/ht(j,j,t)*( (ytilde(t,j)-tsim(j,:))**2 - (ytilde(t,j)-theta(t,j))**2))
                             end if
                         end do
                 end select

@@ -30,7 +30,6 @@ nnd,nsim,epsplus,etaplus,aplus1,c,tol,info,antit,sim,nsim2,nd,ndl,diff,marginal)
     double precision, intent(inout), dimension(r,n,nsim) :: etaplus
     double precision, intent(inout) :: lik
     double precision, dimension(p,n,nsim2) :: tsim
-    double precision, dimension(n,p) :: dn
     double precision, dimension(n) :: tmp
     double precision, dimension(nsim2) :: w
     double precision, intent(inout) :: diff
@@ -92,8 +91,6 @@ nnd,nsim,epsplus,etaplus,aplus1,c,tol,info,antit,sim,nsim2,nd,ndl,diff,marginal)
 
     if(sim .EQ. 1) then
 
-        where(ymiss == 0) dn=(ytilde-theta)**2
-
         w=1.0d0
         info2 = 0
 
@@ -113,7 +110,7 @@ nnd,nsim,epsplus,etaplus,aplus1,c,tol,info,antit,sim,nsim2,nd,ndl,diff,marginal)
                                 !  do i=1,nsim2
                                 w = w*exp(yt(t,j)*(tsim(j,t,:)-theta(t,j))-&
                                 u(t,j)*(exp(tsim(j,t,:))-tmp(t)))/&
-                                exp(-0.5d0/ht(j,j,t)*( (ytilde(t,j)-tsim(j,t,:))**2 - dn(t,j)))
+                                exp(-0.5d0/ht(j,j,t)*( (ytilde(t,j)-tsim(j,t,:))**2 - (ytilde(t,j)-theta(t,j))**2))
                               !  end do
                             end if
                         end do
@@ -123,7 +120,7 @@ nnd,nsim,epsplus,etaplus,aplus1,c,tol,info,antit,sim,nsim2,nd,ndl,diff,marginal)
                             if(ymiss(t,j) .EQ. 0) then
                                 w = w*exp( yt(t,j)*(tsim(j,t,:)-theta(t,j))-&
                                 u(t,j)*(log(1.0d0+exp(tsim(j,t,:)))-tmp(t)))/&
-                                exp(-0.5d0/ht(j,j,t)*( (ytilde(t,j)-tsim(j,t,:))**2 -dn(t,j)))
+                                exp(-0.5d0/ht(j,j,t)*( (ytilde(t,j)-tsim(j,t,:))**2 - (ytilde(t,j)-theta(t,j))**2))
                             end if
                         end do
                     case(4) ! gamma
@@ -131,7 +128,7 @@ nnd,nsim,epsplus,etaplus,aplus1,c,tol,info,antit,sim,nsim2,nd,ndl,diff,marginal)
                         do t=1,n
                             if(ymiss(t,j) .EQ. 0) then
                                 w = w*exp( u(t,j)*(yt(t,j)*(tmp(t)-exp(-tsim(j,t,:)))+theta(t,j)-tsim(j,t,:)))/&
-                                exp(-0.5d0/ht(j,j,t)*( (ytilde(t,j)-tsim(j,t,:))**2 -dn(t,j)))
+                                exp(-0.5d0/ht(j,j,t)*( (ytilde(t,j)-tsim(j,t,:))**2 - (ytilde(t,j)-theta(t,j))**2))
                             end if
                         end do
                     case(5)
@@ -140,7 +137,7 @@ nnd,nsim,epsplus,etaplus,aplus1,c,tol,info,antit,sim,nsim2,nd,ndl,diff,marginal)
                             if(ymiss(t,j) .EQ. 0) then
                                 w = w*exp(yt(t,j)*(tsim(j,t,:)-theta(t,j)) +&
                                 (yt(t,j)+u(t,j))*log((u(t,j)+tmp(t))/(u(t,j)+exp(tsim(j,t,:)))))/&
-                                exp(-0.5d0/ht(j,j,t)*( (ytilde(t,j)-tsim(j,t,:))**2 -dn(t,j)))
+                                exp(-0.5d0/ht(j,j,t)*( (ytilde(t,j)-tsim(j,t,:))**2 - (ytilde(t,j)-theta(t,j))**2))
                             end if
                         end do
                 end select

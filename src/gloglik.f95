@@ -32,7 +32,7 @@ p, m, r, n, lik, tol,rankp,marginal)
 
     external dgemm, dsymm, dgemv, dsymv, daxpy, dsyr, dsyr2, marginalxx
 
-meps = epsilon(meps)
+    meps = epsilon(meps)
 
     ! compute RQR'
     tv= max(timevar(4),timevar(5))
@@ -51,10 +51,9 @@ meps = epsilon(meps)
     pt = p1
     arec = a1
     ! Diffuse initialization
-    if(maxval(p1inf) .GT.  0.0d0) then
+    if(rankp > 0) then
         pinf=p1inf
-
-        diffuse: do while(d .LT. n)
+        diffuse: do while(d < n .AND. rankp > 0)
             d = d+1
             do j=1, p !sequential processing
                 if(ymiss(d,j).EQ.0) then
@@ -68,9 +67,9 @@ meps = epsilon(meps)
                         call dsyr('u',m,ft(j)/finf(j)**2,kinf(:,j),1,pt,m) !pt = pt +  kinf*kinf'*ft/finf^2
                         call dsyr2('u',m,-1.0d0/finf(j),kt(:,j),1,kinf(:,j),1,pt,m) !pt = pt -(kt*kinf'+kinf*kt')/finf
                         call dsyr('u',m,-1.0d0/finf(j),kinf(:,j),1,pinf,m) !pirec = pirec -kinf*kinf'/finf
+
                         lik = lik - 0.5d0*log(finf(j))
                         rankp = rankp -1
-
                     else
                         if (ft(j) > tol*maxval(zt(j,:,(d-1)*timevar(1)+1)**2)) then
                             call daxpy(m,vt(j)/ft(j),kt(:,j),1,arec,1) !a_rec = a_rec + kt(:,i,t)*vt(:,t)/ft(i,t)
@@ -91,13 +90,14 @@ meps = epsilon(meps)
             pt = pt + rqr(:,:,(d-1)*tv+1)
             call dsymm('r','u',m,m,1.0d0,pinf,m,tt(:,:,(d-1)*timevar(3)+1),m,0.0d0,mm,m)
             call dgemm('n','t',m,m,m,1.0d0,mm,m,tt(:,:,(d-1)*timevar(3)+1),m,0.0d0,pinf,m)
-          do i = 1, m ! try to deal with possible rounding errors, non-diffuse states should have zeros in pinf
+            do i = 1, m ! try to deal with possible rounding errors, non-diffuse states should have zeros in pinf
                 if(pinf(i,i) .LT. meps) then
-                     pinf(i,:) = 0.0d0
-                     pinf(:,i) = 0.0d0
-                 end if
-             end do
+                    pinf(i,:) = 0.0d0
+                    pinf(:,i) = 0.0d0
+                end if
+            end do
         end do diffuse
+
         if(rankp .EQ. 0) then
             !non-diffuse filtering begins
             do i = j+1, p
@@ -125,6 +125,7 @@ meps = epsilon(meps)
 
 
     !Non-diffuse filtering continues from t=d+1, i=1
+
     do t = d+1, n
         do i = 1, p
             if(ymiss(t,i).EQ.0) then

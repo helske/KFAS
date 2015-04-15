@@ -366,13 +366,13 @@ etahat,etahatvar,thetahat,thetahatvar, ldlsignal,zorig, zorigtv,aug,state,dist,s
             mm = im - mm
             call dsymm('r','u',m,m,1.0d0,pt(:,:,t),m,mm,m,0.0d0,vvt(:,:,t),m) !pt*n_t-1*pt
         end do
-        if(m > 1) then
-            do t=1, n
-                do i=1,m-1
-                    vvt((i+1):m,i,t) =vvt(i,(i+1):m,t)
-                end do
-            end do
-        end if
+!        if(m > 1) then
+!            do t=1, n
+!                do i=1,m-1
+!                    vvt((i+1):m,i,t) =vvt(i,(i+1):m,t)
+!                end do
+!            end do
+!        end if
     end if
 
     if(dist.EQ.1) then
