@@ -85,7 +85,7 @@ aplus1,c,tol,info,antithetics,w,sim,nd,ndl,simwhat,simdim)
             return
         end if
 
-        if(maxiter2>maxitermax) then
+        if(maxiter2.GT.maxitermax) then
             maxitermax = maxiter2
         end if
         epsplus2 = epsplus
@@ -112,7 +112,7 @@ aplus1,c,tol,info,antithetics,w,sim,nd,ndl,simwhat,simdim)
         ! compute importance weights
 
 
-        if(simwhat==5) then
+        if(simwhat.EQ.5) then
             do j=1,p
                 select case(dist(j))
                     case(2)    !poisson

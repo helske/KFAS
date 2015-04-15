@@ -66,7 +66,7 @@ subroutine varmeanw(x,w,m,n,k,meanx,varx,var)
     do i = 1, k
         meanx = meanx + x(:,:,i)*w(i)
     end do
-    if(var==1) then
+    if(var.EQ.1) then
         do i = 1, m
             do t = 1, n
                 varx(t,i) = sum(w*x(t,i,:)**2)-meanx(t,i)**2

@@ -31,12 +31,12 @@ d, j, p, m, n, r,tol,rankp,ft,finf,kt,kinf,epshat,etahat,rt0,rt1,needeps)
     double precision, intent(inout), dimension(r,n) :: etahat
     double precision, intent(inout), dimension(p,n) :: epshat
     double precision, intent(inout), dimension(m) :: rt0,rt1
-double precision :: meps
+    double precision :: meps
     double precision, external :: ddot
 
     external dgemm, dsymm, dgemv, dsymv, daxpy, dsyr, dsyr2, dger
  
-meps = epsilon(meps)
+    meps = epsilon(meps)
     tv = max(timevar(4),timevar(5))
 
     im = 0.0d0
@@ -64,7 +64,7 @@ meps = epsilon(meps)
                     finf(j,d) = ddot(m,zt(j,:,(d-1)*timevar(1)+1),1,kinf(:,j,d),1)! finf
 
 
-                    if (finf(j,d) > tol*maxval(zt(j,:,(d-1)*timevar(1)+1)**2)) then
+                    if (finf(j,d) .GT. tol*maxval(zt(j,:,(d-1)*timevar(1)+1)**2)) then
                         call daxpy(m,vt(j,d)/finf(j,d),kinf(:,j,d),1,arec,1) !a_rec = a_rec + kinf(:,i,t)*vt(:,t)/finf(j,d)
                         call dsyr('u',m,ft(j,d)/(finf(j,d)**2),kinf(:,j,d),1,prec,m) !prec = prec +  kinf*kinf'*ft/finf^2
                         call dsyr2('u',m,-1.0d0/finf(j,d),kt(:,j,d),1,kinf(:,j,d),1,prec,m) !prec = prec -(kt*kinf'+kinf*kt')/finf
@@ -75,7 +75,7 @@ meps = epsilon(meps)
 
                     else
                         finf(j,d) = 0.0d0
-                        if(ft(j,d)> tol*maxval(zt(j,:,(d-1)*timevar(1)+1)**2)) then
+                        if(ft(j,d) .GT. tol*maxval(zt(j,:,(d-1)*timevar(1)+1)**2)) then
                             call daxpy(m,vt(j,d)/ft(j,d),kt(:,j,d),1,arec,1) !a_rec = a_rec + kt(:,i,t)*vt(:,t)/ft(i,t)
                             call dsyr('u',m,(-1.0d0)/ft(j,d),kt(:,j,d),1,prec,m) !prec = prec -kt*kt'/ft
                         else
@@ -100,11 +100,11 @@ meps = epsilon(meps)
             call dgemm('n','t',m,m,m,1.0d0,mm,m,tt(:,:,(d-1)*timevar(3)+1),m,0.0d0,pirec,m)
 
             do i = 1, m
-                 if(pirec(i,i) .LT. meps) then
-                     pirec(i,:) = 0.0d0
-                     pirec(:,i) = 0.0d0
-                 end if
-             end do
+                if(pirec(i,i) .LT. meps) then
+                    pirec(i,:) = 0.0d0
+                    pirec(:,i) = 0.0d0
+                end if
+            end do
 
         end do diffuse
 
@@ -115,7 +115,7 @@ meps = epsilon(meps)
                     vt(i,d) = yt(d,i) - ddot(m,zt(i,:,(d-1)*timevar(1)+1),1,arec,1) !vt
                     call dsymv('u',m,1.0d0,prec,m,zt(i,:,(d-1)*timevar(1)+1),1,0.0d0,kt(:,i,d),1) ! p symmetric!
                     ft(i,d) = ddot(m,zt(i,:,(d-1)*timevar(1)+1),1,kt(:,i,d),1)  +  ht(i,i,(d-1)*timevar(2)+1)
-                    if (ft(i,d)> tol*maxval(zt(i,:,(d-1)*timevar(1)+1)**2)) then
+                    if (ft(i,d) .GT. tol*maxval(zt(i,:,(d-1)*timevar(1)+1)**2)) then
                         call daxpy(m,vt(i,d)/ft(i,d),kt(:,i,d),1,arec,1) !a_rec = a_rec + kt(:,i,t)*vt(:,t)
                         call dsyr('u',m,-1.0d0/ft(i,d),kt(:,i,d),1,prec,m) !p_rec = p_rec - kt*kt'*ft(i,t)
                     else
@@ -148,7 +148,7 @@ meps = epsilon(meps)
                 vt(i,t) = yt(t,i) - ddot(m,zt(i,:,(t-1)*timevar(1)+1),1,arec,1)
                 call dsymv('u',m,1.0d0,prec,m,zt(i,:,(t-1)*timevar(1)+1),1,0.0d0,kt(:,i,t),1)
                 ft(i,t) = ddot(m,zt(i,:,(t-1)*timevar(1)+1),1,kt(:,i,t),1) +  ht(i,i,(t-1)*timevar(2)+1)
-                if (ft(i,t)> tol*maxval(zt(i,:,(t-1)*timevar(1)+1)**2)) then
+                if (ft(i,t) .GT. tol*maxval(zt(i,:,(t-1)*timevar(1)+1)**2)) then
                     call daxpy(m,vt(i,t)/ft(i,t),kt(:,i,t),1,arec,1) !a_rec = a_rec + kt(:,i,t)*vt(:,t)
                     call dsyr('u',m,-1.0d0/ft(i,t),kt(:,i,t),1,prec,m) !p_rec = p_rec - kt*kt'*ft(i,i,t)
                 else
@@ -177,8 +177,8 @@ meps = epsilon(meps)
         call dgemv('t',m,m,1.0d0,tt(:,:,(t-1)*timevar(3)+1),m,rrec,1,0.0d0,rhelp,1) !r_t,p=t_t-1'*r_t+1
         rrec = rhelp
         do i = p, 1 , -1
-            if(ymiss(t,i)==0) then
-                if(ft(i,t) > tol) then
+            if(ymiss(t,i).EQ.0) then
+                if(ft(i,t) .GT. 0.0d0) then
                     if(needeps) then
                         epshat(i,t) = ht(i,i,(t-1)*timevar(2)+1)*(vt(i,t)-ddot(m,kt(:,i,t),1,rrec,1))/ft(i,t)
                     end if
@@ -200,7 +200,7 @@ meps = epsilon(meps)
         rrec = rhelp
         do i = p, (j+1) , -1
             if(ymiss(t,i).EQ.0) then
-                if(ft(i,t)  > tol) then
+                if(ft(i,t) .GT. 0.0d0) then
                     if(needeps) then
                         epshat(i,t) = ht(i,i,(t-1)*timevar(2)+1)/ft(i,t)*(vt(i,t)-ddot(m,kt(:,i,t),1,rrec,1))
                     end if
@@ -215,7 +215,7 @@ meps = epsilon(meps)
         rrec1 = 0.0d0
         do i = j, 1, -1
             if(ymiss(t,i).EQ.0) then
-                if(finf(i,t)> tol) then
+                if(finf(i,t) .GT. 0.0d0) then
                     if(needeps) then
                         epshat(i,t) = -ht(i,i,(t-1)*timevar(2)+1)*ddot(m,kinf(:,i,t),1,rrec,1)/finf(i,t)
                     end if
@@ -232,7 +232,7 @@ meps = epsilon(meps)
                     call dgemv('t',m,m,1.0d0,linf,m,rrec,1,0.0d0,rhelp,1) !rt0
                     rrec = rhelp
                 else
-                    if(ft(i,t)> tol) then
+                    if(ft(i,t) .GT. 0.0d0) then
                         if(needeps) then
                             epshat(i,t) = ht(i,i,(t-1)*timevar(2)+1)*(vt(i,t)-ddot(m,kt(:,i,t),1,rrec,1))/ft(i,t)
                         end if
@@ -258,7 +258,7 @@ meps = epsilon(meps)
 
             do i = p, 1, -1
                 if(ymiss(t,i).EQ.0) then
-                    if(finf(i,t)> tol) then
+                    if(finf(i,t) .GT. 0.0d0) then
                         if(needeps) then
                             epshat(i,t) = -ht(i,i,(t-1)*timevar(2)+1)*ddot(m,kinf(:,i,t),1,rrec,1)/finf(i,t)
                         end if
@@ -275,7 +275,7 @@ meps = epsilon(meps)
                         call dgemv('t',m,m,1.0d0,linf,m,rrec,1,0.0d0,rhelp,1) !rt0
                         rrec = rhelp
                     else
-                        if(ft(i,t)> tol) then
+                        if(ft(i,t) .GT. 0.0d0) then
                             if(needeps) then
                                 epshat(i,t) = ht(i,i,(t-1)*timevar(2)+1)*(vt(i,t)-ddot(m,kt(:,i,t),1,rrec,1))/ft(i,t)
                             end if

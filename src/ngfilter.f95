@@ -41,7 +41,7 @@ convtol,nd,ndl,alphahat,alphavar,thetahat,thetavar,yhat,yvar,smootha,smooths,smo
 
     external isamplefilter, covmeanwprotect, dgemv, dsymm, dgemm, covmeanw
 
-    if(smootha==1) then
+    if(smootha.EQ.1) then
 
         call isamplefilter(yt, ymiss, timevar, zt, tt, rtv, qt, a1, p1,p1inf, u, dist, &
         p, n, m, r, theta, maxiter,rankp,convtol, nnd,nsim,epsplus,etaplus,&
@@ -56,7 +56,7 @@ convtol,nd,ndl,alphahat,alphavar,thetahat,thetavar,yhat,yvar,smootha,smooths,smo
             call covmeanwprotect(sim(:,t,:),w(t,:),m,1,4*nsim,alphahat(:,t),alphavar(:,:,t))
         end do
 
-        if(smooths==1) then
+        if(smooths.EQ.1) then
             do t = 1, n
                 call dgemv('n',p,m,1.0d0,zt(:,:,(t-1)*timevar(1)+1),p,alphahat(:,t),1,0.0d0,thetahat(:,t),1)
                 call dsymm('r','u',p,m,1.0d0,alphavar(:,:,t),m,zt(:,:,(t-1)*timevar(1)+1),p,0.0d0,pm,p)
@@ -64,7 +64,7 @@ convtol,nd,ndl,alphahat,alphavar,thetahat,thetavar,yhat,yvar,smootha,smooths,smo
             end do
         end if
 
-        if(smoothy==1) then
+        if(smoothy.EQ.1) then
             do t = 1, n
                 do j = 1,p
                     call dgemv('t',m,4*nsim,1.0d0,sim(:,t,:),m,zt(j,:,(t-1)*timevar(1)+1),1,0.0d0,osim(j,t,:),1)
@@ -102,13 +102,13 @@ convtol,nd,ndl,alphahat,alphavar,thetahat,thetavar,yhat,yvar,smootha,smooths,smo
             w(t,:) = w(t,:)/sum(w(t,:))
         end do
 
-        if(smooths==1) then
+        if(smooths.EQ.1) then
             do t=1,n
                 call covmeanwprotect(sim(:,t,:),w(t,:),p,1,4*nsim,thetahat(:,t),thetavar(:,:,t))
             end do
         end if
 
-        if(smoothy==1) then
+        if(smoothy.EQ.1) then
             do j= 1,p
                 select case(dist(j))
                     case(1)

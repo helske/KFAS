@@ -1,7 +1,7 @@
 ! Subroutine for Kalman smoothing of linear gaussian state space model
 
 subroutine gsmoothall(ymiss, timevar, zt, ht,tt, rtv, qt, p, n, m, r, d,j, at, pt, vt, ft, kt, &
-rt, rt0, rt1, nt, nt0, nt1, nt2, pinf, kinf,finf,  tol,ahat, vvt,epshat,epshatvar, &
+rt, rt0, rt1, nt, nt0, nt1, nt2, pinf, kinf,finf ,ahat, vvt,epshat,epshatvar, &
 etahat,etahatvar,thetahat,thetahatvar, ldlsignal,zorig, zorigtv,aug,state,dist,signal)
 
     implicit none
@@ -22,7 +22,6 @@ etahat,etahatvar,thetahat,thetahatvar, ldlsignal,zorig, zorigtv,aug,state,dist,s
     double precision, intent(in), dimension(m,m,d+1) ::  pinf
     double precision, intent(in),dimension(m,p,d) ::  kinf
     double precision, intent(in), dimension(p,d) ::  finf
-    double precision, intent(in) :: tol
     double precision, intent(inout), dimension(m,m,n+1) :: nt !n_1 = n_0, ..., n_201 = n_200
     double precision, intent(inout), dimension(m,n+1) :: rt !same as n, r_1 = r_0 etc.
     double precision, intent(inout), dimension(m,d+1) :: rt0,rt1
@@ -147,7 +146,7 @@ etahat,etahatvar,thetahat,thetahatvar, ldlsignal,zorig, zorigtv,aug,state,dist,s
 
         do i = j, 1, -1
             if(ymiss(t,i).EQ.0) then
-                if(finf(i,t).GT.tol) then
+                if(finf(i,t) .GT. 0.0d0) then
                     if(aug .EQ. 1 .AND. dist.EQ.1) then
                         epshat(i,t) = -ht(i,i,(t-1)*timevar(2)+1)*ddot(m,kinf(:,i,t),1,rrec,1)/finf(i,t)
                         call dgemv('n',m,m,1.0d0,nrec,m,kinf(:,i,t),1,0.0d0,rhelp,1)
@@ -246,7 +245,7 @@ etahat,etahatvar,thetahat,thetahatvar, ldlsignal,zorig, zorigtv,aug,state,dist,s
 
             do i = p, 1, -1
                 if(ymiss(t,i).EQ.0) then
-                    if(finf(i,t).GT. tol) then
+                    if(finf(i,t).GT. 0.0d0) then
                         if(aug .EQ. 1 .AND. dist.EQ.1) then
                             epshat(i,t) = -ht(i,i,(t-1)*timevar(2)+1)*ddot(m,kinf(:,i,t),1,rrec,1)/finf(i,t)
                             call dgemv('n',m,m,1.0d0,nrec,m,kinf(:,i,t),1,0.0d0,rhelp,1)
@@ -366,7 +365,7 @@ etahat,etahatvar,thetahat,thetahatvar, ldlsignal,zorig, zorigtv,aug,state,dist,s
             mm = im - mm
             call dsymm('r','u',m,m,1.0d0,pt(:,:,t),m,mm,m,0.0d0,vvt(:,:,t),m) !pt*n_t-1*pt
         end do
-!        if(m > 1) then
+!        if(m .GT. 1) then
 !            do t=1, n
 !                do i=1,m-1
 !                    vvt((i+1):m,i,t) =vvt(i,(i+1):m,t)

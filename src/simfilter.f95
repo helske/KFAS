@@ -117,10 +117,10 @@ tol,nd,ndl,sim,c,simwhat,simdim,antithetics)
         atplus=0.0d0
         call filtersimfast(yplus, ymiss, timevar, zt,tt, a1, ft,kt,&
         finf, kinf, d, j, p, m, n,tol,atplus)
-        if(simwhat==4) then
+        if(simwhat.EQ.4) then
             do t = 1, n
                 sim(:,t,i) = at(:,t) - atplus(:,t) + aplus(:,t)
-                if(antithetics == 1) then
+                if(antithetics .EQ. 1) then
                     sim(:,t,i+nsim) = at(:,t) + atplus(:,t) - aplus(:,t)
                     sim(:,t,i+2*nsim) = at(:,t)+ c(i)*(sim(:,t,i)-at(:,t))
                     sim(:,t,i+3*nsim) = at(:,t)+ c(i)*(sim(:,t,i+nsim)-at(:,t))
@@ -131,7 +131,7 @@ tol,nd,ndl,sim,c,simwhat,simdim,antithetics)
                 alphatmp(:,t,1) = at(:,t) - atplus(:,t) + aplus(:,t)
                 call dgemv('n',p,m,1.0d0,zt(:,:,(t-1)*timevar(1)+1),p,&
                 alphatmp(:,t,1),1,0.0d0,sim(:,t,i),1)
-                if(antithetics == 1) then
+                if(antithetics .EQ. 1) then
                     alphatmp(:,t,2) = at(:,t) + atplus(:,t) - aplus(:,t)
                     alphatmp(:,t,3) = at(:,t)+ c(i)*(alphatmp(:,t,1)-at(:,t))
                     alphatmp(:,t,4) = at(:,t)+ c(i)*(alphatmp(:,t,2)-at(:,t))

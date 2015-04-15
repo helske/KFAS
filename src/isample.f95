@@ -64,7 +64,7 @@ aplus1,c,tol,info,antithetics,w,sim,nd,ndl,simwhat,simdim)
 
     w=1.0d0
 
-    if(simwhat==5) then
+    if(simwhat.EQ.5) then
         do j=1,p
             select case(dist(j))
                 case(2)    !poisson

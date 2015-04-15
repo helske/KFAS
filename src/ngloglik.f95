@@ -44,12 +44,12 @@ nnd,nsim,epsplus,etaplus,aplus1,c,tol,info,antit,sim,nsim2,nd,ndl,diff,marginal)
         return
     end if
         
-    if(marginal==1) then
+    if(marginal.EQ.1) then
         j = int(sum(p1inf))
-        if(j>0) then
+        if(j.GT.0) then
             call marginalxx(p1inf,zt,tt,m,p,n,j,timevar,lik,marginal)
         end if
-        if(marginal==-1) then
+        if(marginal.EQ.-1) then
             info = 5
             return
         end if
@@ -99,7 +99,7 @@ nnd,nsim,epsplus,etaplus,aplus1,c,tol,info,antit,sim,nsim2,nd,ndl,diff,marginal)
         p1inf, nnd,nsim, epsplus, etaplus, aplus1, p, n, m, r, info2,rankp,&
         tol,nd,ndl,tsim,c,5,p,antit)
 
-        if(info2==0) then
+        if(info2.EQ.0) then
             ! Compute weights
             do j=1,p
                 select case(dist(j))

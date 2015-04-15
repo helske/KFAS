@@ -61,7 +61,7 @@ p, n, m, r,tol,rankp,thetahat,lik)
                     finf(j,d) = ddot(m,zt(j,:,(d-1)*timevar(1)+1),1,kinf(:,j,d),1)! finf
 
 
-                    if (finf(j,d) .GT. tol) then
+                    if (finf(j,d) .GT. tol*maxval(zt(j,:,(d-1)*timevar(1)+1)**2)) then
                         call daxpy(m,vt(j,d)/finf(j,d),kinf(:,j,d),1,arec,1) !a_rec = a_rec + kinf(:,i,t)*vt(:,t)/finf(j,d)
                         call dsyr('u',m,ft(j,d)/(finf(j,d)**2),kinf(:,j,d),1,prec,m) !prec = prec +  kinf*kinf'*ft/finf^2
                         call dsyr2('u',m,-1.0d0/finf(j,d),kt(:,j,d),1,kinf(:,j,d),1,prec,m) !prec = prec -(kt*kinf'+kinf*kt')/finf
@@ -72,7 +72,7 @@ p, n, m, r,tol,rankp,thetahat,lik)
 
                     else
                         finf(j,d) = 0.0d0
-                        if(ft(j,d)> tol*maxval(zt(j,:,(d-1)*timevar(1)+1)**2)) then
+                        if(ft(j,d) .GT. tol*maxval(zt(j,:,(d-1)*timevar(1)+1)**2)) then
                             call daxpy(m,vt(j,d)/ft(j,d),kt(:,j,d),1,arec,1) !a_rec = a_rec + kt(:,i,t)*vt(:,t)/ft(i,t)
                             call dsyr('u',m,(-1.0d0)/ft(j,d),kt(:,j,d),1,prec,m) !prec = prec -kt*kt'/ft
                             lik = lik - c - 0.5d0*(log(ft(j,d)) + vt(j,d)**2/ft(j,d))
@@ -113,7 +113,7 @@ p, n, m, r,tol,rankp,thetahat,lik)
                     vt(i,d) = yt(d,i) - ddot(m,zt(i,:,(d-1)*timevar(1)+1),1,arec,1) !vt
                     call dsymv('u',m,1.0d0,prec,m,zt(i,:,(d-1)*timevar(1)+1),1,0.0d0,kt(:,i,d),1) ! p symmetric!
                     ft(i,d) = ddot(m,zt(i,:,(d-1)*timevar(1)+1),1,kt(:,i,d),1)  +  ht(i,i,(d-1)*timevar(2)+1)
-                    if (ft(i,d)> tol*maxval(zt(i,:,(d-1)*timevar(1)+1)**2)) then
+                    if (ft(i,d) .GT. tol*maxval(zt(i,:,(d-1)*timevar(1)+1)**2)) then
                         call daxpy(m,vt(i,d)/ft(i,d),kt(:,i,d),1,arec,1) !a_rec = a_rec + kt(:,i,t)*vt(:,t)
                         call dsyr('u',m,-1.0d0/ft(i,d),kt(:,i,d),1,prec,m) !p_rec = p_rec - kt*kt'*ft(i,t)
                         lik = lik - 0.5d0*(log(ft(i,d)) + vt(i,d)**2/ft(i,d))-c
@@ -145,7 +145,7 @@ p, n, m, r,tol,rankp,thetahat,lik)
                 vt(i,t) = yt(t,i) - ddot(m,zt(i,:,(t-1)*timevar(1)+1),1,arec,1)
                 call dsymv('u',m,1.0d0,prec,m,zt(i,:,(t-1)*timevar(1)+1),1,0.0d0,kt(:,i,t),1)
                 ft(i,t) = ddot(m,zt(i,:,(t-1)*timevar(1)+1),1,kt(:,i,t),1) +  ht(i,i,(t-1)*timevar(2)+1)
-                if (ft(i,t)> tol*maxval(zt(i,:,(t-1)*timevar(1)+1)**2)) then
+                if (ft(i,t) .GT. tol*maxval(zt(i,:,(t-1)*timevar(1)+1)**2)) then
                     call daxpy(m,vt(i,t)/ft(i,t),kt(:,i,t),1,arec,1) !a_rec = a_rec + kt(:,i,t)*vt(:,t)
                     call dsyr('u',m,-1.0d0/ft(i,t),kt(:,i,t),1,prec,m) !p_rec = p_rec - kt*kt'*ft(i,i,t)
                     lik = lik - 0.5d0*(log(ft(i,t)) + vt(i,t)**2/ft(i,t))-c
@@ -175,8 +175,8 @@ p, n, m, r,tol,rankp,thetahat,lik)
         call dgemv('t',m,m,1.0d0,tt(:,:,(t-1)*timevar(3)+1),m,rrec,1,0.0d0,rhelp,1) !r_t,p=t_t-1'*r_t+1
         rrec = rhelp
         do i = p, 1 , -1
-            if(ymiss(t,i)==0) then
-                if(ft(i,t) >  tol) then
+            if(ymiss(t,i).EQ.0) then
+                if(ft(i,t) .GT.  0.0d0) then
                     lt = im
                     call dger(m,m,-1.0d0/ft(i,t),kt(:,i,t),1,zt(i,:,(t-1)*timevar(1)+1),1,lt,m) !l = I -kz
                     call dgemv('t',m,m,1.0d0,lt,m,rrec,1,0.0d0,rhelp,1)
@@ -194,7 +194,7 @@ p, n, m, r,tol,rankp,thetahat,lik)
         rrec = rhelp
         do i = p, (j+1) , -1
             if(ymiss(t,i).EQ.0) then
-                if(ft(i,t) .GT.  tol) then
+                if(ft(i,t) .GT.  0.0d0) then
                     lt = im
                     call dger(m,m,-1.0d0/ft(i,t),kt(:,i,t),1,zt(i,:,(t-1)*timevar(1)+1),1,lt,m) !l = i -kz
                     call dgemv('t',m,m,1.0d0,lt,m,rrec,1,0.0d0,rhelp,1)
@@ -206,7 +206,7 @@ p, n, m, r,tol,rankp,thetahat,lik)
         rrec1 = 0.0d0
         do i = j, 1, -1
             if(ymiss(t,i).EQ.0) then
-                if(finf(i,t).GT. tol) then
+                if(finf(i,t).GT. 0.0d0) then
                     linf = im
                     call dger(m,m,-1.0d0/finf(i,t),kinf(:,i,t),1,zt(i,:,(t-1)*timevar(1)+1),1,linf,m) !linf
                     rhelp = -kt(:,i,t)
@@ -221,7 +221,7 @@ p, n, m, r,tol,rankp,thetahat,lik)
                     call dgemv('t',m,m,1.0d0,linf,m,rrec,1,0.0d0,rhelp,1) !rt0
                     rrec = rhelp
                 else
-                    if(ft(i,t).GT. tol) then
+                    if(ft(i,t).GT. 0.0d0) then
                         lt= im
                         call dger(m,m,-1.0d0/ft(i,t),kt(:,i,t),1,zt(i,:,(t-1)*timevar(1)+1),1,lt,m) !lt = I -Kt*Z/Ft
                         call dgemv('t',m,m,1.0d0,lt,m,rrec,1,0.0d0,rhelp,1)
@@ -244,7 +244,7 @@ p, n, m, r,tol,rankp,thetahat,lik)
 
             do i = p, 1, -1
                 if(ymiss(t,i).EQ.0) then
-                    if(finf(i,t).GT. tol) then
+                    if(finf(i,t).GT. 0.0d0) then
                         linf = im
                         call dger(m,m,-1.0d0/finf(i,t),kinf(:,i,t),1,zt(i,:,(t-1)*timevar(1)+1),1,linf,m) !linf
                         rhelp = -kt(:,i,t)
@@ -259,7 +259,7 @@ p, n, m, r,tol,rankp,thetahat,lik)
                         call dgemv('t',m,m,1.0d0,linf,m,rrec,1,0.0d0,rhelp,1) !rt0
                         rrec = rhelp
                     else
-                        if(ft(i,t).GT.  tol) then
+                        if(ft(i,t).GT.  0.0d0) then
                             lt= im
                             call dger(m,m,-1.0d0/ft(i,t),kt(:,i,t),1,zt(i,:,(t-1)*timevar(1)+1),1,lt,m) !lt = I -Kt*Z/Ft
                             call dgemv('t',m,m,1.0d0,lt,m,rrec,1,0.0d0,rhelp,1)

@@ -18,7 +18,7 @@ subroutine marginalxx(p1inf,zt,tt,m,p,n,k,timevar,lik,info)
     a=0.0d0
     j=1
     do i=1, m
-        if(sum(p1inf(:,i))>0.0d0) then
+        if(sum(p1inf(:,i)).GT.0.0d0) then
             a(i,j) = 1.0d0
             j = j+1
         end if
@@ -31,7 +31,7 @@ subroutine marginalxx(p1inf,zt,tt,m,p,n,k,timevar,lik,info)
         call dsyrk('u','t',k,p,1.0d0,v,p,1.0d0,s,k)    
     end do
     call dpotrf('u', k, s, k, info)
-    if(info==0) then    
+    if(info.EQ.0) then    
         do i=1, k
             lik = lik + log(s(i,i))
         end do

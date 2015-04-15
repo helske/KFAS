@@ -486,7 +486,7 @@ KFS <-
                             N0 = array(0, dim = c(m, m, filterout$d + 1)), 
                             N1 = array(0, dim = c(m, m, filterout$d + 1)), 
                             N2 = array(0, dim = c(m, m, filterout$d + 1)), filterout$Pinf, filterout$Kinf, 
-                            filterout$Finf, model$tol, alphahat = array(0, dim = c(m, n)*("state" %in% smoothing)), 
+                            filterout$Finf, alphahat = array(0, dim = c(m, n)*("state" %in% smoothing)), 
                             V = array(0, dim = c(m, m, n)), 
                             epshat = array(0, dim = c(p, n)*("disturbance" %in% smoothing)), 
                             V_eps = array(0, dim = c(p, n)*("disturbance" %in% smoothing)), 

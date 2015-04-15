@@ -51,7 +51,7 @@ theta, u, ytilde, dist,maxiter,tol,rankp,convtol,diff,lik,info)
     thetaold = theta
     devold = -huge(devold)
     k=0
-    do while(k < maxiter)
+    do while(k .LT. maxiter)
 
         k=k+1
         ! compute new guess thetanew
@@ -60,15 +60,15 @@ theta, u, ytilde, dist,maxiter,tol,rankp,convtol,diff,lik,info)
         ! and log(p(theta|y))
         call pytheta(thetanew, dist, u, yt, ymiss, dev, p, n)
         if(rankp .NE. m) then
-            call pthetarest(thetanew, timevar, zt, tt, a1, p, m, n, dev, tol,kt,kinf,ft,finf,dt,jt)
+            call pthetarest(thetanew, timevar, zt, tt, a1, p, m, n, dev, kt,kinf,ft,finf,dt,jt)
         end if
         !non-finite value in linear predictor or muhat
-        if(finitex(sum(thetanew))==0 .OR. finitex(maxval(exp(thetanew)))==0 ) then 
-            if(k>1) then
+        if(finitex(sum(thetanew)).EQ.0 .OR. finitex(maxval(exp(thetanew))).EQ.0 ) then 
+            if(k .GT. 1) then
                 kk = 0
-                do while(finitex(sum(thetanew))==0 .OR. finitex(maxval(exp(thetanew)))==0)
+                do while(finitex(sum(thetanew)).EQ.0 .OR. finitex(maxval(exp(thetanew))).EQ.0)
                     kk = kk + 1
-                    if(kk>maxiter) then
+                    if(kk .GT. maxiter) then
                         info = 1
                         return
                     end if
@@ -79,7 +79,7 @@ theta, u, ytilde, dist,maxiter,tol,rankp,convtol,diff,lik,info)
 
                     call pytheta(thetanew, dist, u, yt, ymiss, dev, p, n)
                     if(rankp .NE. m) then
-                        call pthetarest(thetanew, timevar, zt, tt, a1, p, m, n, dev, tol,kt,kinf,ft,finf,dt,jt)
+                        call pthetarest(thetanew, timevar, zt, tt, a1, p, m, n, dev, kt,kinf,ft,finf,dt,jt)
                     end if
                 end do
             else !cannot correct step size as we have just began
@@ -88,12 +88,12 @@ theta, u, ytilde, dist,maxiter,tol,rankp,convtol,diff,lik,info)
             end if
         end if
 
-        if(finitex(dev)==0) then !non-finite value of objective function
-            if(k>1) then
+        if(finitex(dev).EQ.0) then !non-finite value of objective function
+            if(k .GT. 1) then
                 kk = 0
-                do while(finitex(dev)==0)
+                do while(finitex(dev).EQ.0)
                     kk = kk + 1
-                    if(kk>maxiter) then !did not find valid likelihood
+                    if(kk .GT. maxiter) then !did not find valid likelihood
                         info = 2
                         return
                     end if
@@ -104,7 +104,7 @@ theta, u, ytilde, dist,maxiter,tol,rankp,convtol,diff,lik,info)
 
                     call pytheta(thetanew, dist, u, yt, ymiss, dev, p, n)
                     if(rankp .NE. m) then
-                        call pthetarest(thetanew, timevar, zt, tt, a1, p, m, n, dev, tol,kt,kinf,ft,finf,dt,jt)
+                        call pthetarest(thetanew, timevar, zt, tt, a1, p, m, n, dev, kt,kinf,ft,finf,dt,jt)
                     end if
 
                 end do
@@ -116,9 +116,9 @@ theta, u, ytilde, dist,maxiter,tol,rankp,convtol,diff,lik,info)
 
 
         ! decreasing deviance
-        if((dev - devold)/(0.1d0 + abs(dev)) < -convtol .AND. k > 1) then
+        if((dev - devold)/(0.1d0 + abs(dev)) .LT. -convtol .AND. k  .GT.  1) then
             kk = 0
-            do while((dev - devold)/(0.1d0 + abs(dev)) < convtol .AND. kk < maxiter)
+            do while((dev - devold)/(0.1d0 + abs(dev)) .LT. convtol .AND. kk .LT. maxiter)
                 kk = kk + 1
                 ! previous theta produced too 'big' thetanew
                 ! new guess by halving the last try
@@ -128,14 +128,14 @@ theta, u, ytilde, dist,maxiter,tol,rankp,convtol,diff,lik,info)
 
                 call pytheta(thetanew, dist, u, yt, ymiss, dev, p, n)
                 if(rankp .NE. m) then
-                    call pthetarest(thetanew, timevar, zt, tt, a1, p, m, n, dev, tol,kt,kinf,ft,finf,dt,jt)
+                    call pthetarest(thetanew, timevar, zt, tt, a1, p, m, n, dev, kt,kinf,ft,finf,dt,jt)
                 end if
 
             end do
         end if
 
         diff = abs(dev - devold)/(0.1d0 + abs(dev))
-        if(diff < convtol) then !convergence
+        if(diff .LT. convtol) then !convergence
             theta=thetanew
             info=0
             exit
@@ -145,7 +145,7 @@ theta, u, ytilde, dist,maxiter,tol,rankp,convtol,diff,lik,info)
             devold = dev
         end if
     end do
-    if(maxiter==k) then
+    if(maxiter.EQ.k) then
         info=3
     end if
     maxiter=k

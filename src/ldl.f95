@@ -12,7 +12,7 @@ subroutine ldl(a,n,tol,info)
 
     do i = 1, n
         di=a(i,i)
-        if(abs(di)<=tol) then
+        if(abs(di) .LE. tol) then
             a(:,i) = 0.0d0
         else
             do j = i+1, n
@@ -27,7 +27,7 @@ subroutine ldl(a,n,tol,info)
     end do
     do i = 1,n
         a(i,(i+1):n) = 0.0d0
-        if(a(i,i)<0.0d0) then
+        if(a(i,i) .LT. 0.0d0) then
             info = -1
         end if
     end do
