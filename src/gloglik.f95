@@ -26,11 +26,11 @@ p, m, r, n, lik, tol,rankp,marginal)
     double precision, dimension(m,p) :: kt,kinf
     double precision, dimension(m,m) :: pt,pinf,mm
     double precision, dimension(m,r) :: mr    
-    double precision :: c, meps
+    double precision :: c, meps, finv
     double precision, external :: ddot
     double precision, dimension(m,m,(n-1)*max(timevar(4),timevar(5))+1) :: rqr
 
-    external dgemm, dsymm, dgemv, dsymv, daxpy, dsyr, dsyr2, marginalxx
+    external dgemm, dsymm, dgemv, dsymv, dsyr, dsyr2, marginalxx
 
     meps = epsilon(meps)
 
@@ -55,26 +55,28 @@ p, m, r, n, lik, tol,rankp,marginal)
         pinf=p1inf
         diffuse: do while(d .LT. n .AND. rankp .GT. 0)
             d = d+1
-            do j=1, p !sequential processing
+            do j=1, p
                 if(ymiss(d,j).EQ.0) then
                     vt(j) = yt(d,j) - ddot(m,zt(j,:,(d-1)*timevar(1)+1),1,arec,1)
-                    call dsymv('u',m,1.0d0,pt,m,zt(j,:,(d-1)*timevar(1)+1),1,0.0d0,kt(:,j),1) ! kt_t,i = pt_t,i*t(z_t,i)
+                    call dsymv('u',m,1.0d0,pt,m,zt(j,:,(d-1)*timevar(1)+1),1,0.0d0,kt(:,j),1)
                     ft(j) = ddot(m,zt(j,:,(d-1)*timevar(1)+1),1,kt(:,j),1)+ ht(j,j,(d-1)*timevar(2)+1)
-                    call dsymv('u',m,1.0d0,pinf,m,zt(j,:,(d-1)*timevar(1)+1),1,0.0d0,kinf(:,j),1) ! kinf_t,i = pinf_t,i*t(z_t,i)
+                    call dsymv('u',m,1.0d0,pinf,m,zt(j,:,(d-1)*timevar(1)+1),1,0.0d0,kinf(:,j),1)
                     finf(j) = ddot(m,zt(j,:,(d-1)*timevar(1)+1),1,kinf(:,j),1)
                     if (finf(j)  .GT. tol*maxval(zt(j,:,(d-1)*timevar(1)+1)**2)) then
-                        call daxpy(m,vt(j)/finf(j),kinf(:,j),1,arec,1) !a_rec = a_rec + kinf(:,i,t)*vt(:,t)/finf(j,d)
-                        call dsyr('u',m,ft(j)/finf(j)**2,kinf(:,j),1,pt,m) !pt = pt +  kinf*kinf'*ft/finf^2
-                        call dsyr2('u',m,-1.0d0/finf(j),kt(:,j),1,kinf(:,j),1,pt,m) !pt = pt -(kt*kinf'+kinf*kt')/finf
-                        call dsyr('u',m,-1.0d0/finf(j),kinf(:,j),1,pinf,m) !pirec = pirec -kinf*kinf'/finf
+                        finv = 1.0d0/finf(j)
+                        arec = arec +vt(j)*finv*kinf(:,j)
+                        call dsyr('u',m,ft(j)*finv**2,kinf(:,j),1,pt,m)
+                        call dsyr2('u',m,-finv,kt(:,j),1,kinf(:,j),1,pt,m)
+                        call dsyr('u',m,-finv,kinf(:,j),1,pinf,m)
 
                         lik = lik - 0.5d0*log(finf(j))
                         rankp = rankp -1
                     else
                         if (ft(j) .GT. tol*maxval(zt(j,:,(d-1)*timevar(1)+1)**2)) then
-                            call daxpy(m,vt(j)/ft(j),kt(:,j),1,arec,1) !a_rec = a_rec + kt(:,i,t)*vt(:,t)/ft(i,t)
-                            call dsyr('u',m,-1.0d0/ft(j),kt(:,j),1,pt,m) !pt = pt -kt*kt'/ft
-                            lik = lik - c - 0.5d0*(log(ft(j)) + vt(j)**2/ft(j))
+                            finv = 1.0d0/ft(j)
+                            arec = arec + vt(j)*finv*kt(:,j)
+                            call dsyr('u',m,-finv,kt(:,j),1,pt,m)
+                            lik = lik - c - 0.5d0*(log(ft(j)) + vt(j)**2*finv)
                         end if
                     end if
                     if(rankp .EQ. 0) then
@@ -105,10 +107,11 @@ p, m, r, n, lik, tol,rankp,marginal)
                     vt(i) = yt(d,i) - ddot(m,zt(i,:,(d-1)*timevar(1)+1),1,arec,1)
                     call dsymv('u',m,1.0d0,pt,m,zt(i,:,(d-1)*timevar(1)+1),1,0.0d0,kt(:,i),1)
                     ft(i) = ddot(m,zt(i,:,(d-1)*timevar(1)+1),1,kt(:,i),1) + ht(i,i,(d-1)*timevar(2)+1)
-                    if (ft(i).GT. tol*maxval(zt(i,:,(d-1)*timevar(1)+1)**2)) then !ft.NE.0
-                        call daxpy(m,vt(i)/ft(i),kt(:,i),1,arec,1) !a_rec = a_rec + kt(:,i,t)*vt(:,t)
-                        call dsyr('u',m,-1.0d0/ft(i),kt(:,i),1,pt,m) !p_rec = p_rec - kt*kt'*ft(i,t)
-                        lik = lik - 0.5d0*(log(ft(i)) + vt(i)**2/ft(i))-c
+                    if (ft(i).GT. tol*maxval(zt(i,:,(d-1)*timevar(1)+1)**2)) then
+                        finv = 1.0d0/ft(i)
+                        arec = arec + vt(i)*finv*kt(:,i)
+                        call dsyr('u',m,-finv,kt(:,i),1,pt,m)
+                        lik = lik - 0.5d0*(log(ft(i)) + vt(i)**2*finv)-c
                     end if
                 end if
             end do
@@ -133,9 +136,10 @@ p, m, r, n, lik, tol,rankp,marginal)
                 call dsymv('u',m,1.0d0,pt,m,zt(i,:,(t-1)*timevar(1)+1),1,0.0d0,kt(:,i),1)
                 ft(i) = ddot(m,zt(i,:,(t-1)*timevar(1)+1),1,kt(:,i),1) + ht(i,i,(t-1)*timevar(2)+1)
                 if (ft(i).GT. tol*maxval(zt(i,:,(t-1)*timevar(1)+1)**2)) then
-                    call daxpy(m,vt(i)/ft(i),kt(:,i),1,arec,1) !a_rec = a_rec + kt(:,i,t)*vt(:,t)
-                    call dsyr('u',m,-1.0d0/ft(i),kt(:,i),1,pt,m) !pt = pt - kt*kt'*ft(i,i,t)
-                    lik = lik - 0.5d0*(log(ft(i)) + vt(i)**2/ft(i))-c
+                    finv = 1.0d0/ft(i)
+                    arec = arec + vt(i)*finv*kt(:,i)
+                    call dsyr('u',m,-finv,kt(:,i),1,pt,m)
+                    lik = lik - 0.5d0*(log(ft(i)) + vt(i)**2*finv)-c
                 end if
             end if
         end do

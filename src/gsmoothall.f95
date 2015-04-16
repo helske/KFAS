@@ -43,7 +43,7 @@ etahat,etahatvar,thetahat,thetahatvar, ldlsignal,zorig, zorigtv,aug,state,dist,s
     double precision, dimension(p,n) ::  ftinv
     double precision, dimension(p,d) ::  finfinv
     double precision, external :: ddot
-    external dgemm, dsymm, dgemv, dsymv, dger, dcopy
+    external dgemm, dsymm, dgemv, dsymv, dger
 
     if(aug.EQ.1 .AND. dist.EQ.1) then
         do i = 1, p
@@ -75,22 +75,20 @@ etahat,etahatvar,thetahat,thetahatvar, ldlsignal,zorig, zorigtv,aug,state,dist,s
             if(ymiss(t,i).EQ.0) then
                 if(ft(i,t) .GT. 0.0d0) then
                     if(aug.EQ.1 .AND. dist.EQ.1) then
-                        epshat(i,t) = ht(i,i,(t-1)*timevar(2)+1)/ft(i,t)*(vt(i,t)-ddot(m,kt(:,i,t),1,rrec,1))
+                        epshat(i,t) = ht(i,i,(t-1)*timevar(2)+1)*ftinv(i,t)*(vt(i,t)-ddot(m,kt(:,i,t),1,rrec,1))
                         call dgemv('n',m,m,ftinv(i,t)**2, nrec,m,kt(:,i,t),1,0.0d0,rhelp,1)
                         epshatvar(i,t) = ht(i,i,(t-1)*timevar(2)+1)-(ht(i,i,(t-1)*timevar(2)+1)**2)*&
                         (ftinv(i,t)+ddot(m,kt(:,i,t),1,rhelp,1))
                     end if
 
-                    rhelp = -zt(i,:,(t-1)*timevar(1)+1)*ftinv(i,t)
                     l0 = im
-                    call dgemm('n','n',m,m,1,1.0d0,kt(:,i,t), m,rhelp,1,1.0d0,l0,m)
-
-
+                    call dger(m,m,-ftinv(i,t),kt(:,i,t),1,zt(i,:,(t-1)*timevar(1)+1),1,l0,m)
                     call dgemv('t',m,m,1.0d0,l0,m,rrec,1,0.0d0,rhelp,1)
                     rrec = rhelp + vt(i,t)*ftinv(i,t)*zt(i,:,(t-1)*timevar(1)+1)
-                    call dgemm('t','n',m,m,m,1.0d0,l0,m,nrec,m,0.0d0,mm,m) !n = l'nl
-                     call dgemm('n','n',m,m,m,1.0d0,mm,m,l0,m,0.0d0,nrec,m)
-                    call dger(m,m,ftinv(i,t),zt(i,:,(t-1)*timevar(1)+1),1,zt(i,:,(t-1)*timevar(1)+1),1,nrec,m) ! n = n+z'z/f
+
+                    call dgemm('t','n',m,m,m,1.0d0,l0,m,nrec,m,0.0d0,mm,m)
+                    call dgemm('n','n',m,m,m,1.0d0,mm,m,l0,m,0.0d0,nrec,m)
+                    call dger(m,m,ftinv(i,t),zt(i,:,(t-1)*timevar(1)+1),1,zt(i,:,(t-1)*timevar(1)+1),1,nrec,m)
                 end if
             end if
         end do
@@ -99,10 +97,10 @@ etahat,etahatvar,thetahat,thetahatvar, ldlsignal,zorig, zorigtv,aug,state,dist,s
         nt(:,:,t) = nrec !n_t-1 = n_t,0
 
         if(t.GT. 1) then
-            call dgemv('t',m,m,1.0d0,tt(:,:,(t-2)*timevar(3)+1),m,rrec,1,0.0d0,rhelp,1) !r_t,p=t_t-1'*r_t+1
+            call dgemv('t',m,m,1.0d0,tt(:,:,(t-2)*timevar(3)+1),m,rrec,1,0.0d0,rhelp,1)
             rrec = rhelp
-            call dsymm('l','u',m,m,1.0d0,nrec,m,tt(:,:,(t-2)*timevar(3)+1),m,0.0d0,mm,m) !n*t
-            call dgemm('t','n',m,m,m,1.0d0,tt(:,:,(t-2)*timevar(3)+1),m,mm,m,0.0d0,nrec,m) !n_t,p = t'nt
+            call dsymm('l','u',m,m,1.0d0,nrec,m,tt(:,:,(t-2)*timevar(3)+1),m,0.0d0,mm,m)
+            call dgemm('t','n',m,m,m,1.0d0,tt(:,:,(t-2)*timevar(3)+1),m,mm,m,0.0d0,nrec,m)
         end if
 
     end do
@@ -117,21 +115,18 @@ etahat,etahatvar,thetahat,thetahatvar, ldlsignal,zorig, zorigtv,aug,state,dist,s
             if(ymiss(t,i).EQ.0) then
                 if(ft(i,t) .GT. 0.0d0) then
                     if(aug .EQ. 1 .AND. dist.EQ.1) then
-                        epshat(i,t) = ht(i,i,(t-1)*timevar(2)+1)/ft(i,t)*(vt(i,t)-ddot(m,kt(:,i,t),1,rrec,1))
+                        epshat(i,t) = ht(i,i,(t-1)*timevar(2)+1)*ftinv(i,t)*(vt(i,t)-ddot(m,kt(:,i,t),1,rrec,1))
                         call dgemv('n',m,m,ftinv(i,t)**2,nrec,m,kt(:,i,t),1,0.0d0,rhelp,1)
                         epshatvar(i,t) = ht(i,i,(t-1)*timevar(2)+1)-(ht(i,i,(t-1)*timevar(2)+1)**2)*&
                         (ftinv(i,t)+ddot(m,kt(:,i,t),1,rhelp,1))
                     end if
 
-                    rhelp = -zt(i,:,(t-1)*timevar(1)+1)*ftinv(i,t)
                     l0 = im
-                    call dgemm('n','n',m,m,1,1.0d0,kt(:,i,t),&
-                    m,rhelp,1,1.0d0,l0,m)
-
-
+                    call dger(m,m,-ftinv(i,t),kt(:,i,t),1,zt(i,:,(t-1)*timevar(1)+1),1,l0,m)
                     call dgemv('t',m,m,1.0d0,l0,m,rrec,1,0.0d0,rhelp,1)
                     rrec = rhelp + vt(i,t)*ftinv(i,t)*zt(i,:,(t-1)*timevar(1)+1)
-                    call dgemm('t','n',m,m,m,1.0d0,l0,m,nrec,m,0.0d0,mm,m) !n = l'nl
+
+                    call dgemm('t','n',m,m,m,1.0d0,l0,m,nrec,m,0.0d0,mm,m)
                     call dgemm('n','n',m,m,m,1.0d0,mm,m,l0,m,0.0d0,nrec,m)
                     call dgemm('t','n',m,m,1,1.0d0,zt(i,:,(t-1)*timevar(1)+1),&
                     1,zt(i,:,(t-1)*timevar(1)+1),1,0.0d0,mm,m)
@@ -148,72 +143,75 @@ etahat,etahatvar,thetahat,thetahatvar, ldlsignal,zorig, zorigtv,aug,state,dist,s
             if(ymiss(t,i).EQ.0) then
                 if(finf(i,t) .GT. 0.0d0) then
                     if(aug .EQ. 1 .AND. dist.EQ.1) then
-                        epshat(i,t) = -ht(i,i,(t-1)*timevar(2)+1)*ddot(m,kinf(:,i,t),1,rrec,1)/finf(i,t)
+                        epshat(i,t) = -ht(i,i,(t-1)*timevar(2)+1)*ddot(m,kinf(:,i,t),1,rrec,1)*finfinv(i,t)
                         call dgemv('n',m,m,1.0d0,nrec,m,kinf(:,i,t),1,0.0d0,rhelp,1)
                         epshatvar(i,t) = ht(i,i,(t-1)*timevar(2)+1)-(ht(i,i,(t-1)*timevar(2)+1)**2)*&
-                        ddot(m,kinf(:,i,t),1,rhelp,1)/finf(i,t)**2
+                        ddot(m,kinf(:,i,t),1,rhelp,1)*finfinv(i,t)**2
                     end if
 
 
                     linf = im
-                    rhelp = -zt(i,:,(t-1)*timevar(1)+1)*finfinv(i,t)
-                    call dger(m,m,1.0d0,kinf(:,i,t),1,rhelp,1,linf,m)
+                    call dger(m,m,-finfinv(i,t),kinf(:,i,t),1,zt(i,:,(t-1)*timevar(1)+1),1,linf,m)
 
-                    rhelp = (kinf(:,i,t)*ft(i,t)*finfinv(i,t)-kt(:,i,t))*finfinv(i,t)
+                    rhelp = kinf(:,i,t)*ft(i,t)*finfinv(i,t) - kt(:,i,t)
                     l0=0.0d0
-                    call dger(m,m,1.0d0,rhelp,1,zt(i,:,(t-1)*timevar(1)+1),1,l0,m) !l0=  (-kt + ft/finf*kinf)*z/finf
+                    call dger(m,m,finfinv(i,t),rhelp,1,zt(i,:,(t-1)*timevar(1)+1),1,l0,m)
 
                     call dgemv('t',m,m,1.0d0,linf,m,rrec1,1,0.0d0,rhelp,1) !rt1
-                    rrec1 = rhelp + zt(i,:,(t-1)*timevar(1)+1)*vt(i,t)*finfinv(i,t)
+                    rrec1 = rhelp
                     call dgemv('t',m,m,1.0d0,l0,m,rrec,1,1.0d0,rrec1,1)
+                    rrec1 = rrec1 + vt(i,t)*finfinv(i,t)*zt(i,:,(t-1)*timevar(1)+1)
+
                     call dgemv('t',m,m,1.0d0,linf,m,rrec,1,0.0d0,rhelp,1) !rt0
                     rrec = rhelp
 
-                    call dgemm('t','n',m,m,m,1.0d0,linf,m,nrec2,m,0.0d0,mm,m) !mm =linf'*nt2
-                    call dgemm('n','n',m,m,m,1.0d0,mm,m,linf,m,0.0d0,nrec2,m) !nt2 = linf'*nt2*linf
-                    call dger(m,m,-1.0d0*ft(i,t)*finfinv(i,t)**2.0d0,zt(i,:,(t-1)*timevar(1)+1)&
-                    ,1,zt(i,:,(t-1)*timevar(1)+1),1,nrec2,m) !nt2 = linf'nt2'linf + z'z*ft/finf^2
-                    call dgemm('t','n',m,m,m,1.0d0,l0,m,nrec,m,0.0d0,mm,m) !mm= nt0*l0
-                    call dgemm('n','n',m,m,m,1.0d0,mm,m,l0,m,1.0d0,nrec2,m) !nt2 = linf'nt2'linf + z'z*ft/finf^2 + l0'*nt0*l0
+                    call dgemm('t','n',m,m,m,1.0d0,linf,m,nrec2,m,0.0d0,mm,m)
+                    call dgemm('n','n',m,m,m,1.0d0,mm,m,linf,m,0.0d0,nrec2,m)
+                    call dger(m,m,-ft(i,t)*finfinv(i,t)**2.0d0,zt(i,:,(t-1)*timevar(1)+1)&
+                    ,1,zt(i,:,(t-1)*timevar(1)+1),1,nrec2,m)
+                    call dgemm('t','n',m,m,m,1.0d0,l0,m,nrec,m,0.0d0,mm,m)
+                    call dgemm('n','n',m,m,m,1.0d0,mm,m,l0,m,1.0d0,nrec2,m)
 
-                    call dgemm('t','n',m,m,m,1.0d0,linf,m,nrec1,m,0.0d0,mm,m) !mm = linf'*nt1
-                    call dgemm('n','n',m,m,m,1.0d0,mm,m,l0,m,0.0d0,mm2,m) !nt2 = nt2 + linf'*nt1*l0
+                    call dgemm('t','n',m,m,m,1.0d0,linf,m,nrec1,m,0.0d0,mm,m)
+                    call dgemm('n','n',m,m,m,1.0d0,mm,m,l0,m,0.0d0,mm2,m)
                     nrec2 = nrec2 +mm2 + transpose(mm2)
 
-                    call dgemm('t','n',m,m,m,1.0d0,linf,m,nrec1,m,0.0d0,mm,m) !mm = linf'*nt1
-                    call dgemm('n','n',m,m,m,1.0d0,mm,m,linf,m,0.0d0,nrec1,m) !nt1 = mm*linf
+                    call dgemm('t','n',m,m,m,1.0d0,linf,m,nrec1,m,0.0d0,mm,m)
+                    call dgemm('n','n',m,m,m,1.0d0,mm,m,linf,m,0.0d0,nrec1,m)
 
                     call dger(m,m,finfinv(i,t),zt(i,:,(t-1)*timevar(1)+1),1,zt(i,:,(t-1)*timevar(1)+1),1,nrec1,m)
-                    !nt1 = linf'nt1'linf + z'z/finf
-                    call dgemm('t','n',m,m,m,1.0d0,l0,m,nrec,m,0.0d0,mm,m) !mm= nt0*linf
-                    call dgemm('n','n',m,m,m,1.0d0,mm,m,linf,m,1.0d0,nrec1,m) !nt1 = l0'*nt0*linf+ linf'nt1*linf + z'z/finf
+                    call dgemm('t','n',m,m,m,1.0d0,l0,m,nrec,m,0.0d0,mm,m)
+                    call dgemm('n','n',m,m,m,1.0d0,mm,m,linf,m,1.0d0,nrec1,m)
 
-                    call dgemm('t','n',m,m,m,1.0d0,linf,m,nrec,m,0.0d0,mm,m) !mm= nt0*linf
+                    call dgemm('t','n',m,m,m,1.0d0,linf,m,nrec,m,0.0d0,mm,m)
                     call dgemm('n','n',m,m,m,1.0d0,mm,m,linf,m,0.0d0,nrec,m)
 
                 else
                     if(ft(i,t).GT.0.0d0) then
                         if(aug .EQ. 1 .AND. dist.EQ.1) then
-                            epshat(i,t) = ht(i,i,(t-1)*timevar(2)+1)*(vt(i,t)/ft(i,t)-&
-                            ddot(m,kt(:,i,t),1,rrec,1)/ft(i,t))
+                            epshat(i,t) = ht(i,i,(t-1)*timevar(2)+1)*(vt(i,t)*ftinv(i,t)-&
+                            ddot(m,kt(:,i,t),1,rrec,1)*ftinv(i,t))
                             call dgemv('n',m,m,1.0d0,nrec,m,kt(:,i,t),1,0.0d0,rhelp,1)
                             epshatvar(i,t) = ht(i,i,(t-1)*timevar(2)+1)-(ht(i,i,(t-1)*timevar(2)+1)**2)*&
-                            (ftinv(i,t)+ddot(m,kt(:,i,t),1,rhelp,1)/ft(i,t)**2)
+                            (ftinv(i,t)+ddot(m,kt(:,i,t),1,rhelp,1)*ftinv(i,t)**2)
                         end if
-                        l0= im
-                        call dger(m,m,-ftinv(i,t),kt(:,i,t),1,zt(i,:,(t-1)*timevar(1)+1),1,l0,m) !l0 = I -Kt*Z/Ft
-                        call dgemv('t',m,m,1.0d0,l0,m,rrec,1,0.0d0,rhelp,1)
-                        rrec = rhelp+zt(i,:,(t-1)*timevar(1)+1)*vt(i,t)*ftinv(i,t)
-                        call dgemv('t',m,m,1.0d0,l0,m,rrec1,1,0.0d0,rhelp,1)
-                        rrec1=rhelp
+                        l0 = im
+                        call dger(m,m,-ftinv(i,t),kt(:,i,t),1,zt(i,:,(t-1)*timevar(1)+1),1,l0,m) !lt = I -Kt*Z/Ft
 
-                        call dgemm('t','n',m,m,m,1.0d0,l0,m,nrec,m,0.0d0,mm,m) !mm =l0'*nt0
-                        call dgemm('n','n',m,m,m,1.0d0,mm,m,l0,m,0.0d0,nrec,m) !nt0 = l0'*nt0*l0
+                        call dgemv('t',m,m,1.0d0,l0,m,rrec,1,0.0d0,rhelp,1) !r0
+                        rrec = rhelp + vt(i,t)*ftinv(i,t)*zt(i,:,(t-1)*timevar(1)+1)   !!r0 = Z'vt/Ft - Lt'r0
+
+                        call dgemv('t',m,m,1.0d0,l0,m,rrec1,1,0.0d0,rhelp,1) !r1
+                        rrec1 = rhelp
+
+
+                        call dgemm('t','n',m,m,m,1.0d0,l0,m,nrec,m,0.0d0,mm,m)
+                        call dgemm('n','n',m,m,m,1.0d0,mm,m,l0,m,0.0d0,nrec,m)
                         call dger(m,m,ftinv(i,t),zt(i,:,(t-1)*timevar(1)+1),1,&
-                        zt(i,:,(t-1)*timevar(1)+1),1,nrec,m)  !nt0 = z'z/ft+l0'*nt0*l0
-                        call dgemm('n','n',m,m,m,1.0d0,nrec1,m,l0,m,0.0d0,mm,m) !mm = nt1*l0
+                        zt(i,:,(t-1)*timevar(1)+1),1,nrec,m)
+                        call dgemm('n','n',m,m,m,1.0d0,nrec1,m,l0,m,0.0d0,mm,m)
                         nrec1 = mm
-                        call dgemm('n','n',m,m,m,1.0d0,nrec2,m,l0,m,0.0d0,mm,m) !mm = nt1*l0
+                        call dgemm('n','n',m,m,m,1.0d0,nrec2,m,l0,m,0.0d0,mm,m)
                         nrec2 = mm
                     end if
                 end if
@@ -232,13 +230,12 @@ etahat,etahatvar,thetahat,thetahatvar, ldlsignal,zorig, zorigtv,aug,state,dist,s
             rrec = rhelp
             call dgemv('t',m,m,1.0d0,tt(:,:,(t-2)*timevar(3)+1),m,rrec1,1,0.0d0,rhelp,1)
             rrec1 = rhelp
-            call dgemm('t','n',m,m,m,1.0d0,tt(:,:,(t-2)*timevar(3)+1),m,nrec,m,0.0d0,mm,m) !n*t
-            call dgemm('n','n',m,m,m,1.0d0,mm,m,tt(:,:,(t-2)*timevar(3)+1),m,0.0d0,nrec,m) !n_t,p = t'nt
-            call dgemm('t','n',m,m,m,1.0d0,tt(:,:,(t-2)*timevar(3)+1),m,nrec1,m,0.0d0,mm,m) !n*t
-            call dgemm('n','n',m,m,m,1.0d0,mm,m,tt(:,:,(t-2)*timevar(3)+1),m,0.0d0,nrec1,m) !n_t,p = t'nt
-            call dgemm('t','n',m,m,m,1.0d0,tt(:,:,(t-2)*timevar(3)+1),m,nrec2,m,0.0d0,mm,m) !n*t
-            call dgemm('n','n',m,m,m,1.0d0,mm,m,tt(:,:,(t-2)*timevar(3)+1),m,0.0d0,nrec2,m) !n_t,p = t'nt
-
+            call dgemm('t','n',m,m,m,1.0d0,tt(:,:,(t-2)*timevar(3)+1),m,nrec,m,0.0d0,mm,m)
+            call dgemm('n','n',m,m,m,1.0d0,mm,m,tt(:,:,(t-2)*timevar(3)+1),m,0.0d0,nrec,m)
+            call dgemm('t','n',m,m,m,1.0d0,tt(:,:,(t-2)*timevar(3)+1),m,nrec1,m,0.0d0,mm,m)
+            call dgemm('n','n',m,m,m,1.0d0,mm,m,tt(:,:,(t-2)*timevar(3)+1),m,0.0d0,nrec1,m)
+            call dgemm('t','n',m,m,m,1.0d0,tt(:,:,(t-2)*timevar(3)+1),m,nrec2,m,0.0d0,mm,m)
+            call dgemm('n','n',m,m,m,1.0d0,mm,m,tt(:,:,(t-2)*timevar(3)+1),m,0.0d0,nrec2,m)
         end if
 
         do t=(d-1), 1, -1
@@ -247,71 +244,74 @@ etahat,etahatvar,thetahat,thetahatvar, ldlsignal,zorig, zorigtv,aug,state,dist,s
                 if(ymiss(t,i).EQ.0) then
                     if(finf(i,t).GT. 0.0d0) then
                         if(aug .EQ. 1 .AND. dist.EQ.1) then
-                            epshat(i,t) = -ht(i,i,(t-1)*timevar(2)+1)*ddot(m,kinf(:,i,t),1,rrec,1)/finf(i,t)
+                            epshat(i,t) = -ht(i,i,(t-1)*timevar(2)+1)*ddot(m,kinf(:,i,t),1,rrec,1)*finfinv(i,t)
                             call dgemv('n',m,m,1.0d0,nrec,m,kinf(:,i,t),1,0.0d0,rhelp,1)
                             epshatvar(i,t) = ht(i,i,(t-1)*timevar(2)+1)-(ht(i,i,(t-1)*timevar(2)+1)**2)*&
-                            ddot(m,kinf(:,i,t),1,rhelp,1)/finf(i,t)**2
+                            ddot(m,kinf(:,i,t),1,rhelp,1)*finfinv(i,t)**2
                         end if
 
                         linf = im
-                        rhelp = -zt(i,:,(t-1)*timevar(1)+1)*finfinv(i,t)
-                        call dger(m,m,1.0d0,kinf(:,i,t),1,rhelp,1,linf,m)
+                        call dger(m,m,-finfinv(i,t),kinf(:,i,t),1,zt(i,:,(t-1)*timevar(1)+1),1,linf,m)
 
-                        rhelp = (kinf(:,i,t)*ft(i,t)*finfinv(i,t)-kt(:,i,t))*finfinv(i,t)
+                        rhelp = kinf(:,i,t)*ft(i,t)*finfinv(i,t) - kt(:,i,t)
                         l0=0.0d0
-                        call dger(m,m,1.0d0,rhelp,1,zt(i,:,(t-1)*timevar(1)+1),1,l0,m) !l0=  (-kt + ft/finf*kinf)*z/finf
+                        call dger(m,m,finfinv(i,t),rhelp,1,zt(i,:,(t-1)*timevar(1)+1),1,l0,m)
 
                         call dgemv('t',m,m,1.0d0,linf,m,rrec1,1,0.0d0,rhelp,1) !rt1
-                        rrec1 = rhelp + zt(i,:,(t-1)*timevar(1)+1)*vt(i,t)*finfinv(i,t)
+                        rrec1 = rhelp
                         call dgemv('t',m,m,1.0d0,l0,m,rrec,1,1.0d0,rrec1,1)
+                        rrec1 = rrec1 + vt(i,t)*finfinv(i,t)*zt(i,:,(t-1)*timevar(1)+1)
+
                         call dgemv('t',m,m,1.0d0,linf,m,rrec,1,0.0d0,rhelp,1) !rt0
                         rrec = rhelp
 
-                        call dgemm('t','n',m,m,m,1.0d0,linf,m,nrec2,m,0.0d0,mm,m) !mm =linf'*nt2
-                        call dgemm('n','n',m,m,m,1.0d0,mm,m,linf,m,0.0d0,nrec2,m) !nt2 = linf'*nt2*linf
-                        call dger(m,m,-1.0d0*ft(i,t)*finfinv(i,t)**2.0d0,zt(i,:,(t-1)*timevar(1)+1)&
-                        ,1,zt(i,:,(t-1)*timevar(1)+1),1,nrec2,m) !nt2 = linf'nt2'linf + z'z*ft/finf^2
-                        call dgemm('t','n',m,m,m,1.0d0,l0,m,nrec,m,0.0d0,mm,m) !mm= nt0*l0
-                        call dgemm('n','n',m,m,m,1.0d0,mm,m,l0,m,1.0d0,nrec2,m) !nt2 = linf'nt2'linf + z'z*ft/finf^2 + l0'*nt0*l0
 
-                        call dgemm('t','n',m,m,m,1.0d0,linf,m,nrec1,m,0.0d0,mm,m) !mm = linf'*nt1
-                        call dgemm('n','n',m,m,m,1.0d0,mm,m,l0,m,0.0d0,mm2,m) !nt2 = nt2 + linf'*nt1*l0
+                        call dgemm('t','n',m,m,m,1.0d0,linf,m,nrec2,m,0.0d0,mm,m)
+                        call dgemm('n','n',m,m,m,1.0d0,mm,m,linf,m,0.0d0,nrec2,m)
+                        call dger(m,m,-ft(i,t)*finfinv(i,t)**2.0d0,zt(i,:,(t-1)*timevar(1)+1)&
+                        ,1,zt(i,:,(t-1)*timevar(1)+1),1,nrec2,m)
+                        call dgemm('t','n',m,m,m,1.0d0,l0,m,nrec,m,0.0d0,mm,m)
+                        call dgemm('n','n',m,m,m,1.0d0,mm,m,l0,m,1.0d0,nrec2,m)
+
+                        call dgemm('t','n',m,m,m,1.0d0,linf,m,nrec1,m,0.0d0,mm,m)
+                        call dgemm('n','n',m,m,m,1.0d0,mm,m,l0,m,0.0d0,mm2,m)
                         nrec2 = nrec2 +mm2 + transpose(mm2)
 
-                        call dgemm('t','n',m,m,m,1.0d0,linf,m,nrec1,m,0.0d0,mm,m) !mm = linf'*nt1
-                        call dgemm('n','n',m,m,m,1.0d0,mm,m,linf,m,0.0d0,nrec1,m) !nt1 = mm*linf
+                        call dgemm('t','n',m,m,m,1.0d0,linf,m,nrec1,m,0.0d0,mm,m)
+                        call dgemm('n','n',m,m,m,1.0d0,mm,m,linf,m,0.0d0,nrec1,m)
 
                         call dger(m,m,finfinv(i,t),zt(i,:,(t-1)*timevar(1)+1),1,zt(i,:,(t-1)*timevar(1)+1),1,nrec1,m)
-                        !nt1 = linf'nt1'linf + z'z/finf
-                        call dgemm('t','n',m,m,m,1.0d0,l0,m,nrec,m,0.0d0,mm,m) !mm= nt0*linf
-                        call dgemm('n','n',m,m,m,1.0d0,mm,m,linf,m,1.0d0,nrec1,m) !nt1 = l0'*nt0*linf+ linf'nt1*linf + z'z/finf
+                        call dgemm('t','n',m,m,m,1.0d0,l0,m,nrec,m,0.0d0,mm,m)
+                        call dgemm('n','n',m,m,m,1.0d0,mm,m,linf,m,1.0d0,nrec1,m)
 
-                        call dgemm('t','n',m,m,m,1.0d0,linf,m,nrec,m,0.0d0,mm,m) !mm= nt0*linf
+                        call dgemm('t','n',m,m,m,1.0d0,linf,m,nrec,m,0.0d0,mm,m)
                         call dgemm('n','n',m,m,m,1.0d0,mm,m,linf,m,0.0d0,nrec,m)
 
                     else
-                        if(ft(i,t).GT.0.0d0) then !lis?tty 12.1.2012
+                        if(ft(i,t).GT.0.0d0) then
                             if(aug .EQ. 1 .AND. dist.EQ.1) then
-                                epshat(i,t) = ht(i,i,(t-1)*timevar(2)+1)*(vt(i,t)/ft(i,t)-&
-                                ddot(m,kt(:,i,t),1,rrec,1)/ft(i,t))
+                                epshat(i,t) = ht(i,i,(t-1)*timevar(2)+1)*(vt(i,t)*ftinv(i,t)-&
+                                ddot(m,kt(:,i,t),1,rrec,1)*ftinv(i,t))
                                 call dgemv('n',m,m,1.0d0,nrec,m,kt(:,i,t),1,0.0d0,rhelp,1)
                                 epshatvar(i,t) = ht(i,i,(t-1)*timevar(2)+1)-(ht(i,i,(t-1)*timevar(2)+1)**2)*&
-                                (ftinv(i,t)+ddot(m,kt(:,i,t),1,rhelp,1)/ft(i,t)**2 )
+                                (ftinv(i,t)+ddot(m,kt(:,i,t),1,rhelp,1)*ftinv(i,t)**2 )
                             end if
-                            l0= im
-                            call dger(m,m,-ftinv(i,t),kt(:,i,t),1,zt(i,:,(t-1)*timevar(1)+1),1,l0,m) !l0 = I -Kt*Z/Ft
-                            call dgemv('t',m,m,1.0d0,l0,m,rrec,1,0.0d0,rhelp,1)
-                            rrec = rhelp+zt(i,:,(t-1)*timevar(1)+1)*vt(i,t)*ftinv(i,t)
-                            call dgemv('t',m,m,1.0d0,l0,m,rrec1,1,0.0d0,rhelp,1)
-                            rrec1=rhelp
+                            l0 = im
+                            call dger(m,m,-ftinv(i,t),kt(:,i,t),1,zt(i,:,(t-1)*timevar(1)+1),1,l0,m) !lt = I -Kt*Z/Ft
 
-                            call dgemm('t','n',m,m,m,1.0d0,l0,m,nrec,m,0.0d0,mm,m) !mm =l0'*nt0
-                            call dgemm('n','n',m,m,m,1.0d0,mm,m,l0,m,0.0d0,nrec,m) !nt0 = l0'*nt0*l0
+                            call dgemv('t',m,m,1.0d0,l0,m,rrec,1,0.0d0,rhelp,1) !r0
+                            rrec = rhelp + vt(i,t)*ftinv(i,t)*zt(i,:,(t-1)*timevar(1)+1)   !!r0 = Z'vt/Ft - Lt'r0
+
+                            call dgemv('t',m,m,1.0d0,l0,m,rrec1,1,0.0d0,rhelp,1) !r1
+                            rrec1 = rhelp
+
+                            call dgemm('t','n',m,m,m,1.0d0,l0,m,nrec,m,0.0d0,mm,m)
+                            call dgemm('n','n',m,m,m,1.0d0,mm,m,l0,m,0.0d0,nrec,m)
                             call dger(m,m,ftinv(i,t),zt(i,:,(t-1)*timevar(1)+1),1,&
-                            zt(i,:,(t-1)*timevar(1)+1),1,nrec,m)  !nt0 = z'z/ft+l0'*nt0*l0
-                            call dgemm('n','n',m,m,m,1.0d0,nrec1,m,l0,m,0.0d0,mm,m) !mm = nt1*l0
+                            zt(i,:,(t-1)*timevar(1)+1),1,nrec,m)
+                            call dgemm('n','n',m,m,m,1.0d0,nrec1,m,l0,m,0.0d0,mm,m)
                             nrec1 = mm
-                            call dgemm('n','n',m,m,m,1.0d0,nrec2,m,l0,m,0.0d0,mm,m) !mm = nt1*l0
+                            call dgemm('n','n',m,m,m,1.0d0,nrec2,m,l0,m,0.0d0,mm,m)
                             nrec2 = mm
                         end if
                     end if
@@ -331,12 +331,12 @@ etahat,etahatvar,thetahat,thetahatvar, ldlsignal,zorig, zorigtv,aug,state,dist,s
                 rrec = rhelp
                 call dgemv('t',m,m,1.0d0,tt(:,:,(t-2)*timevar(3)+1),m,rrec1,1,0.0d0,rhelp,1)
                 rrec1 = rhelp
-                call dgemm('t','n',m,m,m,1.0d0,tt(:,:,(t-2)*timevar(3)+1),m,nrec,m,0.0d0,mm,m) !n*t
-                call dgemm('n','n',m,m,m,1.0d0,mm,m,tt(:,:,(t-2)*timevar(3)+1),m,0.0d0,nrec,m) !n_t,p = t'nt
-                call dgemm('t','n',m,m,m,1.0d0,tt(:,:,(t-2)*timevar(3)+1),m,nrec1,m,0.0d0,mm,m) !n*t
-                call dgemm('n','n',m,m,m,1.0d0,mm,m,tt(:,:,(t-2)*timevar(3)+1),m,0.0d0,nrec1,m) !n_t,p = t'nt
-                call dgemm('t','n',m,m,m,1.0d0,tt(:,:,(t-2)*timevar(3)+1),m,nrec2,m,0.0d0,mm,m) !n*t
-                call dgemm('n','n',m,m,m,1.0d0,mm,m,tt(:,:,(t-2)*timevar(3)+1),m,0.0d0,nrec2,m) !n_t,p = t'nt
+                call dgemm('t','n',m,m,m,1.0d0,tt(:,:,(t-2)*timevar(3)+1),m,nrec,m,0.0d0,mm,m)
+                call dgemm('n','n',m,m,m,1.0d0,mm,m,tt(:,:,(t-2)*timevar(3)+1),m,0.0d0,nrec,m)
+                call dgemm('t','n',m,m,m,1.0d0,tt(:,:,(t-2)*timevar(3)+1),m,nrec1,m,0.0d0,mm,m)
+                call dgemm('n','n',m,m,m,1.0d0,mm,m,tt(:,:,(t-2)*timevar(3)+1),m,0.0d0,nrec1,m)
+                call dgemm('t','n',m,m,m,1.0d0,tt(:,:,(t-2)*timevar(3)+1),m,nrec2,m,0.0d0,mm,m)
+                call dgemm('n','n',m,m,m,1.0d0,mm,m,tt(:,:,(t-2)*timevar(3)+1),m,0.0d0,nrec2,m)
             end if
 
 
@@ -350,28 +350,21 @@ etahat,etahatvar,thetahat,thetahatvar, ldlsignal,zorig, zorigtv,aug,state,dist,s
             call dsymv('u',m,1.0d0,pinf(:,:,t),m,rt1(:,t),1,1.0d0,ahat(:,t),1)
 
             vvt(:,:,t) = pt(:,:,t)
-            call dsymm('l','u',m,m,1.0d0,pt(:,:,t),m,nt0(:,:,t),m,0.0d0,mm,m) !mm = pt*nt0
-            call dsymm('r','u',m,m,-1.0d0,pt(:,:,t),m,mm,m,1.0d0,vvt(:,:,t),m) !vvt = pt - pt*nt0*pt
-            call dsymm('l','u',m,m,1.0d0,pinf(:,:,t),m,nt1(:,:,t),m,0.0d0,mm,m) !mm = pinf*nt1
-            call dsymm('r','u',m,m,-1.0d0,pt(:,:,t),m,mm,m,0.0d0,mm2,m) !mm2 = -pinf*nt1*pt
-            vvt(:,:,t) = vvt(:,:,t) + mm2 + transpose(mm2) !vvt = pt - pt*nt0*pt  -pinf*nt1*pt - t(pinf*nt1*pt)
-            call dsymm('l','u',m,m,1.0d0,pinf(:,:,t),m,nt2(:,:,t),m,0.0d0,mm,m) !mm = pinf*nt2
-            call dsymm('r','u',m,m,-1.0d0,pinf(:,:,t),m,mm,m,1.0d0,vvt(:,:,t),m) !vvt = vvt - pinf*nt2*pinf
+            call dsymm('l','u',m,m,1.0d0,pt(:,:,t),m,nt0(:,:,t),m,0.0d0,mm,m)
+            call dsymm('r','u',m,m,-1.0d0,pt(:,:,t),m,mm,m,1.0d0,vvt(:,:,t),m)
+            call dsymm('l','u',m,m,1.0d0,pinf(:,:,t),m,nt1(:,:,t),m,0.0d0,mm,m)
+            call dsymm('r','u',m,m,-1.0d0,pt(:,:,t),m,mm,m,0.0d0,mm2,m)
+            vvt(:,:,t) = vvt(:,:,t) + mm2 + transpose(mm2)
+            call dsymm('l','u',m,m,1.0d0,pinf(:,:,t),m,nt2(:,:,t),m,0.0d0,mm,m)
+            call dsymm('r','u',m,m,-1.0d0,pinf(:,:,t),m,mm,m,1.0d0,vvt(:,:,t),m)
         end do
         do t = d+1, n
             ahat(:,t) = at(:,t)
-            call dsymv('u',m,1.0d0,pt(:,:,t),m,rt(:,t),1,1.0d0,ahat(:,t),1) !ahat = ahat+pt*r_t-1
-            call dsymm('l','u',m,m,1.0d0,pt(:,:,t),m,nt(:,:,t),m,0.0d0,mm,m) !pt*n_t-1
+            call dsymv('u',m,1.0d0,pt(:,:,t),m,rt(:,t),1,1.0d0,ahat(:,t),1)
+            call dsymm('l','u',m,m,1.0d0,pt(:,:,t),m,nt(:,:,t),m,0.0d0,mm,m)
             mm = im - mm
-            call dsymm('r','u',m,m,1.0d0,pt(:,:,t),m,mm,m,0.0d0,vvt(:,:,t),m) !pt*n_t-1*pt
+            call dsymm('r','u',m,m,1.0d0,pt(:,:,t),m,mm,m,0.0d0,vvt(:,:,t),m)
         end do
-!        if(m .GT. 1) then
-!            do t=1, n
-!                do i=1,m-1
-!                    vvt((i+1):m,i,t) =vvt(i,(i+1):m,t)
-!                end do
-!            end do
-!        end if
     end if
 
     if(dist.EQ.1) then
@@ -380,7 +373,7 @@ etahat,etahatvar,thetahat,thetahatvar, ldlsignal,zorig, zorigtv,aug,state,dist,s
             call dsymv('u',r,1.0d0,qt(:,:,(t-1)*timevar(5)+1),r,help,1,0.0d0,etahat(:,t),1)
             etahatvar(:,:,t) = qt(:,:,(t-1)*timevar(5)+1)
             call dsymm('r','u',m,r,1.0d0,qt(:,:,(t-1)*timevar(5)+1),r,rtv(:,:,(t-1)*timevar(4)+1),m,0.0d0,mr,m)
-             call dsymm('l','u',m,r,1.0d0,nt0(:,:,t+1),m,mr,m,0.0d0,mr2,m)
+            call dsymm('l','u',m,r,1.0d0,nt0(:,:,t+1),m,mr,m,0.0d0,mr2,m)
             call dgemm('t','n',r,r,m,-1.0d0,mr,m,mr2,m,1.0d0,etahatvar(:,:,t),r)
         end do
         do t = d+1, n
@@ -403,29 +396,29 @@ etahat,etahatvar,thetahat,thetahatvar, ldlsignal,zorig, zorigtv,aug,state,dist,s
                 end do
             else
                 do t = 1, d
-                    call dcopy(m,at(:,t),1,rrec,1) !ahat = at
-                    call dsymv('u',m,1.0d0,pt(:,:,t),m,rt0(:,t),1,1.0d0,rrec,1) !ahat = at + pt * rt0_t
-                    call dsymv('u',m,1.0d0,pinf(:,:,t),m,rt1(:,t),1,1.0d0,rrec,1) !ahat = at + pt * rt0_t + pinf*rt1_t
+                    rrec = at(:,t)
+                    call dsymv('u',m,1.0d0,pt(:,:,t),m,rt0(:,t),1,1.0d0,rrec,1)
+                    call dsymv('u',m,1.0d0,pinf(:,:,t),m,rt1(:,t),1,1.0d0,rrec,1)
                     call dgemv('n',p,m,1.0d0,zorig(:,:,(t-1)*zorigtv+1),p,rrec,1,0.0d0,thetahat(:,t),1)
 
                     nrec = pt(:,:,t)
-                    call dsymm('l','u',m,m,1.0d0,pt(:,:,t),m,nt0(:,:,t),m,0.0d0,mm,m) !mm = pt*nt0
-                    call dsymm('r','u',m,m,-1.0d0,pt(:,:,t),m,mm,m,1.0d0,nrec,m) !vvt = pt - pt*nt0*pt
-                    call dsymm('l','u',m,m,1.0d0,pinf(:,:,t),m,nt1(:,:,t),m,0.0d0,mm,m) !mm = pinf*nt1
-                    call dsymm('r','u',m,m,-1.0d0,pt(:,:,t),m,mm,m,0.0d0,mm2,m) !mm2 = -pinf*nt1*pt
-                    nrec = nrec + mm2 + transpose(mm2) !vvt = pt - pt*nt0*pt  -pinf*nt1*pt - t(pinf*nt1*pt)
-                    call dsymm('l','u',m,m,1.0d0,pinf(:,:,t),m,nt2(:,:,t),m,0.0d0,mm,m) !mm = pinf*nt2
-                    call dsymm('r','u',m,m,-1.0d0,pinf(:,:,t),m,mm,m,1.0d0,nrec,m) !vvt = vvt - pinf*nt2*pinf
+                    call dsymm('l','u',m,m,1.0d0,pt(:,:,t),m,nt0(:,:,t),m,0.0d0,mm,m)
+                    call dsymm('r','u',m,m,-1.0d0,pt(:,:,t),m,mm,m,1.0d0,nrec,m)
+                    call dsymm('l','u',m,m,1.0d0,pinf(:,:,t),m,nt1(:,:,t),m,0.0d0,mm,m)
+                    call dsymm('r','u',m,m,-1.0d0,pt(:,:,t),m,mm,m,0.0d0,mm2,m)
+                    nrec = nrec + mm2 + transpose(mm2)
+                    call dsymm('l','u',m,m,1.0d0,pinf(:,:,t),m,nt2(:,:,t),m,0.0d0,mm,m)
+                    call dsymm('r','u',m,m,-1.0d0,pinf(:,:,t),m,mm,m,1.0d0,nrec,m)
                     call dsymm('r','u',p,m,1.0d0,nrec,m,zorig(:,:,(t-1)*zorigtv+1),p,0.0d0,pm,p)
                     call dgemm('n','t',p,p,m,1.0d0,pm,p,zorig(:,:,(t-1)*zorigtv+1),p,0.0d0,thetahatvar(:,:,t),p)
                 end do
                 do t = d+1, n
-                    call dcopy(m,at(:,t),1,rrec,1) !ahat = at
-                    call dsymv('u',m,1.0d0,pt(:,:,t),m,rt(:,t),1,1.0d0,rrec,1) !ahat = ahat+pt*r_t-1
+                    rrec = at(:,t)
+                    call dsymv('u',m,1.0d0,pt(:,:,t),m,rt(:,t),1,1.0d0,rrec,1)
                     call dgemv('n',p,m,1.0d0,zorig(:,:,(t-1)*zorigtv+1),p,rrec,1,0.0d0,thetahat(:,t),1)
                     nrec = pt(:,:,t)
-                    call dsymm('l','u',m,m,1.0d0,pt(:,:,t),m,nt(:,:,t),m,0.0d0,mm,m) !pt*n_t-1
-                    call dsymm('r','u',m,m,-1.0d0,pt(:,:,t),m,mm,m,1.0d0,nrec,m) !pt*n_t-1*pt
+                    call dsymm('l','u',m,m,1.0d0,pt(:,:,t),m,nt(:,:,t),m,0.0d0,mm,m)
+                    call dsymm('r','u',m,m,-1.0d0,pt(:,:,t),m,mm,m,1.0d0,nrec,m)
                     call dsymm('r','u',p,m,1.0d0,nrec,m,zorig(:,:,(t-1)*zorigtv+1),p,0.0d0,pm,p)
                     call dgemm('n','t',p,p,m,1.0d0,pm,p,zorig(:,:,(t-1)*zorigtv+1),p,0.0d0,thetahatvar(:,:,t),p)
                 end do
@@ -440,29 +433,29 @@ etahat,etahatvar,thetahat,thetahatvar, ldlsignal,zorig, zorigtv,aug,state,dist,s
                 end do
             else
                 do t = 1, d
-                    call dcopy(m,at(:,t),1,rrec,1) !ahat = at
-                    call dsymv('u',m,1.0d0,pt(:,:,t),m,rt0(:,t),1,1.0d0,rrec,1) !ahat = at + pt * rt0_t
-                    call dsymv('u',m,1.0d0,pinf(:,:,t),m,rt1(:,t),1,1.0d0,rrec,1) !ahat = at + pt * rt0_t + pinf*rt1_t
+                    rrec = at(:,t)
+                    call dsymv('u',m,1.0d0,pt(:,:,t),m,rt0(:,t),1,1.0d0,rrec,1)
+                    call dsymv('u',m,1.0d0,pinf(:,:,t),m,rt1(:,t),1,1.0d0,rrec,1)
                     call dgemv('n',p,m,1.0d0,zt(:,:,(t-1)*timevar(1)+1),p,rrec,1,0.0d0,thetahat(:,t),1)
 
                     nrec = pt(:,:,t)
-                    call dsymm('l','u',m,m,1.0d0,pt(:,:,t),m,nt0(:,:,t),m,0.0d0,mm,m) !mm = pt*nt0
-                    call dsymm('r','u',m,m,-1.0d0,pt(:,:,t),m,mm,m,1.0d0,nrec,m) !vvt = pt - pt*nt0*pt
-                    call dsymm('l','u',m,m,1.0d0,pinf(:,:,t),m,nt1(:,:,t),m,0.0d0,mm,m) !mm = pinf*nt1
-                    call dsymm('r','u',m,m,-1.0d0,pt(:,:,t),m,mm,m,0.0d0,mm2,m) !mm2 = -pinf*nt1*pt
-                    nrec = nrec + mm2 + transpose(mm2) !vvt = pt - pt*nt0*pt  -pinf*nt1*pt - t(pinf*nt1*pt)
-                    call dsymm('l','u',m,m,1.0d0,pinf(:,:,t),m,nt2(:,:,t),m,0.0d0,mm,m) !mm = pinf*nt2
-                    call dsymm('r','u',m,m,-1.0d0,pinf(:,:,t),m,mm,m,1.0d0,nrec,m) !vvt = vvt - pinf*nt2*pinf
+                    call dsymm('l','u',m,m,1.0d0,pt(:,:,t),m,nt0(:,:,t),m,0.0d0,mm,m)
+                    call dsymm('r','u',m,m,-1.0d0,pt(:,:,t),m,mm,m,1.0d0,nrec,m)
+                    call dsymm('l','u',m,m,1.0d0,pinf(:,:,t),m,nt1(:,:,t),m,0.0d0,mm,m)
+                    call dsymm('r','u',m,m,-1.0d0,pt(:,:,t),m,mm,m,0.0d0,mm2,m)
+                    nrec = nrec + mm2 + transpose(mm2)
+                    call dsymm('l','u',m,m,1.0d0,pinf(:,:,t),m,nt2(:,:,t),m,0.0d0,mm,m)
+                    call dsymm('r','u',m,m,-1.0d0,pinf(:,:,t),m,mm,m,1.0d0,nrec,m)
                     call dsymm('r','u',p,m,1.0d0,nrec,m,zt(:,:,(t-1)*timevar(1)+1),p,0.0d0,pm,p)
                     call dgemm('n','t',p,p,m,1.0d0,pm,p,zt(:,:,(t-1)*timevar(1)+1),p,0.0d0,thetahatvar(:,:,t),p)
                 end do
                 do t = d+1, n
-                    call dcopy(m,at(:,t),1,rrec,1) !ahat = at
-                    call dsymv('u',m,1.0d0,pt(:,:,t),m,rt(:,t),1,1.0d0,rrec,1) !ahat = ahat+pt*r_t-1
+                    rrec = at(:,t)
+                    call dsymv('u',m,1.0d0,pt(:,:,t),m,rt(:,t),1,1.0d0,rrec,1)
                     call dgemv('n',p,m,1.0d0,zt(:,:,(t-1)*timevar(1)+1),p,rrec,1,0.0d0,thetahat(:,t),1)
                     nrec = pt(:,:,t)
-                    call dsymm('l','u',m,m,1.0d0,pt(:,:,t),m,nt(:,:,t),m,0.0d0,mm,m) !pt*n_t-1
-                    call dsymm('r','u',m,m,-1.0d0,pt(:,:,t),m,mm,m,1.0d0,nrec,m) !pt*n_t-1*pt
+                    call dsymm('l','u',m,m,1.0d0,pt(:,:,t),m,nt(:,:,t),m,0.0d0,mm,m)
+                    call dsymm('r','u',m,m,-1.0d0,pt(:,:,t),m,mm,m,1.0d0,nrec,m)
                     call dsymm('r','u',p,m,1.0d0,nrec,m,zt(:,:,(t-1)*timevar(1)+1),p,0.0d0,pm,p)
                     call dgemm('n','t',p,p,m,1.0d0,pm,p,zt(:,:,(t-1)*timevar(1)+1),p,0.0d0,thetahatvar(:,:,t),p)
                 end do

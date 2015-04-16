@@ -16,7 +16,7 @@ subroutine covmeanw(x,w,m,n,k,meanx,covx)
         meanx = meanx + x(:,:,i)*w(i)
     end do
     do i = 1, k
-      x(:,:,i) = sqrt(w(i))*(x(:,:,i) - meanx)
+        x(:,:,i) = sqrt(w(i))*(x(:,:,i) - meanx)
     end do
 
     do t = 1, n
@@ -46,7 +46,7 @@ subroutine covmeanwprotect(x,w,m,n,k,meanx,covx)
         x2(:,:,i) = sqrt(w(i))*(x(:,:,i) - meanx)
     end do
 
-  do t = 1, n
+    do t = 1, n
         call dgemm('n','t',m,m,k,1.0d0,x2(:,t,:),m,x2(:,t,:),m,0.0d0,covx(:,:,t),m)
     end do
 

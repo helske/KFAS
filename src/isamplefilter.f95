@@ -107,10 +107,7 @@ aplus1,c,tol,info,antithetics,w,sim,nd,ndl,simwhat,simdim)
             return
         end if
 
-
-
         ! compute importance weights
-
 
         if(simwhat.EQ.5) then
             do j=1,p

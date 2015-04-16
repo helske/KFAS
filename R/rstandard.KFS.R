@@ -2,7 +2,7 @@
 #' @export
 #' @details For object of class KFS with fully Gaussian observations, several 
 #'   types of standardized residuals can be computed. Also the standardization 
-#'   in for multivariate residuals can be done either by Cholesky decomposition 
+#'   for multivariate residuals can be done either by Cholesky decomposition 
 #'   \eqn{L^{-1}_t residual_t,}{L^(-1)[t]residual[t]} or component-wise 
 #'   \eqn{residual_t/sd(residual_t),}{residual[t]/sd(residual[t])}.
 #'   

@@ -27,10 +27,10 @@ p, m, n, lik, tol,rankp2,kt,kinf,ft,finf,d,j)
     double precision, dimension(m,m) :: pt,pinf,mm
     double precision, external :: ddot
     double precision, intent(inout), dimension(m,m,(n-1)*max(timevar(4),timevar(5))+1) :: rqr
-    double precision :: meps
+    double precision :: meps, finv
  
 
-    external dgemm, dsymm, dgemv, dsymv, daxpy, dsyr, dsyr2
+    external dgemm, dsymm, dgemv, dsymv, dsyr, dsyr2
 
     meps = epsilon(meps)
     tv= max(timevar(4),timevar(5))
@@ -49,24 +49,27 @@ p, m, n, lik, tol,rankp2,kt,kinf,ft,finf,d,j)
             d = d+1
             do j=1, p
                 vt(j) = yt(d,j) - ddot(m,zt(j,:,(d-1)*timevar(1)+1),1,arec,1)
-                call dsymv('u',m,1.0d0,pt,m,zt(j,:,(d-1)*timevar(1)+1),1,0.0d0,kt(:,j,d),1) ! kt_t,i = pt_t,i*t(z_t,i)
+                call dsymv('u',m,1.0d0,pt,m,zt(j,:,(d-1)*timevar(1)+1),1,0.0d0,kt(:,j,d),1)
                 ft(j,d) = ddot(m,zt(j,:,(d-1)*timevar(1)+1),1,kt(:,j,d),1)
-                call dsymv('u',m,1.0d0,pinf,m,zt(j,:,(d-1)*timevar(1)+1),1,0.0d0,kinf(:,j,d),1) ! kinf_t,i = pinf_t,i*t(z_t,i)
+                call dsymv('u',m,1.0d0,pinf,m,zt(j,:,(d-1)*timevar(1)+1),1,0.0d0,kinf(:,j,d),1)
                 finf(j,d) = ddot(m,zt(j,:,(d-1)*timevar(1)+1),1,kinf(:,j,d),1)
                 if (finf(j,d) .GT. tol*maxval(zt(j,:,(d-1)*timevar(1)+1)**2)) then
-                    call daxpy(m,vt(j)/finf(j,d),kinf(:,j,d),1,arec,1) !a_rec = a_rec + kinf(:,i,t)*vt(:,t)/finf(j,d)
-                    call dsyr('u',m,ft(j,d)/(finf(j,d)**2),kinf(:,j,d),1,pt,m) !pt = pt +  kinf*kinf'*ft/finf^2
-                    call dsyr2('u',m,-1.0d0/finf(j,d),kt(:,j,d),1,kinf(:,j,d),1,pt,m) !pt = pt -(kt*kinf'+kinf*kt')/finf
-                    call dsyr('u',m,-1.0d0/finf(j,d),kinf(:,j,d),1,pinf,m) !pinf = pinf -kinf*kinf'/finf
+                    finv = 1.0d0/finf(j,d)
+                    arec = arec +vt(j)*finv*kinf(:,j,d)
+                    call dsyr('u',m,ft(j,d)*finv**2,kinf(:,j,d),1,pt,m)
+                    call dsyr2('u',m,-finv,kt(:,j,d),1,kinf(:,j,d),1,pt,m)
+                    call dsyr('u',m,-finv,kinf(:,j,d),1,pinf,m)
+
                     lik = lik - 0.5d0*log(finf(j,d))
                     rankp = rankp -1
 
                 else
                     finf(j,d) = 0.0d0
                     if (ft(j,d).GT. tol*maxval(zt(j,:,(d-1)*timevar(1)+1)**2)) then
-                        call daxpy(m,vt(j)/ft(j,d),kt(:,j,d),1,arec,1) !a_rec = a_rec + kt(:,i,t)*vt(:,t)/ft(i,t)
-                        call dsyr('u',m,-1.0d0/ft(j,d),kt(:,j,d),1,pt,m) !pt = pt -kt*kt'/ft
-                        lik = lik - 0.5d0*(log(ft(j,d)) + vt(j)**2/ft(j,d))
+                        finv = 1.0d0/ft(j,d)
+                        arec = arec + vt(j)*finv*kt(:,j,d)
+                        call dsyr('u',m,-finv,kt(:,j,d),1,pt,m)
+                        lik = lik - 0.5d0*(log(ft(j,d)) + vt(j)**2*finv)
                     end if
                 end if
                 if(ft(j,d) .LE. tol*maxval(zt(j,:,(d-1)*timevar(1)+1)**2)) then
@@ -99,10 +102,13 @@ p, m, n, lik, tol,rankp2,kt,kinf,ft,finf,d,j)
                 vt(i) = yt(d,i) - ddot(m,zt(i,:,(d-1)*timevar(1)+1),1,arec,1)
                 call dsymv('u',m,1.0d0,pt,m,zt(i,:,(d-1)*timevar(1)+1),1,0.0d0,kt(:,i,d),1)
                 ft(i,d) = ddot(m,zt(i,:,(d-1)*timevar(1)+1),1,kt(:,i,d),1)
-                if (ft(i,d).GT. tol*maxval(zt(i,:,(d-1)*timevar(1)+1)**2)) then !ft.NE.0
-                    call daxpy(m,vt(i)/ft(i,d),kt(:,i,d),1,arec,1) !a_rec = a_rec + kt(:,i,t)*vt(:,t)
-                    call dsyr('u',m,-1.0d0/ft(i,d),kt(:,i,d),1,pt,m) !p_rec = p_rec - kt*kt'*ft(i,t)
-                    lik = lik - 0.5d0*(log(ft(i,d)) + vt(i)**2/ft(i,d))
+                if (ft(i,d).GT. tol*maxval(zt(i,:,(d-1)*timevar(1)+1)**2)) then
+                    finv = 1.0d0/ft(i,d)
+                    arec = arec + vt(i)*finv*kt(:,i,d)
+                    call dsyr('u',m,-finv,kt(:,i,d),1,pt,m)
+                    lik = lik - 0.5d0*(log(ft(i,d)) + vt(i)**2*finv)
+
+
                 else
                     ft(i,d) = 0.0d0
                 end if
@@ -130,9 +136,11 @@ p, m, n, lik, tol,rankp2,kt,kinf,ft,finf,d,j)
             call dsymv('u',m,1.0d0,pt,m,zt(i,:,(t-1)*timevar(1)+1),1,0.0d0,kt(:,i,t),1)
             ft(i,t) = ddot(m,zt(i,:,(t-1)*timevar(1)+1),1,kt(:,i,t),1)
             if (ft(i,t) .GT. tol*maxval(zt(i,:,(t-1)*timevar(1)+1)**2)) then
-                call daxpy(m,vt(i)/ft(i,t),kt(:,i,t),1,arec,1) !a_rec = a_rec + kt(:,i,t)*vt(:,t)
-                call dsyr('u',m,-1.0d0/ft(i,t),kt(:,i,t),1,pt,m) !p_rec = p_rec - kt*kt'*ft(i,i,t)
-                lik = lik - 0.5d0*(log(ft(i,t)) + vt(i)**2/ft(i,t))
+                finv = 1.0d0/ft(i,t)
+                arec = arec + vt(i)*finv*kt(:,i,t)
+                call dsyr('u',m,-finv,kt(:,i,t),1,pt,m)
+                lik = lik - 0.5d0*(log(ft(i,t)) + vt(i)**2*finv)
+
             else
                 ft(i,t) = 0.0d0
             end if
@@ -171,7 +179,7 @@ p, m, n, lik, kt,kinf,ft,finf,dt,jt)
     double precision, intent(in), dimension(m,p,n) :: kt,kinf
     double precision, external :: ddot
 
-    external dgemv, daxpy
+    external dgemv
 
     j=0
     d=0
@@ -182,13 +190,15 @@ p, m, n, lik, kt,kinf,ft,finf,dt,jt)
             d = d+1
             do j=1, p
 
-                vt(j) = yt(d,j) - ddot(m,zt(j,:,(d-1)*timevar(1)+1),1,arec,1) !arec
+                vt(j) = yt(d,j) - ddot(m,zt(j,:,(d-1)*timevar(1)+1),1,arec,1)
                 if (finf(j,d) .GT. 0.0d0) then
-                    call daxpy(m,vt(j)/finf(j,d),kinf(:,j,d),1,arec,1) !a_rec = a_rec + kinf(:,i,t)*vt(:,t)/finf(j,d)
+                    arec = arec + vt(j)/finf(j,d)*kinf(:,j,d)
+
                     lik = lik - 0.5d0*log(finf(j,d))
                 else
                     if(ft(j,d) .GT. 0.0d0) then
-                        call daxpy(m,vt(j)/ft(j,d),kt(:,j,d),1,arec,1) !a_rec = a_rec + kt(:,i,t)*vt(:,t)/ft(i,t)
+                        arec = arec + vt(j)/ft(j,d)*kt(:,j,d)
+
                         lik = lik - 0.5d0*(log(ft(j,d)) + vt(j)**2/ft(j,d))
                     end if
                 end if
@@ -203,14 +213,14 @@ p, m, n, lik, kt,kinf,ft,finf,dt,jt)
         d = dt
         do j=1, jt
 
-            vt(j) = yt(d,j) - ddot(m,zt(j,:,(d-1)*timevar(1)+1),1,arec,1) !arec
+            vt(j) = yt(d,j) - ddot(m,zt(j,:,(d-1)*timevar(1)+1),1,arec,1)
 
             if (finf(j,d) .GT. 0.0d0) then
-                call daxpy(m,vt(j)/finf(j,d),kinf(:,j,d),1,arec,1) !a_rec = a_rec + kinf(:,i,t)*vt(:,t)/finf(j,d)
+                arec = arec + vt(j)/finf(j,d)*kinf(:,j,d)
                 lik = lik - 0.5d0*log(finf(j,d))
             else
                 if(ft(j,d) .GT. 0.0d0) then
-                    call daxpy(m,vt(j)/ft(j,d),kt(:,j,d),1,arec,1) !a_rec = a_rec + kt(:,i,t)*vt(:,t)/ft(i,t)
+                    arec = arec + vt(j)/ft(j,d)*kt(:,j,d)
                     lik = lik - 0.5d0*(log(ft(j,d)) + vt(j)**2/ft(j,d))
                 end if
             end if
@@ -222,9 +232,10 @@ p, m, n, lik, kt,kinf,ft,finf,dt,jt)
 
         do i = jt+1, p
 
-            vt(i) = yt(d,i) - ddot(m,zt(i,:,(d-1)*timevar(1)+1),1,arec,1) !vt
+            vt(i) = yt(d,i) - ddot(m,zt(i,:,(d-1)*timevar(1)+1),1,arec,1)
             if (ft(i,d) .GT. 0.0d0) then !ft.NE.0
-                call daxpy(m,vt(i)/ft(i,d),kt(:,i,d),1,arec,1) !a_rec = a_rec + kt(:,i,t)*vt(:,t)
+                arec = arec + vt(i)/ft(i,d)*kt(:,i,d)
+
                 lik = lik - 0.5d0*(log(ft(i,d)) + vt(i)**2/ft(i,d))
             end if
 
@@ -240,9 +251,9 @@ p, m, n, lik, kt,kinf,ft,finf,dt,jt)
         do t = dt+1, n
             do i = 1, p
 
-                vt(i) = yt(t,i) - ddot(m,zt(i,:,(t-1)*timevar(1)+1),1,arec,1) !variate vt
-                if (ft(i,t) .GT. 0.0d0) then !ft.NE.0
-                    call daxpy(m,vt(i)/ft(i,t),kt(:,i,t),1,arec,1) !a_rec = a_rec + kt(:,i,t)*vt(:,t)
+                vt(i) = yt(t,i) - ddot(m,zt(i,:,(t-1)*timevar(1)+1),1,arec,1)
+                if (ft(i,t) .GT. 0.0d0) then
+                    arec = arec + vt(i)/ft(i,t)*kt(:,i,t)
                     lik = lik - 0.5d0*(log(ft(i,t)) + vt(i)**2/ft(i,t))
                 end if
 

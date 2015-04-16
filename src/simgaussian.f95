@@ -126,7 +126,7 @@ tol,nd,ndl,sim,c,simwhat,simdim,antithetics)
             do k = 1, p
                 epsplus(k,t,i) = epsplus(k,t,i)*sqrt(ht(k,k,(t-1)*timevar(2)+1))
                 if(ymiss(t,k).EQ.0) then
-                   yplus(t,k) = epsplus(k,t,i) + ddot(m,zt(k,:,(t-1)*timevar(1)+1),1,aplus(:,t),1)
+                    yplus(t,k) = epsplus(k,t,i) + ddot(m,zt(k,:,(t-1)*timevar(1)+1),1,aplus(:,t),1)
                 end if
             end do
             call dtrmv('l','n','n',r,cholqt(:,:,(t-1)*timevar(5)+1),r,etaplus(:,t,i),1)

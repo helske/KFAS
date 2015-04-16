@@ -20,55 +20,51 @@ a1, ft,kt,finf, kinf, dt, jt, p, m, n,tol,at)
     double precision, dimension(m) :: arec
     double precision, external :: ddot
 
-    external daxpy, dgemv
+    external dgemv
 
     j=0
     d=0
     if(dt.GT.0) then
+        !diffuse filtering begins
         arec = a1
         diffuse: do while(d .LT. (dt-1))
             d = d+1
             do j=1, p
                 if(ymiss(d,j).EQ.0) then
-                    vt(j,d) = yt(d,j) - ddot(m,zt(j,:,(d-1)*timevar(1)+1),1,arec,1) !arec
-                    if (finf(j,d) .GT. tol*maxval(zt(j,:,(d-1)*timevar(1)+1)**2)) then
-                        call daxpy(m,vt(j,d)/finf(j,d),kinf(:,j,d),1,arec,1) !a_rec = a_rec + kinf(:,i,t)*vt(:,t)/finf(j,d)
+                    vt(j,d) = yt(d,j) - ddot(m,zt(j,:,(d-1)*timevar(1)+1),1,arec,1)
+                    if (finf(j,d) .GT. 0.0d0) then
+                        arec = arec + vt(j,d)/finf(j,d)*kinf(:,j,d)
                     else
-                        if(ft(j,d) .GT. tol*maxval(zt(j,:,(d-1)*timevar(1)+1)**2)) then
-                            call daxpy(m,vt(j,d)/ft(j,d),kt(:,j,d),1,arec,1) !a_rec = a_rec + kt(:,i,t)*vt(:,t)/ft(i,t)
+                        if(ft(j,d) .GT. 0.0d0) then
+                            arec = arec + vt(j,d)/ft(j,d)*kt(:,j,d)
                         end if
                     end if
                 end if
             end do
-           
             call dgemv('n',m,m,1.0d0,tt(:,:,(d-1)*timevar(3)+1),m,arec,1,0.0d0,at(:,d+1),1)
-           arec = at(:,d+1)
-            
+            arec = at(:,d+1)
         end do diffuse
 
         d = dt
         do j=1, jt
             if(ymiss(d,j).EQ.0) then
-                vt(j,d) = yt(d,j) - ddot(m,zt(j,:,(d-1)*timevar(1)+1),1,arec,1) !arec
+                vt(j,d) = yt(d,j) - ddot(m,zt(j,:,(d-1)*timevar(1)+1),1,arec,1)
       
-                if (finf(j,d) .GT. tol*maxval(zt(j,:,(d-1)*timevar(1)+1)**2)) then
-                    call daxpy(m,vt(j,d)/finf(j,d),kinf(:,j,d),1,arec,1) !a_rec = a_rec + kinf(:,i,t)*vt(:,t)/finf(j,d)
+                if (finf(j,d) .GT. 0.0d0) then
+                    arec = arec + vt(j,d)/finf(j,d)*kinf(:,j,d)
                 else
-                    if(ft(j,d) .GT. tol*maxval(zt(j,:,(d-1)*timevar(1)+1)**2)) then
-                        call daxpy(m,vt(j,d)/ft(j,d),kt(:,j,d),1,arec,1) !a_rec = a_rec + kt(:,i,t)*vt(:,t)/ft(i,t)
+                    if(ft(j,d) .GT. 0.0d0) then
+                        arec = arec + vt(j,d)/ft(j,d)*kt(:,j,d)
                     end if
                 end if
             end if
         end do
-   
-  
         !non-diffuse filtering begins
- 
         do i = jt+1, p
             if(ymiss(d,i).EQ.0) then
-                vt(i,d) = yt(d,i) - ddot(m,zt(i,:,(d-1)*timevar(1)+1),1,arec,1) !vt
-                if (ft(i,d) .GT. tol*maxval(zt(i,:,(d-1)*timevar(1)+1)**2)) then !ft.NE.0
-                    call daxpy(m,vt(i,d)/ft(i,d),kt(:,i,d),1,arec,1) !a_rec = a_rec + kt(:,i,t)*vt(:,t)
+                vt(i,d) = yt(d,i) - ddot(m,zt(i,:,(d-1)*timevar(1)+1),1,arec,1)
+                if (ft(i,d) .GT. 0.0d0) then
+                    arec = arec + vt(i,d)/ft(i,d)*kt(:,i,d)
                 end if
             end if
         end do
@@ -78,19 +74,16 @@ a1, ft,kt,finf, kinf, dt, jt, p, m, n,tol,at)
     end if
 
     if(dt.LT.n) then
-
         !Non-diffuse filtering continues from t=d+1, i=1
-
-
         if(dt.EQ.0) then
             arec = a1
         end if
         do t = dt+1, n
             do i = 1, p
                 if(ymiss(t,i).EQ.0) then
-                    vt(i,t) = yt(t,i) - ddot(m,zt(i,:,(t-1)*timevar(1)+1),1,arec,1) !variate vt
-                    if (ft(i,t) .GT. tol*maxval(zt(i,:,(t-1)*timevar(1)+1)**2)) then !ft.NE.0
-                        call daxpy(m,vt(i,t)/ft(i,t),kt(:,i,t),1,arec,1) !a_rec = a_rec + kt(:,i,t)*vt(:,t)
+                    vt(i,t) = yt(t,i) - ddot(m,zt(i,:,(t-1)*timevar(1)+1),1,arec,1)
+                    if (ft(i,t) .GT. 0.0d0) then
+                        arec = arec + vt(i,t)/ft(i,t)*kt(:,i,t)
                     end if
                 end if
             end do
