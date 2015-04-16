@@ -49,79 +49,26 @@ p, m, r, n, lik, tol,rankp,marginal)
     j=0
     d=0
     pt = p1
-    arec = a1
+    at = a1
+    pinf=p1inf
     ! Diffuse initialization
     if(rankp .GT. 0) then
-        pinf=p1inf
         diffuse: do while(d .LT. n .AND. rankp .GT. 0)
             d = d+1
-            do j=1, p
-                if(ymiss(d,j).EQ.0) then
-                    vt(j) = yt(d,j) - ddot(m,zt(j,:,(d-1)*timevar(1)+1),1,arec,1)
-                    call dsymv('u',m,1.0d0,pt,m,zt(j,:,(d-1)*timevar(1)+1),1,0.0d0,kt(:,j),1)
-                    ft(j) = ddot(m,zt(j,:,(d-1)*timevar(1)+1),1,kt(:,j),1)+ ht(j,j,(d-1)*timevar(2)+1)
-                    call dsymv('u',m,1.0d0,pinf,m,zt(j,:,(d-1)*timevar(1)+1),1,0.0d0,kinf(:,j),1)
-                    finf(j) = ddot(m,zt(j,:,(d-1)*timevar(1)+1),1,kinf(:,j),1)
-                    if (finf(j)  .GT. tol*maxval(zt(j,:,(d-1)*timevar(1)+1)**2)) then
-                        finv = 1.0d0/finf(j)
-                        arec = arec +vt(j)*finv*kinf(:,j)
-                        call dsyr('u',m,ft(j)*finv**2,kinf(:,j),1,pt,m)
-                        call dsyr2('u',m,-finv,kt(:,j),1,kinf(:,j),1,pt,m)
-                        call dsyr('u',m,-finv,kinf(:,j),1,pinf,m)
-
-                        lik = lik - 0.5d0*log(finf(j))
-                        rankp = rankp -1
-                    else
-                        if (ft(j) .GT. tol*maxval(zt(j,:,(d-1)*timevar(1)+1)**2)) then
-                            finv = 1.0d0/ft(j)
-                            arec = arec + vt(j)*finv*kt(:,j)
-                            call dsyr('u',m,-finv,kt(:,j),1,pt,m)
-                            lik = lik - c - 0.5d0*(log(ft(j)) + vt(j)**2*finv)
-                        end if
-                    end if
-                    if(rankp .EQ. 0) then
-                        exit diffuse
-                    end if
-                end if
-            end do
            
-            call dgemv('n',m,m,1.0d0,tt(:,:,(d-1)*timevar(3)+1),m,arec,1,0.0d0,at,1)
-            arec = at
-            call dsymm('r','u',m,m,1.0d0,pt,m,tt(:,:,(d-1)*timevar(3)+1),m,0.0d0,mm,m)
-            call dgemm('n','t',m,m,m,1.0d0,mm,m,tt(:,:,(d-1)*timevar(3)+1),m,0.0d0,pt,m)
-            pt = pt + rqr(:,:,(d-1)*tv+1)
-            call dsymm('r','u',m,m,1.0d0,pinf,m,tt(:,:,(d-1)*timevar(3)+1),m,0.0d0,mm,m)
-            call dgemm('n','t',m,m,m,1.0d0,mm,m,tt(:,:,(d-1)*timevar(3)+1),m,0.0d0,pinf,m)
-            do i = 1, m ! try to deal with possible rounding errors, non-diffuse states should have zeros in pinf
-                if(pinf(i,i) .LT. meps) then
-                    pinf(i,:) = 0.0d0
-                    pinf(:,i) = 0.0d0
-                end if
-            end do
+            call diffusefilteronestep(ymiss(d,:),yt(d,:),transpose(zt(:,:,(d-1)*timevar(1)+1)),ht(:,:,(d-1)*timevar(2)+1),&
+            tt(:,:,(d-1)*timevar(3)+1),rqr(:,:,(d-1)*tv+1), at,pt,vt,ft,kt,pinf,finf,kinf,rankp,lik,tol,meps,c,p,m,j)
+
         end do diffuse
 
-        if(rankp .EQ. 0) then
+        if(rankp .EQ. 0 .AND. j .LT. p) then
             !non-diffuse filtering begins
-            do i = j+1, p
-                if(ymiss(d,i).EQ.0) then
-                    vt(i) = yt(d,i) - ddot(m,zt(i,:,(d-1)*timevar(1)+1),1,arec,1)
-                    call dsymv('u',m,1.0d0,pt,m,zt(i,:,(d-1)*timevar(1)+1),1,0.0d0,kt(:,i),1)
-                    ft(i) = ddot(m,zt(i,:,(d-1)*timevar(1)+1),1,kt(:,i),1) + ht(i,i,(d-1)*timevar(2)+1)
-                    if (ft(i).GT. tol*maxval(zt(i,:,(d-1)*timevar(1)+1)**2)) then
-                        finv = 1.0d0/ft(i)
-                        arec = arec + vt(i)*finv*kt(:,i)
-                        call dsyr('u',m,-finv,kt(:,i),1,pt,m)
-                        lik = lik - 0.5d0*(log(ft(i)) + vt(i)**2*finv)-c
-                    end if
-                end if
-            end do
-   
-            call dgemv('n',m,m,1.0d0,tt(:,:,(d-1)*timevar(3)+1),m,arec,1,0.0d0,at,1)
-            arec = at
-            call dsymm('r','u',m,m,1.0d0,pt,m,tt(:,:,(d-1)*timevar(3)+1),m,0.0d0,mm,m)
-            call dgemm('n','t',m,m,m,1.0d0,mm,m,tt(:,:,(d-1)*timevar(3)+1),m,0.0d0,pt,m)
- 
-            pt = pt + rqr(:,:,(d-1)*tv+1)
+            call filteronestep(ymiss(d,:),yt(d,:),transpose(zt(:,:,(d-1)*timevar(1)+1)),ht(:,:,(d-1)*timevar(2)+1),&
+            tt(:,:,(d-1)*timevar(3)+1),rqr(:,:,(d-1)*tv+1),at,pt,vt,ft,kt,lik,tol,meps,c,p,m,j)
+
+        else
+            j = p
+
         end if
     end if
 
@@ -130,25 +77,8 @@ p, m, r, n, lik, tol,rankp,marginal)
     !Non-diffuse filtering continues from t=d+1, i=1
 
     do t = d+1, n
-        do i = 1, p
-            if(ymiss(t,i).EQ.0) then
-                vt(i) = yt(t,i) - ddot(m,zt(i,:,(t-1)*timevar(1)+1),1,arec,1)
-                call dsymv('u',m,1.0d0,pt,m,zt(i,:,(t-1)*timevar(1)+1),1,0.0d0,kt(:,i),1)
-                ft(i) = ddot(m,zt(i,:,(t-1)*timevar(1)+1),1,kt(:,i),1) + ht(i,i,(t-1)*timevar(2)+1)
-                if (ft(i).GT. tol*maxval(zt(i,:,(t-1)*timevar(1)+1)**2)) then
-                    finv = 1.0d0/ft(i)
-                    arec = arec + vt(i)*finv*kt(:,i)
-                    call dsyr('u',m,-finv,kt(:,i),1,pt,m)
-                    lik = lik - 0.5d0*(log(ft(i)) + vt(i)**2*finv)-c
-                end if
-            end if
-        end do
-        call dgemv('n',m,m,1.0d0,tt(:,:,(t-1)*timevar(3)+1),m,arec,1,0.0d0,at,1)
-        arec = at
-        call dsymm('r','u',m,m,1.0d0,pt,m,tt(:,:,(t-1)*timevar(3)+1),m,0.0d0,mm,m)
-        call dgemm('n','t',m,m,m,1.0d0,mm,m,tt(:,:,(t-1)*timevar(3)+1),m,0.0d0,pt,m)
-        pt = pt + rqr(:,:,(t-1)*tv+1)
-
+        call filteronestep(ymiss(t,:),yt(t,:),transpose(zt(:,:,(t-1)*timevar(1)+1)),ht(:,:,(t-1)*timevar(2)+1),&
+        tt(:,:,(t-1)*timevar(3)+1),rqr(:,:,(t-1)*tv+1),at,pt,vt,ft,kt,lik,tol,meps,c,p,m,0)
 
     end do
 

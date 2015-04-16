@@ -29,7 +29,6 @@ finf, kinf, dt, jt, p, m, n,r,epshat,etahat,rt0,rt1,needeps)
 
     external dgemv, dger, dsymv
 
-
     j = 0
     d = 0
     if(dt.GT.0) then
@@ -114,151 +113,30 @@ finf, kinf, dt, jt, p, m, n,r,epshat,etahat,rt0,rt1,needeps)
         im(i,i) = 1.0d0
     end do
 
-    rrec = 0.0d0
+    rt0 = 0.0d0
 
-    do t = n, dt+1, -1
-        call dgemv('t',m,r,1.0d0,rtv(:,:,(t-1)*timevar(4)+1),m,rrec,1,0.0d0,help,1)
-        call dsymv('l',r,1.0d0,qt(:,:,(t-1)*timevar(5)+1),r,help,1,0.0d0,etahat(:,t),1)
-        call dgemv('t',m,m,1.0d0,tt(:,:,(t-1)*timevar(3)+1),m,rrec,1,0.0d0,rhelp,1)
-        rrec = rhelp
-        do i = p, 1 , -1
-            if(ymiss(t,i).EQ.0) then
-                if(ft(i,t) .GT. 0.0d0) then
-                    finv = 1.0d0/ft(i,t)
-                    if(needeps) then
-                        epshat(i,t) = ht(i,i,(t-1)*timevar(2)+1)*(vt(i,t)-ddot(m,kt(:,i,t),1,rrec,1))*finv
-                    end if
-                    l0 = im
-                    call dger(m,m,-finv,kt(:,i,t),1,zt(i,:,(t-1)*timevar(1)+1),1,l0,m)
-                    call dgemv('t',m,m,1.0d0,l0,m,rrec,1,0.0d0,rhelp,1)
-                    rrec = rhelp + vt(i,t)*finv*zt(i,:,(t-1)*timevar(1)+1)
-                end if
-            end if
-        end do
+    do t = n, d+1, -1
+        call smoothonestep(ymiss(t,:), transpose(zt(:,:,(t-1)*timevar(1)+1)), ht(:,:,(t-1)*timevar(2)+1), &
+        tt(:,:,(t-1)*timevar(3)+1), rtv(:,:,(t-1)*timevar(4)+1), qt(:,:,(t-1)*timevar(5)+1), vt(:,t), &
+        ft(:,t),kt(:,:,t), im,p,m,r,1,rt0,etahat(:,t),epshat(:,t),needeps)
     end do
 
     if(dt.GT.0) then
         t=dt
-        call dgemv('t',m,r,1.0d0,rtv(:,:,(t-1)*timevar(4)+1),m,rrec,1,0.0d0,help,1)
-        call dsymv('l',r,1.0d0,qt(:,:,(t-1)*timevar(5)+1),r,help,1,0.0d0,etahat(:,t),1)
-   
-        call dgemv('t',m,m,1.0d0,tt(:,:,(t-1)*timevar(3)+1),m,rrec,1,0.0d0,rhelp,1)
-        rrec = rhelp       
-  
-        do i = p, (jt+1) , -1
-
-            if(ymiss(t,i).EQ.0) then
-                if(ft(i,t) .GT. 0.0d0) then
-                    finv = 1.0d0/ft(i,t)
-                    if(needeps) then
-                        epshat(i,t) = ht(i,i,(t-1)*timevar(2)+1)*(vt(i,t)-ddot(m,kt(:,i,t),1,rrec,1))*finv
-                    end if
-                    l0 = im
-                    call dger(m,m,-finv,kt(:,i,t),1,zt(i,:,(t-1)*timevar(1)+1),1,l0,m)
-                    call dgemv('t',m,m,1.0d0,l0,m,rrec,1,0.0d0,rhelp,1)
-                    rrec = rhelp + vt(i,t)*finv*zt(i,:,(t-1)*timevar(1)+1)
-                end if
-            end if
-        end do
-
-        rrec1 = 0.0d0
-        do i = jt, 1, -1
-            if(ymiss(t,i).EQ.0) then
-                if(finf(i,t) .GT. 0.0d0) then
-                    finv = 1.0d0/finf(i,t)
-                    if(needeps) then
-                        epshat(i,t) = -ht(i,i,(t-1)*timevar(2)+1)*ddot(m,kinf(:,i,t),1,rrec,1)*finv
-                    end if
-                    linf = im
-                    call dger(m,m,-finv,kinf(:,i,t),1,zt(i,:,(t-1)*timevar(1)+1),1,linf,m)
-
-                    rhelp = kinf(:,i,t)*ft(i,t)*finv - kt(:,i,t)
-                    l0=0.0d0
-                    call dger(m,m,finv,rhelp,1,zt(i,:,(t-1)*timevar(1)+1),1,l0,m)
-
-                    call dgemv('t',m,m,1.0d0,linf,m,rrec1,1,0.0d0,rhelp,1) !rt1
-                    rrec1 = rhelp
-                    call dgemv('t',m,m,1.0d0,l0,m,rrec,1,1.0d0,rrec1,1)
-                    rrec1 = rrec1 + vt(i,t)*finv*zt(i,:,(t-1)*timevar(1)+1)
-
-                    call dgemv('t',m,m,1.0d0,linf,m,rrec,1,0.0d0,rhelp,1) !rt0
-                    rrec = rhelp
-                else
-                    if(ft(i,t) .GT. 0.0d0) then
-                        finv = 1.0d0/ft(i,t)
-                        if(needeps) then
-                            epshat(i,t) = ht(i,i,(t-1)*timevar(2)+1)*(vt(i,t)-ddot(m,kt(:,i,t),1,rrec,1))*finv
-                        end if
-
-                        l0 = im
-                        call dger(m,m,-finv,kt(:,i,t),1,zt(i,:,(t-1)*timevar(1)+1),1,l0,m)
-
-                        call dgemv('t',m,m,1.0d0,l0,m,rrec,1,0.0d0,rhelp,1)
-                        rrec = rhelp + vt(i,t)*finv*zt(i,:,(t-1)*timevar(1)+1)
-
-                        call dgemv('t',m,m,1.0d0,l0,m,rrec1,1,0.0d0,rhelp,1)
-                        rrec1 = rhelp
-                    end if
-                end if
-            end if
-        end do
-
+        if(jt .LT. p) then
+            call smoothonestep(ymiss(t,:), transpose(zt(:,:,(t-1)*timevar(1)+1)), ht(:,:,(t-1)*timevar(2)+1), &
+            tt(:,:,(t-1)*timevar(3)+1), rtv(:,:,(t-1)*timevar(4)+1), qt(:,:,(t-1)*timevar(5)+1), vt(:,t), &
+            ft(:,t),kt(:,:,t), im,p,m,r,jt+1,rt0,etahat(:,t),epshat(:,t),needeps)
+        end if
+        rt1 = 0.0d0
+        call diffusesmoothonestep(ymiss(t,:), transpose(zt(:,:,(t-1)*timevar(1)+1)), ht(:,:,(t-1)*timevar(2)+1), &
+        tt(:,:,(t-1)*timevar(3)+1), rtv(:,:,(t-1)*timevar(4)+1), qt(:,:,(t-1)*timevar(5)+1), vt(:,t), &
+        ft(:,t),kt(:,:,t), im,p,m,r,jt,rt0,rt1,finf(:,t),kinf(:,:,t),etahat(:,t),epshat(:,t),needeps)
         do t=(dt-1), 1, -1
-            call dgemv('t',m,r,1.0d0,rtv(:,:,(t-1)*timevar(4)+1),m,rrec,1,0.0d0,help,1)
-            call dsymv('l',r,1.0d0,qt(:,:,(t-1)*timevar(5)+1),r,help,1,0.0d0,etahat(:,t),1)
-            call dgemv('t',m,m,1.0d0,tt(:,:,(t-1)*timevar(3)+1),m,rrec,1,0.0d0,rhelp,1)
-            rrec = rhelp
-            call dgemv('t',m,m,1.0d0,tt(:,:,(t-1)*timevar(3)+1),m,rrec1,1,0.0d0,rhelp,1)
-            rrec1 = rhelp
-
-            do i = p, 1, -1
-                if(ymiss(t,i).EQ.0) then
-                    if(finf(i,t) .GT. 0.0d0) then
-                        finv = 1.0d0/finf(i,t)
-                        if(needeps) then
-                            epshat(i,t) = -ht(i,i,(t-1)*timevar(2)+1)*ddot(m,kinf(:,i,t),1,rrec,1)*finv
-                        end if
-
-
-                        linf = im
-                        call dger(m,m,-finv,kinf(:,i,t),1,zt(i,:,(t-1)*timevar(1)+1),1,linf,m)
-
-                        rhelp = kinf(:,i,t)*ft(i,t)*finv - kt(:,i,t)
-                        l0=0.0d0
-                        call dger(m,m,finv,rhelp,1,zt(i,:,(t-1)*timevar(1)+1),1,l0,m)
-
-                        call dgemv('t',m,m,1.0d0,linf,m,rrec1,1,0.0d0,rhelp,1)
-                        rrec1 = rhelp
-                        call dgemv('t',m,m,1.0d0,l0,m,rrec,1,1.0d0,rrec1,1)
-                        rrec1 = rrec1 + vt(i,t)*finv*zt(i,:,(t-1)*timevar(1)+1)
-
-                        call dgemv('t',m,m,1.0d0,linf,m,rrec,1,0.0d0,rhelp,1)
-                        rrec = rhelp
-                    else
-                        if(ft(i,t) .GT. 0.0d0) then
-                            finv = 1.0d0/ft(i,t)
-                            if(needeps) then
-                                epshat(i,t) = ht(i,i,(t-1)*timevar(2)+1)*(vt(i,t)-ddot(m,kt(:,i,t),1,rrec,1))*finv
-                            end if
-
-                            l0 = im
-                            call dger(m,m,-finv,kt(:,i,t),1,zt(i,:,(t-1)*timevar(1)+1),1,l0,m)
-
-                            call dgemv('t',m,m,1.0d0,l0,m,rrec,1,0.0d0,rhelp,1)
-                            rrec = rhelp + vt(i,t)*finv*zt(i,:,(t-1)*timevar(1)+1)
-
-                            call dgemv('t',m,m,1.0d0,l0,m,rrec1,1,0.0d0,rhelp,1)
-                            rrec1 = rhelp
-                        end if
-
-                    end if
-                end if
-            end do
-
-
+            call diffusesmoothonestep(ymiss(t,:), transpose(zt(:,:,(t-1)*timevar(1)+1)), ht(:,:,(t-1)*timevar(2)+1), &
+            tt(:,:,(t-1)*timevar(3)+1), rtv(:,:,(t-1)*timevar(4)+1), qt(:,:,(t-1)*timevar(5)+1), vt(:,t), &
+            ft(:,t),kt(:,:,t), im,p,m,r,p,rt0,rt1,finf(:,t),kinf(:,:,t),etahat(:,t),epshat(:,t),needeps)
         end do
     end if
-    rt0=rrec
-    rt1=rrec1
 
 end subroutine smoothsimfast

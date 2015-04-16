@@ -396,6 +396,7 @@ KFS <-
     
     if (filterout$d == n & filterout$j == p) 
       warning("Model is degenerate, diffuse phase did not end.")
+    filterout$Pinf <- filterout$Pinf[1:m, 1:m, 1:filterout$d, drop = FALSE]
     if (filterout$d > 0 & m > 1 & min(apply(filterout$Pinf, 3, diag)) < 0) 
       warning(paste0("Possible error in diffuse filtering: Negative variances in Pinf, ",
                      "check the model or try changing the tolerance parameter tol or P1/P1inf of the model."))
@@ -404,7 +405,7 @@ KFS <-
                      "Finf is not equal to the number of diffuse states. \n",
                      "Either model is degenerate or numerical errors occured. ",
                      "Check the model or try changing the tolerance parameter tol or P1/P1inf of the model."))
-    filterout$Pinf <- filterout$Pinf[1:m, 1:m, 1:(filterout$d + 1), drop = FALSE]
+    
     if (filterout$d > 0) {
       filterout$Finf <- filterout$Finf[, 1:filterout$d, drop = FALSE]
       filterout$Kinf <- filterout$Kinf[, , 1:filterout$d, drop = FALSE]
