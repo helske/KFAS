@@ -1,5 +1,5 @@
 !non-diffuse smoothing for single time point
-subroutine smoothonestep(ymiss, zt, ht, tt, rtv, qt, vt, ft,kt,&
+subroutine smooth1step(ymiss, zt, ht, tt, rtv, qt, vt, ft,kt,&
 im,p,m,r,j,rt,etahat,epshat,needeps)
 
     implicit none
@@ -47,9 +47,9 @@ im,p,m,r,j,rt,etahat,epshat,needeps)
         end if
     end do
 
-end subroutine smoothonestep
+end subroutine smooth1step
 
-subroutine diffusesmoothonestep(ymiss, zt, ht, tt, rtv, qt, vt, ft,kt,&
+subroutine dsmooth1step(ymiss, zt, ht, tt, rtv, qt, vt, ft,kt,&
 im,p,m,r,j,rt,rt1,finf,kinf,etahat,epshat,needeps)
 
     implicit none
@@ -128,4 +128,4 @@ im,p,m,r,j,rt,rt1,finf,kinf,etahat,epshat,needeps)
         end if
     end do
 
-end subroutine diffusesmoothonestep
+end subroutine dsmooth1step

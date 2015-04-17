@@ -8,7 +8,7 @@ p, m, r, n, lik, tol,rankp,marginal)
 
     integer, intent(in) ::  p, m, r, n
     integer, intent(inout) :: rankp,marginal
-    integer ::  t, i,d,j,tv
+    integer ::  t,d,j,tv
     integer, intent(in), dimension(n,p) :: ymiss
     integer, intent(in), dimension(5) :: timevar
     double precision, intent(in), dimension(n,p) :: yt
@@ -21,12 +21,12 @@ p, m, r, n, lik, tol,rankp,marginal)
     double precision, intent(in), dimension(m,m) ::  p1,p1inf
     double precision, intent(in) :: tol
     double precision, intent(inout) :: lik
-    double precision, dimension(m) :: at,arec
+    double precision, dimension(m) :: at
     double precision, dimension(p) :: vt,ft,finf
     double precision, dimension(m,p) :: kt,kinf
-    double precision, dimension(m,m) :: pt,pinf,mm
+    double precision, dimension(m,m) :: pt,pinf
     double precision, dimension(m,r) :: mr    
-    double precision :: c, meps, finv
+    double precision :: c, meps
     double precision, external :: ddot
     double precision, dimension(m,m,(n-1)*max(timevar(4),timevar(5))+1) :: rqr
 
@@ -56,15 +56,15 @@ p, m, r, n, lik, tol,rankp,marginal)
         diffuse: do while(d .LT. n .AND. rankp .GT. 0)
             d = d+1
            
-            call diffusefilteronestep(ymiss(d,:),yt(d,:),transpose(zt(:,:,(d-1)*timevar(1)+1)),ht(:,:,(d-1)*timevar(2)+1),&
+            call dfilter1step(ymiss(d,:),yt(d,:),transpose(zt(:,:,(d-1)*timevar(1)+1)),ht(:,:,(d-1)*timevar(2)+1),&
             tt(:,:,(d-1)*timevar(3)+1),rqr(:,:,(d-1)*tv+1), at,pt,vt,ft,kt,pinf,finf,kinf,rankp,lik,tol,meps,c,p,m,j)
 
         end do diffuse
 
         if(rankp .EQ. 0 .AND. j .LT. p) then
             !non-diffuse filtering begins
-            call filteronestep(ymiss(d,:),yt(d,:),transpose(zt(:,:,(d-1)*timevar(1)+1)),ht(:,:,(d-1)*timevar(2)+1),&
-            tt(:,:,(d-1)*timevar(3)+1),rqr(:,:,(d-1)*tv+1),at,pt,vt,ft,kt,lik,tol,meps,c,p,m,j)
+            call filter1step(ymiss(d,:),yt(d,:),transpose(zt(:,:,(d-1)*timevar(1)+1)),ht(:,:,(d-1)*timevar(2)+1),&
+            tt(:,:,(d-1)*timevar(3)+1),rqr(:,:,(d-1)*tv+1),at,pt,vt,ft,kt,lik,tol,c,p,m,j)
 
         else
             j = p
@@ -77,8 +77,8 @@ p, m, r, n, lik, tol,rankp,marginal)
     !Non-diffuse filtering continues from t=d+1, i=1
 
     do t = d+1, n
-        call filteronestep(ymiss(t,:),yt(t,:),transpose(zt(:,:,(t-1)*timevar(1)+1)),ht(:,:,(t-1)*timevar(2)+1),&
-        tt(:,:,(t-1)*timevar(3)+1),rqr(:,:,(t-1)*tv+1),at,pt,vt,ft,kt,lik,tol,meps,c,p,m,0)
+        call filter1step(ymiss(t,:),yt(t,:),transpose(zt(:,:,(t-1)*timevar(1)+1)),ht(:,:,(t-1)*timevar(2)+1),&
+        tt(:,:,(t-1)*timevar(3)+1),rqr(:,:,(t-1)*tv+1),at,pt,vt,ft,kt,lik,tol,c,p,m,0)
 
     end do
 

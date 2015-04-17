@@ -116,7 +116,7 @@ tol,nd,ndl,sim,c,simwhat,simdim,antithetics)
 
         atplus=0.0d0
         call filtersimfast(yplus, ymiss, timevar, zt,tt, a1, ft,kt,&
-        finf, kinf, d, j, p, m, n,tol,atplus)
+        finf, kinf, d, j, p, m, n,atplus)
         if(simwhat.EQ.4) then
             do t = 1, n
                 sim(:,t,i) = at(:,t) - atplus(:,t) + aplus(:,t)
