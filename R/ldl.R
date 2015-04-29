@@ -8,6 +8,15 @@
 #' diagonal values are counted as zero. Same value is used in isSymmetric function.
 #' @return Transformed matrix with D in diagonal, L in strictly lower diagonal 
 #' and zeros on upper diagonal.
+#' @examples
+#' # Positive semidefinite matrix, example matrix taken from ?chol
+#' x <- matrix(c(1:5, (1:5)^2), 5, 2)
+#' x <- cbind(x, x[, 1] + 3*x[, 2])
+#' m <- crossprod(x)
+#' l <- ldl(m)
+#' d<-diag(diag(x))
+#' diag(l)<-1
+#' all.equal(l%*%d%*%t(l),m,tol=1e-15)
 ldl <- 
   function(x, tol = max(abs(diag(x))) * .Machine$double.eps) {
     if (!isSymmetric(x, tol = tol)) 

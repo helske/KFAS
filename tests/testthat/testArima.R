@@ -1,3 +1,5 @@
+context("Testing ARIMA models")
+
 test_that("arimaSSM works properly",{
   tol<-1e-3
   s <- 12
