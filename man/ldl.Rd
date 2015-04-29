@@ -19,4 +19,14 @@ and zeros on upper diagonal.
 \description{
 Function \code{ldl} computes the LDL decomposition of a positive semidefinite matrix.
 }
+\examples{
+# Positive semidefinite matrix, example matrix taken from ?chol
+x <- matrix(c(1:5, (1:5)^2), 5, 2)
+x <- cbind(x, x[, 1] + 3*x[, 2])
+m <- crossprod(x)
+l <- ldl(m)
+d<-diag(diag(x))
+diag(l)<-1
+all.equal(l\%*\%d\%*\%t(l),m,tol=1e-15)
+}
 

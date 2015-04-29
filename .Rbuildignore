@@ -4,3 +4,4 @@
 ^.*\.project
 ^TODO$
 ^\.travis\.yml$
+^README.md$
