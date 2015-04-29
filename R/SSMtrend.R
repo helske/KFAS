@@ -23,8 +23,6 @@ SSMtrend <-
     if (type == 2) {
         Z[, 1] <- 1
         p <- 1
-        # state_names <- switch(degree, `1` = 'level', `2` = c('level', 'slope'),
-        # paste0('trend', 1:degree))
     } else {
         for (i in 1:p) Z[i, (i - 1) * degree + 1] <- 1
     }
@@ -74,12 +72,9 @@ SSMtrend <-
             if (!is.list(Q)) 
                 stop("Q must be a list of length degree.")
             for (i in 1:degree) {
-                if ((p > 1 && length(Q[[i]]) == 1) || (p == 1 && length(Q[[i]]) != 
-                  1) || (p > 1 && (dim(Q[[i]])[1:2] != p || !(max(1, dim(Q[[i]])[3], 
-                  na.rm = TRUE) %in% c(1, n))))) 
+              if(length(Q[[i]]) != 1 && (is.null(dim(Q[[i]])) || any(dim(Q[[i]])[1:2]!=p) || !(max(dim(Q[[i]])[3], 1, na.rm = TRUE) %in% c(1, n))))
                   stop("Q must be a list of length degree, which contains (p x p) matrices, (p x p x 1), or (p x p x n) arrays, where p is the number of series. ")
-                Qm[seq(from = i, by = degree, length = p), seq(from = i, by = degree, 
-                  length = p), ] <- Q[[i]]
+                Qm[seq(from = i, by = degree, length = p), seq(from = i, by = degree, length = p), ] <- Q[[i]]
             }
             k <- dim(Qm)[1]
             R <- diag(k)

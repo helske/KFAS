@@ -55,8 +55,9 @@ SSMarima <-
     }
     if (stationary) {
         nd <- which(diag(P1inf) == 0)
-        temp <- try(solve(a = diag((m - d * p)^2) - matrix(kronecker(T[nd, nd], T[nd, 
-            nd]), (m - d * p)^2, (m - d * p)^2), b = c(R[nd, , drop = FALSE] %*% 
+        mnd <- length(nd)
+        temp <- try(solve(a = diag(mnd^2) - matrix(kronecker(T[nd, nd], T[nd, 
+            nd]), mnd^2, mnd^2), b = c(R[nd, , drop = FALSE] %*% 
             Q %*% t(R[nd, , drop = FALSE]))), TRUE)
         if (class(temp) == "try-error") {
             stop("ARIMA part is numerically too close to non-stationarity.")

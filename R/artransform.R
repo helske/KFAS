@@ -12,7 +12,5 @@
 #' of ARMA models to time series with missing observations, Technometrics 
 #' Vol 22. p. 389--395.
 artransform <- function(param) {
-  param <- tanh(param)
-  p <- length(param)
-  .Fortran("fartransform", as.double(param), phi = param, as.integer(p))$phi
+  .Fortran("fartransform", phi = tanh(param), length(param))$phi
 }

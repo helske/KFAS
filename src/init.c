@@ -5,7 +5,7 @@
 #include "declarations.h"
 
 static R_FortranMethodDef FortEntries[] = {
-		{"fartransform", (DL_FUNC) &F77_SUB(artransform), 3},
+		{"fartransform", (DL_FUNC) &F77_SUB(artransform), 2},
 		{"fldl", (DL_FUNC) &F77_SUB(ldl), 4},
 		{"fldlssm", (DL_FUNC) &F77_SUB(ldlssm), 15},
 		{"fsignaltheta", (DL_FUNC) &F77_SUB(signaltheta), 12},

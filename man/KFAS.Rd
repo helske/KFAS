@@ -255,6 +255,43 @@ pred <- predict(model,states=c('custom','regression'),interval='prediction')
 ts.plot(pred$front,pred$rear,model$y,col=c(1,2,2,3,4,4,5,6),lty=c(1,2,2,1,2,2,1,1))
 }
 
+## Simulate ARMA(2,2) process
+set.seed(1)
+y <- arima.sim(n = 1000, list(ar = c(0.8897, -0.4858), ma = c(-0.2279, 0.2488)),
+               innov = rnorm(1000) * sqrt(0.5))
+
+
+model <- SSModel(y~SSMarima(ar=c(0,0),ma=c(0,0),Q=1),H=0)
+likfn <- function(pars, model, estimate=TRUE){
+  tmp <- try(SSMarima(artransform(pars[1:2]),artransform(pars[3:4]),Q = exp(pars[5])),silent=TRUE)
+  if(!inherits(tmp,"try-error")){
+    model["T","arima"] <- tmp$T
+    model["R","arima"] <- tmp$R
+    model["P1","arima"] <- tmp$P1
+    model["Q","arima"] <- tmp$Q
+    if(estimate){
+      -logLik(model)
+    } else model
+  } else {
+    if(estimate){
+      1e100
+    } else model
+  }
+}
+
+fit_kfas <- optim(par = c(rep(0,4),log(1)), model = model, fn = likfn, method="BFGS")
+model <- likfn(fit_kfas$par,model,FALSE)
+
+# AR coefficients:
+model$T[2:3,2,1]
+# MA coefficients:
+model$R[3:4]
+# sigma2:
+model$Q[1]
+# intercept
+KFS(model)
+# same with arima:
+arima(y,c(2,0,2))
 \dontrun{
 # Poisson model
 model<-SSModel(VanKilled~law+SSMtrend(1,Q=list(matrix(NA)))+

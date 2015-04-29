@@ -1,3 +1,8 @@
+Changes from version 1.1.0 to 1.1.1:
+ * Corrected dimensionality checks of systemn matrices in auxiliary functions. Previously SSMtrend 
+   threw an error with time varying Q for univariate series.
+ * Corrected memory leak in artransform which sometimes caused R to crash.
+ * Added tests and example regarding ARIMA models.
 Changes from version 1.0.4-1 to 1.1.0:
  * Added state types level and slope for easier extraction of states in multiple functions.
  * coef.KFS: Added argument states for partial state vector extraction.

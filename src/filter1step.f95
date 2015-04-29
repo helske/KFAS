@@ -68,12 +68,6 @@ pinf,finf,kinf,rankp,lik,tol,meps,c,p,m,i)
 
     call dsymm('r','u',m,m,1.0d0,pinf,m,tt,m,0.0d0,mm,m)
     call dgemm('n','t',m,m,m,1.0d0,mm,m,tt,m,0.0d0,pinf,m)
-    do i = 1, m
-        if(pinf(i,i) .LT. meps) then
-            pinf(i,:) = 0.0d0
-            pinf(:,i) = 0.0d0
-        end if
-    end do
 
 end subroutine dfilter1step
 
@@ -115,7 +109,7 @@ subroutine filter1step(ymiss, yt, zt, ht, tt, rqr, at, pt, vt, ft,kt,lik,tol,c,p
                 call dsyr('u',m,-finv,kt(:,i),1,pt,m)
                 lik = lik - c - 0.5d0*(log(ft(i)) + vt(i)**2*finv)
             else
-                ft(i)=0.0d0
+                ft(i) = 0.0d0
             end if
         end if
     end do

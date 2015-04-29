@@ -397,7 +397,7 @@ KFS <-
     if (filterout$d == n & filterout$j == p) 
       warning("Model is degenerate, diffuse phase did not end.")
     filterout$Pinf <- filterout$Pinf[1:m, 1:m, 1:filterout$d, drop = FALSE]
-    if (filterout$d > 0 & m > 1 & min(apply(filterout$Pinf, 3, diag)) < 0) 
+    if (filterout$d > 0 & m > 1 & min(apply(filterout$Pinf, 3, diag)) < -.Machine$double.eps^0.5) 
       warning(paste0("Possible error in diffuse filtering: Negative variances in Pinf, ",
                      "check the model or try changing the tolerance parameter tol or P1/P1inf of the model."))
     if (sum(filterout$Finf > 0) != sum(diag(model$P1inf))) 
@@ -501,7 +501,7 @@ KFS <-
                             as.integer("state" %in% smoothing), as.integer("disturbance" %in% smoothing), 
                             as.integer(("signal" %in% smoothing || "mean" %in% smoothing)))
       
-      if (m > 1 & min(apply(smoothout$V, 3, diag)) < -.Machine$double.eps)
+      if (m > 1 & min(apply(smoothout$V, 3, diag)) < -.Machine$double.eps^0.5)
        warning(paste0("Possible error in smoothing: Negative variances in V, ",
                      "check the model or try changing the tolerance parameter tol or P1/P1inf of the model."))
       if ("state" %in% smoothing) {

@@ -63,8 +63,7 @@ SSMcycle <-
         tvq <- 0
     } else {
         if (type == 1) {
-            if (length(Q) != 1 && (!identical(dim(Q)[1], dim(Q)[2]) || dim(Q)[1] != 
-                p || !(max(dim(Q)[3], 1, na.rm = TRUE) %in% c(1, n)))) 
+            if (length(Q) != 1 && (is.null(dim(Q)) || any(dim(Q)[1:2] != p) || !(max(dim(Q)[3], 1, na.rm = TRUE) %in% c(1, n)))) 
                 stop("Misspecified Q, argument Q must be (p x p) matrix, (p x p x 1), or (p x p x n) array where m is the number of time series.")
             tvq <- max(dim(Q)[3] == n, 0, na.rm = TRUE)
             Qm <- array(0, c(m, m, tvq * (n - 1) + 1))
@@ -74,8 +73,7 @@ SSMcycle <-
             } else Qm[cbind(rep(1:(p * 2), p), rep(1:2, p^2) + rep(0:(p - 1) * 2, each = p * 
                 2), 1)] <- rep(Q, each = 2)
         } else {
-            if (length(Q) != 1 && (!identical(dim(Q)[1], dim(Q)[2]) || isTRUE(dim(Q)[1] != 
-                1) || !(max(dim(Q)[3], 1, na.rm = TRUE) %in% c(1, n)))) 
+            if (length(Q) != 1 && (is.null(dim(Q)) || any(dim(Q)[1:2] != 1) || !(max(dim(Q)[3], 1, na.rm = TRUE) %in% c(1, n)))) 
                 stop("Misspecified Q, argument Q must be a scalar, (1 x 1) matrix, or (1 x 1 x 1)/(1 x 1 x n) array.")
             tvq <- max(dim(Q)[3] == n, 0, na.rm = TRUE)
             Qm <- array(0, c(m, m, tvq * (n - 1) + 1))

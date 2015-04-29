@@ -62,19 +62,16 @@ at, pt, vt, ft,kt, pinf, finf, kinf, lik, tol,rankp,theta,thetavar,filtersignal)
 
 
         if(rankp .EQ. 0 .AND. j .LT. p) then
-                !non-diffuse filtering begins
-
+           !non-diffuse filtering begins
             call filter1step(ymiss(d,:),yt(d,:),transpose(zt(:,:,(d-1)*timevar(1)+1)),ht(:,:,(d-1)*timevar(2)+1),&
             tt(:,:,(d-1)*timevar(3)+1),rqr(:,:,(d-1)*tv+1),&
             at(:,d+1),pt(:,:,d+1),vt(:,d),ft(:,d),kt(:,:,d),lik,tol,c,p,m,j)
-
         else
             j = p
         end if
     end if
 
     !Non-diffuse filtering continues from t=d+1, i=1
-
 
     do t = d+1, n
         at(:,t+1) = at(:,t)
