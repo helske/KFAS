@@ -104,7 +104,8 @@
 #'   
 #'   \item{muhat}{Smoothed estimates of \eqn{f(\theta_t) | y_1, \ldots ,
 #'   y_n)}{f(\theta[t]) | y[1], \ldots , y[n])}, where \eqn{f} is the inverse
-#'   link function.  }
+#'   link function, or in Poisson case \eqn{u_t f(\theta_t) | y_1, \ldots ,
+#'   y_n)}{u[t]f(\theta[t]) | y[1], \ldots , y[n])}, where \eqn{u} is the exposure term.}
 #'   
 #'   
 #'   \item{V_mu}{Covariances \eqn{Cov(f(\theta_t)| y_1, \ldots , 
