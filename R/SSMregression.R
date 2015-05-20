@@ -170,7 +170,7 @@ SSMregression <-
                     "(m x k x n) array where m is the number of states and k is the number of disturbance terms."))
       tvr <- max(dim(R)[3] == n, 0, na.rm = TRUE)
     }
-    if (dim(unique(Z))[[3]] == 1) {
+    if (dim(unique(Z,MARGIN=3))[[3]] == 1) {
       Z <- Z[, , 1, drop = FALSE]
       tvz <- 0
     }

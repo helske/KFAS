@@ -1,5 +1,8 @@
+Changes from version 1.1.1 to 1.1.2:
+ * SSMregression: If Z contains only intercept or other time-invariant variables only, Z is reduced to time-invariant.
+
 Changes from version 1.1.0 to 1.1.1:
- * Corrected dimensionality checks of systemn matrices in auxiliary functions. Previously SSMtrend 
+ * Corrected dimensionality checks of system matrices in auxiliary functions. Previously SSMtrend 
    threw an error with time varying Q for univariate series.
  * Corrected memory leak in artransform which sometimes caused R to crash.
  * Added tests and example regarding ARIMA models.
