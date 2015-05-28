@@ -8,6 +8,8 @@ KFAS: R Package for Exponential Family State Space Models
 Package KFAS provides tools for modelling exponential family state space models such as
 structural time series, ARIMA models, generalized linear models and generalized linear mixed models.
 
+[Vignette at CRAN](http://cran.r-project.org/web/packages/KFAS/vignettes/KFAS.pdf)
+
 Main features
 --------------------------------------------------------------------------
 
