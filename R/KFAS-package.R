@@ -501,8 +501,8 @@ NULL
 NULL 
 #' Alcohol related deaths in Finland 1969--2013
 #'
-#' A multivariate time series object containing the population sizes and number of alcohol related
-#' deaths in Finland in four age groups.
+#' A multivariate time series object containing the number of alcohol related
+#' deaths and population sizes (divided by 100,000) of Finland in four age groups.
 #' 
 #' @name alcohol
 #' @docType data

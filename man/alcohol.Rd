@@ -11,8 +11,8 @@ Statistics Finland:
 \url{pxweb2.stat.fi/database/StatFin/vrm/vaerak/vaerak_en.asp}
 }
 \description{
-A multivariate time series object containing the population sizes and number of alcohol related
-deaths in Finland in four age groups.
+A multivariate time series object containing the number of alcohol related
+deaths and population sizes (divided by 100,000) of Finland in four age groups.
 }
 \keyword{datasets}
 
