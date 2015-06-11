@@ -9,10 +9,10 @@ p, m, r, n, lik, tol,rankp,marginal)
     integer, intent(in) ::  p, m, r, n
     integer, intent(inout) :: rankp,marginal
     integer ::  t,d,j,tv
-    integer, intent(in), dimension(n,p) :: ymiss
+    integer, intent(in), dimension(p,n) :: ymiss
     integer, intent(in), dimension(5) :: timevar
-    double precision, intent(in), dimension(n,p) :: yt
-    double precision, intent(in), dimension(p,m,(n-1)*timevar(1)+1) :: zt
+    double precision, intent(in), dimension(p,n) :: yt
+    double precision, intent(in), dimension(m,p,(n-1)*timevar(1)+1) :: zt
     double precision, intent(in), dimension(p,p,(n-1)*timevar(2)+1) :: ht
     double precision, intent(in), dimension(m,m,(n-1)*timevar(3)+1) :: tt
     double precision, intent(in), dimension(m,r,(n-1)*timevar(4)+1) :: rt
@@ -56,14 +56,14 @@ p, m, r, n, lik, tol,rankp,marginal)
         diffuse: do while(d .LT. n .AND. rankp .GT. 0)
             d = d+1
            
-            call dfilter1step(ymiss(d,:),yt(d,:),transpose(zt(:,:,(d-1)*timevar(1)+1)),ht(:,:,(d-1)*timevar(2)+1),&
+            call dfilter1step(ymiss(:,d),yt(:,d),zt(:,:,(d-1)*timevar(1)+1),ht(:,:,(d-1)*timevar(2)+1),&
             tt(:,:,(d-1)*timevar(3)+1),rqr(:,:,(d-1)*tv+1), at,pt,vt,ft,kt,pinf,finf,kinf,rankp,lik,tol,meps,c,p,m,j)
 
         end do diffuse
 
         if(rankp .EQ. 0 .AND. j .LT. p) then
             !non-diffuse filtering begins
-            call filter1step(ymiss(d,:),yt(d,:),transpose(zt(:,:,(d-1)*timevar(1)+1)),ht(:,:,(d-1)*timevar(2)+1),&
+            call filter1step(ymiss(:,d),yt(:,d),zt(:,:,(d-1)*timevar(1)+1),ht(:,:,(d-1)*timevar(2)+1),&
             tt(:,:,(d-1)*timevar(3)+1),rqr(:,:,(d-1)*tv+1),at,pt,vt,ft,kt,lik,tol,c,p,m,j)
 
         else
@@ -77,7 +77,7 @@ p, m, r, n, lik, tol,rankp,marginal)
     !Non-diffuse filtering continues from t=d+1, i=1
 
     do t = d+1, n
-        call filter1step(ymiss(t,:),yt(t,:),transpose(zt(:,:,(t-1)*timevar(1)+1)),ht(:,:,(t-1)*timevar(2)+1),&
+        call filter1step(ymiss(:,t),yt(:,t),zt(:,:,(t-1)*timevar(1)+1),ht(:,:,(t-1)*timevar(2)+1),&
         tt(:,:,(t-1)*timevar(3)+1),rqr(:,:,(t-1)*tv+1),at,pt,vt,ft,kt,lik,tol,c,p,m,0)
 
     end do

@@ -87,9 +87,8 @@ logLik.SSModel <-
         k <- attr(object, "k")       
         tv <- attr(object, "tv") 
       } 
-      
-      out <- .Fortran(fgloglik, NAOK = TRUE, object$y, ymiss, tv, 
-                      object$Z, object$H, object$T, object$R, object$Q, object$a1, object$P1, 
+      out <- .Fortran(fgloglik, NAOK = TRUE, t(object$y), t(ymiss), tv, 
+                      aperm(object$Z,c(2,1,3)), object$H, object$T, object$R, object$Q, object$a1, object$P1, 
                       object$P1inf, p, m, k, n, 
                       lik = double(1), object$tol, as.integer(sum(object$P1inf)),marginal=as.integer(marginal))
       
