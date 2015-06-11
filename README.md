@@ -8,6 +8,8 @@ KFAS: R Package for Exponential Family State Space Models
 Package KFAS provides tools for modelling exponential family state space models such as
 structural time series, ARIMA models, generalized linear models and generalized linear mixed models.
 
+[Vignette at CRAN](http://cran.r-project.org/web/packages/KFAS/vignettes/KFAS.pdf)
+
 Main features
 --------------------------------------------------------------------------
 
@@ -21,7 +23,7 @@ Main features
 
 Most of the algorithms are based on book "Time Series Analysis by State Space Methods" and related articles by J. Durbin and S.J. Koopman.
 
-Current version of KFAS in CRAN is 1.1.1. You can install the latest development version from github using devtools package:
+Current version of KFAS in [CRAN](http://cran.r-project.org/web/packages/KFAS/index.html) is 1.1.1. You can install the latest development version from github using devtools package:
 
 ```R
 install.packages("devtools")
