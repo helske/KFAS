@@ -90,28 +90,28 @@ approxSSM <- function(model, theta, maxiter = 50, tol = 1e-08) {
   } else theta <- array(theta, dim = c(n, p))
   
   dist <- pmatch(x = model$distribution, duplicates.ok = TRUE,
-                 table = c("gaussian", "poisson",
-                           "binomial", "gamma", "negative binomial"))
+    table = c("gaussian", "poisson",
+      "binomial", "gamma", "negative binomial"))
   
   # Call Fortran subroutine for model approximation
   out <-
     .Fortran(fapprox, NAOK = TRUE, model$y, ymiss, tv, model$Z, model$T,
-             model$R, Htilde = array(0, c(p, p, n)), model$Q, model$a1,
-             model$P1, model$P1inf, p, n, m, k, theta = theta, model$u,
-             ytilde = array(0, dim = c(n, p)), dist,
-             maxiter = as.integer(maxiter), model$tol,
-             as.integer(sum(model$P1inf)), as.double(tol), diff = double(1),
-             double(1),info=integer(1))
+      model$R, Htilde = array(0, c(p, p, n)), model$Q, model$a1,
+      model$P1, model$P1inf, p, n, m, k, theta = theta, model$u,
+      ytilde = array(0, dim = c(n, p)), dist,
+      maxiter = as.integer(maxiter), model$tol,
+      as.integer(sum(model$P1inf)), as.double(tol), diff = double(1),
+      double(1),info=integer(1))
   if(out$info != 0){    
     warning(switch(as.character(out$info),
-                   "-3" = "Couldn't compute LDL decomposition of P1.",
-                   "-2" =  "Couldn't compute LDL decomposition of Q.",
-                   "1" = paste0("Gaussian approximation failed due to ",
-                                "non-finite value in linear predictor."),
-                   "2" = paste0("Gaussian approximation failed due to ",
-                                "non-finite value of p(theta|y)."),
-                   "3" = paste0("Maximum number of iterations reached, latest ", 
-                                "difference was ", signif(out$diff, 3))
+      "-3" = "Couldn't compute LDL decomposition of P1.",
+      "-2" =  "Couldn't compute LDL decomposition of Q.",
+      "1" = paste0("Gaussian approximation failed due to ",
+        "non-finite value in linear predictor."),
+      "2" = paste0("Gaussian approximation failed due to ",
+        "non-finite value of p(theta|y)."),
+      "3" = paste0("Maximum number of iterations reached, latest ", 
+        "difference was ", signif(out$diff, 3))
     ))
   }
   

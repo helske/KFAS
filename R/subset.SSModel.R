@@ -1,8 +1,8 @@
 #' @method subset<- SSModel
 #' @export
 #' @rdname Extract.SSModel
-`subset<-.SSModel` <- 
-  function(x, element, states, etas, series, times, ..., value) {
+`subset<-.SSModel` <- function(x, element, states, etas, series, times, 
+  ..., value) {
   
   .Deprecated(new="[<-.SSModel")
   x[element, states, etas, series, times, ...] <- value
@@ -19,9 +19,8 @@
 #' @export 
 #' @rdname Extract.SSModel
 #' @param ... ignored.
-subset.SSModel <- 
-  function(x, element, states, etas, series, times, ...) {  
-    .Deprecated(new="[.SSModel")
-    x[element, states, etas, series, times, ...]  
+subset.SSModel <- function(x, element, states, etas, series, times, ...) {  
+  .Deprecated(new="[.SSModel")
+  x[element, states, etas, series, times, ...]  
   
 } 

@@ -53,18 +53,20 @@
 #' @param standardization_type Type of standardization. Either \code{"marginal"}
 #'   (default) for marginal standardization or  \code{"cholesky"} for Cholesky-type standardization.
 #' @param ... Ignored.
-rstandard.KFS <- 
-  function(model, type = c("recursive", "pearson", "state", "deviance"), standardization_type=c("marginal","cholesky"), ...) {
-    type <- match.arg(type)
-    stype <- match.arg(standardization_type)
-    
-    if(type=="deviance")
-      .Deprecated(msg="Argument type=\"deviance\" is deprecated.")
-    
-    if (type == "state" && any(model$model$distribution != "gaussian")) 
-      stop("State residuals are only supported for fully gaussian models.")
-    
-    x<-do.call(paste0(type,"_standardized"), list(model,stype))
-    return(ts(drop(x), start = start(model$model$y), frequency = frequency(model$model$y), 
-              names = colnames(model$model$y)))
-  } 
+rstandard.KFS <- function(model, 
+  type = c("recursive", "pearson", "state", "deviance"), 
+  standardization_type = c("marginal","cholesky"), ...) {
+  
+  type <- match.arg(type)
+  stype <- match.arg(standardization_type)
+  
+  if(type == "deviance")
+    .Deprecated(msg="Argument type=\"deviance\" is deprecated.")
+  
+  if (type == "state" && any(model$model$distribution != "gaussian")) 
+    stop("State residuals are only supported for fully gaussian models.")
+  
+  x <- do.call(paste0(type,"_standardized"), list(model,stype))
+  return(ts(drop(x), start = start(model$model$y), frequency = frequency(model$model$y), 
+    names = colnames(model$model$y)))
+} 

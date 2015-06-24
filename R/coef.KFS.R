@@ -22,7 +22,9 @@
 #'    These can be combined. Default is \code{"all"}.
 #' @param \dots Ignored.
 #' @return Multivariate time series containing estimates states.
-coef.KFS <- function(object, start = NULL, end = NULL, filtered = FALSE, states = "all", ...) {
+coef.KFS <- function(object, start = NULL, end = NULL, filtered = FALSE, 
+  states = "all", ...) {
+  
   if (!filtered) {
     if (!is.null(object$alphahat)) {
       tmp <- object$alphahat
@@ -32,9 +34,9 @@ coef.KFS <- function(object, start = NULL, end = NULL, filtered = FALSE, states 
       tmp <- object$a
     } else stop("Input does not contain filtered estimates for states, rerun KFS with state filtering.")
   }
-  states <- match.arg(arg = states, choices = c("all", "arima", "custom", "level","slope",
-                                                "cycle", "seasonal", "trend", "regression"),
-                      several.ok = TRUE)
+  states <- match.arg(arg = states, 
+    choices = c("all", "arima", "custom", "level","slope", "cycle", "seasonal", "trend", "regression"),
+    several.ok = TRUE)
   
   if ("all" %in% states) {
     states <- as.integer(1:attr(object$model, "m"))

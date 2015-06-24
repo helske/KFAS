@@ -9,8 +9,6 @@
 #' \code{SSMarima}, \code{SSMcustom}, \code{SSMcycle}, \code{SSMregression},
 #' \code{SSMseasonal} and \code{SSMtrend}.
 #' 
-#' 
-#' 
 #' @export
 #' @rdname SSModel
 #' @name SSModel
@@ -140,207 +138,207 @@
 #' # This fails as there is no x in the environment of f
 #' c(SSModel(y~-1+SSMregression(f),data=data1)$Z)
 #' } 
-SSModel <- 
-  function(formula, data, H, u, distribution, tol = .Machine$double.eps^0.5) {
-   
-    if (missing(data)) {
-      data <- environment(formula)
-      tsp_data <- NULL
-    } else {
-      tsp_data <- tsp(data)
-      data<-as.data.frame(data) 
-    }
-    
-    # Modifying formula object, catching special functions
-    mf <- mc <- match.call(expand.dots = FALSE)
-    mf <- mf[c(1L, match(c("formula", "data"), names(mf), 0L))]
-    mf[[1L]] <- as.name("model.frame")
-    mf$na.action <- as.name("na.pass")
-    components <- c("SSMregression", "SSMtrend", "SSMseasonal", "SSMcycle", 
-                    "SSMarima", "SSMcustom")
-    
-    all_terms <- terms_out<-terms(formula, specials = components, data = data)
-    specials <- attr(all_terms, "specials")
-    components <- components[!sapply(specials, is.null)]
-    if (length(unlist(specials)) > 0) {
-      if (length(attr(all_terms, "term.labels")) == length(unlist(specials))){ 
-        all_terms <- terms(update.formula(all_terms, . ~ . + .emptyx.), 
-                           specials = components)
-      }
-      drops <- which(attr(all_terms, "term.labels") %in% 
-                       rownames(attr(all_terms, "factors"))[unlist(specials)])
-      mf$formula <- formula(drop.terms(all_terms, drops, keep.response = TRUE))      
-      mf$formula <- update.formula(mf$formula, . ~ . - .emptyx., simplify = TRUE)
-    }
-    # Remove extra intercept
-    if ("SSMtrend" %in% components || 
-          ("SSMarima" %in% components && 
-             isTRUE(eval(attr(all_terms, "variables")[[specials$SSMarima + 1]]$d, 
-                         envir = data, enclos=parent.frame()) > 0))){
-      mf$formula <- update.formula(mf$formula, . ~ . - 1)
-      remove.intercept<-TRUE
-    } else remove.intercept<-FALSE
-    
-    mf <- eval(mf, parent.frame())
-    y <- model.response(mf, "numeric")
-    mt <- attr(mf, "terms")   
+SSModel <- function(formula, data, H, u, distribution, 
+  tol = .Machine$double.eps^0.5) {
   
-    vars <- attr(all_terms, "variables")
-    reg_in_formula <- as.integer(dim(model.matrix(mt, mf))[2] > 0)
-    specials <- unlist(specials)
-    lspecials <- length(specials)
-    n_blocks <- lspecials + reg_in_formula
-    blocks <- vector("list", n_blocks)
-    
-    # building y
-    if (is.array(y)) {
-      p <- dim(y)[2]
-      n <- dim(y)[1]
+  if (missing(data)) {
+    data <- environment(formula)
+    tsp_data <- NULL
+  } else {
+    tsp_data <- tsp(data)
+    data<-as.data.frame(data) 
+  }
+  
+  # Modifying formula object, catching special functions
+  mf <- mc <- match.call(expand.dots = FALSE)
+  mf <- mf[c(1L, match(c("formula", "data"), names(mf), 0L))]
+  mf[[1L]] <- as.name("model.frame")
+  mf$na.action <- as.name("na.pass")
+  components <- c("SSMregression", "SSMtrend", "SSMseasonal", "SSMcycle", 
+    "SSMarima", "SSMcustom")
+  
+  all_terms <- terms_out<-terms(formula, specials = components, data = data)
+  specials <- attr(all_terms, "specials")
+  components <- components[!sapply(specials, is.null)]
+  if (length(unlist(specials)) > 0) {
+    if (length(attr(all_terms, "term.labels")) == length(unlist(specials))){ 
+      all_terms <- terms(update.formula(all_terms, . ~ . + .emptyx.), 
+        specials = components)
+    }
+    drops <- which(attr(all_terms, "term.labels") %in% 
+        rownames(attr(all_terms, "factors"))[unlist(specials)])
+    mf$formula <- formula(drop.terms(all_terms, drops, keep.response = TRUE))      
+    mf$formula <- update.formula(mf$formula, . ~ . - .emptyx., simplify = TRUE)
+  }
+  # Remove extra intercept
+  if ("SSMtrend" %in% components || 
+      ("SSMarima" %in% components && 
+          isTRUE(eval(attr(all_terms, "variables")[[specials$SSMarima + 1]]$d, 
+            envir = data, enclos=parent.frame()) > 0))){
+    mf$formula <- update.formula(mf$formula, . ~ . - 1)
+    remove.intercept<-TRUE
+  } else remove.intercept<-FALSE
+  
+  mf <- eval(mf, parent.frame())
+  y <- model.response(mf, "numeric")
+  mt <- attr(mf, "terms")   
+  
+  vars <- attr(all_terms, "variables")
+  reg_in_formula <- as.integer(dim(model.matrix(mt, mf))[2] > 0)
+  specials <- unlist(specials)
+  lspecials <- length(specials)
+  n_blocks <- lspecials + reg_in_formula
+  blocks <- vector("list", n_blocks)
+  
+  # building y
+  if (is.array(y)) {
+    p <- dim(y)[2]
+    n <- dim(y)[1]
+  } else {
+    y <- as.array(y)
+    if (length(dim(y)) != 2) {
+      p <- 1
+      n <- length(y)
+      dim(y) <- c(n, p)
+    }
+  }
+  y_names <- colnames(y)
+  if (is.null(y_names)) {
+    y_names <- if (p > 1) {
+      colnames(y) <- paste0("y", 1:p)
+    } else ""
+  }
+  class(y) <- if (p > 1) 
+    c("mts", "ts", "matrix") else "ts"
+  if (is.null(tsp(y))) {
+    if (!is.null(tsp_data)) {
+      tsp(y) <- tsp_data
+    } else tsp(y) <- c(1, n, 1)
+  }
+  # defining the distributions of y
+  if (missing(distribution)) {
+    distribution <- rep("gaussian", length = p)
+  } else {
+    if (length(distribution) == 1 | length(distribution) == p) {
+      distribution <- rep(pmatch(x = distribution, table = c("gaussian", "poisson", 
+        "binomial", "gamma", "negative binomial"), duplicates.ok = TRUE), 
+        length = p)
+    } else stop("Length of the argument 'distribution' must be either 1 or p, the number of series.")
+    if (any(is.na(distribution))) 
+      stop("Misspeficied distribution, only 'gaussian', 'poisson', 'binomial', 'gamma', and 'negative binomial' are allowed.")
+    distribution <- c("gaussian", "poisson", "binomial", "gamma", "negative binomial")[distribution]
+  }
+  # building H and u
+  if (all(distribution == "gaussian")) {
+    if (!missing(H)) {
+      if (length(H) == 1) 
+        dim(H) <- c(1, 1)
+      dims <- dim(H)
+      if (dims[1] != p || dims[2] != p) 
+        stop("Misspecified H, argument H must be NULL, a scalar, p x p matrix or p x p x n array, where p is the number of time series.")
+      H <- array(H, dim = c(p, p, 1 + (n - 1) * (max(dims[3], 0, na.rm = TRUE) > 
+          1)))
     } else {
-      y <- as.array(y)
-      if (length(dim(y)) != 2) {
-        p <- 1
-        n <- length(y)
-        dim(y) <- c(n, p)
-      }
+      H <- array(diag(p), dim = c(p, p, 1))
     }
-    y_names <- colnames(y)
-    if (is.null(y_names)) {
-      y_names <- if (p > 1) {
-        colnames(y) <- paste0("y", 1:p)
-      } else ""
-    }
-    class(y) <- if (p > 1) 
-      c("mts", "ts", "matrix") else "ts"
-    if (is.null(tsp(y))) {
-      if (!is.null(tsp_data)) {
-        tsp(y) <- tsp_data
-      } else tsp(y) <- c(1, n, 1)
-    }
-    # defining the distributions of y
-    if (missing(distribution)) {
-      distribution <- rep("gaussian", length = p)
+    u <- "Omitted"
+  } else {
+    if (!missing(H)) 
+      warning("H ignored as model contains non-gaussian series.")
+    H <- "Omitted"
+    if (missing(u)) {
+      u <- array(1, c(n, p))
     } else {
-      if (length(distribution) == 1 | length(distribution) == p) {
-        distribution <- rep(pmatch(x = distribution, table = c("gaussian", "poisson", 
-                                                               "binomial", "gamma", "negative binomial"), duplicates.ok = TRUE), 
-                            length = p)
-      } else stop("Length of the argument 'distribution' must be either 1 or p, the number of series.")
-      if (any(is.na(distribution))) 
-        stop("Misspeficied distribution, only 'gaussian', 'poisson', 'binomial', 'gamma', and 'negative binomial' are allowed.")
-      distribution <- c("gaussian", "poisson", "binomial", "gamma", "negative binomial")[distribution]
+      if (is.data.frame(u)) {
+        u <- data.matrix(u)
+        if (!identical(dim(u), c(n, p))) 
+          stop("Mispecified u, argument u must be either vector of length p, or n x p matrix, where p is the number of time series.")
+      } else u <- matrix(u, n, p, byrow = is.vector(u))
+      storage.mode(u) <- "double"
     }
-    # building H and u
-    if (all(distribution == "gaussian")) {
-      if (!missing(H)) {
-        if (length(H) == 1) 
-          dim(H) <- c(1, 1)
-        dims <- dim(H)
-        if (dims[1] != p || dims[2] != p) 
-          stop("Misspecified H, argument H must be NULL, a scalar, p x p matrix or p x p x n array, where p is the number of time series.")
-        H <- array(H, dim = c(p, p, 1 + (n - 1) * (max(dims[3], 0, na.rm = TRUE) > 
-                                                     1)))
-      } else {
-        H <- array(diag(p), dim = c(p, p, 1))
-      }
-      u <- "Omitted"
-    } else {
-      if (!missing(H)) 
-        warning("H ignored as model contains non-gaussian series.")
-      H <- "Omitted"
-      if (missing(u)) {
-        u <- array(1, c(n, p))
-      } else {
-        if (is.data.frame(u)) {
-          u <- data.matrix(u)
-          if (!identical(dim(u), c(n, p))) 
-            stop("Mispecified u, argument u must be either vector of length p, or n x p matrix, where p is the number of time series.")
-        } else u <- matrix(u, n, p, byrow = is.vector(u))
-        storage.mode(u) <- "double"
-      }
-      class(u) <- class(y)
-      tsp(u) <- tsp(y)
-    }
-    # building model components by calling appropriate component functions
-    if (reg_in_formula) {
-      blocks[[1]] <- SSMregression(rformula = formula(delete.response(mt)), data = mf, 
-                                   index = 1:p, n = n, ynames = if (p > 1) 
-                                     y_names,remove.intercept=remove.intercept)
-      blocks[[1]]$state_types <- "regression"
-      #if(attr(mt, "intercept")==1) remove.intercept<-TRUE
-    }
-    if (lspecials > 0) 
-      for (i in 1:lspecials) {
+    class(u) <- class(y)
+    tsp(u) <- tsp(y)
+  }
+  # building model components by calling appropriate component functions
+  if (reg_in_formula) {
+    blocks[[1]] <- SSMregression(rformula = formula(delete.response(mt)), data = mf, 
+      index = 1:p, n = n, ynames = if (p > 1) 
+        y_names,remove.intercept=remove.intercept)
+    blocks[[1]]$state_types <- "regression"
+  }
+  if (lspecials > 0) 
+    for (i in 1:lspecials) {
       
-        comp <- vars[[1 + specials[i]]]
-        comp <- match.call(definition = eval(comp[[1]],envir=data,enclos=parent.frame()), call = comp)
-        if (is.null(comp$index)) {
-          comp$index <- 1:p
-        } else if (!all(eval(comp$index,envir=data,enclos=parent.frame()) %in% (1:p))) 
-          stop("Index must have values between 1 to p. ")
-        comp$n <- n
-        if (comp[[1]] != "SSMcustom" && p > 1 && 
-              is.null(comp$ynames) && (is.null(comp$type) || comp$type != "common")) 
-          comp$ynames <- y_names[eval(comp$index,envir=data,enclos=parent.frame())]
-        #if(comp[[1]] == "SSMregression")
-        #  comp$remove.intercept<-remove.intercept
-        blocks[[i + reg_in_formula]] <- eval(comp, envir=data,enclos=parent.frame())
-        # use level and slope instead of generic trend
-        if((s_type <- substr(as.character(comp[[1]]), 
-                            start = 4, stop = 15L))=="trend"){
-          s_type <- substr(blocks[[i + reg_in_formula]]$state_names, start = 1, stop = 5L)
-        }
-        blocks[[i + reg_in_formula]]$state_types <- s_type
+      comp <- vars[[1 + specials[i]]]
+      comp <- match.call(definition = eval(comp[[1]],envir=data,enclos=parent.frame()), call = comp)
+      if (is.null(comp$index)) {
+        comp$index <- 1:p
+      } else if (!all(eval(comp$index,envir=data,enclos=parent.frame()) %in% (1:p))) 
+        stop("Index must have values between 1 to p. ")
+      comp$n <- n
+      if (comp[[1]] != "SSMcustom" && p > 1 && 
+          is.null(comp$ynames) && (is.null(comp$type) || comp$type != "common")) 
+        comp$ynames <- y_names[eval(comp$index,envir=data,enclos=parent.frame())]
+
+      blocks[[i + reg_in_formula]] <- eval(comp, envir=data,enclos=parent.frame())
+      # use level and slope instead of generic trend
+      if((s_type <- substr(as.character(comp[[1]]), 
+        start = 4, stop = 15L))=="trend"){
+        s_type <- substr(blocks[[i + reg_in_formula]]$state_names, start = 1, stop = 5L)
       }
-   
-    # building combined model arrays
-    cum_m <- c(0, cumsum(unlist(sapply(blocks, "[", "m"))))
-    cum_k <- c(0, cumsum(unlist(sapply(blocks, "[", "k"))))
-    m <- max(cum_m)
-    k <- max(cum_k, 1)
-    tv<-numeric(5)
-    tv[1] <- max(0, unlist(sapply(blocks, "[", "tvz")))
-    tv[2] <- any(distribution != "gaussian") || (dim(H)[3] > 1)
-    tv[3] <- max(0, unlist(sapply(blocks, "[", "tvt")))
-    tv[4] <- max(0, unlist(sapply(blocks, "[", "tvr")))
-    tv[5] <- max(0, unlist(sapply(blocks, "[", "tvq")))
-    Z <- array(0, c(p, m, 1 + (n - 1) * tv[1]))
-    T <- array(0, c(m, m, 1 + (n - 1) * tv[3]))
-    R <- array(0, c(m, k, 1 + (n - 1) * tv[4]))
-    Q <- array(0, c(k, k, 1 + (n - 1) * tv[5]))
-    P1 <- P1inf <- matrix(0, m, m)
-    a1 <- matrix(0, nrow = m)
-    state_names <- unname(unlist(sapply(blocks, "[", "state_names")))
-    rownames(a1) <- rownames(T) <- colnames(T) <- colnames(Z) <- rownames(R) <- rownames(P1) <- colnames(P1) <- rownames(P1inf) <- colnames(P1inf) <- state_names
-    rownames(Z) <- colnames(y)
-    state_types <- character(m)
-    eta_types <- character(k)
-    for (i in 1:n_blocks) {
-      Z[blocks[[i]]$index, (cum_m[i] + 1):cum_m[i + 1], ] <- blocks[[i]]$Z
-      T[(cum_m[i] + 1):cum_m[i + 1], (cum_m[i] + 1):cum_m[i + 1], ] <- blocks[[i]]$T
-      R[(cum_m[i] + 1):cum_m[i + 1], seq_len(cum_k[i + 1] - cum_k[i]) + cum_k[i], 
-        ] <- blocks[[i]]$R
-      Q[seq_len(cum_k[i + 1] - cum_k[i]) + cum_k[i], seq_len(cum_k[i + 1] - cum_k[i]) + 
-          cum_k[i], ] <- blocks[[i]]$Q
-      a1[(cum_m[i] + 1):cum_m[i + 1], ] <- blocks[[i]]$a1
-      P1[(cum_m[i] + 1):cum_m[i + 1], (cum_m[i] + 1):cum_m[i + 1]] <- blocks[[i]]$P1
-      P1inf[(cum_m[i] + 1):cum_m[i + 1], (cum_m[i] + 1):cum_m[i + 1]] <- blocks[[i]]$P1inf
-      state_types[(cum_m[i] + 1):cum_m[i + 1]] <- eta_types[seq_len(cum_k[i + 1] - 
-                                                                      cum_k[i]) + cum_k[i]] <- blocks[[i]]$state_types
+      blocks[[i + reg_in_formula]]$state_types <- s_type
     }
-    if (all(dim(R) == c(1, 1, 1)) && R[1] == 0) 
-      R[1] <- 1
-    model <- list(y = y, Z = Z, H = H, T = T, R = R, Q = Q, a1 = a1, P1 = P1, P1inf = P1inf, 
-                  u = u, distribution = distribution, tol = tol)
-    class(model) <- "SSModel"
-    attr(model, "p") <- as.integer(p)
-    attr(model, "m") <- as.integer(m)
-    attr(model, "k") <- as.integer(k)
-    attr(model, "n") <- as.integer(n)    
-    attr(model, "tv") <- as.integer(tv)
-    attr(model, "state_types") <- state_types
-    attr(model, "eta_types") <- eta_types
-    model$call <- mc
-    model$terms <- terms_out
-    invisible(model)
-  } 
+  
+  # building combined model arrays
+  cum_m <- c(0, cumsum(unlist(sapply(blocks, "[", "m"))))
+  cum_k <- c(0, cumsum(unlist(sapply(blocks, "[", "k"))))
+  m <- max(cum_m)
+  k <- max(cum_k, 1)
+  tv<-numeric(5)
+  tv[1] <- max(0, unlist(sapply(blocks, "[", "tvz")))
+  tv[2] <- any(distribution != "gaussian") || (dim(H)[3] > 1)
+  tv[3] <- max(0, unlist(sapply(blocks, "[", "tvt")))
+  tv[4] <- max(0, unlist(sapply(blocks, "[", "tvr")))
+  tv[5] <- max(0, unlist(sapply(blocks, "[", "tvq")))
+  Z <- array(0, c(p, m, 1 + (n - 1) * tv[1]))
+  T <- array(0, c(m, m, 1 + (n - 1) * tv[3]))
+  R <- array(0, c(m, k, 1 + (n - 1) * tv[4]))
+  Q <- array(0, c(k, k, 1 + (n - 1) * tv[5]))
+  P1 <- P1inf <- matrix(0, m, m)
+  a1 <- matrix(0, nrow = m)
+  state_names <- unname(unlist(sapply(blocks, "[", "state_names")))
+  rownames(a1) <- rownames(T) <- colnames(T) <- colnames(Z) <- 
+    rownames(R) <- rownames(P1) <- colnames(P1) <- rownames(P1inf) <- 
+    colnames(P1inf) <- state_names
+  rownames(Z) <- colnames(y)
+  state_types <- character(m)
+  eta_types <- character(k)
+  for (i in 1:n_blocks) {
+    Z[blocks[[i]]$index, (cum_m[i] + 1):cum_m[i + 1], ] <- blocks[[i]]$Z
+    T[(cum_m[i] + 1):cum_m[i + 1], (cum_m[i] + 1):cum_m[i + 1], ] <- blocks[[i]]$T
+    R[(cum_m[i] + 1):cum_m[i + 1], seq_len(cum_k[i + 1] - cum_k[i]) + cum_k[i], 
+      ] <- blocks[[i]]$R
+    Q[seq_len(cum_k[i + 1] - cum_k[i]) + cum_k[i], seq_len(cum_k[i + 1] - cum_k[i]) + 
+        cum_k[i], ] <- blocks[[i]]$Q
+    a1[(cum_m[i] + 1):cum_m[i + 1], ] <- blocks[[i]]$a1
+    P1[(cum_m[i] + 1):cum_m[i + 1], (cum_m[i] + 1):cum_m[i + 1]] <- blocks[[i]]$P1
+    P1inf[(cum_m[i] + 1):cum_m[i + 1], (cum_m[i] + 1):cum_m[i + 1]] <- blocks[[i]]$P1inf
+    state_types[(cum_m[i] + 1):cum_m[i + 1]] <- eta_types[seq_len(cum_k[i + 1] - 
+        cum_k[i]) + cum_k[i]] <- blocks[[i]]$state_types
+  }
+  if (all(dim(R) == c(1, 1, 1)) && R[1] == 0) 
+    R[1] <- 1
+  model <- list(y = y, Z = Z, H = H, T = T, R = R, Q = Q, a1 = a1, P1 = P1, P1inf = P1inf, 
+    u = u, distribution = distribution, tol = tol)
+  class(model) <- "SSModel"
+  attr(model, "p") <- as.integer(p)
+  attr(model, "m") <- as.integer(m)
+  attr(model, "k") <- as.integer(k)
+  attr(model, "n") <- as.integer(n)    
+  attr(model, "tv") <- as.integer(tv)
+  attr(model, "state_types") <- state_types
+  attr(model, "eta_types") <- eta_types
+  model$call <- mc
+  model$terms <- terms_out
+  invisible(model)
+} 

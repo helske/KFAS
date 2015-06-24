@@ -98,9 +98,9 @@ fitSSM <- function(model, inits, updatefn, checkfn,...) {
         naHnd <- which(upper.tri(H[naHd, naHd]) & is.na(H[naHd, naHd]))
         H[naHd, naHd][lower.tri(H[naHd, naHd])] <- 0
         diag(H)[naHd] <- exp(0.5 * pars[length(naQd) + length(naQnd) + 
-                                          1:length(naHd)])
+            1:length(naHd)])
         H[naHd, naHd][naHnd] <- pars[length(naQd) + length(naQnd) + 
-                                       length(naHd) + 1:length(naHnd)]
+            length(naHd) + 1:length(naHnd)]
         model$H[naHd, naHd, 1] <- crossprod(H[naHd, naHd])
         
       }
@@ -109,7 +109,7 @@ fitSSM <- function(model, inits, updatefn, checkfn,...) {
   }
   # Check that the model object is of proper form
   is.SSModel(updatefn(inits, model, ...), na.check = TRUE, 
-             return.logical = FALSE)
+    return.logical = FALSE)
   
   # use is.SSModel as default checking function
   if (missing(checkfn)) {

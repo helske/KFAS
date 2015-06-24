@@ -2,26 +2,28 @@
 #' @export
 #' @param x SSModel object
 #' @param ... Ignored.
-print.SSModel <- 
-  function(x, ...) {
-    cat("\nCall:\n", paste(deparse(x$call), sep = "\n", collapse = "\n"), "\n\n", 
-        sep = "")
-    cat("State space model object of class SSModel\n\n")
-    cat("Dimensions:\n")
-    print(paste0("Number of time points: ", attr(x, "n")), quote = FALSE)
-    print(paste0("Number of time series: ", attr(x, "p")), quote = FALSE)
-    print(paste0("Number of disturbances: ", attr(x, "k")), quote = FALSE)
-    print(paste0("Number of states: ", attr(x, "m")), quote = FALSE)
-    cat("Names of the states:\n")
-    print.default(format(rownames(x$a1)), quote = FALSE, print.gap = 2L)
-    cat("Distributions of the time series:\n")
-    print.default(format(x$distribution), quote = FALSE, print.gap = 2L)
-    if (is.SSModel(x)) {
-      cat("\nObject is a valid object of class SSModel.")
-    } else {
-      is.SSModel(x, return.logical = FALSE)
-    }
+print.SSModel <-  function(x, ...) {
+  
+  cat("\nCall:\n", paste(deparse(x$call), sep = "\n", collapse = "\n"), "\n\n", 
+    sep = "")
+  cat("State space model object of class SSModel\n\n")
+  cat("Dimensions:\n")
+  print(paste0("Number of time points: ", attr(x, "n")), quote = FALSE)
+  print(paste0("Number of time series: ", attr(x, "p")), quote = FALSE)
+  print(paste0("Number of disturbances: ", attr(x, "k")), quote = FALSE)
+  print(paste0("Number of states: ", attr(x, "m")), quote = FALSE)
+  cat("Names of the states:\n")
+  print.default(format(rownames(x$a1)), quote = FALSE, print.gap = 2L)
+  cat("Distributions of the time series:\n")
+  if(length(distr <- unique(x$distribution)) > 1)
+    distr <- x$distribution
+  print.default(format(distr), quote = FALSE, print.gap = 2L)
+  if (is.SSModel(x)) {
+    cat("\nObject is a valid object of class SSModel.")
+  } else {
+    is.SSModel(x, return.logical = FALSE)
   }
+}
 #' Print Ouput of Kalman Filter and Smoother
 #' 
 #' @export
@@ -31,34 +33,35 @@ print.SSModel <-
 #' @param digits minimum number of digits to be printed.
 #' @param ... Ignored.
 print.KFS <- 
-  function(x, type="state", digits = max(3L, getOption("digits") - 3L), ...) {
+  function(x, type = "state", digits = max(3L, getOption("digits") - 3L), ...) {
     
     p <- attr(x$model, "p")
     m <- attr(x$model, "m")
     n <- attr(x$model, "n")
-    type<-match.arg(type,choices=c("state","signal","mean"),several.ok=TRUE)
+    type <- match.arg(type,choices = c("state", "signal", "mean"), 
+      several.ok = TRUE)
     
     pdiag <- 1 + 0:(p - 1) * (p + 1)
     mdiag <- 1 + 0:(m - 1) * (m + 1)
-    if(type=="state" && (!is.null(x$a) || !is.null(x$alphahat))){
+    if(type == "state" && (!is.null(x$a) || !is.null(x$alphahat))){
       if (is.null(x$alphahat)) { 
         gaussian<-all(x$model$distribution=="gaussian")
-        print_this <- cbind(x$a[n + gaussian,], sqrt(x$P[, , n + gaussian][mdiag]))
+        print_this <- cbind(x$a[n + gaussian, ], sqrt(x$P[, , n + gaussian][mdiag]))
         colnames(print_this) <- c("Estimate", "Std. Error")
         if(gaussian){
           cat(paste0("\n Filtered values of states and standard errors at time n+1 = ",n+1,":\n"))
         } else cat(paste0("\n Filtered values of states and standard errors at time n = ",n,":\n"))
         print.default(format(print_this, digits = digits), quote = FALSE, print.gap = 2)
       } else {        
-        print_this <- cbind(x$alphahat[n,], sqrt(x$V[, , n][mdiag]))
+        print_this <- cbind(x$alphahat[n, ], sqrt(x$V[, , n][mdiag]))
         colnames(print_this) <- c("Estimate", "Std. Error")
         cat(paste0("\n Smoothed values of states and standard errors at time n = ",n,":\n"))
         print.default(format(print_this, digits = digits), quote = FALSE, print.gap = 2)        
       }
     }
-    if(type=="signal" && (!is.null(x$t) || !is.null(x$thetahat))){
+    if(type == "signal" && (!is.null(x$t) || !is.null(x$thetahat))){
       if (is.null(x$thetahat)) { 
-        print_this <- cbind(x$t[n,], sqrt(x$P_theta[, , n][pdiag]))
+        print_this <- cbind(x$t[n, ], sqrt(x$P_theta[, , n][pdiag]))
         colnames(print_this) <- c("Estimate", "Std. Error")
         cat(paste0("\n Filtered values of signal and standard errors at time n = ",n,":\n"))
         print.default(format(print_this, digits = digits), quote = FALSE, print.gap = 2)
@@ -69,9 +72,9 @@ print.KFS <-
         print.default(format(print_this, digits = digits), quote = FALSE, print.gap = 2)        
       }
     }
-    if(type=="mean" && (!is.null(x$m) || !is.null(x$muhat))){
+    if(type == "mean" && (!is.null(x$m) || !is.null(x$muhat))){
       if (is.null(x$muhat)) { 
-        print_this <- cbind(x$m[n,], sqrt(x$P_mu[, , n][pdiag]))
+        print_this <- cbind(x$m[n, ], sqrt(x$P_mu[, , n][pdiag]))
         colnames(print_this) <- c("Estimate", "Std. Error")
         cat(paste0("\n Filtered values of mean and standard errors at time n = ",n,":\n"))
         print.default(format(print_this, digits = digits), quote = FALSE, print.gap = 2)

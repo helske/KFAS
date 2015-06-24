@@ -32,14 +32,14 @@ hatvalues.KFS <- function(model, ...) {
     if (is.null(model$V_theta)) 
       stop("KFS was run without signal smoothing, cannot compute hat values.")
     hatv <- matrix(apply(model$V_theta/app$H, 3, diag), attr(model$model, "n"), 
-                   attr(model$model, "p"), byrow = TRUE)
+      attr(model$model, "p"), byrow = TRUE)
   } else {
     if (is.null(model$V_mu)) 
       stop("KFS was run without mean smoothing, cannot compute hat values.")
     hatv <- matrix(apply(model$V_mu, 3, diag), 
-                   attr(model$model, "n"), attr(model$model,"p"), byrow = TRUE)/
+      attr(model$model, "n"), attr(model$model,"p"), byrow = TRUE)/
       matrix(apply(model$model$H, 3, diag), attr(model$model, "n"), 
-             attr(model$model, "p"), byrow = TRUE)
+        attr(model$model, "p"), byrow = TRUE)
   }
   attributes(hatv) <- attributes(model$model$y)
   hatv[is.na(model$model$y)]<-NA

@@ -1,4 +1,5 @@
 mvInnovations <- function(x){
+  
   # Compute the multivariate versions of one step-ahead prediction errors and variances
   # Used in rstandard.KFS
   if(any(x$model$distribution!="gaussian"))

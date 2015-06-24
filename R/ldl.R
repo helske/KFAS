@@ -17,12 +17,11 @@
 #' d<-diag(diag(x))
 #' diag(l)<-1
 #' all.equal(l%*%d%*%t(l),m,tol=1e-15)
-ldl <- 
-  function(x, tol = max(abs(diag(x))) * .Machine$double.eps) {
-    if (!isSymmetric(x, tol = tol)) 
-        stop("Matrix is not symmetric!")
-    out <- .Fortran(fldl, x = x, as.integer(dim(x)[1]), tol = tol, info = integer(1))
-    if(out$info!=0)
-      stop("Matrix x is not positive semidefinite.")
-    out$x
+ldl <- function(x, tol = max(abs(diag(x))) * .Machine$double.eps) {
+  if (!isSymmetric(x, tol = tol)) 
+    stop("Matrix is not symmetric!")
+  out <- .Fortran(fldl, x = x, as.integer(dim(x)[1]), tol = tol, info = integer(1))
+  if(out$info!=0)
+    stop("Matrix x is not positive semidefinite.")
+  out$x
 } 

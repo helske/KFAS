@@ -54,100 +54,100 @@
 #'   approximation.
 #' @param ... Ignored.
 #' @return Log-likelihood of the model.
-logLik.SSModel <- 
-  function(object, marginal=FALSE, nsim = 0, antithetics = TRUE, theta, check.model = TRUE, 
-           transform = c("ldl", "augment"), maxiter = 50, seed, convtol = 1e-8,...) {
-    # Check that the model object is of proper form
-    if (check.model) {
-      if (!is.SSModel(object, na.check = TRUE)) {
-        return(-.Machine$double.xmax)
-      }
+logLik.SSModel <- function(object, marginal=FALSE, nsim = 0,
+  antithetics = TRUE, theta, check.model = TRUE, 
+  transform = c("ldl", "augment"), maxiter = 50, seed, convtol = 1e-8,...) {
+  # Check that the model object is of proper form
+  if (check.model) {
+    if (!is.SSModel(object, na.check = TRUE)) {
+      return(-.Machine$double.xmax)
     }
-    p <- attr(object, "p")
-    m <- attr(object, "m")
-    k <- attr(object, "k")
-    n <- attr(object, "n")
-    ymiss <- array(is.na(object$y), dim = c(n, p))
-    storage.mode(ymiss) <- "integer"
-    tv <- attr(object, "tv")
-    if (all(object$distribution == "gaussian")) {
-      # degenerate case
-      if (all(c(object$Q, object$H) < .Machine$double.eps) || all(c(object$R, object$H) < .Machine$double.eps)) 
-        return(-.Machine$double.xmax^0.75)   
-      
-      if (p > 1 && any(abs(apply(object$H, 3, "[", !diag(p))) > object$tol)) {
-        object <- 
-          tryCatch(transformSSM(object, type = match.arg(arg = transform, choices = c("ldl", "augment"))), 
-                   error = function(e) e)
-        if (!inherits(object, "SSModel")) {
-          warning(object$message)
-          return(-.Machine$double.xmax^0.75)
-        }        
-        m <- attr(object, "m")
-        k <- attr(object, "k")       
-        tv <- attr(object, "tv") 
-      } 
-      out <- .Fortran(fgloglik, NAOK = TRUE, t(object$y), t(ymiss), tv, 
-                      aperm(object$Z,c(2,1,3)), object$H, object$T, object$R, object$Q, object$a1, object$P1, 
-                      object$P1inf, p, m, k, n, 
-                      lik = double(1), object$tol, as.integer(sum(object$P1inf)),marginal=as.integer(marginal))
-      
-      
-      if(out$marginal==-1){        
-        warning("Computation of marginal likelihood failed, could not compute the additional term.")
-        return(-.Machine$double.xmax^0.75)
-      }      
-    } else {
-      if(maxiter<1)
-        stop("Argument maxiter must a positive integer. ")
-      if (all(c(object$Q, object$u) == 0) || all(c(object$R, object$u) == 0) || 
-            any(!is.finite(c(object$R, object$Q, object$u) == 0))) 
-        return(-.Machine$double.xmax^0.75)
-      if (missing(theta)) {
-        theta <- initTheta(object$y, object$u, object$distribution)
-      } else theta <- array(theta, dim = c(n, p))    
-      if (nsim == 0) {
-        nsim <- 1
-        sim <- 0        
-        simtmp <- list(epsplus = array(0, c(1, 1, 1)), etaplus = array(0, c(1, 1, 1)),
-                       aplus1 = array(0, dim = c(1, 1)), c2 = numeric(1),
-                       nonzeroP1 = which(diag(object$P1) > object$tol), 
-                       nNonzeroP1 = length(which(diag(object$P1) > object$tol)),
-                       zeroP1inf = which(diag(object$P1inf) > 0), 
-                       nNonzeroP1inf = as.integer(sum(object$P1inf)))
-      } else {
-        sim <- 1
-        if (missing(seed)) 
-          seed <- 123
-        set.seed(seed)
-        simtmp <- simHelper(object, ymiss, nsim, antithetics)
-      }
-      nsim2 <- as.integer(max(sim * (3 * antithetics * nsim + nsim), 1))
-      out <- .Fortran(fngloglik, NAOK = TRUE, object$y, ymiss, tv, 
-                      object$Z, object$T, object$R, object$Q, object$a1, object$P1, object$P1inf, 
-                      p, m, k, n, lik = double(1), 
-                      theta = theta, object$u, 
-                      pmatch(x = object$distribution, 
-                             table = c("gaussian", "poisson", "binomial", "gamma", "negative binomial"), 
-                             duplicates.ok = TRUE), 
-                      maxiter = as.integer(maxiter), simtmp$nNonzeroP1inf, convtol, 
-                      simtmp$nNonzeroP1, as.integer(nsim), simtmp$epsplus, simtmp$etaplus, 
-                      simtmp$aplus1, simtmp$c2, object$tol, 
-                      info = integer(1), as.integer(antithetics), as.integer(sim), nsim2, 
-                      simtmp$zeroP1inf, length(simtmp$zeroP1inf), diff = double(1), 
-                      marginal = as.integer(marginal))     
-      
-      if(out$info!=0){        
-        warning(switch(as.character(out$info),
-                       "-3" = "Couldn't compute LDL decomposition of P1.",
-                       "-2" =  "Couldn't compute LDL decomposition of Q.",
-                       "1" = "Gaussian approximation failed due to non-finite value in linear predictor.",
-                       "2" = "Gaussian approximation failed due to non-finite value of p(theta|y).",
-                       "3" = "Maximum number of iterations reached, the approximation did not converge.",
-                       "5" = "Computation of marginal likelihood failed, could not compute the additional term."
-        )) 
-        if(out$info!=3) return(-.Machine$double.xmax^0.75)
-      }   
-    } 
-    out$lik
   }
+  p <- attr(object, "p")
+  m <- attr(object, "m")
+  k <- attr(object, "k")
+  n <- attr(object, "n")
+  ymiss <- array(is.na(object$y), dim = c(n, p))
+  storage.mode(ymiss) <- "integer"
+  tv <- attr(object, "tv")
+  if (all(object$distribution == "gaussian")) {
+    # degenerate case
+    if (all(c(object$Q, object$H) < .Machine$double.eps) || all(c(object$R, object$H) < .Machine$double.eps)) 
+      return(-.Machine$double.xmax^0.75)   
+    
+    if (p > 1 && any(abs(apply(object$H, 3, "[", !diag(p))) > object$tol)) {
+      object <- 
+        tryCatch(transformSSM(object, type = match.arg(arg = transform, choices = c("ldl", "augment"))), 
+          error = function(e) e)
+      if (!inherits(object, "SSModel")) {
+        warning(object$message)
+        return(-.Machine$double.xmax^0.75)
+      }        
+      m <- attr(object, "m")
+      k <- attr(object, "k")       
+      tv <- attr(object, "tv") 
+    } 
+    out <- .Fortran(fgloglik, NAOK = TRUE, t(object$y), t(ymiss), tv, 
+      aperm(object$Z,c(2,1,3)), object$H, object$T, object$R, object$Q, object$a1, object$P1, 
+      object$P1inf, p, m, k, n, 
+      lik = double(1), object$tol, as.integer(sum(object$P1inf)),marginal=as.integer(marginal))
+    
+    
+    if(out$marginal==-1){        
+      warning("Computation of marginal likelihood failed, could not compute the additional term.")
+      return(-.Machine$double.xmax^0.75)
+    }      
+  } else {
+    if(maxiter<1)
+      stop("Argument maxiter must a positive integer. ")
+    if (all(c(object$Q, object$u) == 0) || all(c(object$R, object$u) == 0) || 
+        any(!is.finite(c(object$R, object$Q, object$u) == 0))) 
+      return(-.Machine$double.xmax^0.75)
+    if (missing(theta)) {
+      theta <- initTheta(object$y, object$u, object$distribution)
+    } else theta <- array(theta, dim = c(n, p))    
+    if (nsim == 0) {
+      nsim <- 1
+      sim <- 0        
+      simtmp <- list(epsplus = array(0, c(1, 1, 1)), etaplus = array(0, c(1, 1, 1)),
+        aplus1 = array(0, dim = c(1, 1)), c2 = numeric(1),
+        nonzeroP1 = which(diag(object$P1) > object$tol), 
+        nNonzeroP1 = length(which(diag(object$P1) > object$tol)),
+        zeroP1inf = which(diag(object$P1inf) > 0), 
+        nNonzeroP1inf = as.integer(sum(object$P1inf)))
+    } else {
+      sim <- 1
+      if (missing(seed)) 
+        seed <- 123
+      set.seed(seed)
+      simtmp <- simHelper(object, ymiss, nsim, antithetics)
+    }
+    nsim2 <- as.integer(max(sim * (3 * antithetics * nsim + nsim), 1))
+    out <- .Fortran(fngloglik, NAOK = TRUE, object$y, ymiss, tv, 
+      object$Z, object$T, object$R, object$Q, object$a1, object$P1, object$P1inf, 
+      p, m, k, n, lik = double(1), 
+      theta = theta, object$u, 
+      pmatch(x = object$distribution, 
+        table = c("gaussian", "poisson", "binomial", "gamma", "negative binomial"), 
+        duplicates.ok = TRUE), 
+      maxiter = as.integer(maxiter), simtmp$nNonzeroP1inf, convtol, 
+      simtmp$nNonzeroP1, as.integer(nsim), simtmp$epsplus, simtmp$etaplus, 
+      simtmp$aplus1, simtmp$c2, object$tol, 
+      info = integer(1), as.integer(antithetics), as.integer(sim), nsim2, 
+      simtmp$zeroP1inf, length(simtmp$zeroP1inf), diff = double(1), 
+      marginal = as.integer(marginal))     
+    
+    if(out$info!=0){        
+      warning(switch(as.character(out$info),
+        "-3" = "Couldn't compute LDL decomposition of P1.",
+        "-2" =  "Couldn't compute LDL decomposition of Q.",
+        "1" = "Gaussian approximation failed due to non-finite value in linear predictor.",
+        "2" = "Gaussian approximation failed due to non-finite value of p(theta|y).",
+        "3" = "Maximum number of iterations reached, the approximation did not converge.",
+        "5" = "Computation of marginal likelihood failed, could not compute the additional term."
+      )) 
+      if(out$info!=3) return(-.Machine$double.xmax^0.75)
+    }   
+  } 
+  out$lik
+}

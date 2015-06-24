@@ -10,12 +10,14 @@ simHelper <- function(model, ymiss, nsim, antithetics) {
   if(any(model$distribution != "gaussian")){
     x <- array(t(!ymiss), c(attr(model, "p"), attr(model, "n"), nsim))
   } else {
-    x <- array(abs(apply(model$H, 3, diag)) > model$tol, c(attr(model, "p"), attr(model, "n"))) & (!t(ymiss))
+    x <- array(abs(apply(model$H, 3, diag)) > model$tol, 
+      c(attr(model, "p"), attr(model, "n"))) & (!t(ymiss))
     x <- array(x, c(attr(model, "p"), attr(model, "n"), nsim))  
   }  
   
   dfeps <- sum(x)/nsim
-  x2 <- array(abs(apply(model$Q, 3, diag)) > model$tol, c(attr(model, "k"), (attr(model, "n") - 1) * attr(model, "tv")[5] + 1))
+  x2 <- array(abs(apply(model$Q, 3, diag)) > model$tol, 
+    c(attr(model, "k"), (attr(model, "n") - 1) * attr(model, "tv")[5] + 1))
   x2 <- array(x2, c(attr(model, "k"), attr(model, "n"), nsim))
   dfeta <- sum(x2)/nsim
   nonzeroP1 <- which(diag(model$P1) > model$tol)
@@ -39,6 +41,7 @@ simHelper <- function(model, ymiss, nsim, antithetics) {
     c2 <- sqrt(qchisq(1 - q, dfu)/c2)
   }
   list(epsplus = epsplus, etaplus = etaplus, aplus1 = aplus1, c2 = c2, 
-       nonzeroP1 = as.integer(nonzeroP1), nNonzeroP1 = nNonzeroP1,
-       zeroP1inf = which(diag(model$P1inf) > 0), nNonzeroP1inf = as.integer(sum(model$P1inf)))
+    nonzeroP1 = as.integer(nonzeroP1), nNonzeroP1 = nNonzeroP1,
+    zeroP1inf = which(diag(model$P1inf) > 0), 
+    nNonzeroP1inf = as.integer(sum(model$P1inf)))
 }
