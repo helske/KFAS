@@ -1,7 +1,7 @@
-! Subroutine for computation of the approximating gaussian model for non-gaussian models
+! Subroutine for computation of the approximating Gaussian model for non-Gaussian models
 
-subroutine approx(yt, ymiss, timevar, zt, tt, rtv, ht, qt, a1, p1,p1inf, p,n,m,r,&
-theta, u, ytilde, dist,maxiter,tol,rankp,convtol,diff,lik,info)
+subroutine approx(yt, ymiss, timevar, zt, tt, rtv, ht, qt, a1, p1,p1inf, p, n, m, r,&
+theta, u, ytilde, dist, maxiter, tol, rankp, convtol, diff, lik, info)
 
     implicit none
 
