@@ -21,8 +21,8 @@
 #' @param data an optional data frame, list or environment containing the
 #'   variables in the model.
 #' @param H covariance matrix or array of disturbance terms
-#'   \eqn{\epsilon_t}{\epsilon[t]} of observation equation. Omitted in case of
-#'   non-gaussian distributions. Augment the state vector if you want to add
+#'   \eqn{\epsilon_t}{\epsilon[t]} of observation equation. Defaults to an identity matrix. Omitted in case of
+#'   non-Gaussian distributions. Augment the state vector if you want to add
 #'   additional noise.
 #' @param u additional parameters for non-Gaussian models. See details in
 #'   \code{\link{KFAS}}.
@@ -35,8 +35,7 @@
 #'   components are constructed.
 #' @param type for cycle, seasonal, trend and regression components, character
 #'   string defining if \code{'distinct'} or \code{'common'} states are used for
-#'   different series.
-#'   
+#'   different series.   
 #' @param Q for arima, cycle and seasonal component, a \eqn{p \times p}{p x p}
 #'   covariance matrix of the disturbances (or in the time varying case \eqn{p
 #'   \times p \times n}{p x p x n} array), where where p=\code{length(index)}. 
@@ -82,26 +81,38 @@
 #' @param ynames names of the times series, only used internally.
 #'   
 #' @return object of class \code{SSModel}, which is a list with the following
-#'   components: \item{y}{A n x p matrix containing the observations. } 
+#'   components: 
+#'   \item{y}{A n x p matrix containing the observations. } 
 #'   \item{Z}{A p x m x 1 or p x m x n array corresponding to the system matrix
-#'   of observation equation. } \item{H}{A p x p x 1 or p x p x n array
+#'   of observation equation. } 
+#'   \item{H}{A p x p x 1 or p x p x n array
 #'   corresponding to the covariance matrix of observational disturbances
-#'   epsilon. } \item{T}{A m x m x 1 or m x m x n array corresponding to the
-#'   first system matrix of state equation. } \item{R}{A m x k x 1 or m x k x n
+#'   epsilon. } 
+#'   \item{T}{A m x m x 1 or m x m x n array corresponding to the
+#'   first system matrix of state equation. } 
+#'   \item{R}{A m x k x 1 or m x k x n
 #'   array corresponding to the second system matrix of state equation. } 
 #'   \item{Q}{A k x k x 1 or k x k x n array corresponding to the covariance
-#'   matrix of state disturbances eta } \item{a1}{A m x 1 matrix containing the
-#'   expected values of the initial states. } \item{P1}{A m x m matrix
+#'   matrix of state disturbances eta } 
+#'   \item{a1}{A m x 1 matrix containing the
+#'   expected values of the initial states. } 
+#'   \item{P1}{A m x m matrix
 #'   containing the covariance matrix of the nondiffuse part of the initial
-#'   state vector. } \item{P1inf}{A m x m matrix containing the covariance
-#'   matrix of the diffuse part of the initial state vector. } \item{u}{A n x p
+#'   state vector. } 
+#'   \item{P1inf}{A m x m matrix containing the covariance
+#'   matrix of the diffuse part of the initial state vector. } 
+#'   \item{u}{A n x p
 #'   matrix of an additional parameters in case of non-Gaussian model.} 
 #'   \item{distribution}{A vector of length p giving the distributions of the
-#'   observations. } \item{tol}{A tolerance parameter for the diffuse phase. } 
+#'   observations. } 
+#'   \item{tol}{A tolerance parameter for the diffuse phase. } 
 #'   \item{call}{Original call to the function. } In addition, object of class
-#'   \code{SSModel} contains following attributes: \item{names}{Names of the
-#'   list components. } \item{p, m, k, n}{Integer valued scalars defining the
-#'   dimensions of the model components. } \item{state_types}{Types of the
+#'   \code{SSModel} contains following attributes: 
+#'   \item{names}{Names of the
+#'   list components. } 
+#'   \item{p, m, k, n}{Integer valued scalars defining the
+#'   dimensions of the model components. } 
+#'   \item{state_types}{Types of the
 #'   states in the model. }
 #'   \item{eta_types}{Types of the
 #'   state disturbances in the model. }
