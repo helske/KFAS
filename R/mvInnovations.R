@@ -1,3 +1,14 @@
+#'Multivariate Innovations
+#'
+#'Function \code{mvInnovations} computes the multivariate versions of one 
+#'step-ahead prediction errors and their variances using the output of \code{KFS}.
+#'@export
+#'@param x Object of class \code{KFS}.
+#'@return 
+#'\item{v}{Multivariate prediction errors \eqn{v_{t} = y_{t} - Z_{t}a_{t}
+#'}{v[t,i] = y[t] - Z[t]a[t]}}
+#'\item{F}{Prediction error variances \eqn{Var(v_{t})}{Var(v[t])}. }
+#'\item{Finf}{Diffuse part of \eqn{F_t}{F[t]}.}
 mvInnovations <- function(x){
   
   # Compute the multivariate versions of one step-ahead prediction errors and variances
