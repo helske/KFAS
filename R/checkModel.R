@@ -31,7 +31,7 @@ is.SSModel <- function(object, na.check = FALSE, return.logical = TRUE) {
   m <- attr(object, "m")
   k <- attr(object, "k")
   n <- attr(object, "n")
-  tv <- attr(object, "n")
+  tv <- attr(object, "tv")
   one <- as.integer(1)
   
   if(return.logical){    
