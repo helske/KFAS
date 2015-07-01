@@ -116,22 +116,27 @@ predict.SSModel <- function(object, newdata, n.ahead,
     if (tvo[1] || tvn[1] || !identical(object$Z, newdata$Z)) {
       object$Z <- array(data = c(array(object$Z, dim = c(m, p, no)), array(newdata$Z, 
         dim = c(m, p, nn))), dim = c(p, m, n))
+      attr(object, "tv")[1] <- 1L
     }
     if (gaussianmodel && (tvo[2] || tvn[2] || !identical(object$H, newdata$H))) {
       object$H <- array(data = c(array(object$H, dim = c(p, p, no)), array(newdata$H, 
         dim = c(p, p, nn))), dim = c(p, p, n))
+      attr(object, "tv")[2] <- 1L
     } else if(!gaussianmodel) object$u <- rbind(object$u, matrix(newdata$u, nn, p))
     if (tvo[3] || tvn[3] || !identical(object$T, newdata$T)) {
       object$T <- array(data = c(array(object$T, dim = c(m, m, no)), array(newdata$T, 
         dim = c(m, m, nn))), dim = c(m, m, n))
+      attr(object, "tv")[3] <- 1L
     }
     if (tvo[4] || tvn[4] || !identical(object$R, newdata$R)) {
       object$R <- array(data = c(array(object$R, dim = c(m, k, no)), array(newdata$R, 
         dim = c(m, k, nn))), dim = c(m, k, n))
+      attr(object, "tv")[4] <- 1L
     }
     if (tvo[5] || tvn[5] || !identical(object$Q, newdata$Q)) {
       object$Q <- array(data = c(array(data = object$Q, dim = c(k, k, no)), 
         array(data = newdata$Q, dim = c(k, k, nn))), dim = c(k, k, n))
+      attr(object, "tv")[5] <- 1L
     }
   } else {
     if (!missing(n.ahead) && !is.null(n.ahead)) {

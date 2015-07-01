@@ -32,7 +32,6 @@ is.SSModel <- function(object, na.check = FALSE, return.logical = TRUE) {
   k <- attr(object, "k")
   n <- attr(object, "n")
   tv <- attr(object, "tv")
-  one <- as.integer(1)
   
   if(return.logical){    
     x <- inherits(object, "SSModel") &&
@@ -43,13 +42,13 @@ is.SSModel <- function(object, na.check = FALSE, return.logical = TRUE) {
               "negative binomial")) &&
       is.integer(c(p,m,k,n,tv)) &&
       identical(dim(object$y), c(n, p)) &&
-      identical(dim(object$Z), c(p, m, (n - one) * tv[1] + one)) &&
+      identical(dim(object$Z), c(p, m, (n - 1L) * tv[1] + 1L)) &&
       (identical(object$H, "Omitted") ||
-         identical(dim(object$H), c(p, p, (n - one) * tv[2] + one))) &&
-      identical(dim(object$T), c(m, m, (n - one) * tv[3] + one)) &&
-      identical(dim(object$R), c(m, k, (n - one) * tv[4] + one)) &&
-      identical(dim(object$Q), c(k, k, (n - one) * tv[5] + one)) &&
-      identical(dim(object$a1), c(m, one)) &&
+         identical(dim(object$H), c(p, p, (n - 1L) * tv[2] + 1L))) &&
+      identical(dim(object$T), c(m, m, (n - 1L) * tv[3] + 1L)) &&
+      identical(dim(object$R), c(m, k, (n - 1L) * tv[4] + 1L)) &&
+      identical(dim(object$Q), c(k, k, (n - 1L) * tv[5] + 1L)) &&
+      identical(dim(object$a1), c(m, 1L)) &&
       identical(dim(object$P1), c(m, m)) &&
       identical(dim(object$P1inf), c(m, m)) &&
       (identical(object$u, "Omitted") || 
@@ -71,12 +70,12 @@ is.SSModel <- function(object, na.check = FALSE, return.logical = TRUE) {
       stop(paste0("Storage mode of some of the model attributes 'p', 'k', ",
                   "'m', 'n', 'tv' is not integer."))
     
-    components <- c("y", "Z", "H", "T", "R", "Q", "a1", "P1", "P1inf", "u",
+    comp1Lnts <- c("y", "Z", "H", "T", "R", "Q", "a1", "P1", "P1inf", "u",
                     "distribution", "tol", "call")
-    if (!all(components %in% names(object)))
+    if (!all(comp1Lnts %in% names(object)))
       stop(paste("Model is not a proper object of class 'SSModel'.
-                   Following components are missing: ",
-                 paste(components[!(components %in% names(object))],
+                   Following comp1Lnts are missing: ",
+                 paste(comp1Lnts[!(comp1Lnts %in% names(object))],
                        collapse = ", ")))
     
     if (!all(object$distribution %in%
@@ -88,13 +87,13 @@ is.SSModel <- function(object, na.check = FALSE, return.logical = TRUE) {
     
     
     if (!(identical(dim(object$y), c(n, p)) &&
-          identical(dim(object$Z), c(p, m, (n - one) * tv[1] + one)) &&
+          identical(dim(object$Z), c(p, m, (n - 1L) * tv[1] + 1L)) &&
           (identical(object$H, "Omitted") ||
-           identical(dim(object$H), c(p, p, (n - one) * tv[2] + one))) &&
-          identical(dim(object$T), c(m, m, (n - one) * tv[3] + one)) &&
-          identical(dim(object$R), c(m, k, (n - one) * tv[4] + one)) &&
-          identical(dim(object$Q), c(k, k, (n - one) * tv[5] + one)) &&
-          identical(dim(object$a1), c(m, one)) &&
+           identical(dim(object$H), c(p, p, (n - 1L) * tv[2] + 1L))) &&
+          identical(dim(object$T), c(m, m, (n - 1L) * tv[3] + 1L)) &&
+          identical(dim(object$R), c(m, k, (n - 1L) * tv[4] + 1L)) &&
+          identical(dim(object$Q), c(k, k, (n - 1L) * tv[5] + 1L)) &&
+          identical(dim(object$a1), c(m, 1L)) &&
           identical(dim(object$P1), c(m, m)) &&
           identical(dim(object$P1inf), c(m, m)) &&
           (identical(object$u, "Omitted") || identical(dim(object$u),
