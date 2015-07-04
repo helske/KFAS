@@ -1,5 +1,4 @@
 [![Build Status](https://travis-ci.org/helske/KFAS.png?branch=master)](https://travis-ci.org/helske/KFAS)
-[![Coverage Status](https://coveralls.io/repos/helske/KFAS/badge.svg?branch=master)](https://coveralls.io/r/helske/KFAS?branch=master)
 [![codecov.io](https://codecov.io/github/helske/KFAS/coverage.svg?branch=master)](https://codecov.io/github/helske/KFAS?branch=master)
 [![downloads](http://cranlogs.r-pkg.org/badges/KFAS)](http://cranlogs.r-pkg.org/badges/KFAS)
 [![cran version](http://www.r-pkg.org/badges/version/KFAS)](http://cran.r-project.org/package=KFAS)
@@ -25,7 +24,7 @@ Main features
 
 Most of the algorithms are based on book "Time Series Analysis by State Space Methods" and related articles by J. Durbin and S.J. Koopman.
 
-Current version of KFAS in [CRAN](http://cran.r-project.org/web/packages/KFAS/index.html) is 1.1.1. You can install the latest development version from github using devtools package:
+Current version of KFAS in [CRAN](http://cran.r-project.org/web/packages/KFAS/index.html) is 1.1.2. You can install the latest development version from github using devtools package:
 
 ```R
 install.packages("devtools")
