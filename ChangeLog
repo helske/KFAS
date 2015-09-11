@@ -1,8 +1,10 @@
+Changes from version 1.1.3 to 1.1.4:
+ * signal: Corrected case of extracting filtered mean when it was missing from the input.
 Changes from version 1.1.2 to 1.1.3:
  * is.SSModel: Tweaked code for performance.
  * is.SSmodel: Corrected bug relating for check of tv attribute.
  * predict.SSModel: Tweaked code for performance.
- * predict.SSmodel: Corrected a bug relating to modifying tv attribute of combined model where 
+ * predict.SSmodel: Corrected a bug relating to modifying tv attribute of combined model where
    system matrices on original and new model were both time invariant but not identical.
 
 Changes from version 1.1.1 to 1.1.2:
@@ -10,7 +12,7 @@ Changes from version 1.1.1 to 1.1.2:
  * SSMregression: If Z contains only intercept or other time-invariant variables only, Z is reduced to time-invariant.
 
 Changes from version 1.1.0 to 1.1.1:
- * Corrected dimensionality checks of system matrices in auxiliary functions. Previously SSMtrend 
+ * Corrected dimensionality checks of system matrices in auxiliary functions. Previously SSMtrend
    threw an error with time varying Q for univariate series.
  * Corrected memory leak in artransform which sometimes caused R to crash.
  * Added tests and example regarding ARIMA models.
@@ -22,34 +24,34 @@ Changes from version 1.0.4-1 to 1.1.0:
  * simulateSSM: Corrected a bug which gave wrong variances for the initial states.
  * rstandard.KFS: Added argument standardization_type which defines whether cholesky or marginal standardization is used.
  * is.SSModel: Tweaked checks for faster performance for time varying models, added check for P1inf.
- * fitSSM: Function now allows fixed time varying covariance matrices. 
+ * fitSSM: Function now allows fixed time varying covariance matrices.
  * fitSSM: check.model is set to FALSE when calling logLik.SSModel in all cases. see ?fitSSM for details.
  * predict.SSModel: Corrected bug which caused partial signal prediction to fail.
- * predict.SSModel: Corrected bug which caused prediction of non-Gaussian models with time varying u to fail. 
- * predict.SSModel: Method now correctly uses original times of the model object for the start and 
-   end times of the predictions. 
- * approxSSM and related functions: Changed the converge criterion for approximating algorithm. 
-   Previous criterion was missing one term which caused poor (or non-) converge in some cases with non-diffuse states.    
+ * predict.SSModel: Corrected bug which caused prediction of non-Gaussian models with time varying u to fail.
+ * predict.SSModel: Method now correctly uses original times of the model object for the start and
+   end times of the predictions.
+ * approxSSM and related functions: Changed the converge criterion for approximating algorithm.
+   Previous criterion was missing one term which caused poor (or non-) converge in some cases with non-diffuse states.
  * approxSSM and related functions: Added a line search as part of approximating algorithm.
    This improves the converge of the algorithm especially in case of poor initial values.
- * logLik.SSModel: Changed constant on Gaussian log-likelihood computation so now adding meaningless predictor 
-   improves diffuse likelihood like it should. In simple regression setting the change is from 
-   n*log(2*pi) to (n-k)*log(2*pi) where k is the number of regression coefficients. See testLM.R in 
+ * logLik.SSModel: Changed constant on Gaussian log-likelihood computation so now adding meaningless predictor
+   improves diffuse likelihood like it should. In simple regression setting the change is from
+   n*log(2*pi) to (n-k)*log(2*pi) where k is the number of regression coefficients. See testLM.R in
    inst/tests for illustration.
- * logLik.SSModel: Added argument 'marginal' for logLik method. If TRUE, additional, 
-   often constant term suggested by Francke et al. (2010) is added to the diffuse log-likelihood. 
+ * logLik.SSModel: Added argument 'marginal' for logLik method. If TRUE, additional,
+   often constant term suggested by Francke et al. (2010) is added to the diffuse log-likelihood.
    See ?logLik.SSModel for details.
- * logLik.SSModel: Changed default value for check.model to TRUE. For large models this adds small 
-   overhead but prevents R from crashing with improperly (manually) modified model objects. 
+ * logLik.SSModel: Changed default value for check.model to TRUE. For large models this adds small
+   overhead but prevents R from crashing with improperly (manually) modified model objects.
  * SSModel: Added terms component for update method.
- * SSModel: Corrected a bug relating to the environments which caused error in SSModel when 
-   calling it inside a function with index argument defined in nonstandard way. 
- * SSModel: When using SSMregression without data argument, if variables are not found in the environment 
-   of the formula, it now searches them from the data argument of SSModel and from the 
+ * SSModel: Corrected a bug relating to the environments which caused error in SSModel when
+   calling it inside a function with index argument defined in nonstandard way.
+ * SSModel: When using SSMregression without data argument, if variables are not found in the environment
+   of the formula, it now searches them from the data argument of SSModel and from the
    environment of main formula. See examples in ?SSModel.
- * Deprecated subset and 'subset<-' methods for SSModel as these were not in 
-   line with the base R's generic function. Use '[.SSModel' instead. Generic 
-   replacement via subset with 'subset<-' was also deprecated as it was only 
+ * Deprecated subset and 'subset<-' methods for SSModel as these were not in
+   line with the base R's generic function. Use '[.SSModel' instead. Generic
+   replacement via subset with 'subset<-' was also deprecated as it was only
    used for SSModel object.
  * rtandard.KFS and residuals.KFS: Deprecated deviance residuals.
  * rtandard.KFS and residuals.KFS: Added support for recursive residuals for non-Gaussian models.
@@ -59,34 +61,34 @@ Changes from version 1.0.4-1 to 1.1.0:
 
 Changes from version 1.0.4 to 1.0.4-1:
  * Corrected R dependency from 3.0.0 to 3.1.0, which is needed for some package tests.
- * Adjusted tolerance parameters in tests for better portability (test should now only fail in case 
+ * Adjusted tolerance parameters in tests for better portability (test should now only fail in case
    of clearly bogus answers).
 
 Changes from version 1.0.3 to 1.0.4:
- * Tweaked the underlying algorithms for increased numerical stability of filtering and smoothing 
+ * Tweaked the underlying algorithms for increased numerical stability of filtering and smoothing
    in KFS. Note that it is still possible that exact diffuse initialization fails due to to numerical
    issues whereas traditional 'big value' approach works and vice versa.
- * Corrected a bug in residuals.KFS which threw an error when computing recursive residuals without 
+ * Corrected a bug in residuals.KFS which threw an error when computing recursive residuals without
    diffuse initialization.
- * Corrected output of LogLik method for non-Gaussian models: It now returns -Inf only when the 
-   approximation algoritm failedcompletely (resulting NA), and issues only warning about 
+ * Corrected output of LogLik method for non-Gaussian models: It now returns -Inf only when the
+   approximation algoritm failedcompletely (resulting NA), and issues only warning about
    non-convergence in other cases.
- * Added checks of degenerate model to LogLik method. If all elements in R, Q and H/u are zero, or 
+ * Added checks of degenerate model to LogLik method. If all elements in R, Q and H/u are zero, or
    they contain any non-finite values, -Inf is returned.
- * Fixed a bug in approximation algorithm which caused the approximation to fail for seemingly 
+ * Fixed a bug in approximation algorithm which caused the approximation to fail for seemingly
    random models.
  * Fixed a bug in SSMcycle which caused error with common components.
  * Fixed bug in SSMcycle which resulted erroneus system matrix T in all cases.
  * Fixed a bug in SSMseasonal which caused error in SSModel when using common components.
- * SSMseasonal with trigonometric seasonal now works properly when period is odd.  
- * Fixed a bug in coef.KFS which caused function to return smoothed states even with argument 
+ * SSMseasonal with trigonometric seasonal now works properly when period is odd.
+ * Fixed a bug in coef.KFS which caused function to return smoothed states even with argument
    filtered=TRUE if they were present in KFS object.
  * Added argument "maxiter" to predict.SSModel and changed its default value in all functions to 50.
- * Corrected a bug in function ldl which caused the decomposition of semidefinite matrices to fail 
+ * Corrected a bug in function ldl which caused the decomposition of semidefinite matrices to fail
    silently.
- * Changed variable mu to m for mean filtering for non-Gaussian models without simulation just like 
+ * Changed variable mu to m for mean filtering for non-Gaussian models without simulation just like
    in other cases.
- * Changed convergence criterion in Gaussian approximation algorithm from linear predictor based to 
+ * Changed convergence criterion in Gaussian approximation algorithm from linear predictor based to
    deviance based.
  * Properly exported assigment using subset method. See ?subset.SSModel for details.
 
@@ -94,39 +96,39 @@ Changes from version 1.0.2 to 1.0.3:
  * Changed default filtering option for Gaussian models back to "state" (was previously "none").
  * Argument "invlink" in KFS is obsolete, proper argument is now "mean". For backwards compatibility,
   "invlink" still works.
- * Naming of output components of KFS were unified to follow the logic of state filtering and 
-   smoothing: Now mean filtering returns an array m, and mean smoothing returns an array muhat, 
-   signal filtering returns an array t, and signal smoothing returns an array thetahat. 
+ * Naming of output components of KFS were unified to follow the logic of state filtering and
+   smoothing: Now mean filtering returns an array m, and mean smoothing returns an array muhat,
+   signal filtering returns an array t, and signal smoothing returns an array thetahat.
    Also, signal filtering and smoothing for Gaussian models returns m and muhat, not t and thetahat.
  * Fixed several bugs concerning the linearization of Gamma and Negative binomial distribution,
    which resulted false standard errors, among other problems.
- * Corrected bug in computing standardization for pearson and deviance residuals, 
+ * Corrected bug in computing standardization for pearson and deviance residuals,
    and added separate method rstandard for standardized residuals.
  * Added method hatvalues for computing hat values from KFS output.
  * Added method fitted for extraction of fitted values from KFS output.
  * Added method coef for extraction of fitted state values from KFS output.
  * Added method deviance for computation of deviance from KFS output.
- * Mean estimates for Poisson distribution now contains the effect of offset. Note that linear 
+ * Mean estimates for Poisson distribution now contains the effect of offset. Note that linear
    predictor theta still does not contain offset term, i.e. mu=exp(theta)*offset.
- * Fixed a bug in SSMregression. In earlier versions missing values were removed from model matrix 
+ * Fixed a bug in SSMregression. In earlier versions missing values were removed from model matrix
    which caused error in constructing system matrices.
  * Fixed a bug in SSMregression relating state names when type=="common".
- * Fixed a bug in approxSSM which caused the approximation to fail if system matrix Z contained 
+ * Fixed a bug in approxSSM which caused the approximation to fail if system matrix Z contained
    missing values.
  * LogLik.SSModel now produces error if linearization of non-Gaussian model did not converge.
  * When using formula list in SSMregression, option to use list of datasets is now also supported.
- * Naming convention for common regression coefficients with formula lists was changed. 
+ * Naming convention for common regression coefficients with formula lists was changed.
    Names for the states are now taken from the first dataset in data list.
  * Fixed a bug in SSModel which caused error when formula contained interaction terms and custom parts.
  * Broken SSMcycle with type="distinct" was fixed.
- * Fixed a bug regarding simulateSSM with missing observations in diffuse phase, which caused 
+ * Fixed a bug regarding simulateSSM with missing observations in diffuse phase, which caused
    variances of simulated values to be much larger than expected.
 
 Changes from version 1.0.0 to 1.0.2:
- * Fixed a bug in SSMarima which caused function to fail if there was 
+ * Fixed a bug in SSMarima which caused function to fail if there was
    no ar part and stationarity option was TRUE.
  * Fixed a bug regarding the deviance residuals for Gaussian model.
- * Fixed a bugs in logLik.SSModel and transformSSM relating to the model transformation. 
+ * Fixed a bugs in logLik.SSModel and transformSSM relating to the model transformation.
  * Fixed a bug in KFS signal smoothing regarding the multivariate model with
    missing observations with time invariant Z and non-diagonal H.
  * SSModel should now keep the time series attributes of the response variable.
@@ -135,11 +137,11 @@ Changes from version 1.0.0 to 1.0.2:
  * Changed the variable mu to muhat so it is similar to alphahat, thetahat etc.
  * KFS now always returns the log-likelihood for the Gaussian models.
  * Fixed a bug in residuals.KFS concerning the standardized deviance residuals.
- * Fixed a bug in predict.SSModel concerning the interval computation for 
+ * Fixed a bug in predict.SSModel concerning the interval computation for
    non-Gaussian models without simulation.
- * Fixed a bug in SSMregression and SSMcustom where a test of equality of 
+ * Fixed a bug in SSMregression and SSMcustom where a test of equality of
    integer and double variables was done using function identical instead of ==.
- * Fixed a bug in predict.SSModel regarding the standard error computations 
+ * Fixed a bug in predict.SSModel regarding the standard error computations
    without simulation for non-Gaussian models.
  * Added filtering for non-Gaussian models.
  * Changed the filtering and smoothing options on KFS.
