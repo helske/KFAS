@@ -47,7 +47,7 @@ signal <- function(object, states = "all", filtered = FALSE) {
         return(list(signal = object$m, variance = object$P_mu))
       } else {
         if (!is.null(object$muhat))
-          return(list(signal = object$muhat, variance = object$V_muhat))
+          return(list(signal = object$muhat, variance = object$V_mu))
       }
     } else {
       if (filtered && !is.null(object[["t", exact = TRUE]])) {
