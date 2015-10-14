@@ -283,10 +283,8 @@ predict.SSModel <- function(object, newdata, n.ahead,
       }
     }
   }
-  pred <- lapply(pred,drop)
   names(pred) <- colnames(object$y)
-  pred <- lapply(pred, ts, end = endtime, frequency = frequency(object$y))
-  if (p == 1) #for univariate model return time series instead of list of single time series
-    pred <- pred[[1]]
+  pred <- lapply(pred, ts,end = endtime, frequency = frequency(object$y))
+  if (p == 1) pred <- pred[[1]]
   pred
 } 
