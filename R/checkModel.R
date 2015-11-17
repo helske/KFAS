@@ -70,12 +70,12 @@ is.SSModel <- function(object, na.check = FALSE, return.logical = TRUE) {
       stop(paste0("Storage mode of some of the model attributes 'p', 'k', ",
                   "'m', 'n', 'tv' is not integer."))
     
-    comp1Lnts <- c("y", "Z", "H", "T", "R", "Q", "a1", "P1", "P1inf", "u",
+    components<- c("y", "Z", "H", "T", "R", "Q", "a1", "P1", "P1inf", "u",
                     "distribution", "tol", "call")
-    if (!all(comp1Lnts %in% names(object)))
+    if (!all(components%in% names(object)))
       stop(paste("Model is not a proper object of class 'SSModel'.
-                   Following comp1Lnts are missing: ",
-                 paste(comp1Lnts[!(comp1Lnts %in% names(object))],
+                   Following componentsare missing: ",
+                 paste(comp1Lnts[!(components%in% names(object))],
                        collapse = ", ")))
     
     if (!all(object$distribution %in%
