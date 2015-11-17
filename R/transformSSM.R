@@ -88,7 +88,7 @@ transformSSM <- function(object, type = c("ldl", "augment")) {
       out <- .Fortran(fldlssm, NAOK = TRUE, yt = yt, ydims = ydims, yobs = yobs, 
         tv = as.integer(tv), Zt = Z, p = p, m = m, 
         n = n, ichols = ichols, nh = as.integer(nh), hchol = hchol, 
-        unidim = as.integer(unidim), info = as.integer(0), hobs = hobs, 
+        unidim = as.integer(unidim), info = 0L, hobs = hobs, 
         tol = max(abs(apply(object$H, 3, diag))) * .Machine$double.eps)
       if(out$info!=0){
         stop(switch(as.character(out$info),
