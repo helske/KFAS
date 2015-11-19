@@ -103,7 +103,7 @@ logLik.SSModel <- function(object, marginal=FALSE, nsim = 0,
     if (all(c(object$Q, object$u) == 0) || all(c(object$R, object$u) == 0) || 
         any(!is.finite(c(object$R, object$Q, object$u) == 0))) 
       return(-.Machine$double.xmax^0.75)
-    if (missing(theta)) {
+    if (missing(theta) || is.null(theta)) {
       theta <- initTheta(object$y, object$u, object$distribution)
     } else theta <- array(theta, dim = c(n, p))    
     if (nsim == 0) {
