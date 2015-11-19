@@ -34,7 +34,7 @@
 #'  details.
 #'@param update_args Optional list containing additional arguments to \code{updatefn}.
 #'@param ... Further arguments for functions \code{optim} and 
-#'  \code{logLik.SSModel}, such as \ode{nsim = 1000} and \code{method = 'BFGS'}.
+#'  \code{logLik.SSModel}, such as \code{nsim = 1000} and \code{method = 'BFGS'}.
 #'@return A list with elements \item{optim.out}{Output from function 
 #'  \code{optim}. } \item{model}{Model with estimated parameters. }
 #' @examples
