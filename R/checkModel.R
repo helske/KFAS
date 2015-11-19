@@ -75,7 +75,7 @@ is.SSModel <- function(object, na.check = FALSE, return.logical = TRUE) {
     if (!all(components%in% names(object)))
       stop(paste("Model is not a proper object of class 'SSModel'.
                    Following componentsare missing: ",
-                 paste(comp1Lnts[!(components%in% names(object))],
+                 paste(components[!(components%in% names(object))],
                        collapse = ", ")))
     
     if (!all(object$distribution %in%
