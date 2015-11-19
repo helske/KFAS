@@ -460,4 +460,7 @@ No. 1.
 Shumway, Robert H. and Stoffer, David S. (2006).  Time Series Analysis and
 Its Applications: With R examples.  \cr
 }
+\seealso{
+examples in \code{\link{boat}},\code{\link{importanceSSM}}, \code{\link{approxSSM}}
+}
 
