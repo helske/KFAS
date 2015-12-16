@@ -19,3 +19,4 @@ Description: Functions for Kalman filtering, smoothing,
 License: GPL (>= 2)
 BugReports: https://github.com/helske/KFAS/issues
 VignetteBuilder: knitr
+RoxygenNote: 5.0.1

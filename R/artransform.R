@@ -11,7 +11,7 @@
 #' @references Jones, R. H (1980). Maximum likelihood fitting
 #' of ARMA models to time series with missing observations, Technometrics
 #' Vol 22. p. 389--395.
-#' @example
+#' @examples
 #' artransform(1:3)
 artransform <- function(param) {
   .Fortran("fartransform", phi = tanh(param), length(param))$phi
