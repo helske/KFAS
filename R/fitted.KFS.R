@@ -1,10 +1,25 @@
 #' Extract Fitted Values of State Space Model
-#' 
-#' Extracts fitted values from output of \code{KFS}.
+#'
+#' Extracts fitted values from output of \code{KFS}, i.e. one-step ahead
+#' predictions  \eqn{f(θ_t | y_{t-1}, \ldots, y_1)}{
+#' f(θ[t] | y[t-1], ... , y[1]),} (\code{m}) or smoothed estimates
+#' \eqn{f(θ_t | y_n, \ldots, y_1)}{f(θ[t] | y[n], ... , y[1]),} (\code{muhat}),
+#' where \eqn{f} is the inverse of the link function
+#' (identity in Gaussian case), except in case of Poisson distribution where
+#' \eqn{f} is multiplied with the exposure \eqn{u_t}{u[t]}.
+#'
 #' @export
 #' @inheritParams coef.KFS
 #' @return Multivariate time series containing fitted values.
 #' @seealso \code{\link{signal}} for partial signals and their covariances.
+#' @examples
+#' data("sexratio")
+#' model <- SSModel(Male ~ SSMtrend(1,Q = list(NA)),u = sexratio[, "Total"],
+#'   data = sexratio, distribution = "binomial")
+#' model <- fitSSM(model,inits = -15, method = "BFGS")$model
+#' out <- KFS(model)
+#' identical(drop(out$muhat), fitted(out))
+
 fitted.KFS <- function(object, start = NULL, end = NULL, filtered = FALSE, ...) {
   if (!filtered) {
     if (!is.null(object$muhat)) {
@@ -16,7 +31,9 @@ fitted.KFS <- function(object, start = NULL, end = NULL, filtered = FALSE, ...) 
     } else stop("Input does not contain filtered estimates for means, rerun KFS with mean filtering.")
   }
   tmp <- window(tmp, start = start, end = end)
-  if (!is.null(start) && start == end) 
-    tsp(tmp) <- class(tmp) <- NULL
-  drop(tmp)
-} 
+  if (!is.null(start) && identical(start, end)) {
+    tmp[1, ]
+  } else {
+    drop(tmp)
+  }
+}
