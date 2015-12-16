@@ -36,8 +36,8 @@ These can be combined. Default is \code{"all"}.}
 
 \item{value}{A value to be assigned to x.}
 
-\item{drop}{Logical. If TRUE the result is coerced to the lowest possible
-dimension. Default is FALSE (which differs from default R behaviour).}
+\item{drop}{Logical. If \code{TRUE} (default) the result is coerced to the lowest possible
+dimension.}
 }
 \value{
 A selected subset of the chosen element or a value.

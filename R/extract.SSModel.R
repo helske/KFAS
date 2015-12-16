@@ -24,8 +24,8 @@
 #' @param series Numeric. Which series are chosen. Used for elements
 #' \code{"y"}, \code{"Z"}, and \code{"u"}.
 #' @param times Numeric. Which time points are chosen.
-#' @param drop Logical. If TRUE the result is coerced to the lowest possible
-#' dimension. Default is FALSE (which differs from default R behaviour).
+#' @param drop Logical. If \code{TRUE} (default) the result is coerced to the lowest possible
+#' dimension.
 #' @param value A value to be assigned to x.
 #' @return A selected subset of the chosen element or a value.
 #' @examples
