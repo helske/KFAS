@@ -49,7 +49,7 @@ p, m, n, lik, tol,rankp2,kt,kinf,ft,finf,d,j)
             d = d+1
             call dfilter1step(ymiss,yt(d,:),transpose(zt(:,:,(d-1)*timevar(1)+1)),ht,&
             tt(:,:,(d-1)*timevar(3)+1),rqr(:,:,(d-1)*tv+1),&
-            at,pt,vt,ft(:,d),kt(:,:,d),pinf,finf(:,d),kinf(:,:,d),rankp,lik,tol,meps,0.0d0,p,m,j)
+            at,pt,vt,ft(:,d),kt(:,:,d),pinf,finf(:,d),kinf(:,:,d),rankp,lik,tol,0.0d0,p,m,j)
         end do diffuse
         if(rankp .EQ. 0 .AND. j .LT. p) then
             call filter1step(ymiss,yt(d,:),transpose(zt(:,:,(d-1)*timevar(1)+1)),ht,&
@@ -69,7 +69,7 @@ p, m, n, lik, tol,rankp2,kt,kinf,ft,finf,d,j)
     end do
 
 
-   
+
 
 end subroutine pthetafirst
 

@@ -25,7 +25,7 @@ p, m, r, n, lik, tol,rankp,marginal)
     double precision, dimension(p) :: vt,ft,finf
     double precision, dimension(m,p) :: kt,kinf
     double precision, dimension(m,m) :: pt,pinf
-    double precision, dimension(m,r) :: mr    
+    double precision, dimension(m,r) :: mr
     double precision :: c, meps
     double precision, external :: ddot
     double precision, dimension(m,m,(n-1)*max(timevar(4),timevar(5))+1) :: rqr
@@ -55,9 +55,9 @@ p, m, r, n, lik, tol,rankp,marginal)
     if(rankp .GT. 0) then
         diffuse: do while(d .LT. n .AND. rankp .GT. 0)
             d = d+1
-           
+
             call dfilter1step(ymiss(:,d),yt(:,d),zt(:,:,(d-1)*timevar(1)+1),ht(:,:,(d-1)*timevar(2)+1),&
-            tt(:,:,(d-1)*timevar(3)+1),rqr(:,:,(d-1)*tv+1), at,pt,vt,ft,kt,pinf,finf,kinf,rankp,lik,tol,meps,c,p,m,j)
+            tt(:,:,(d-1)*timevar(3)+1),rqr(:,:,(d-1)*tv+1), at,pt,vt,ft,kt,pinf,finf,kinf,rankp,lik,tol,c,p,m,j)
 
         end do diffuse
 
@@ -88,6 +88,6 @@ p, m, r, n, lik, tol,rankp,marginal)
             call marginalxx(p1inf,zt,tt,m,p,n,t,timevar,lik,marginal)
         end if
     end if
-   
+
 
 end subroutine gloglik

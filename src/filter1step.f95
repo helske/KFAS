@@ -1,7 +1,7 @@
 
 !diffuse filtering for single time point
 subroutine dfilter1step(ymiss, yt, zt, ht, tt, rqr, at, pt, vt, ft,kt,&
-pinf,finf,kinf,rankp,lik,tol,meps,c,p,m,i)
+pinf,finf,kinf,rankp,lik,tol,c,p,m,i)
 
     implicit none
 
@@ -13,7 +13,7 @@ pinf,finf,kinf,rankp,lik,tol,meps,c,p,m,i)
     double precision, intent(in), dimension(p,p) :: ht
     double precision, intent(in), dimension(m,m) :: tt
     double precision, dimension(m,m) :: rqr
-    double precision, intent(in) :: tol,c,meps
+    double precision, intent(in) :: tol,c
     double precision, intent(inout) :: lik
     double precision, intent(inout), dimension(m) :: at
     double precision, intent(inout), dimension(p) :: vt,ft,finf

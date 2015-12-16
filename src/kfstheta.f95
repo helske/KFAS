@@ -51,7 +51,7 @@ p, n, m, r,tol,rankp,thetahat,lik)
             d = d+1
             call dfilter1step(ymiss(d,:),yt(d,:),transpose(zt(:,:,(d-1)*timevar(1)+1)),ht(:,:,(d-1)*timevar(2)+1),&
             tt(:,:,(d-1)*timevar(3)+1),rqr(:,:,(d-1)*tv+1),&
-            at,pt,vt(:,d),ft(:,d),kt(:,:,d),pinf,finf(:,d),kinf(:,:,d),rankp,lik,tol,meps,c,p,m,j)
+            at,pt,vt(:,d),ft(:,d),kt(:,:,d),pinf,finf(:,d),kinf(:,:,d),rankp,lik,tol,c,p,m,j)
         end do diffuse
 
         if(rankp .EQ. 0 .AND. j .LT. p) then

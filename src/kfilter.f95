@@ -57,7 +57,7 @@ at, pt, vt, ft,kt, pinf, finf, kinf, lik, tol,rankp,theta,thetavar,filtersignal)
             pinf(:,:,d+1) = pinf(:,:,d)
             call dfilter1step(ymiss(d,:),yt(d,:),transpose(zt(:,:,(d-1)*timevar(1)+1)),ht(:,:,(d-1)*timevar(2)+1),&
             tt(:,:,(d-1)*timevar(3)+1),rqr(:,:,(d-1)*tv+1),&
-            at(:,d+1),pt(:,:,d+1),vt(:,d),ft(:,d),kt(:,:,d),pinf(:,:,d+1),finf(:,d),kinf(:,:,d),rankp,lik,tol,meps,c,p,m,j)
+            at(:,d+1),pt(:,:,d+1),vt(:,d),ft(:,d),kt(:,:,d),pinf(:,:,d+1),finf(:,d),kinf(:,:,d),rankp,lik,tol,c,p,m,j)
         end do diffuse
 
 
