@@ -33,7 +33,7 @@ test_that("FitSSM, transformSSM and simulateSSM works",{
   expect_equal(var(sim[192,29,]), 1.219971, tolerance=tol,check.attributes=FALSE)
   
   expect_that(out <- KFS(fit$model,smoothing=c("state","disturbance")),not(gives_warning()))
-  expect_that(sim <- simulateSSM(fit$model,"disturbances",nsim=25,antithetics=T),not(gives_warning()))
+  expect_that(sim <- simulateSSM(fit$model,"disturbances",nsim=25,antithetics=TRUE),not(gives_warning()))
   
   expect_equal(rowMeans(sim[192,,]), c(out$eps[192,],0), check.attributes=FALSE)
   expect_equal(rowMeans(sim[1,,]), c(out$eps[1,],out$eta[1,]), check.attributes=FALSE)
