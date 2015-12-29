@@ -75,7 +75,7 @@ signal <- function(object, states = "all", filtered = FALSE) {
           "n")], as.integer(attr(object$model, "p")), as.integer(attr(object$model,
             "n")), as.integer(attr(object$model, "m")), theta = array(0, c(attr(object$model,
               "n"), attr(object$model, "p"))), V_theta = array(0, c(attr(object$model,
-                "p"), attr(object$model, "p"), attr(object$model, "n"))), d = as.integer(0),
+                "p"), attr(object$model, "p"), attr(object$model, "n"))), d = 0L,
     states, as.integer(length(states)))
   attributes(signal$theta) <- attributes(object$model$y)
   list(signal = signal$theta, variance = signal$V_theta)

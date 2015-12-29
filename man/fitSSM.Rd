@@ -4,7 +4,7 @@
 \alias{fitSSM}
 \title{Maximum Likelihood Estimation of a State Space Model}
 \usage{
-fitSSM(model, inits, updatefn, checkfn, ...)
+fitSSM(model, inits, updatefn, checkfn, update_args = NULL, ...)
 }
 \arguments{
 \item{model}{Model object of class \code{SSModel}.}
@@ -22,8 +22,10 @@ trigonometric seasonal components as its covariance structure is of form
 \item{checkfn}{Optional function for checking the validity of the model. See
 details.}
 
-\item{...}{Further arguments for functions \code{optim}, \code{updatefn} and
-\code{logLik.SSModel}, such as \code{method='BFGS'}.}
+\item{update_args}{Optional list containing additional arguments to \code{updatefn}.}
+
+\item{...}{Further arguments for functions \code{optim} and
+\code{logLik.SSModel}, such as \code{nsim = 1000} and \code{method = 'BFGS'}.}
 }
 \value{
 A list with elements \item{optim.out}{Output from function

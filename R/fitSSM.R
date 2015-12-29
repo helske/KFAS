@@ -32,8 +32,9 @@
 #'  \eqn{\sigma}{\sigma}I.
 #'@param checkfn Optional function for checking the validity of the model. See 
 #'  details.
-#'@param ... Further arguments for functions \code{optim}, \code{updatefn} and 
-#'  \code{logLik.SSModel}, such as \code{method='BFGS'}.
+#'@param update_args Optional list containing additional arguments to \code{updatefn}.
+#'@param ... Further arguments for functions \code{optim} and 
+#'  \code{logLik.SSModel}, such as \code{nsim = 1000} and \code{method = 'BFGS'}.
 #'@return A list with elements \item{optim.out}{Output from function 
 #'  \code{optim}. } \item{model}{Model with estimated parameters. }
 #' @examples
@@ -73,7 +74,7 @@
 #'   inherits(try(ldl(model$Q[,,1]),TRUE),'try-error')
 #' }
 #'
-fitSSM <- function(model, inits, updatefn, checkfn,...) {
+fitSSM <- function(model, inits, updatefn, checkfn, update_args = NULL, ...) {
   
   if (missing(updatefn)) {
     # use default updating function, only for time invariant covariance matrices
@@ -82,7 +83,7 @@ fitSSM <- function(model, inits, updatefn, checkfn,...) {
     if ((dim(model$H)[3]>1 && estH || (dim(model$Q)[3] > 1) && estQ)) 
       stop("No model updating function supplied, but cannot use default 
              function as the covariance matrices are time varying.")
-    updatefn <- function(pars, model, ...) {
+    updatefn <- function(pars, model) {
       if(estQ){
         Q <- as.matrix(model$Q[, , 1])
         naQd <- which(is.na(diag(Q)))
@@ -108,25 +109,38 @@ fitSSM <- function(model, inits, updatefn, checkfn,...) {
     }
   }
   # Check that the model object is of proper form
-  is.SSModel(updatefn(inits, model, ...), na.check = TRUE, 
-    return.logical = FALSE)
+  is.SSModel(do.call(updatefn, args = c(list(pars = inits, model = model), update_args)), 
+    na.check = TRUE, return.logical = FALSE)
   
-  # use is.SSModel as default checking function
-  if (missing(checkfn)) {
-    likfn <- function(pars, model, ...) {
-      model <- updatefn(pars, model, ...)
-      -logLik(object = model, check.model = TRUE, ...)       
-    }
-  } else {
-    likfn <- function(pars, model, ...) {
-      model <- updatefn(pars, model, ...)
-      if (checkfn(model)) {
-        return(-logLik(object = model, check.model = FALSE, ...))
-      } else return(.Machine$double.xmax^0.75)
-    }
+  # initial values for theta can be computed beforehand
+  if (is.null(list(...)$theta)){
+    if (any(model$distribution != "gaussian")) {
+      theta <- initTheta(model$y, model$u, model$distribution)
+    } else theta <- NULL
   }
+  
+  if (missing(checkfn)) {
+    # check for infinite values and overly large variances/covariances
+    checkfn <- function(model){
+      !any(sapply(c("H", "u", "T", "R", "Q", "a1", "P1", "P1inf"), 
+        function(x) {
+          any(is.na(model[[x]])) || any(is.infinite(model[[x]]))
+        })) &&
+        max(model$Q) <= 1e7 &&  
+        ifelse(identical(model$u, "Omitted"), max(model$H) <= 1e7, TRUE)
+    }
+  } 
+  likfn <- function(pars, model, ...) {
+    model <- do.call(updatefn, args = c(list(pars = pars, model = model), update_args))
+    if (checkfn(model)) {
+      return(-logLik(object = model, check.model = FALSE, theta = theta, ...))
+    } else return(.Machine$double.xmax^0.75)
+  }
+  
   out <- NULL
   out$optim.out <- optim(par = inits, fn = likfn, model = model, ...)
-  out$model <- updatefn(out$opt$par, model, ...)
+  out$model <- do.call(updatefn, args = c(list(pars = out$optim.out$par, model = model), update_args))
+  # check that the obtained model is of proper form
+  is.SSModel(out$model, na.check = TRUE, return.logical = FALSE)
   out
 } 
