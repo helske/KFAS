@@ -25,6 +25,17 @@
 #'   signals, states or disturbances.
 #' @references Durbin J. and Koopman, S.J. (2002). A simple and efficient simulation smoother for
 #'   state space time series analysis, Biometrika, Volume 89, Issue 3
+#' @examples
+#' 
+#' model <- SSModel(matrix(NA, 100, 1) ~ SSMtrend(1, 1), H = 1)
+#' 
+#' set.seed(123)
+#' sim <- simulateSSM(model, "obs", nsim = 2, antithetics = TRUE)
+#' # first time points
+#' sim[1,,]
+#' # correlation structure between simulations with two antithetics
+#' cor(sim[,1,])
+#' 
 simulateSSM <- function(object, 
   type = c("states", "signals", "disturbances", "observations", "epsilon", "eta"), 
   filtered = FALSE, nsim = 1, antithetics = FALSE, conditional = TRUE) {
