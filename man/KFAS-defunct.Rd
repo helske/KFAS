@@ -26,9 +26,9 @@ that useful (compared to \code{\link{[<-.SSModel}}).
 
 Deviance.KFS was removed as it was mostly useless. The value was not a \eqn{-2*(logL-logL*)}
 where \eqn{L} is the likelihood and \eqn{L*} is the saturated likelihood.
-Instead it wasbased on the conditional likelihood \eqn{p(y|theta)} i.e. it disregards
+Instead it was based on the conditional likelihood \eqn{p(y|theta)} i.e. it disregards
 the effect of hidden states. Therefore the value
-returned by this function did not make sense for non-GLM setting.
+returned by this function did not make much sense in non-GLM setting.
 }
 \keyword{internal}
 
