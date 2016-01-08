@@ -47,7 +47,7 @@ model<-SSModel(log(drivers) ~ SSMtrend(1, Q = list(1)) +
  SSMseasonal(period = 12, sea.type = "trigonometric") +
  log(PetrolPrice) + law, data = Seatbelts,H = 1)
 
-out <- KFS(model
+out <- KFS(model)
 coef(out, states = "regression", last = TRUE)
 coef(out, start = c(1983, 12), end = c(1984, 2))
 

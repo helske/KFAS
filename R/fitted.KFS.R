@@ -1,9 +1,9 @@
 #' Extract Fitted Values of State Space Model
 #'
 #' Extracts fitted values from output of \code{KFS}, i.e. one-step ahead
-#' predictions  \eqn{f(θ_t | y_{t-1}, \ldots, y_1)}{
-#' f(θ[t] | y[t-1], ... , y[1]),} (\code{m}) or smoothed estimates
-#' \eqn{f(θ_t | y_n, \ldots, y_1)}{f(θ[t] | y[n], ... , y[1]),} (\code{muhat}),
+#' predictions  \eqn{f(\theta_t | y_{t-1}, \ldots, y_1)}{
+#' f(\theta[t] | y[t-1], ... , y[1]),} (\code{m}) or smoothed estimates
+#' \eqn{f(\theta_t | y_n, \ldots, y_1)}{f(\theta[t] | y[n], ... , y[1]),} (\code{muhat}),
 #' where \eqn{f} is the inverse of the link function
 #' (identity in Gaussian case), except in case of Poisson distribution where
 #' \eqn{f} is multiplied with the exposure \eqn{u_t}{u[t]}.
