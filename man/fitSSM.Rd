@@ -12,11 +12,11 @@ fitSSM(model, inits, updatefn, checkfn, update_args = NULL, ...)
 \item{inits}{Initial values for \code{optim}}
 
 \item{updatefn}{User defined function which updates the model given the
-parameters. Must be of form \code{updatefn(pars, model,...)}.
+parameters. Must be of form \code{updatefn(pars, model, ...)}.
 If not supplied, a default function is used,
 which estimates the values marked as NA in unconstrained time-invariant
 covariance matrices Q and H. Note that the default \code{updatefn} function
-cannot be used withtrigonometric seasonal components as its covariance
+cannot be used with trigonometric seasonal components as its covariance
 structure is of form \eqn{\sigma}{\sigma}I.}
 
 \item{checkfn}{Optional function for checking the validity of the model. See

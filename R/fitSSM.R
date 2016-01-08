@@ -26,11 +26,11 @@
 #' @param inits Initial values for \code{optim}
 #' @param model Model object of class \code{SSModel}.
 #' @param updatefn User defined function which updates the model given the
-#'   parameters. Must be of form \code{updatefn(pars, model,...)}.
+#'   parameters. Must be of form \code{updatefn(pars, model, ...)}.
 #'   If not supplied, a default function is used,
 #'   which estimates the values marked as NA in unconstrained time-invariant
 #'   covariance matrices Q and H. Note that the default \code{updatefn} function
-#'   cannot be used withtrigonometric seasonal components as its covariance
+#'   cannot be used with trigonometric seasonal components as its covariance
 #'   structure is of form \eqn{\sigma}{\sigma}I.
 #' @param checkfn Optional function for checking the validity of the model. See
 #'   details.
@@ -97,9 +97,11 @@
 
 fitSSM <- function(model, inits, updatefn, checkfn, update_args = NULL, ...) {
 
+  is_gaussian <- all(model$distribution == "gaussian")
+
   if (missing(updatefn)) {
     # use default updating function, only for time invariant covariance matrices
-    estH <- !identical(model$H, "Omitted") && any(is.na(model$H))
+    estH <- is_gaussian && any(is.na(model$H))
     estQ <- any(is.na(model$Q))
     if ((dim(model$H)[3] > 1 && estH || (dim(model$Q)[3] > 1) && estQ))
       stop("No model updating function supplied, but cannot use default
@@ -133,22 +135,30 @@ fitSSM <- function(model, inits, updatefn, checkfn, update_args = NULL, ...) {
     na.check = TRUE, return.logical = FALSE)
 
   # initial values for theta can be computed beforehand
-  if (is.null(list(...)$theta)) {
-    if (any(model$distribution != "gaussian")) {
-      theta <- initTheta(model$y, model$u, model$distribution)
-    } else theta <- NULL
-  }
+  if (!is_gaussian && is.null(list(...)$theta)) {
+    theta <- initTheta(model$y, model$u, model$distribution)
+
+  } else theta <- NULL
 
   if (missing(checkfn)) {
-    # check for infinite values and overly large variances/covariances
-    checkfn <- function(model){
-      !any(sapply(c("H", "u", "T", "R", "Q", "a1", "P1", "P1inf"),
-        function(x) {
-          any(!is.finite(model[[x]]))
-        })) &&
-        max(model$Q) <= 1e7 &&
-        ifelse(identical(model$u, "Omitted"), max(model$H) <= 1e7, TRUE)
+    # check for nonfinite values and overly large variances/covariances
+    if (is_gaussian) {
+      checkfn <- function(model){
+        all(sapply(c("H", "T", "R", "Q", "a1", "P1", "P1inf"),
+          function(x) {
+            all(is.finite(model[[x]]))
+          })) && max(model$Q) <= 1e7 && max(model$H) <= 1e7
+      }
+    } else {
+      checkfn <- function(model){
+        all(sapply(c("u", "T", "R", "Q", "a1", "P1", "P1inf"),
+          function(x) {
+            all(is.finite(model[[x]]))
+          })) &&
+          max(model$Q) <= 1e7
+      }
     }
+
   }
   likfn <- function(pars, model, ...) {
     model <- do.call(updatefn, args = c(list(pars = pars, model = model), update_args))
