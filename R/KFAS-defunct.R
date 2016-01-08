@@ -3,7 +3,7 @@
 #' The function listed here are removed from KFAS.
 #'
 #' Subset-based methods were removed as they were somewhat confusingly
-#' named as the \code{subset} method in \code{base}, and most likely not
+#' named as the \code{subset} generic in \code{base}, and most likely not
 #' that useful (compared to \code{\link{[<-.SSModel}}).
 #'
 #' Deviance.KFS was removed as it was mostly useless. The value was not a \eqn{-2*(logL-logL*)}
@@ -13,7 +13,10 @@
 #' returned by this function did not make sense for non-GLM setting.
 #'
 #' @export
+#' @aliases KFAS-defunct
+#' @name KFAS-defunct
 #' @rdname KFAS-defunct
+#' @keywords internal
 deviance.KFS <- function(object, ...) {
   .Defunct()
   sum(residuals(object, type = "deviance") ^ 2, na.rm = TRUE)

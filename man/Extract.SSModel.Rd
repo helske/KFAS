@@ -34,6 +34,8 @@ These can be combined. Default is \code{"all"}.}
 
 \item{times}{Numeric. Which time points are chosen.}
 
+\item{...}{Ignored.}
+
 \item{value}{A value to be assigned to x.}
 
 \item{drop}{Logical. If \code{TRUE} (default) the result is coerced to the lowest possible
@@ -50,13 +52,13 @@ not altered.
 \examples{
 set.seed(1)
 model <- SSModel(rnorm(10) ~ 1)
-model['H']
-model['H'] <- 10
+model["H"]
+model["H"] <- 10
 # H is still an array:
-model['H']
+model["H"]
 logLik(model)
 model$H <- 1
-# model['H'] throws an error as H is now scalar:
+# model["H"] throws an error as H is now scalar:
 model$H
 logLik(model, check.model = TRUE) #with check.model = FALSE R crashes!
 }
