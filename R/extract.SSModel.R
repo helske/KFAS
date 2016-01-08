@@ -27,17 +27,18 @@
 #' @param drop Logical. If \code{TRUE} (default) the result is coerced to the lowest possible
 #' dimension.
 #' @param value A value to be assigned to x.
+#' @param ... Ignored.
 #' @return A selected subset of the chosen element or a value.
 #' @examples
 #' set.seed(1)
 #' model <- SSModel(rnorm(10) ~ 1)
-#' model['H']
-#' model['H'] <- 10
+#' model["H"]
+#' model["H"] <- 10
 #' # H is still an array:
-#' model['H']
+#' model["H"]
 #' logLik(model)
 #' model$H <- 1
-#' # model['H'] throws an error as H is now scalar:
+#' # model["H"] throws an error as H is now scalar:
 #' model$H
 #' logLik(model, check.model = TRUE) #with check.model = FALSE R crashes!
 `[<-.SSModel` <-  function(x, element, states, etas, series, times, ...,
@@ -89,7 +90,7 @@
         if ("all" %in% etas) {
           etas <- 1:attr(x, "k")
         } else {
-          if("trend" %in% etas)
+          if ("trend" %in% etas)
             etas <- c(etas, "level", "slope")
           etas <- which(attr(x, "eta_types") %in% etas)
         }
