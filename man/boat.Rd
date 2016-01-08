@@ -19,7 +19,7 @@ model <- SSModel(boat ~ SSMtrend(1, Q = NA), distribution = "binomial")
 
 fit_nosim <- fitSSM(model, inits = log(0.25), method = "BFGS", hessian = TRUE)
 # nsim set to small for faster execution of example
-# doesn't matter here as the model/data is so poor anyway 
+# doesn't matter here as the model/data is so poor anyway
 fit_sim <- fitSSM(model, inits = log(0.25), method = "BFGS", hessian = TRUE, nsim = 100)
 
 # Compare with the results from DK2012
@@ -31,16 +31,16 @@ fit_sim$model["Q"]
 
 # approximate 95\% confidence intervals for variance parameter:
 # very wide, there really isn't enough information in the data
-# as a comparison, a fully Bayesian approach (using BUGS) with [0,10] uniform prior for sigma
+# as a comparison, a fully Bayesian approach (using BUGS) with [0, 10] uniform prior for sigma
 # gives posterior mode for Q as 0.18, and 95\% credible interval [0.036, 3.083]
 
-exp(fit_nosim$optim.out$par + c(-1,1)*qnorm(0.975)*sqrt(1/fit_nosim$optim.out$hessian))
-exp(fit_sim$optim.out$par + c(-1,1)*qnorm(0.975)*sqrt(1/fit_sim$optim.out$hessian))
+exp(fit_nosim$optim.out$par + c(-1, 1)*qnorm(0.975)*sqrt(1/fit_nosim$optim.out$hessian))
+exp(fit_sim$optim.out$par + c(-1, 1)*qnorm(0.975)*sqrt(1/fit_sim$optim.out$hessian))
 
-# 95\% confidence intervals for probability that Cambridge wins 
+# 95\% confidence intervals for probability that Cambridge wins
 pred_nosim <- predict(fit_nosim$model, interval = "confidence")
 pred_sim <- predict(fit_sim$model, interval = "confidence")
-ts.plot(pred_nosim, pred_sim, col = c(1,2,2,3,4,4), lty = c(1,2,2), ylim = c(0,1))
+ts.plot(pred_nosim, pred_sim, col = c(1, 2, 2, 3, 4, 4), lty = c(1, 2, 2), ylim = c(0, 1))
 points(x = time(boat), y = boat, pch = 15, cex = 0.5)
 
 # if we trust the approximation, fit_nosim gives largest log-likelihood:

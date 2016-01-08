@@ -6,21 +6,21 @@
 \alias{KFAS-package}
 \title{KFAS: Functions for Exponential Family State Space Models}
 \description{
-Package KFAS contains functions for Kalman filtering, smoothing and 
+Package KFAS contains functions for Kalman filtering, smoothing and
 simulation of linear state space models with exact diffuse initialization.
 }
 \details{
 The linear Gaussian state space model is given by
 
-\deqn{y_t = Z_t \alpha_t + \epsilon_t,}{y[t] = Z[t]\alpha[t] + \epsilon[t],
+\deqn{y_t = Z_t \alpha_t + \epsilon_t, }{y[t] = Z[t]\alpha[t] + \epsilon[t],
 (observation equation)}
 
-\deqn{\alpha_{t+1} = T_t \alpha_t + R_t \eta_t,}{\alpha[t+1] = T[t]\alpha[t]
+\deqn{\alpha_{t+1} = T_t \alpha_t + R_t \eta_t, }{\alpha[t+1] = T[t]\alpha[t]
 + R[t]\eta[t], (transition equation)}
 
-where \eqn{\epsilon_t \sim N(0,H_t)}{\epsilon[t] ~ N(0,H[t])}, \eqn{\eta_t
-\sim N(0,Q_t)}{\eta[t] ~ N(0,Q[t])} and \eqn{\alpha_1 \sim
-N(a_1,P_1)}{\alpha[1] ~ N(a[1],P[1])} independently of each other.
+where \eqn{\epsilon_t \sim N(0, H_t)}{\epsilon[t] ~ N(0, H[t])}, \eqn{\eta_t
+\sim N(0, Q_t)}{\eta[t] ~ N(0, Q[t])} and \eqn{\alpha_1 \sim
+N(a_1, P_1)}{\alpha[1] ~ N(a[1], P[1])} independently of each other.
 
 All system and covariance matrices \code{Z}, \code{H}, \code{T}, \code{R} and
 \code{Q} can be time-varying, and partially or totally missing observations
@@ -33,77 +33,77 @@ Model components in \code{KFAS} are defined as
 \describe{
   \item{y}{A n x p matrix containing the observations. }
   \item{Z}{A p x m x 1 or p x m x n array corresponding to the system matrix
-  of observation equation. } 
+  of observation equation. }
   \item{H}{A p x p x 1 or p x p x n array
   corresponding to the covariance matrix of observational disturbances
-  epsilon. } 
+  epsilon. }
   \item{T}{A m x m x 1 or m x m x n array corresponding to the
-  first system matrix of state equation. } 
-  \item{R}{A m x k x 1 or m x k x n array corresponding to the second system matrix of state equation. } 
+  first system matrix of state equation. }
+  \item{R}{A m x k x 1 or m x k x n array corresponding to the second system matrix of state equation. }
   \item{Q}{A k x k x 1 or k x k x n array corresponding to the covariance
-  matrix of state disturbances eta } 
+  matrix of state disturbances eta }
   \item{a1}{A m x 1 matrix containing the
-  expected values of the initial states. } 
+  expected values of the initial states. }
   \item{P1}{A m x m matrix
   containing the covariance matrix of the nondiffuse part of the initial
-  state vector. } 
+  state vector. }
   \item{P1inf}{A m x m matrix containing the covariance
-  matrix of the diffuse part of the initial state vector. } 
+  matrix of the diffuse part of the initial state vector. }
   \item{u}{A n x p
-  matrix of an additional parameters in case of non-Gaussian model.} 
+  matrix of an additional parameters in case of non-Gaussian model.}
 }
-In case of any of the series in model is defined as non-Gaussian, the 
-observation equation is of form \deqn{\prod_i^p 
-p_i(y_{t,p}|\theta_t)}{\prod[i]^p p(y[t,i]|\theta[t]),} with 
-\eqn{\theta_{t,i}=Z_{i,t}\alpha_t}{\theta[t,i]=Z[i,t]\alpha[t]} being one of 
+In case of any of the series in model is defined as non-Gaussian, the
+observation equation is of form \deqn{\prod_i^p
+p_i(y_{t, p}|\theta_t)}{\prod[i]^p p(y[t, i]|\theta[t]), } with
+\eqn{\theta_{t, i} = Z_{i, t}\alpha_t}{\theta[t, i] = Z[i, t]\alpha[t]} being one of
 the following:
 
 \itemize{
-\item \eqn{y_t \sim N(\mu_t,u_t),}{y[t]~N(\mu[t],u[t]),} with identity link \eqn{\theta_t=\mu_t}{\theta[t]=\mu[t]}. 
-Note that now variances are defined using \eqn{u_t}, not \eqn{H_t}. 
-If the correlation between Gaussian observation equations is needed, one can use 
-\eqn{u_t=0}{u[t]=0} and add correlating disturbances into state equation (although care is 
+\item \eqn{y_t \sim N(\mu_t, u_t), }{y[t]~N(\mu[t], u[t]), } with identity link \eqn{\theta_t = \mu_t}{\theta[t] = \mu[t]}.
+Note that now variances are defined using \eqn{u_t}, not \eqn{H_t}.
+If the correlation between Gaussian observation equations is needed, one can use
+\eqn{u_t = 0}{u[t] = 0} and add correlating disturbances into state equation (although care is
 then needed when making inferences about signal which contains the error terms also).
 
-\item \eqn{y_t \sim \textrm{Poisson}(u_t\lambda_t),}{y[t]~Poisson(u[t]\lambda[t]),} where \eqn{u_t}{u[t]}
-is an offset term, with \eqn{\theta_t = log(u_t\lambda_t)}{\theta[t]=log(u[t]\lambda[t])}.
+\item \eqn{y_t \sim \textrm{Poisson}(u_t\lambda_t), }{y[t]~Poisson(u[t]\lambda[t]), } where \eqn{u_t}{u[t]}
+is an offset term, with \eqn{\theta_t = log(u_t\lambda_t)}{\theta[t] = log(u[t]\lambda[t])}.
 
-\item \eqn{y_t \sim \textrm{binomial}(u_t,\pi_t),}{y[t]~binomial(u[t],\pi[t]),} with \eqn{\theta_t =
+\item \eqn{y_t \sim \textrm{binomial}(u_t, \pi_t), }{y[t]~binomial(u[t], \pi[t]), } with \eqn{\theta_t =
 log[\pi_t/(1-\pi_t)]}{\theta[t] = log(\pi[t]/(1-\pi[t]))}, where
 \eqn{\pi_t}{\pi[t]} is the probability of success at time \eqn{t}.
 
-\item \eqn{y_t \sim \textrm{gamma}(u_t,\mu_t),}{y[t]~gamma(u[t],\mu[t]),} with \eqn{\theta_t =
+\item \eqn{y_t \sim \textrm{gamma}(u_t, \mu_t), }{y[t]~gamma(u[t], \mu[t]), } with \eqn{\theta_t =
 log(\mu_t)}{[\theta[t] = log(\mu[t])]}, where \eqn{\mu_t}{\mu[t]} is the mean
 parameter and \eqn{u_t}{u[t]} is the shape parameter.
 
-\item \eqn{y_t \sim \textrm{negative binomial}(u_t,\mu_t),}{y[t]~negative binomial(u[t],\mu[t]),}
+\item \eqn{y_t \sim \textrm{negative binomial}(u_t, \mu_t), }{y[t]~negative binomial(u[t], \mu[t]), }
  with expected value \eqn{\mu_t}{\mu[t]} and variance \eqn{\mu_t+ \mu_t^2/u_t}{\mu[t]+
 \mu[t]^2/u[t]} (see \code{\link{dnbinom}}), then \eqn{\theta_t =
 log[\mu_t]}{\theta[t] = log(\mu[t])}.
 }
 
-For exponential family models \eqn{u_t=1}{u[t]=1} as a default. 
-For completely Gaussian models, parameter is omitted. Note that series can 
+For exponential family models \eqn{u_t = 1}{u[t] = 1} as a default.
+For completely Gaussian models, parameter is omitted. Note that series can
 have different distributions in case of multivariate models.
 
 For the unknown elements of initial state vector \eqn{a_1}{a[1]}, KFAS uses
 exact diffuse initialization by Koopman and Durbin (2000, 2001, 2003), where
 the unknown initial states are set to have a zero mean and infinite variance,
-so \deqn{P_1 = P_{\ast,1} + \kappa P_{\infty,1},}{P[1] = P[*,1] +
-\kappaP[inf,1],} with \eqn{\kappa} going to infinity and
-\eqn{P_{\infty,1}}{P[inf,1]} being diagonal matrix with ones on diagonal
+so \deqn{P_1 = P_{\ast, 1} + \kappa P_{\infty, 1}, }{P[1] = P[*, 1] +
+\kappaP[inf, 1], } with \eqn{\kappa} going to infinity and
+\eqn{P_{\infty, 1}}{P[inf, 1]} being diagonal matrix with ones on diagonal
 elements corresponding to unknown initial states.
 
 This method is basically a equivalent of setting uninformative priors for the
 initial states in a Bayesian setting.
 
-Diffuse phase is continued until rank of \eqn{P_{\infty,t}}{P[inf,t]} becomes
-zero. Rank of \eqn{P_{\infty,t}}{P[inf,t]} decreases by 1, if 
-\eqn{F_{\infty,t}>\xi_t>0}{F[inf,t]>\xi[t]>0}, where \eqn{\xi_t}{\xi[t]} is by default 
-\code{.Machine$double.eps^0.5*max(Z[,,t]^2)}. Usually the number of diffuse time points
-equals the number unknown elements of initial state vector, but missing 
+Diffuse phase is continued until rank of \eqn{P_{\infty, t}}{P[inf, t]} becomes
+zero. Rank of \eqn{P_{\infty, t}}{P[inf, t]} decreases by 1, if
+\eqn{F_{\infty, t}>\xi_t>0}{F[inf, t]>\xi[t]>0}, where \eqn{\xi_t}{\xi[t]} is by default
+\code{.Machine$double.eps^0.5*max(Z[, , t]^2)}. Usually the number of diffuse time points
+equals the number unknown elements of initial state vector, but missing
 observations or time-varying system matrices can affect this. See Koopman and
-Durbin (2000, 2001, 2003) for details for exact diffuse and non-diffuse 
+Durbin (2000, 2001, 2003) for details for exact diffuse and non-diffuse
 filtering.  If the number of diffuse states is large compared to the data, it
 is possible that the model is degenerate in a sense that not enough
 information is available for leaving the diffuse phase.
@@ -119,43 +119,43 @@ element at the time. Therefore the prediction error variance matrices F and
 Finf do not need to be non-singular, as there is no matrix inversions in
 univariate approach algorithm.  This provides possibly more
 faster filtering and smoothing than normal multivariate Kalman filter
-algorithm, and simplifies the formulas for diffuse filtering and smoothing. 
-If covariance matrix H is not diagonal, it is possible to transform the model by either using 
-LDL decomposition on H, or augmenting the state vector with \eqn{\epsilon} disturbances. 
+algorithm, and simplifies the formulas for diffuse filtering and smoothing.
+If covariance matrix H is not diagonal, it is possible to transform the model by either using
+LDL decomposition on H, or augmenting the state vector with \eqn{\epsilon} disturbances.
 See \code{\link{transformSSM}} for more details.
 }
 \examples{
 
 # Example of local level model for Nile series
 
-modelNile<-SSModel(Nile~SSMtrend(1,Q=list(matrix(NA))),H=matrix(NA))
+modelNile <- SSModel(Nile~SSMtrend(1, Q = list(matrix(NA))), H = matrix(NA))
 modelNile
-modelNile<-fitSSM(inits=c(log(var(Nile)),log(var(Nile))),model=modelNile,
-                  method='BFGS',control=list(REPORT=1,trace=1))$model
+modelNile <- fitSSM(inits = c(log(var(Nile)), log(var(Nile))), model = modelNile,
+                  method = "BFGS", control = list(REPORT = 1, trace = 1))$model
 # Filtering and state smoothing
-out<-KFS(modelNile,filtering='state',smoothing='state') 
+out <- KFS(modelNile, filtering = "state", smoothing = "state")
 out
 
 # Confidence and prediction intervals for the expected value and the observations.
 # Note that predict uses original model object, not the output from KFS.
-conf<-predict(modelNile,interval='confidence')
-pred<-predict(modelNile,interval='prediction')
+conf <- predict(modelNile, interval = "confidence")
+pred <- predict(modelNile, interval = "prediction")
 
-ts.plot(cbind(Nile,pred,conf[,-1]),col=c(1:2,3,3,4,4), 
-        ylab='Predicted Annual flow', main='River Nile')
+ts.plot(cbind(Nile, pred, conf[, -1]), col = c(1:2, 3, 3, 4, 4),
+        ylab = "Predicted Annual flow", main = "River Nile")
 
 
 # Missing observations, using same parameter estimates
 
-y<-Nile
-y[c(21:40,61:80)]<-NA
-modelNile<-SSModel(y~SSMtrend(1,Q=list(modelNile$Q)),H=modelNile$H)
+y <- Nile
+y[c(21:40, 61:80)] <- NA
+modelNile <- SSModel(y~SSMtrend(1, Q = list(modelNile$Q)), H = modelNile$H)
 
-out<-KFS(modelNile,filtering='mean',smoothing='mean')
+out <- KFS(modelNile, filtering = "mean", smoothing = "mean")
 
 # Filtered and smoothed states
-plot.ts(cbind(y,fitted(out,filtered=TRUE),fitted(out)), plot.type='single', 
-        col=1:3, ylab='Predicted Annual flow', main='River Nile')
+plot.ts(cbind(y, fitted(out, filtered = TRUE), fitted(out)), plot.type = "single",
+        col = 1:3, ylab = "Predicted Annual flow", main = "River Nile")
 
 
 # Example of multivariate local level model with only one state
@@ -164,112 +164,112 @@ plot.ts(cbind(y,fitted(out,filtered=TRUE),fitted(out)), plot.type='single',
 
 data(GlobalTemp)
 
-model<-SSModel(GlobalTemp~SSMtrend(1,Q=NA,type='common'),H=matrix(NA,2,2))        
+model <- SSModel(GlobalTemp~SSMtrend(1, Q = NA, type = "common"), H = matrix(NA, 2, 2))
 
 # Estimating the variance parameters
-inits<-chol(cov(GlobalTemp))[c(1,4,3)]
-inits[1:2]<-log(inits[1:2])
-fit<-fitSSM(inits=c(0.5*log(.1),inits),model=model,method='BFGS')
+inits <- chol(cov(GlobalTemp))[c(1, 4, 3)]
+inits[1:2] <- log(inits[1:2])
+fit <- fitSSM(inits = c(0.5*log(.1), inits), model = model, method = "BFGS")
 
-out<-KFS(fit$model)
+out <- KFS(fit$model)
 
-ts.plot(cbind(model$y,coef(out)),col=1:3)
-legend('bottomright',legend=c(colnames(GlobalTemp), 'Smoothed signal'), col=1:3, lty=1)
+ts.plot(cbind(model$y, coef(out)), col = 1:3)
+legend("bottomright", legend = c(colnames(GlobalTemp), "Smoothed signal"), col = 1:3, lty = 1)
 
 
 # Seatbelts data
 \dontrun{
-model<-SSModel(log(drivers)~SSMtrend(1,Q=list(NA))+
-               SSMseasonal(period=12,sea.type='trigonometric',Q=NA)+
-               log(PetrolPrice)+law,data=Seatbelts,H=NA)
+model <- SSModel(log(drivers)~SSMtrend(1, Q = list(NA))+
+               SSMseasonal(period = 12, sea.type = "trigonometric", Q = NA)+
+               log(PetrolPrice)+law, data = Seatbelts, H = NA)
 
-# As trigonometric seasonal contains several disturbances which are all 
-# identically distributed, default behaviour of fitSSM is not enough, 
-# as we have constrained Q. We can either provide our own 
+# As trigonometric seasonal contains several disturbances which are all
+# identically distributed, default behaviour of fitSSM is not enough,
+# as we have constrained Q. We can either provide our own
 # model updating function with fitSSM, or just use optim directly:
 
 # option 1:
-ownupdatefn<-function(pars,model,...){
-  model$H[]<-exp(pars[1])
-  diag(model$Q[,,1])<-exp(c(pars[2],rep(pars[3],11)))
+ownupdatefn <- function(pars, model, ...){
+  model$H[] <- exp(pars[1])
+  diag(model$Q[, , 1]) <- exp(c(pars[2], rep(pars[3], 11)))
   model #for option 2, replace this with -logLik(model) and call optim directly
 }
 
-fit<-fitSSM(inits=log(c(var(log(Seatbelts[,'drivers'])),0.001,0.0001)),
-            model=model,updatefn=ownupdatefn,method='BFGS')
+fit <- fitSSM(inits = log(c(var(log(Seatbelts[, "drivers"])), 0.001, 0.0001)),
+            model = model, updatefn = ownupdatefn, method = "BFGS")
 
-out<-KFS(fit$model,smoothing=c('state','mean'))
+out <- KFS(fit$model, smoothing = c("state", "mean"))
 out
-ts.plot(cbind(out$model$y,fitted(out)),lty=1:2,col=1:2,
-main='Observations and smoothed signal with and without seasonal component')
-lines(signal(out,states=c('regression','trend'))$signal,col=4,lty=1)
-legend('bottomleft',
-legend=c('Observations', 'Smoothed signal','Smoothed level'), 
-col=c(1,2,4), lty=c(1,2,1))
+ts.plot(cbind(out$model$y, fitted(out)), lty = 1:2, col = 1:2,
+main = "Observations and smoothed signal with and without seasonal component")
+lines(signal(out, states = c("regression", "trend"))$signal, col = 4, lty = 1)
+legend("bottomleft",
+legend = c("Observations", "Smoothed signal", "Smoothed level"),
+col = c(1, 2, 4), lty = c(1, 2, 1))
 
 
 # Multivariate model with constant seasonal pattern,
-# using the the seat belt law dummy only for the front seat passangers, 
-# and restricting the rank of the level component by using custom component 
+# using the the seat belt law dummy only for the front seat passangers,
+# and restricting the rank of the level component by using custom component
 
-model<-SSModel(log(cbind(front,rear))~ -1 + log(PetrolPrice) + log(kms)
-               + SSMregression(~law,data=Seatbelts,index=1)
-               + SSMcustom(Z=diag(2),T=diag(2),R=matrix(1,2,1),
-                           Q=matrix(1),P1inf=diag(2))
-               + SSMseasonal(period=12,sea.type='trigonometric'),
-                 data=Seatbelts,H=matrix(NA,2,2)) 
+model <- SSModel(log(cbind(front, rear))~ -1 + log(PetrolPrice) + log(kms)
+               + SSMregression(~law, data = Seatbelts, index = 1)
+               + SSMcustom(Z = diag(2), T = diag(2), R = matrix(1, 2, 1),
+                           Q = matrix(1), P1inf = diag(2))
+               + SSMseasonal(period = 12, sea.type = "trigonometric"),
+                 data = Seatbelts, H = matrix(NA, 2, 2))
 
 # An alternative way for defining the rank deficient trend component:
 
-# model<-SSModel(log(cbind(front,rear))~ -1 + log(PetrolPrice) + log(kms)
-#                + SSMregression(~law,data=Seatbelts,index=1)
-#                + SSMtrend(degree = 1, Q=list(matrix(0,2,2)))
-#                + SSMseasonal(period=12,sea.type='trigonometric'),
-#                  data=Seatbelts,H=matrix(NA,2,2)) 
-# Modify model manually:                  
-# model$Q<-array(1,c(1,1,1))
-# model$R<-model$R[,-2,,drop=FALSE]
-# attr(model,"k")<-as.integer(1)
-# attr(model,"eta_types")<-attr(model,"eta_types")[1]
+# model <- SSModel(log(cbind(front, rear))~ -1 + log(PetrolPrice) + log(kms)
+#                + SSMregression(~law, data = Seatbelts, index = 1)
+#                + SSMtrend(degree = 1, Q = list(matrix(0, 2, 2)))
+#                + SSMseasonal(period = 12, sea.type = "trigonometric"),
+#                  data = Seatbelts, H = matrix(NA, 2, 2))
+# Modify model manually:
+# model$Q <- array(1, c(1, 1, 1))
+# model$R <- model$R[, -2, , drop = FALSE]
+# attr(model, "k") <- as.integer(1)
+# attr(model, "eta_types") <- attr(model, "eta_types")[1]
 
 
-likfn<-function(pars,model,estimate=TRUE){
-  diag(model$H[,,1])<-exp(0.5*pars[1:2])
-  model$H[1,2,1]<-model$H[2,1,1]<-tanh(pars[3])*prod(sqrt(exp(0.5*pars[1:2]))) 
-  model$R[28:29]<-exp(pars[4:5])
+likfn <- function(pars, model, estimate = TRUE){
+  diag(model$H[, , 1]) <- exp(0.5*pars[1:2])
+  model$H[1, 2, 1] <- model$H[2, 1, 1] <- tanh(pars[3])*prod(sqrt(exp(0.5*pars[1:2])))
+  model$R[28:29] <- exp(pars[4:5])
   if(estimate) return(-logLik(model))
   model
-}  
-fit<-optim(f=likfn,p=c(-8,-8,1,-1,-3),method='BFGS',model=model)
-model<-likfn(fit$p,model,estimate=FALSE)
-model$R[28:29,,1]\%*\%t(model$R[28:29,,1])
+}
+fit <- optim(f = likfn, p = c(-8, -8, 1, -1, -3), method = "BFGS", model = model)
+model <- likfn(fit$p, model, estimate = FALSE)
+model$R[28:29, , 1]\%*\%t(model$R[28:29, , 1])
 model$H
 
-out<-KFS(model)
+out <- KFS(model)
 out
-ts.plot(cbind(signal(out,states=c('custom','regression'))$signal,model$y),col=1:4)
+ts.plot(cbind(signal(out, states = c("custom", "regression"))$signal, model$y), col = 1:4)
 
 # For confidence or prediction intervals, use predict on the original model
-pred <- predict(model,states=c('custom','regression'),interval='prediction')
-# Note that even though the intervals were computed without seasonal pattern, 
+pred <- predict(model, states = c("custom", "regression"), interval = "prediction")
+# Note that even though the intervals were computed without seasonal pattern,
 # PetrolPrice induces seasonal pattern to predictions
-ts.plot(pred$front,pred$rear,model$y,col=c(1,2,2,3,4,4,5,6),lty=c(1,2,2,1,2,2,1,1))
+ts.plot(pred$front, pred$rear, model$y, col = c(1, 2, 2, 3, 4, 4, 5, 6), lty = c(1, 2, 2, 1, 2, 2, 1, 1))
 }
 
-## Simulate ARMA(2,2) process
+## Simulate ARMA(2, 2) process
 set.seed(1)
 y <- arima.sim(n = 1000, list(ar = c(0.8897, -0.4858), ma = c(-0.2279, 0.2488)),
                innov = rnorm(1000) * sqrt(0.5))
 
 
-model <- SSModel(y~SSMarima(ar=c(0,0),ma=c(0,0),Q=1),H=0)
-likfn <- function(pars, model, estimate=TRUE){
-  tmp <- try(SSMarima(artransform(pars[1:2]),artransform(pars[3:4]),Q = exp(pars[5])),silent=TRUE)    
-  if(!inherits(tmp,"try-error")){
-    model["T","arima"] <- tmp$T 
-    model["R","arima"] <- tmp$R    
-    model["P1","arima"] <- tmp$P1
-    model["Q","arima"] <- tmp$Q
+model <- SSModel(y~SSMarima(ar = c(0, 0), ma = c(0, 0), Q = 1), H = 0)
+likfn <- function(pars, model, estimate = TRUE){
+  tmp <- try(SSMarima(artransform(pars[1:2]), artransform(pars[3:4]), Q = exp(pars[5])), silent = TRUE)
+  if(!inherits(tmp, "try-error")){
+    model["T", "arima"] <- tmp$T
+    model["R", "arima"] <- tmp$R
+    model["P1", "arima"] <- tmp$P1
+    model["Q", "arima"] <- tmp$Q
     if(estimate){
       -logLik(model)
     } else model
@@ -277,14 +277,14 @@ likfn <- function(pars, model, estimate=TRUE){
     if(estimate){
       1e100
     } else model
-  } 
+  }
 }
 
-fit_kfas <- optim(par = c(rep(0,4),log(1)), model = model, fn = likfn, method="BFGS")
-model <- likfn(fit_kfas$par,model,FALSE)
+fit_kfas <- optim(par = c(rep(0, 4), log(1)), model = model, fn = likfn, method = "BFGS")
+model <- likfn(fit_kfas$par, model, FALSE)
 
 # AR coefficients:
-model$T[2:3,2,1]
+model$T[2:3, 2, 1]
 # MA coefficients:
 model$R[3:4]
 # sigma2:
@@ -292,22 +292,22 @@ model$Q[1]
 # intercept
 KFS(model)
 # same with arima:
-arima(y,c(2,0,2))
+arima(y, c(2, 0, 2))
 \dontrun{
 # Poisson model
-model<-SSModel(VanKilled~law+SSMtrend(1,Q=list(matrix(NA)))+
-               SSMseasonal(period=12,sea.type='dummy',Q=NA),
-               data=Seatbelts, distribution='poisson')
+model <- SSModel(VanKilled~law+SSMtrend(1, Q = list(matrix(NA)))+
+               SSMseasonal(period = 12, sea.type = "dummy", Q = NA),
+               data = Seatbelts, distribution = "poisson")
 
 # Estimate variance parameters
-fit<-fitSSM(inits=c(-4,-7), model=model,method='BFGS')
+fit <- fitSSM(inits = c(-4, -7), model = model, method = "BFGS")
 
-model<-fit$model
+model <- fit$model
 
 # use approximating model, gives posterior modes, but the variances might not be reliable
-out_nosim<-KFS(model,nsim=0)
+out_nosim <- KFS(model, nsim = 0)
 # State smoothing via importance sampling
-out_sim<-KFS(model,nsim=1000)
+out_sim <- KFS(model, nsim = 1000)
 
 out_nosim
 out_sim
@@ -315,135 +315,135 @@ out_sim
 
 # Example of generalized linear modelling with KFS
 
-# Same example as in ?glm 
-counts <- c(18,17,15,20,10,20,25,13,12)
-outcome <- gl(3,1,9)
-treatment <- gl(3,3)
+# Same example as in ?glm
+counts <- c(18, 17, 15, 20, 10, 20, 25, 13, 12)
+outcome <- gl(3, 1, 9)
+treatment <- gl(3, 3)
 print(d.AD <- data.frame(treatment, outcome, counts))
 glm.D93 <- glm(counts ~ outcome + treatment, family = poisson())
 
 
-model<-SSModel(counts ~ outcome + treatment, data=d.AD, 
-               distribution = 'poisson')
+model <- SSModel(counts ~ outcome + treatment, data = d.AD,
+               distribution = "poisson")
 
-out<-KFS(model)
-coef(out,start=1,end=1)
+out <- KFS(model)
+coef(out, start = 1, end = 1)
 coef(glm.D93)
 
 summary(glm.D93)$cov.s
-out$V[,,1]
+out$V[, , 1]
 
-outnosim<-KFS(model,smoothing=c('state','signal','mean'))
+outnosim <- KFS(model, smoothing = c("state", "signal", "mean"))
 set.seed(1)
-outsim<-KFS(model,smoothing=c('state','signal','mean'),nsim=1000)
+outsim <- KFS(model, smoothing = c("state", "signal", "mean"), nsim = 1000)
 
 
 ## linear predictor
 # GLM
 glm.D93$linear.predictor
 # approximate model, this is the posterior mode of p(theta|y)
-c(outnosim$thetahat)            
-# importance sampling on theta,  gives E(theta|y)            
-c(outsim$thetahat)                         
+c(outnosim$thetahat)
+# importance sampling on theta,  gives E(theta|y)
+c(outsim$thetahat)
 
 
 
 ## predictions on response scale
 # GLM
-fitted(glm.D93) 
+fitted(glm.D93)
 # approximate model with backtransform, equals GLM
-c(fitted(outnosim))                
-# importance sampling on exp(theta)       
+c(fitted(outnosim))
+# importance sampling on exp(theta)
 c(fitted(outsim))
 
 # prediction variances on link scale
 # GLM
-as.numeric(predict(glm.D93,type='link',se.fit=TRUE)$se.fit^2)
+as.numeric(predict(glm.D93, type = "link", se.fit = TRUE)$se.fit^2)
 # approx, equals to GLM results
-c(outnosim$V_theta)                                    
-# importance sampling on theta        
-c(outsim$V_theta)                                            
+c(outnosim$V_theta)
+# importance sampling on theta
+c(outsim$V_theta)
 
 
 # prediction variances on response scale
 # GLM
-as.numeric(predict(glm.D93,type='response',se.fit=TRUE)$se.fit^2) 
+as.numeric(predict(glm.D93, type = "response", se.fit = TRUE)$se.fit^2)
 # approx, equals to GLM results
-c(outnosim$V_mu)                             
-# importance sampling on theta                    
-c(outsim$V_mu)                                                   
+c(outnosim$V_mu)
+# importance sampling on theta
+c(outsim$V_mu)
 
 # approxSSM uses modified step-halving for more robust convergence than glm:
-y <- rep (0:1,c(15,10))
+y <- rep (0:1, c(15, 10))
 suppressWarnings(glm(formula = y ~ 1, family = binomial(link = "logit"), start = 2))
-model<-SSModel(y~1,dist="binomial")
-KFS(model,theta=2)
-KFS(model,theta=7)
+model <- SSModel(y~1, dist = "binomial")
+KFS(model, theta = 2)
+KFS(model, theta = 7)
 
 \dontrun{
 data(sexratio)
-model<-SSModel(Male~SSMtrend(1,Q=list(NA)),u=sexratio[,'Total'],data=sexratio,
-               distribution='binomial')
-fit<-fitSSM(model,inits=-15,method='BFGS',control=list(trace=1,REPORT=1))
+model <- SSModel(Male~SSMtrend(1, Q = list(NA)), u = sexratio[, "Total"], data = sexratio,
+               distribution = "binomial")
+fit <- fitSSM(model, inits = -15, method = "BFGS", control = list(trace = 1, REPORT = 1))
 fit$model$Q #1.107652e-06
 
-# Computing confidence intervals in response scale 
+# Computing confidence intervals in response scale
 # Uses importance sampling on response scale (4000 samples with antithetics)
 
-pred<-predict(fit$model,type='response',interval='conf',nsim=1000) 
- 
-ts.plot(cbind(model$y/model$u,pred),col=c(1,2,3,3),lty=c(1,1,2,2))
+pred <- predict(fit$model, type = "response", interval = "conf", nsim = 1000)
+
+ts.plot(cbind(model$y/model$u, pred), col = c(1, 2, 3, 3), lty = c(1, 1, 2, 2))
 
 # Now with sex ratio instead of the probabilities:
-imp<-importanceSSM(fit$model,nsim=1000,antithetics=TRUE)
-sexratio.smooth<-numeric(length(model$y))
-sexratio.ci<-matrix(0,length(model$y),2)
-w<-imp$w/sum(imp$w)
+imp <- importanceSSM(fit$model, nsim = 1000, antithetics = TRUE)
+sexratio.smooth <- numeric(length(model$y))
+sexratio.ci <- matrix(0, length(model$y), 2)
+w <- imp$w/sum(imp$w)
 for(i in 1:length(model$y)){
- sexr<-exp(imp$sample[i,1,])
- sexratio.smooth[i]<-sum(sexr*w)
- oo<-order(sexr)
- sexratio.ci[i,]<-c(sexr[oo][which.min(abs(cumsum(w[oo]) - 0.05))],
+ sexr <- exp(imp$sample[i, 1, ])
+ sexratio.smooth[i] <- sum(sexr*w)
+ oo <- order(sexr)
+ sexratio.ci[i, ] <- c(sexr[oo][which.min(abs(cumsum(w[oo]) - 0.05))],
                       sexr[oo][which.min(abs(cumsum(w[oo]) - 0.95))])
 }
 
 # Same by direct transformation:
-out<-KFS(fit$model,smoothing='signal',nsim=1000)
+out <- KFS(fit$model, smoothing = "signal", nsim = 1000)
 sexratio.smooth2 <- exp(out$thetahat)
-sexratio.ci2<-exp(c(out$thetahat) + qnorm(0.025) * sqrt(drop(out$V_theta))\%o\%c(1, -1))
+sexratio.ci2 <- exp(c(out$thetahat) + qnorm(0.025) * sqrt(drop(out$V_theta))\%o\%c(1, -1))
 
-ts.plot(cbind(sexratio.smooth,sexratio.ci,sexratio.smooth2,sexratio.ci2),
-        col=c(1,1,1,2,2,2),lty=c(1,2,2,1,2,2))
+ts.plot(cbind(sexratio.smooth, sexratio.ci, sexratio.smooth2, sexratio.ci2),
+        col = c(1, 1, 1, 2, 2, 2), lty = c(1, 2, 2, 1, 2, 2))
 }
 # Example of Cubic spline smoothing
 \dontrun{
 require(MASS)
 data(mcycle)
 
-model<-SSModel(accel~-1+SSMcustom(Z=matrix(c(1,0),1,2),
-                                 T=array(diag(2),c(2,2,nrow(mcycle))),
-                                 Q=array(0,c(2,2,nrow(mcycle))),
-                                 P1inf=diag(2),P1=diag(0,2)),data=mcycle)
+model <- SSModel(accel~-1+SSMcustom(Z = matrix(c(1, 0), 1, 2),
+                                 T = array(diag(2), c(2, 2, nrow(mcycle))),
+                                 Q = array(0, c(2, 2, nrow(mcycle))),
+                                 P1inf = diag(2), P1 = diag(0, 2)), data = mcycle)
 
-model$T[1,2,]<-c(diff(mcycle$times),1)
-model$Q[1,1,]<-c(diff(mcycle$times),1)^3/3
-model$Q[1,2,]<-model$Q[2,1,]<-c(diff(mcycle$times),1)^2/2
-model$Q[2,2,]<-c(diff(mcycle$times),1)
+model$T[1, 2, ] <- c(diff(mcycle$times), 1)
+model$Q[1, 1, ] <- c(diff(mcycle$times), 1)^3/3
+model$Q[1, 2, ] <- model$Q[2, 1, ] <- c(diff(mcycle$times), 1)^2/2
+model$Q[2, 2, ] <- c(diff(mcycle$times), 1)
 
 
-updatefn<-function(pars,model,...){ 
-  model$H[]<-exp(pars[1])
-  model$Q[]<-model$Q[]*exp(pars[2])
+updatefn <- function(pars, model, ...){
+  model$H[] <- exp(pars[1])
+  model$Q[] <- model$Q[]*exp(pars[2])
   model
 }
 
-fit<-fitSSM(model,inits=c(4,4),updatefn=updatefn,method='BFGS')
+fit <- fitSSM(model, inits = c(4, 4), updatefn = updatefn, method = "BFGS")
 
-pred<-predict(fit$model,interval='conf',level=0.95)
-plot(x=mcycle$times,y=mcycle$accel,pch=19)
-lines(x=mcycle$times,y=pred[,1])
-lines(x=mcycle$times,y=pred[,2],lty=2)
-lines(x=mcycle$times,y=pred[,3],lty=2)
+pred <- predict(fit$model, interval = "conf", level = 0.95)
+plot(x = mcycle$times, y = mcycle$accel, pch = 19)
+lines(x = mcycle$times, y = pred[, 1])
+lines(x = mcycle$times, y = pred[, 2], lty = 2)
+lines(x = mcycle$times, y = pred[, 3], lty = 2)
 }
 
 
@@ -464,6 +464,6 @@ Shumway, Robert H. and Stoffer, David S. (2006).  Time Series Analysis and
 Its Applications: With R examples.  \cr
 }
 \seealso{
-examples in \code{\link{boat}},\code{\link{importanceSSM}}, \code{\link{approxSSM}}
+examples in \code{\link{boat}}, \code{\link{importanceSSM}}, \code{\link{approxSSM}}
 }
 

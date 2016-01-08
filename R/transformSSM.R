@@ -1,24 +1,26 @@
 #' Transform Multivariate State Space Model for Sequential Processing
 #' 
-#' \code{transformSSM} transforms the observation equation of Gaussian state space model by LDL 
-#' decomposition or state vector augmentation.
+#' \code{transformSSM} transforms the general multivariate Gaussian state space model
+#' to form suitable for sequential processing.
 #' 
-#' @details As all the functions in KFAS use univariate approach, \eqn{H_t}{H[t]}, a covariance 
-#'   matrix of an observation equation needs to be either diagonal or zero matrix. Function 
-#'   \code{transformSSM} performs either the LDL decomposition of the covariance matrix of the 
-#'   observation equation, or augments the state vector with the disturbances of the observation 
-#'   equation.
+#' @details As all the functions in KFAS use univariate approach i.e. sequential processing, 
+#'   the covariance matrix \eqn{H_t}{H[t]} of the observation equation needs to be 
+#'   either diagonal or zero matrix. Function \code{transformSSM} performs either 
+#'   the LDL decomposition of \eqn{H_t}{H[t]}, or augments the state vector with
+#'   the disturbances of the observation equation.
 #'   
 #'   In case of a LDL decomposition, the new \eqn{H_t}{H[t]} contains the diagonal part of the 
 #'   decomposition, whereas observations \eqn{y_t}{y[t]} and system matrices \eqn{Z_t}{Z[t]} are 
 #'   multiplied with the inverse of \eqn{L_t}{L[t]}. Note that although the state estimates and 
 #'   their error covariances obtained by Kalman filtering and smoothing are identical with those 
-#'   obtained from ordinary multivariate filtering, the one step ahead errors and their variances do
-#'   differ.
+#'   obtained from ordinary multivariate filtering, the one step ahead errors 
+#'   \eqn{v_t}{v[t]} and their variances \eqn{F_t}{F[t]} do differ. The typical 
+#'   multivariate versions can be obtained from output of \code{\link{KFS}}
+#'   using \code{\link{mvInnovations}} function.
 #'   
 #'   
 #' @export
-#' @param object State space model object from function SSModel.
+#' @param object State space model object from function \code{\link{SSModel}}.
 #' @param type Option \code{"ldl"} performs LDL decomposition for covariance matrix \eqn{H_t}{H[t]},
 #'   and multiplies the observation equation with the \eqn{L_t^{-1}}{L[t]^-1}, so \eqn{\epsilon_t^* 
 #'   \sim N(0,D_t)}{\epsilon[t]* ~ N(0,D[t])}. Option \code{"augment"} adds 
@@ -88,7 +90,7 @@ transformSSM <- function(object, type = c("ldl", "augment")) {
       out <- .Fortran(fldlssm, NAOK = TRUE, yt = yt, ydims = ydims, yobs = yobs, 
         tv = as.integer(tv), Zt = Z, p = p, m = m, 
         n = n, ichols = ichols, nh = as.integer(nh), hchol = hchol, 
-        unidim = as.integer(unidim), info = 0L, hobs = hobs, 
+        unidim = as.integer(unidim), info = as.integer(0), hobs = hobs, 
         tol = max(abs(apply(object$H, 3, diag))) * .Machine$double.eps)
       if(out$info!=0){
         stop(switch(as.character(out$info),

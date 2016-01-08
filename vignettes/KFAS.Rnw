@@ -1,6 +1,11 @@
 %\VignetteEngine{knitr::knitr}
-%\VignetteDepends{lme4}
+%\VignetteDepends{lme4, Matrix}
 %\VignetteIndexEntry{KFAS: Exponential Family State Space Models in R}
+%\VignettePackage{KFAS}
+%\VignetteKeyword{state space models}
+%\VignetteKeyword{Kalman filter}
+%\VignetteKeyword{exponential family}
+%\VignetteKeyword{time series}
 \documentclass[nojss,article]{jss}
 \usepackage{amsmath}
 \usepackage{natbib}

@@ -18,11 +18,11 @@ instead of \eqn{p(\alpha|y)}.}
 
 \item{nsim}{Number of independent samples. Default is 1.}
 
-\item{antithetics}{Use antithetic variables in simulation. Default is FALSE.}
+\item{antithetics}{Use antithetic variables in simulation. Default is \code{FALSE}.}
 
-\item{conditional}{Simulations are conditional to data. If FALSE, the initial state
+\item{conditional}{Simulations are conditional to data. If \code{FALSE}, the initial state
 \eqn{\alpha_1}{\alpha[1]} is set to \code{alphahat[1,]} computed by \code{KFS}, 
-and all the observations are removed from the model. Default is TRUE.}
+and all the observations are removed from the model. Default is \code{TRUE}}
 }
 \value{
 An n x k x nsim array containing the simulated series, where k is number of observations,
@@ -33,11 +33,25 @@ Function \code{simulateSMM} simulates states, signals, disturbances or missing o
 the Gaussian state space model.
 }
 \details{
-Simulation smoother algorithm is based to article by J. Durbin and S.J. Koopman (2002).
+Simulation smoother algorithm is based on article by J. Durbin and S.J. Koopman (2002).
+The simulation filter (\code{fitered = TRUE}) is a straightforward modification 
+of the simulations smoother, where only filtering steps are performed.
 
 Function can use two antithetic variables, one for location and other for scale, so output
 contains four blocks of simulated values which correlate which each other (ith block correlates
 negatively with (i+1)th block, and positively with (i+2)th block etc.).
+}
+\examples{
+
+model <- SSModel(matrix(NA, 100, 1) ~ SSMtrend(1, 1), H = 1)
+
+set.seed(123)
+sim <- simulateSSM(model, "obs", nsim = 2, antithetics = TRUE)
+# first time points
+sim[1,,]
+# correlation structure between simulations with two antithetics
+cor(sim[,1,])
+
 }
 \references{
 Durbin J. and Koopman, S.J. (2002). A simple and efficient simulation smoother for

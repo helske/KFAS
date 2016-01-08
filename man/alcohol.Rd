@@ -7,12 +7,12 @@
 \format{A multivariate time series object with 45 times 8 observations.}
 \source{
 Statistics Finland:
-\url{http://pxweb2.stat.fi/database/StatFin/ter/ksyyt/ksyyt_en.asp} and 
+\url{http://pxweb2.stat.fi/database/StatFin/ter/ksyyt/ksyyt_en.asp} and
 \url{pxweb2.stat.fi/database/StatFin/vrm/vaerak/vaerak_en.asp}
 }
 \description{
 A multivariate time series object containing the number of alcohol related
-deaths and population sizes (divided by 100,000) of Finland in four age groups.
+deaths and population sizes (divided by 100, 000) of Finland in four age groups.
 }
 \keyword{datasets}
 

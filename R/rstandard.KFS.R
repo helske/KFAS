@@ -34,7 +34,7 @@
 #'   either the lower triangular matrix from Cholesky decomposition of 
 #'   \eqn{Q_t - V_{\eta,t}}{Q[t] - V[\eta,t]}, or the diagonal of the same matrix.  
 #'   
-#'   \item 'pearson':  Standardized Pearson residuals 
+#'   \item "pearson":  Standardized Pearson residuals 
 #'   \deqn{L^{-1}_t(y_{t}-\theta_{i}), \quad t=1,\ldots,n,}{L^(-1)[t](y[t]-\theta[t]), t=1,\ldots,n,} where 
 #'   \eqn{L_t}{L[t]} is the lower triangular matrix from Cholesky decomposition 
 #'   of \eqn{Var(y_t|y_{n},\ldots,y_1)}{Var(y[t]|y[n],\ldots,y[1])}, or the diagonal of the same
@@ -53,14 +53,26 @@
 #' @param standardization_type Type of standardization. Either \code{"marginal"}
 #'   (default) for marginal standardization or  \code{"cholesky"} for Cholesky-type standardization.
 #' @param ... Ignored.
+#' @examples
+#' modelNile <- SSModel(Nile ~ SSMtrend(1, Q = list(matrix(NA))), H = matrix(NA))
+#' modelNile <- fitSSM(inits = c(log(var(Nile)),log(var(Nile))), model = modelNile,
+#'   method = 'BFGS',control = list(REPORT = 1, trace = 1))$model
+#' # Filtering and state smoothing
+#' out <- KFS(modelNile, smoothing = c("state", "mean", "disturbance"))
+#' 
+#' plot(cbind(
+#'     recursive = rstandard(out), 
+#'     "irregular" = rstandard(out, "pearson"), 
+#'     "state" = rstandard(out, "state")),
+#'   main = "recursive and auxiliary residuals")
 rstandard.KFS <- function(model, 
-  type = c("recursive", "pearson", "state", "deviance"), 
+  type = c("recursive", "pearson", "state"), 
   standardization_type = c("marginal","cholesky"), ...) {
   
   type <- match.arg(type)
   stype <- match.arg(standardization_type)
   
-  if(type == "deviance")
+  if (type == "deviance")
     .Deprecated(msg="Argument type=\"deviance\" is deprecated.")
   
   if (type == "state" && any(model$model$distribution != "gaussian")) 
