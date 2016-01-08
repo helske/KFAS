@@ -199,10 +199,8 @@ SSModel(y~-1+x+SSMregression(f,data=data1))["Z"] # 1 and 2
 rm(x)
 c(SSModel(y~-1+SSMregression(f,data=data1))$Z) # 2
 \dontrun{
-\donttest{
 # This fails as there is no x in the environment of f
-c(SSModel(y~-1+SSMregression(f),data=data1)$Z)
-}
+try(c(SSModel(y~-1+SSMregression(f),data=data1)$Z))#'
 }
 }
 \seealso{
