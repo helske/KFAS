@@ -1,5 +1,5 @@
 %\VignetteEngine{knitr::knitr}
-%\VignetteDepends{lme4, Matrix}
+%\VignetteDepends{lme4}
 %\VignetteIndexEntry{KFAS: Exponential Family State Space Models in R}
 %\VignettePackage{KFAS}
 %\VignetteKeyword{state space models}
@@ -132,7 +132,7 @@ nondiffuse counterparts if $F_{\infty,i,t}=0$, the asterisk is dropped from the 
 \subsection{Log-likelihood of the Gaussian state space model}
 
 The Kalman filter equations can be used for computing the log-likelihood, which
-in its standard form is 
+in its standard form is
 \begin{equation*}\label{logL}
 \log L  = \frac{np}{2}\log2\pi - \frac{1}{2}\sum^n_{t=1}(\log|F_t| +
 v^\prime_tF^{-1}_tv_t).
@@ -160,12 +160,12 @@ See \citet[Chapter 7]{DK2012} for details. \citet{Francke2010} show that there a
 \begin{equation*}
 p(y_t|\theta_t) = p(y_t|Z_t\alpha_t),
 \end{equation*}
-where $\theta_t=Z_t\alpha_t$ is the signal and $p(y_t|\theta_t)$ is the observational density. 
+where $\theta_t=Z_t\alpha_t$ is the signal and $p(y_t|\theta_t)$ is the observational density.
 
 The signal $\theta_t$ is the linear predictor which is connected to the expected value $E(y_t)=\mu_t$ via a link function $l(\mu_t)=\theta_t$. In \pkg{KFAS}, the following distributions and links are available:
 
 \begin{enumerate}
-\item Gaussian distribution with mean $\mu_t$ and variance $u_t$ with identity link $\theta_t=\mu_t$. 
+\item Gaussian distribution with mean $\mu_t$ and variance $u_t$ with identity link $\theta_t=\mu_t$.
 
 \item Poisson distribution with intensity $\lambda_t$ and exposure $u_t$ together with log-link $\theta_t = \log(\lambda_t)$. Thus we have $\E(y_t|\theta_t)=\VAR(y_t|\theta_t)=u_t e^{\theta_t}$.
 
@@ -177,7 +177,7 @@ p(y_t|\mu_t,u_t) = \frac{u_t^{u_t}}{\Gamma(u_t)}\mu_t^{-u_t}y_t^{u_t-1}e^{\frac{
 \end{equation*}
 This gives us $\E(y_t|\theta_t)=e^{\theta_t}$ and $\VAR(y_t|\theta_t) = e^{2\theta_t}/u_t$.
 
-\item Negative binomial distribution with a dispersion parameter $u_t$ and an expected value $\mu_t$ with log-link $\theta_t = \log(\mu_t)$, where the negative binomial distribution is defined as 
+\item Negative binomial distribution with a dispersion parameter $u_t$ and an expected value $\mu_t$ with log-link $\theta_t = \log(\mu_t)$, where the negative binomial distribution is defined as
 \begin{equation*}
 p(y_t|\mu_t,u_t) = \frac{\Gamma(y_t+u_t)}{\Gamma(u_t)y_t!}\frac{\mu_t^{y_t} u_t^{u_t}}{(\mu_t+u_t)^{u_t+y_t}},
 \end{equation*}
@@ -186,11 +186,11 @@ giving us $\E(y_t|\theta_t)=e^{\theta_t}$ and $\VAR(y_t|\theta_t) = e^{\theta_t}
 
 Note that variable $u_t$ has a different meaning depending on the distribution it is linked to. In \pkg{KFAS} one defines the distribution for each time series via argument \code{distribution} and the additional known parameters $u_t$ corresponding to each series as columns of matrix \code{u}.
 
-In order to make inferences of the non-Gaussian models, we first find a Gaussian model which has the same conditional posterior mode as $p(\theta|y)$ \citep{DK2000}. This is done using an iterative process with Laplace approximation of $p(\theta|y)$, where the updated estimates for $\theta_t$ are computed via Kalman filtering and smoothing from the approximating Gaussian model. In approximating Gaussian model the observation equation is replaced by 
+In order to make inferences of the non-Gaussian models, we first find a Gaussian model which has the same conditional posterior mode as $p(\theta|y)$ \citep{DK2000}. This is done using an iterative process with Laplace approximation of $p(\theta|y)$, where the updated estimates for $\theta_t$ are computed via Kalman filtering and smoothing from the approximating Gaussian model. In approximating Gaussian model the observation equation is replaced by
 \begin{equation*}
 \tilde y_t = Z_t\alpha_t + \epsilon_t, \quad \epsilon_t \sim N(0,H_t)
 \end{equation*}
-where the pseudo-observations $\tilde y_t$ variances $H_t$ are based on first and second derivatives of $log p(y_t|\theta_t)$ with respect to $\theta_t$ \citep{DK2000}. 
+where the pseudo-observations $\tilde y_t$ variances $H_t$ are based on first and second derivatives of $log p(y_t|\theta_t)$ with respect to $\theta_t$ \citep{DK2000}.
 
 Final estimates $\hat \theta_t$ correspond to the mode of $p(\theta|y)$. In Gaussian case the mode is also the mean. In cases listed in (1)-(5) the difference between the mode and mean is often negligible. Nevertheless, we are usually more interested in $\mu_t$ than in the linear predictor $\theta_t$. As the link function is non-linear, direct transformation $\hat \mu_t=l^{-1}(\hat \theta_t)$ introduces some bias. To solve this problem \pkg{KFAS} also contains methods based on importance sampling, which allows us to correct these possible approximation errors. With importance sampling technique we can also compute the log-likelihood and the smoothed estimates for $f(\alpha)$, where $f$ is an arbitrary function of states, $\exp(Z_t\alpha_t)$ being typical example.
 
@@ -201,7 +201,7 @@ In importance sampling scheme, we first find the approximating Gaussian model, s
 
 The simulation of Gaussian state space models in \pkg{KFAS} is based on simulation smoothing algorithm by \citet{DK2002}. In order to improve the simulation efficiency, \pkg{KFAS} can use two antithetic variables in the simulation algorithms. See \citet[p.~265-266]{DK2012} for details how these are constructed.
 
-\pkg{KFAS} also provides means for filtering of non-Gaussian models. This is achieved by sequentially using the smoothing scheme for $(y_1,\ldots,y_t), t=1\ldots,n$ with $y_t$ set as missing. This is relatively slow procedure for large models, as the importance sampling algorithms need to be performed $n$ times, although the first steps are much faster than the one using whole data. The non-Gaussian filtering is mainly for computation of recursive residuals (see Section \ref{residuals}) and for illustrative purposes, where the computational efficiency is not that important. With large models or online-filtering problems, one is recommended to use proper particle filter approach which is out of the scope of this paper. 
+\pkg{KFAS} also provides means for filtering of non-Gaussian models. This is achieved by sequentially using the smoothing scheme for $(y_1,\ldots,y_t), t=1\ldots,n$ with $y_t$ set as missing. This is relatively slow procedure for large models, as the importance sampling algorithms need to be performed $n$ times, although the first steps are much faster than the one using whole data. The non-Gaussian filtering is mainly for computation of recursive residuals (see Section \ref{residuals}) and for illustrative purposes, where the computational efficiency is not that important. With large models or online-filtering problems, one is recommended to use proper particle filter approach which is out of the scope of this paper.
 
 \subsection{Log-likelihood of the non-Gaussian state space model}\label{ngloglik}
 
@@ -218,14 +218,14 @@ where $L_g(y)$ is the log-likelihood of the Gaussian approximating model and the
 \log E_g\left[\frac{p(y|\theta)}{g(y|\theta)}\right] \approx \log\frac{1}{N}\sum_{i=1}^N w_i.
 \end{equation}
 
-In many cases, good approximation of the log-likelihood can be computed without any simulation, by setting $N=0$ and using the mode estimate $\hat \theta$ from the approximating model. 
+In many cases, good approximation of the log-likelihood can be computed without any simulation, by setting $N=0$ and using the mode estimate $\hat \theta$ from the approximating model.
 
-In practice \eqref{eg} suffer from the fact that $w_i= p(y|\theta^i)/g(y|\theta^i)$ is numerically unstable; when number of observations is large, the discrete probability mass function $p(y|\theta^i)$ tends to zero, even when the Gaussian density function $g(y|\alpha^i)$ does not. Therefore it is better to redefine the weights as 
+In practice \eqref{eg} suffer from the fact that $w_i= p(y|\theta^i)/g(y|\theta^i)$ is numerically unstable; when number of observations is large, the discrete probability mass function $p(y|\theta^i)$ tends to zero, even when the Gaussian density function $g(y|\alpha^i)$ does not. Therefore it is better to redefine the weights as
 \begin{equation*}
 w^*_i = \frac{p(y|\theta^i)/p(y|\hat\theta)}{g(y|\theta^i)/g(y|\hat \theta)}.
 \end{equation*}
 
-The log-likelihood is then computed as 
+The log-likelihood is then computed as
 
 \begin{equation*}
 \begin{aligned}
@@ -250,9 +250,9 @@ where $d$ is the last time point of diffuse phase, and the denominator can be de
 \end{equation*}
 In the Gaussian case this simplifies to $v_{t}F_{t}^{-\frac{1}{2}}$.
 
-For multivariate observations we have several options on how to standardize the residuals. The most common one is a marginal standardization approach where each residual series is divided by its standard deviation, so we get standard normal distributed residual series which have no autocorrelation or cross-correlation with non-zero lags. Another option is to use for example Cholesky decomposition for the prediction error covariance matrix $F_t$ and standardize the residuals by $L_t^{-1}(y_t-\hat y_t)$ where $L_t L_t^\top=F_t$. Now the whole residual series should look like a draw from standard normal distributed without any autocorrelation. 
+For multivariate observations we have several options on how to standardize the residuals. The most common one is a marginal standardization approach where each residual series is divided by its standard deviation, so we get standard normal distributed residual series which have no autocorrelation or cross-correlation with non-zero lags. Another option is to use for example Cholesky decomposition for the prediction error covariance matrix $F_t$ and standardize the residuals by $L_t^{-1}(y_t-\hat y_t)$ where $L_t L_t^\top=F_t$. Now the whole residual series should look like a draw from standard normal distributed without any autocorrelation.
 
-For computing the marginally standardized residuals, multivariate versions of $F_t$ and $v_t$ are needed, wheras the Cholesky standardized residuals can be computed directly from sequential Kalman filter as 
+For computing the marginally standardized residuals, multivariate versions of $F_t$ and $v_t$ are needed, wheras the Cholesky standardized residuals can be computed directly from sequential Kalman filter as
 \begin{equation*}
 v_{i,t} F_{i_t}^{-\frac{1}{2}}, \quad j=1,\ldots,p,\quad t=d+1\ldots,n.
 \end{equation*}
@@ -299,7 +299,7 @@ Structural time series refers to class of state space models where the observed 
 \begin{equation}
 \begin{aligned}\label{structural}
 y_t       &= \mu_t + \gamma_t + c_t + \epsilon_t, \quad \epsilon_t \sim N(0, H_t),\\
-\mu_{t+1} &= \mu_t + \nu_t + \xi_t, \quad \xi_t \sim N(0, Q_{\textrm{level},t}), \\ 
+\mu_{t+1} &= \mu_t + \nu_t + \xi_t, \quad \xi_t \sim N(0, Q_{\textrm{level},t}), \\
 \nu_{t+1} &= \nu_t + \zeta_t, \quad \zeta_t \sim N(0, Q_{\textrm{slope},t}),
 \end{aligned}
 \end{equation}
@@ -317,7 +317,7 @@ or trigonometric form where
 \end{equation*}
 with $\omega_{j,t}$ and $\omega^{\ast}_{j,t}$ being independently distributed variables with $N(0, Q_{\textrm{seasonal},t})$ distribution and $\lambda_j = 2\pi j/s$.
 
-Cycle component with period $s$ is defined as 
+Cycle component with period $s$ is defined as
 
 \begin{equation*}
 \begin{aligned}
@@ -330,9 +330,9 @@ with $\omega_t$ and $\omega^{\ast}_{t}$ being independent variables from $N(0, Q
 
 For non-Gaussian models the observation equation of \eqref{structural} is replaced by $p(y_t|\theta_t)$ where $\theta_t = \mu_t + \gamma_t + c_t$. Additional Gaussian noise term $\epsilon_t$ can also be included in $\theta_t$ using \code{SSMcustom} function (this is illustrated in Section \ref{illustration})
 
-\code{SSModel} contains three auxiliary functions, \code{SSMtrend}, \code{SSMcycle}, and \code{SSMseasonal}, for building structural time series. Argument \code{degree} of \code{SSMtrend} defines the degree of the polynomial component, where \code{1} corresponds to local level model and \code{2} to local linear trend model. Higher order polynomials can also be defined with larger values. Another important argument for \code{SSMtrend} is \code{Q} which defines the covariance structure of the trend component. This is typically a list of $p \times p$ matrices (with $p$ being the number of series for which the component is defined), where the first matrix corresponds to level component ($\mu$ in \eqref{structural}), second to slope component $\nu$ and so forth. 
+\code{SSModel} contains three auxiliary functions, \code{SSMtrend}, \code{SSMcycle}, and \code{SSMseasonal}, for building structural time series. Argument \code{degree} of \code{SSMtrend} defines the degree of the polynomial component, where \code{1} corresponds to local level model and \code{2} to local linear trend model. Higher order polynomials can also be defined with larger values. Another important argument for \code{SSMtrend} is \code{Q} which defines the covariance structure of the trend component. This is typically a list of $p \times p$ matrices (with $p$ being the number of series for which the component is defined), where the first matrix corresponds to level component ($\mu$ in \eqref{structural}), second to slope component $\nu$ and so forth.
 
-Function \code{SSMcycle} differs from \code{SSMtrend} only by one argument. \code{SSMcycle} does not have argument \code{degree}, but instead it has argument \code{period} which defines the length of the cycle $c_t$. Same argument is also used in function \code{SSMseasonal}, which contains also another important argument \code{sea.type}, which can be used to define whether user wants a \code{dummy} or \code{trigonometric} seasonal. 
+Function \code{SSMcycle} differs from \code{SSMtrend} only by one argument. \code{SSMcycle} does not have argument \code{degree}, but instead it has argument \code{period} which defines the length of the cycle $c_t$. Same argument is also used in function \code{SSMseasonal}, which contains also another important argument \code{sea.type}, which can be used to define whether user wants a \code{dummy} or \code{trigonometric} seasonal.
 
 
 
@@ -408,15 +408,15 @@ Note that the \code{arima} function from \pkg{stats} also uses the same state sp
 
 \subsection{Linear and generalized linear models}
 
-An ordinary linear regression model 
+An ordinary linear regression model
 \begin{equation*}
 y_t = x^\top_t \beta + \epsilon_t, \quad t=1,\ldots,n,
 \end{equation*}
-where $\epsilon_t \sim N(0,\sigma^2)$ can be written as a Gaussian state space model by defining $Z_t=x^\top_t$, $H_t=\sigma^2$, $R_t=Q_t=0$ and $\alpha_t=\beta$. Assuming that the prior distribution of $\beta$ is defined as diffuse, the diffuse likelihood of this state space model corresponds to a restricted maximum likelihood (REML). Then the estimate for $\sigma^2$ obtained from \code{fitSSM} would be the familiar unbiased REML estimate of residual variance. It is important to notice that for this simple model numerical optimization is not needed, since we can estimate $\sigma^2$ by running the Kalman filter with $H_t=1$, which gives us 
+where $\epsilon_t \sim N(0,\sigma^2)$ can be written as a Gaussian state space model by defining $Z_t=x^\top_t$, $H_t=\sigma^2$, $R_t=Q_t=0$ and $\alpha_t=\beta$. Assuming that the prior distribution of $\beta$ is defined as diffuse, the diffuse likelihood of this state space model corresponds to a restricted maximum likelihood (REML). Then the estimate for $\sigma^2$ obtained from \code{fitSSM} would be the familiar unbiased REML estimate of residual variance. It is important to notice that for this simple model numerical optimization is not needed, since we can estimate $\sigma^2$ by running the Kalman filter with $H_t=1$, which gives us
 \begin{equation*}
 \hat \sigma^2 = \frac{1}{\sum I(F_{\infty,t} = 0)} \sum_{t=1}^n I(F_{\infty,t} = 0) v_t^2/F_t,
 \end{equation*}
-which equals to the REML estimate of $\sigma^2$. The initial Kalman filter already provides correct estimates of $\beta$ as $a_{n+1}$, and running Kalman filter again with $H_t=\sigma^2$ gives also the covariance matrix of $\hat \beta$ as $P_{n+1}$. 
+which equals to the REML estimate of $\sigma^2$. The initial Kalman filter already provides correct estimates of $\beta$ as $a_{n+1}$, and running Kalman filter again with $H_t=\sigma^2$ gives also the covariance matrix of $\hat \beta$ as $P_{n+1}$.
 
 The extension from linear model to generalized linear model is straightforward as the basic theory behind the exponential family state space modelling can be formulated from the theory of generalized linear models (GLM), and can be thought of as a extension to GLMs with additional dynamic structure. The iterative process of finding the approximating Gaussian model is equivalent with the famous iterative reweighted least squares (IRLS) algoritm \citep[p.~40]{MN1989}. If the model is ordinary GLM the final estimates of regression coefficients $\beta$ and their standard errors coincide with maximum likelihood estimates obtained from ordinary GLM fitting. By adjusting the prior distribution for $\beta$ we can use \pkg{KFAS} also for Bayesian analysis of Poisson and binomial regression (as those distributions do not depend on any additional parameters such as residual variance) with Gaussian prior.
 
@@ -427,15 +427,15 @@ counts <- c(18,17,15,20,10,20,25,13,12)
 outcome <- gl(3,1,9)
 treatment <- gl(3,3)
 d.AD <- data.frame(treatment, outcome, counts)
-glmModel1 <- SSModel(counts ~ outcome + treatment, 
+glmModel1 <- SSModel(counts ~ outcome + treatment,
                      data = d.AD, distribution = "poisson")
-@               
+@
 
-The previous model could also be defined using the auxiliary function \code{SSMregression}: 
+The previous model could also be defined using the auxiliary function \code{SSMregression}:
 
 <<'glmexample2'>>=
-glmModel2 <- SSModel(counts ~ 
-                       SSMregression(~outcome + treatment, data = d.AD), 
+glmModel2 <- SSModel(counts ~
+                       SSMregression(~outcome + treatment, data = d.AD),
                      distribution = "poisson")
 @
 
@@ -456,11 +456,11 @@ suppressWarnings(library("lme4",quietly=TRUE))
 # Split data by grouping variable
 Y <- split(sleepstudy["Reaction"], sleepstudy["Subject"])
 p <- length(Y) # Number of series
-Y <- matrix(unlist(Y), ncol = p, 
+Y <- matrix(unlist(Y), ncol = p,
             dimnames = list(NULL, paste("Subject", names(Y))))
 dataf <- split(sleepstudy, sleepstudy["Subject"])
 
-# Assume that we know the covariance structure 
+# Assume that we know the covariance structure
 # of random effects and the residual variance
 
 covRandom <- matrix(c(625,36,36,625),2,2)
@@ -468,17 +468,17 @@ sigma2 <- 650
 
 # Common fixed effect part and distinct random effect parts for each "series"
 # Set P1inf = 0 so diffuse initialization is not used for random effects
-lmmModel <- SSModel(Y ~ -1 
-                    + SSMregression(rep(list(~ Days), p), type = "common", 
+lmmModel <- SSModel(Y ~ -1
+                    + SSMregression(rep(list(~ Days), p), type = "common",
                                     data = dataf, remove.intercept = FALSE)
                     + SSMregression(rep(list(~ Days), p), P1inf = 0,
                                     data = dataf, remove.intercept = FALSE),
                     H = diag(sigma2, p))
 # Set covariance structure of the random effects which are states 3 to 38
 # One could also use more common way lmmModel$P1[-(1:2),-(1:2)] <- ...
-lmmModel["P1", 2+1:(2*p)] <- 
+lmmModel["P1", 2+1:(2*p)] <-
   as.matrix(.bdiag(replicate(p, covRandom, simplify = FALSE)))
-@   
+@
 
 
 
@@ -498,13 +498,13 @@ legend("topleft",col = 1:4, lty = 1,
 
 Natural distributional assumption for modelling counts is a Poisson distribution. Based on the time series plot, we can think of several candidates for capturing the time series aspects of the series. One could try for example an ARIMA model or a structural time series model such as local level or local linear trend. These are closely related, but I feel that the latter models are more easily interpretable so I will use structural time series approach.
 
-Here I choose a multivariate Poisson model 
+Here I choose a multivariate Poisson model
 
 \begin{equation*}\label{alcohol}
 \begin{aligned}
 p(y_t|\theta_t) &= Poisson(u_t e^{\theta_t}), \quad u_t = \textrm{population}_t,\\
 \theta_t &= \mu_t + \epsilon_t, \quad \epsilon_t \sim N(0, Q_{\textrm{noise}}),\\
-\mu_{t+1} &= \mu_t + \nu_t + \xi_t, \quad \xi_t \sim N(0, Q_{\textrm{level}}), \\ 
+\mu_{t+1} &= \mu_t + \nu_t + \xi_t, \quad \xi_t \sim N(0, Q_{\textrm{level}}), \\
 \nu_{t+1} &= \nu_t,
 \end{aligned}
 \end{equation*}
@@ -518,9 +518,9 @@ We estimate the model parameters first without simulation, and then using those 
 # remove the last observations
 alcoholPred <- window(alcohol, start = 1969, end = 2007)
 
-model <- SSModel(alcoholPred[,1:4] ~ 
+model <- SSModel(alcoholPred[,1:4] ~
                    SSMtrend(2, Q = list(matrix(NA,4,4), matrix(0,4,4))) +
-                   SSMcustom(Z = diag(1,4), T = diag(0,4), 
+                   SSMcustom(Z = diag(1,4), T = diag(0,4),
                              Q = matrix(NA,4,4), P1 = matrix(NA,4,4)),
                  distribution = "poisson", u = alcoholPred[,5:8])
 
@@ -539,11 +539,11 @@ updatefn <- function(pars, model, ...){
 # covariance matrices are parameterized via log-Cholesky in fitSSM
 init <- chol(cov(log(alcoholPred[,1:4]/alcoholPred[,5:8]))/10)
 
-fitinit <- fitSSM(model, updatefn = updatefn, 
+fitinit <- fitSSM(model, updatefn = updatefn,
                   inits = rep(c(log(diag(init)), init[upper.tri(init)]),2),
                   method = "BFGS")
 # Now with simulation
-fit<-fitSSM(model, updatefn = updatefn, 
+fit<-fitSSM(model, updatefn = updatefn,
             inits = fitinit$optim.out$par, method = "BFGS", nsim = 250)
 varcor <- fit$model["Q", etas = "level"]
 varcor[upper.tri(varcor)] <- cov2cor(varcor)[upper.tri(varcor)]
@@ -552,8 +552,8 @@ varcor <- fit$model["Q", etas = "custom"]
 varcor[upper.tri(varcor)] <- cov2cor(varcor)[upper.tri(varcor)]
 print(varcor,digits=2) #local level component #extra noise component
 -fitinit$optim.out$val #log-likelihood without simulation
--fit$optim.out$val     #log-likelihood with simulation  
-@  
+-fit$optim.out$val     #log-likelihood with simulation
+@
 
 Parameter estimation of state space model is often a difficult task, as the likelihood surface contains multiple maxima, thus making the optimization problem highly dependent on the initial values. Often the unknown parameters are related to the unobserved latent states such as the covariance matrix in this example, without much a priori knowledge. Therefore, it is challenging to guess good initial values especially in more complex settings and multiple initial value configurations possibly with several different type of optimization routines is recommended before one can be reasonably sure that proper optimum is found. Here we use the covariance matrix of the observed series as initial values for the covariance structures.
 
@@ -569,27 +569,27 @@ out
 From the output of \code{KFS} we see that the slope term is not significant in the first age group. For time-varying states we can easily plot the estimated level and noise components, which shows clear trends in three age groups and highly correlated additional variation in all groups:
 
 <<'states',fig.pos = '!ht', fig.cap = 'Smoothed level and white noise components.',out.width='\\linewidth'>>=
-plot(coef(out,states=c("level","custom")), 
+plot(coef(out,states=c("level","custom")),
      main = "Smoothed states", yax.flip=TRUE)
 @
 
 Note the large drop in noise component which relates to possible outlier in 1973 of the mortality series. As an illustration of model diagnostics, we compute recursive residuals for our model and check whether there is autocorrelation left in the residuals (Figure \ref{fig:diagnostics1}).
 
 <<'diagnostics1',fig.pos = '!ht', fig.cap = 'Autocorrelations and cross-correlations of recursive residuals.',out.width='\\linewidth'>>=
-res <- rstandard(KFS(fit$model, filtering = "mean", 
+res <- rstandard(KFS(fit$model, filtering = "mean",
                      smoothing = "none", nsim = 1000))
 acf(res, na.action = na.pass)
 @
 
-We see occasional lagged cross-correlation between the residuals, but overall we can be relatively satisfied with our model. 
+We see occasional lagged cross-correlation between the residuals, but overall we can be relatively satisfied with our model.
 
 We can now predict the intensity $e^{\theta_t}$ of alcohol related deaths per 100,000 persons for each age group for years 2008--2015 using our estimated model. As our model is time varying (\code{u} varies), we need to provide the model for the future observations via \code{newdata} argument. In this case we can use \code{SSMcustom} function and provide all the necessary system matrices as once, together with constant \code{u=1} (our signal $\theta$ is already scaled properly as the original $u_t$ was the population per 100,000 persons).
 
 <<'prediction'>>=
-pred<-predict(fit$model, newdata = 
+pred<-predict(fit$model, newdata =
                 SSModel(ts(matrix(NA,6,4), start = 2008) ~ -1
-                        + SSMcustom(Z = fit$model$Z, T = fit$model$T, 
-                                    R = fit$model$R, Q = fit$model$Q), u = 1, 
+                        + SSMcustom(Z = fit$model$Z, T = fit$model$T,
+                                    R = fit$model$R, Q = fit$model$Q), u = 1,
                         distribution= "poisson"),
               interval = "confidence", nsim = 10000)
 @
@@ -597,12 +597,12 @@ pred<-predict(fit$model, newdata =
 trend <- exp(signal(out, "trend")$signal)
 par(mfrow = c(2,2), mar = c(2,2,2,2) + 0.1, oma = c(2,2,0,0))
 for(i in 1:4)
-  ts.plot(alcohol[,i]/alcohol[,4+i], 
-          trend[,i], 
+  ts.plot(alcohol[,i]/alcohol[,4+i],
+          trend[,i],
           pred[[i]],
-          col = c(1,2,rep(3,3)), xlab = NULL, ylab = NULL, 
+          col = c(1,2,rep(3,3)), xlab = NULL, ylab = NULL,
           main = colnames(alcohol)[i])
-mtext("Number of alcohol related deaths per 100,000 persons in Finland", 
+mtext("Number of alcohol related deaths per 100,000 persons in Finland",
       side = 2, outer = TRUE)
 mtext("Year",side=1,outer=TRUE)
 @
@@ -610,39 +610,39 @@ mtext("Year",side=1,outer=TRUE)
 Figure \ref{fig:predictplot} shows the observed deaths, smoothed trends for 1969--2007, and intensity predictions for 2008--2012 together with 95\% prediction intervals for intensity. When we compare our predictions to true observations, we see that in reality the number of deaths slightly increased in the oldest age group (ages 60--69), whereas in other age they decreased substantially during the forecasting period. This is partly explained by the fact that during this period the total alcohol consumption decreased almost monotonically, which in turn might have been caused by the increase in taxation of alcohol in 2008, 2009 and 2012.
 
 % \section[Comparison to INLA]{Comparison to \pkg{INLA}}\label{comparison}
-% 
+%
 % I will now shortly compare \pkg{KFAS} and \pkg{INLA}, which is an \proglang{R} package for approximate Bayesian inference for latent Gaussian models by using integrated nested Laplace approximation \citep{Rue}.
-% 
+%
 % As an illustration, we reanalyze the salmonella data analyzed by \citet{Margolin} which is available from \pkg{INLA}. The data consists of the number of revertant colonies of TA98 Salmonella with different doses of quinoline. We model the number of colonies as a Poisson GLMM with two explanatory variables and a random intercept term which tries to capture the overdispersion in the data. The codes for inference with \pkg{INLA} used here can be found from \url{http://www.r-inla.org/examples/volume-1/code-for-salm-example}.
-% 
+%
 % <<'salmonellaINLA'>>=
 % suppressWarnings(library("INLA",quietly = TRUE))
 % data("Salm")
-% mod.salm <- inla(y ~ log(dose+10) + dose + 
+% mod.salm <- inla(y ~ log(dose+10) + dose +
 %                    f(rand, model = "iid", param = c(0.001,0.001)),
 %                  family = "poisson", data = Salm)
 % ## improved estimation of the hyperparameters
 % h.salm <- inla.hyperpar(mod.salm)
 % @
-% 
+%
 % There are two ways to define the random intercept component in \pkg{KFAS}. The first one uses the \code{SSMregression} function and constructs a factor with 18 levels (one for each case) with non-diffuse initial variance $\sigma^2$. This gives 18 identically distributed time-invariant states where each state correspond to random effect of one observation. Another option would be to use \code{SSMcustom} function and define just one time-varying state as \code{SSMcustom(Z = 1, T = 0,  R = 1, Q = sigma2, a1 = 0, P1 = sigma2,  P1inf = 0)}. Both approaches give identical results. However, for large data the former approach is less efficient as the number of states depends on the number of observations. Nevertheless, we use the former approach here for illustration.
-% 
+%
 % <<'salmonellaKFAS'>>=
 % Salm$rand<-as.factor(Salm$rand)
-% model <- SSModel(y ~ log(dose+10) + dose + 
-%                    SSMregression(~ -1 + rand, P1 = diag(NA,18), 
+% model <- SSModel(y ~ log(dose+10) + dose +
+%                    SSMregression(~ -1 + rand, P1 = diag(NA,18),
 %                                  remove.intercept = FALSE),
 %                  data = Salm, distribution = "poisson")
-% 
+%
 % updatefn<-function(pars,model,...){
 %   diag(model["P1", states = 4:21]) <- exp(pars)
-%   model  
+%   model
 % }
-% 
-% fit <- fitSSM(model, updatefn = updatefn, inits = -3, 
+%
+% fit <- fitSSM(model, updatefn = updatefn, inits = -3,
 %               method = "BFGS", nsim = 1000)
 % @
-% 
+%
 % <<'salmonellaResults'>>=
 % out<-KFS(fit$model,nsim=1000)
 % out
@@ -651,9 +651,9 @@ Figure \ref{fig:predictplot} shows the observed deaths, smoothed trends for 1969
 % 1/h.salm$summary.hyper[1]
 % fit$model["P1", states = 4]
 % @
-% 
+%
 % Although \pkg{INLA} uses Bayesian approach which takes account the parameter estimation uncertainty, the results from \pkg{INLA} and \pkg{KFAS} are practically same, even with such a small data. Kalman filtering with diffuse initialization still takes account the uncertainty of the estimation of regression coefficients, so the differences here are related to the estimation of hyperparameter $\sigma^2$, which is estimated as precision $1/\sigma^2$ by \pkg{INLA}. The estimate of $\sigma^2$ by \pkg{KFAS} is \Sexpr{signif(fit$model["P1", states = 4],2)} whereas \pkg{INLA} gives $\sigma^2=\Sexpr{signif(1/h.salm$summary.hyper[1],2)}$.
-% 
+%
 % As \pkg{INLA} and \pkg{KFAS} are based on different (although related) theoretical framework, the extensive study of their performances in terms of computational efficiency and accuracy of results is somewhat pointless. Nevertheless, some remarks can be made. I feel that the biggest advantage of \pkg{INLA} is the Bayesian framework which allows us to take account the parameter uncertainty in predictions and other inference. On the other hand, the computational burden related to the numerical integration over the hyperparameters can become infeasible as the number of hyperparameters increase. It is not uncommon to have a time series model with tens (or even hundreds) of parameters (such as multivariate structural time series or dynamic factor models). Of course these same models cause problems also to the maximum likelihood estimation, as noted in the previous section. Also the Bayesian approach eliminates the need for defining good initial values for the maximum likelihood estimation but the problem transforms into defining good priors for the same hyperparameters which again is a non-trivial task in practice.
 
 \section{Discussion}
@@ -700,13 +700,13 @@ K_{t,i} &= P_{t,i} Z_{t,i}^\top \\
 a_{t,i+1} &= a_{t,i} + K_{t,i}F_{t,i}^{-1} v_{t,i} \\
 P_{t,i+1} &= P_{t,i} -K_{t,i}K^\top_{t,i}F_{t,i}^{-1}\\
 a_{t+1,1} &= T_t a_{t,p_t+1}\\
-P_{t+1,1} &= T_t P_{t,p_t+1} T_t^\top + R_t Q_t R_t, 
+P_{t+1,1} &= T_t P_{t,p_t+1} T_t^\top + R_t Q_t R_t,
 \end{aligned}
 \end{equation*}
 for $t=1,\ldots,n$ and  $i=1,\ldots,p_t$, where $v_{t,i}$ and $F_{t,i}$ are
 scalars, $K_{t,i}$ is a column vector and $\sigma^2_{t,i}$ is the $i$th diagonal
 element of $H_t$. It is possible that $F_{t,i}=0$, which case $a_{t,i+1} =
-a_{t,i}$, $P_{t,i+1} = P_{t,i}$, and $v_{t,i}$ is computed as usual.  
+a_{t,i}$, $P_{t,i+1} = P_{t,i}$, and $v_{t,i}$ is computed as usual.
 
 The diffuse filtering equations for univariate approach are
 \begin{equation*}
@@ -729,73 +729,73 @@ P_{\ast,t,i+1} &= P_{\ast,t,i}
 -(K_{\ast,t,i}K^\top_{\infty,t,i}+K_{\ast,t,i}K^\top_{\infty,t,i})F_{\infty,t,i}^{-1}\\
 P_{\infty,t,i+1} &= P_{\infty,t,i}
 -K_{\infty,t,i}K^\top_{\infty,t,i}F_{\infty,t,i}^{-1}\\
-\end{aligned} 
+\end{aligned}
 \end{equation*}
 
 if $F_{\infty,t,i}>0$, and
 
-\begin{equation*} 
+\begin{equation*}
 \begin{aligned}
 a_{t,i+1} &= a_{t,i} + K_{\ast,t,i} v_{t,i}F_{\ast,t,i}^{-1} \\
 P_{\ast,t,i+1} &= P_{\ast,t,i} -K_{\ast,t,i}K^\top_{\ast,t,i}F_{\ast,t,i}^{-1}\\
 P_{\infty,t,i+1} &= P_{\infty,t,i},\\
-\end{aligned} 
+\end{aligned}
 \end{equation*}
 
 if $F_{\infty,t,i}=0$. The transition equations from $t$ to $t+1$ are
 
-\begin{equation*} 
+\begin{equation*}
 \begin{aligned}
 a_{t+1,1} &= T_t a_{t,p_t+1}\\
 P_{\ast,t+1,1} &= T_t P_{\ast,t,p_t+1} T_t^\top + R_t Q_t R_t\\
-P_{\infty,t+1,1} &= T_t P_{\infty,t,p_t+1} T_t^\top. 
+P_{\infty,t+1,1} &= T_t P_{\infty,t,p_t+1} T_t^\top.
 \end{aligned}
 \end{equation*}
 
 
 \subsection{Smoothing}
 Denote
-\begin{equation*} 
+\begin{equation*}
 \begin{aligned}
 \hat\alpha_{t} &= \E(\alpha_{t}|y_n,\ldots,y_1) \quad \textrm{and}  \\
 V_{t} &= \VAR(\alpha_{t}|y_n,\ldots,y_1).
-\end{aligned} 
+\end{aligned}
 \end{equation*}
 
 The smoothing algorithms of \pkg{KFAS} are based on the following recursions:
 
-\begin{equation*} 
+\begin{equation*}
 \begin{aligned}
 r_{t,i-1} &= Z_{t,i}^\top v_{t,i}F_{t,i}^{-1} + L_{t,i}^\top r_{t,i}, \\
 r_{t-1,p_t} &= T_{t-1}^\top r_{t,0},\\
 N_{t,i-1} &= Z_{t,i}^\top Z_{t,i}F_{t,i}^{-1} +L_{t,i}^\top N_{t,i}L_{t,i},\\
 N_{t-1,p_t} &= T_{t-1}^\top N_{t,0}T_{t-1},\\
 L_{t,i} &= I - K_{t,i}Z_{t,i}^\top F_{t,i}^{-1},
-\end{aligned} 
+\end{aligned}
 \end{equation*}
 
 for $t=n,\ldots,1$ and  $i=p_t,\ldots,1$, with $r_{n,p_n}=0$ and $N_{n,p_n}=0$.
 From these recursions, we get state smoothing recursions
-\begin{equation*} 
+\begin{equation*}
 \begin{aligned}
 \hat\alpha_{t} &= a_{t,1} + P_{t,1}r_{t,0}\\
 V_{t} &= P_{t,1}-P_{t,1}N_{t,0}P_{t,1},
-\end{aligned} 
+\end{aligned}
 \end{equation*}
 
 and disturbance smoothing recursions
 
-\begin{equation*} 
+\begin{equation*}
 \begin{aligned}
 \hat \epsilon_{t,i} &= \sigma^2_{t,i}F_{t,i}^{-1}(v_{t,i} -K_{t,i}^\top r_{t,i}),\\
 \VAR(\hat \epsilon_{t,i}) &= \sigma^2_{t,i} -
 \sigma^4_{t,i}(F_{t,i}^{-1} -K_{t,i}^\top N_{t,i}K_{t,i}F_{t,i}^{-2}),\\
 \hat \eta_{t} &= Q_tR_t^\top r_{t,0},\\
 \VAR(\hat \eta_{t,i}) &= Q_tR^\top_t N_{t,0}R_tQ_t.
-\end{aligned} 
+\end{aligned}
 \end{equation*}
 The recursions for diffuse phase are as follows.
-\begin{equation*} 
+\begin{equation*}
 \begin{aligned}
 L_{\infty,t,i} &= I - K_{\infty,t,i}Z_{t,i}F_{\infty,t,i}^{-1},\\
 L_{t,i} &=
@@ -807,13 +807,13 @@ N_{0,t,i-1} &= L_{\infty,t,i}^\top N_{0,t,i}L_{\infty,t,i}\\
 N_{1,t,i-1} &= L_{t,i}^\top N_{0,t,i}L_{\infty,t,i}+
 L_{\infty,t,i}^\top N_{1,t,i}L_{\infty,t,i}+Z_{t,i}^\top Z_{t,i}F_{\infty,t,i}^{-1},\\
 N_{2,t,i-1} &= L_{t,i}^\top N_{0,t,i}L_{t,i}+ L_{\infty,t,i}^\top N_{1,t,i}L_{t,i} +
-(L_{\infty,t,i}^\top N_{1,t,i}L_{t,i})^\top + 
+(L_{\infty,t,i}^\top N_{1,t,i}L_{t,i})^\top +
 L_{\infty,t,i}N_{2,t,i}^\top L_{\infty,t,i}-Z_{t,i}^\top Z_{t,i}F_{t,i}F_{\infty,t,i}^{-2},\\
 N_{t-1,p_t} &= T_{t-1}^\top N_{t,0}T_{t-1},
-\end{aligned} 
+\end{aligned}
 \end{equation*}
 if $F_{\infty,t,i}>0$, and
-\begin{equation*} 
+\begin{equation*}
 \begin{aligned}
 L_{t,i} &= I - K_{t,i}Z_{t,i}F_{t,i}^{-1},\\
 r_{0,t,i-1} &= Z_{t,i}^\top v_{t,i}F_{t,i}^{-1} + L_{t,i}^\top r_{0,t,i}, \\
@@ -821,7 +821,7 @@ r_{1,t,i-1} &= L_{t,i}^\top r_{1,t,i}, \\
 N_{0,t,i-1} &= L_{t,i}^\top N_{0,t,i}L_{t,i}+Z_{t,i}^\top Z_{t,i}F_{t,i}^{-1}\\
 N_{1,t,i-1} &= N_{1,t,i}L_{t,i}\\
 N_{2,t,i-1} &= N_{2,t,i}L_{t,i},
-\end{aligned} 
+\end{aligned}
 \end{equation*}
 otherwise. The transition from time $t$ to $t-1$ is by $N_{j,t-1,p_t} =
 T_{t-1}^\top N_{j,t,0}T_{t-1}$ for $j=0,1,2$, and $r_{j,t-1,p_t} = T_{t-1}^\top r_{j,t,0}$
@@ -829,24 +829,24 @@ for $j=0,1$, with $r_{0,d,j}=r_{d,j}$, $r_{1,d,j}=0$, $N_{0,d,j}=N_{d,j}$, and
 $N_{1,d,j}=N_{2,d,j}=0$, where $(d,j)$ is the last point of diffuse phase.
 From these basic recursions, we get state smoothing recursions for diffuse phase
 as
-\begin{equation*} 
+\begin{equation*}
 \begin{aligned}
 \hat\alpha_{t} &= a_{t,1} + P_{t,1}r_{0,t,0} + P_{\infty,t,1}r_{1,t,0},\\
 V_{t} &= P_{t,1}-P_{t,1}N_{0,t,0}P_{t,1} -(P_{\infty,t,1}N_{1,t,0}P_{t,1})^\top
 -P_{\infty,t,1}N_{1,t,0}P_{t,1} - P_{\infty,t,1}N_{2,t,0}P_{\infty,t,1},
 \end{aligned}
-\end{equation*} 
+\end{equation*}
 and disturbance smoothing recursions
-\begin{equation*} 
+\begin{equation*}
 \begin{aligned}
 \hat \epsilon_{t,i} &= -\sigma^2_{t,i}K_{\infty,t,i}^\top r_{0,t,i},\\
 \VAR(\hat \epsilon_{t,i}) &= \sigma^2_{t,i} -
 \sigma^4_{t,i}K_{\infty,t,i}^\top N_{0,t,i}K_{\infty,t,i}F_{\infty,t,i}^{-2},
-\end{aligned} 
+\end{aligned}
 \end{equation*}
 if $F_{\infty,t,i}>0$, and
 
-\begin{equation*} 
+\begin{equation*}
 \begin{aligned}
 \hat \epsilon_{t,i} &=
 -\sigma^2_{t,i}(v_{t,i}F_{\infty,t,i}^{-1}-K_{t,i}^\top r_{0,t,i}),\\
@@ -857,11 +857,11 @@ if $F_{\infty,t,i}>0$, and
 
 if $F_{\infty,t,i}=0$. For $\hat\eta$, recursions are
 
-\begin{equation*} 
+\begin{equation*}
 \begin{aligned}
 \hat \eta_{t} &= Q_tR_t^\top r_{0,t,0},\\
 \VAR(\hat \eta_{t,i}) &= Q_tR_t^\top N_{0,t,0}R_tQ_t.
-\end{aligned} 
+\end{aligned}
 \end{equation*}
 
 
