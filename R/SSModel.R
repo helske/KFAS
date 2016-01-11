@@ -121,43 +121,43 @@
 #' @examples
 #'
 #' # example of using data argument
-#' y <- x <- rep(1,3)
-#' data1 <- data.frame(x=rep(2,3))
-#' data2 <- data.frame(x=rep(3,3))
+#' y <- x <- rep(1, 3)
+#' data1 <- data.frame(x = rep(2, 3))
+#' data2 <- data.frame(x = rep(3, 3))
 #'
-#' f <- formula(~-1+x)
+#' f <- formula(~ -1 + x)
 #' # With data missing the environment of formula is checked,
 #' # and if not found in there a calling environment via parent.frame is checked.
 #'
-#' c(SSModel(y~-1+x)["Z"]) # 1 1 1
-#' c(SSModel(y~-1+x,data=data1)["Z"]) # 2 2 2
+#' c(SSModel(y ~ -1 + x)["Z"]) # 1
+#' c(SSModel(y ~ -1 + x, data = data1)["Z"]) # 2
 #'
-#' c(SSModel(y~-1+SSMregression(~-1+x))["Z"]) # 1 1 1
-#' c(SSModel(y~-1+SSMregression(~-1+x,data=data1))["Z"]) # 2 2 2
-#' c(SSModel(y~-1+SSMregression(~-1+x),data=data1)["Z"]) # 2 2 2
-#' SSModel(y~-1+x+SSMregression(~-1+x,data=data1))["Z"] # 1 and 2
-#' SSModel(y~-1+x+SSMregression(~-1+x),data=data1)["Z"] # both are 2
-#' SSModel(y~-1+x+SSMregression(~-1+x,data=data1),data=data2)["Z"] # 3 and 2
+#' c(SSModel(y ~ -1 + SSMregression(~ -1 + x))["Z"]) # 1
+#' c(SSModel(y ~ -1 + SSMregression(~ -1 + x, data = data1))["Z"]) # 2
+#' c(SSModel(y ~ -1 + SSMregression(~ -1 + x), data = data1)["Z"]) # 2
+#' SSModel(y ~ -1 + x + SSMregression(~ -1 + x, data = data1))["Z"] # 1 and 2
+#' SSModel(y ~ -1 + x + SSMregression(~ -1 + x), data = data1)["Z"] # both are 2
+#' SSModel(y ~ -1 + x + SSMregression(~ -1 + x, data = data1), data = data2)["Z"] # 3 and 2
 #'
-#' SSModel(y~-1+x+SSMregression(f))["Z"] # 1 and 1
-#' SSModel(y~-1+x+SSMregression(f),data=data1)["Z"] # 2 and 1
-#' SSModel(y~-1+x+SSMregression(f,data=data1))["Z"] # 1 and 2
+#' SSModel(y ~ -1 + x + SSMregression(f))["Z"] # 1 and 1
+#' SSModel(y ~ -1 + x + SSMregression(f), data = data1)["Z"] # 2 and 1
+#' SSModel(y ~ -1 + x + SSMregression(f,data = data1))["Z"] # 1 and 2
 #'
 #' rm(x)
-#' c(SSModel(y~-1+SSMregression(f,data=data1))$Z) # 2
+#' c(SSModel(y ~ -1 + SSMregression(f, data = data1))$Z) # 2
 #' \dontrun{
 #' # This fails as there is no x in the environment of f
-#' try(c(SSModel(y~-1+SSMregression(f),data=data1)$Z))#'
+#' try(c(SSModel(y ~ -1 + SSMregression(f), data = data1)$Z))
 #' }
 SSModel <- function(formula, data, H, u, distribution,
-  tol = .Machine$double.eps^0.5) {
+  tol = .Machine$double.eps ^ 0.5) {
 
   if (missing(data)) {
     data <- environment(formula)
     tsp_data <- NULL
   } else {
     tsp_data <- tsp(data)
-    data<-as.data.frame(data)
+    data <- as.data.frame(data)
   }
 
   # Modifying formula object, catching special functions
@@ -168,7 +168,7 @@ SSModel <- function(formula, data, H, u, distribution,
   components <- c("SSMregression", "SSMtrend", "SSMseasonal", "SSMcycle",
     "SSMarima", "SSMcustom")
 
-  all_terms <- terms_out<-terms(formula, specials = components, data = data)
+  all_terms <- terms_out <- terms(formula, specials = components, data = data)
   specials <- attr(all_terms, "specials")
   components <- components[!sapply(specials, is.null)]
   if (length(unlist(specials)) > 0) {
