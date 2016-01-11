@@ -63,10 +63,12 @@ theta, u, ytilde, dist, maxiter, tol, rankp, convtol, diff, lik, info)
             call pthetarest(thetanew, timevar, zt, tt, a1, p, m, n, dev, kt,kinf,ft,finf,dt,jt)
         end if
         !non-finite value in linear predictor or muhat
-        if(finitex(sum(thetanew)).EQ.0 .OR. finitex(maxval(exp(thetanew))).EQ.0 ) then 
+        if(finitex(sum(thetanew, MASK = ymiss.EQ.0)).EQ.0 .OR. &
+           finitex(maxval(exp(thetanew), MASK = ymiss.EQ.0)).EQ.0 ) then
             if(k .GT. 1) then
                 kk = 0
-                do while(finitex(sum(thetanew)).EQ.0 .OR. finitex(maxval(exp(thetanew))).EQ.0)
+                do while(finitex(sum(thetanew, MASK = ymiss.EQ.0)).EQ.0 .OR. &
+                         finitex(maxval(exp(thetanew), MASK = ymiss.EQ.0)).EQ.0)
                     kk = kk + 1
                     if(kk .GT. maxiter) then
                         info = 1

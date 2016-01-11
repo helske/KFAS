@@ -68,10 +68,10 @@
 #' summary(glmfit2)
 approxSSM <- function(model, theta, maxiter = 50, tol = 1e-08) {
 
-  if (maxiter < 1){
+  if (maxiter < 1) {
     stop("Argument maxiter must a positive integer. ")
   }
-  if (tol < 0){
+  if (tol < 0) {
     stop("Argument tol must be non-negative. ")
   }
   # Check that the model object is of proper form
