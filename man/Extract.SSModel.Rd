@@ -13,7 +13,9 @@
 \item{x}{Object of class \code{SSModel}.}
 
 \item{element}{Which element is chosen. Possible choices are \code{"y"}, \code{"Z"}, \code{"H"},
-\code{"T"}, \code{"R"}, \code{"Q"}, \code{"a1"}, \code{"P1"}, \code{"P1inf"}, and \code{"u"}.}
+\code{"T"}, \code{"R"}, \code{"Q"}, \code{"a1"}, \code{"P1"}, \code{"P1inf"}, and \code{"u"}.
+For other values of \code{element}, default list extraction and assignments are used
+(which do not check that the model components are of proper form).}
 
 \item{states}{Which states are chosen. Either a numeric vector containing the indices of the
 states, or a character vector defining the types of the states. Possible choices are
