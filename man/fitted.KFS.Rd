@@ -8,7 +8,7 @@
   ...)
 }
 \arguments{
-\item{object}{An object of class \code{KFS}.}
+\item{object}{An object of class \code{KFS} or \code{SSModel}.}
 
 \item{start}{The start time of the period of interest. Defaults to first time
 point of the object.}
@@ -19,7 +19,8 @@ point of the object.}
 \item{filtered}{Logical, return filtered instead of smoothed estimates of
 state vector. Default is \code{FALSE}.}
 
-\item{...}{Ignored.}
+\item{...}{Additional arguments to \code{\link{KFS}}.
+Ignored in method for object of class \code{KFS}.}
 }
 \value{
 Multivariate time series containing fitted values.

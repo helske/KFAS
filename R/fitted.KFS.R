@@ -1,6 +1,7 @@
-#' Extract Fitted Values of State Space Model
+#' Smoothed Estimates or One-step Ahead Predictions of Fitted Values
 #'
-#' Extracts fitted values from output of \code{KFS}, i.e. one-step ahead
+#' Computes fitted values from output of \code{KFS}
+#' (or using the \code{SSModel} object), i.e. one-step ahead
 #' predictions  \eqn{f(\theta_t | y_{t-1}, \ldots, y_1)}{
 #' f(\theta[t] | y[t-1], ... , y[1]),} (\code{m}) or smoothed estimates
 #' \eqn{f(\theta_t | y_n, \ldots, y_1)}{f(\theta[t] | y[n], ... , y[1]),} (\code{muhat}),
@@ -9,7 +10,8 @@
 #' \eqn{f} is multiplied with the exposure \eqn{u_t}{u[t]}.
 #'
 #' @export
-#' @inheritParams coef.KFS
+#' @name fitted.SSModel
+#' @inheritParams coef.SSModel
 #' @return Multivariate time series containing fitted values.
 #' @seealso \code{\link{signal}} for partial signals and their covariances.
 #' @examples
@@ -19,7 +21,8 @@
 #' model <- fitSSM(model,inits = -15, method = "BFGS")$model
 #' out <- KFS(model)
 #' identical(drop(out$muhat), fitted(out))
-
+#'
+#' fitted(model)
 fitted.KFS <- function(object, start = NULL, end = NULL, filtered = FALSE, ...) {
   if (!filtered) {
     if (!is.null(object$muhat)) {
@@ -36,4 +39,14 @@ fitted.KFS <- function(object, start = NULL, end = NULL, filtered = FALSE, ...) 
   } else {
     drop(tmp)
   }
+}
+#' @export
+#' @rdname fitted.SSModel
+fitted.SSModel <- function(object, start = NULL, end = NULL, filtered = FALSE, nsim = 0, ...) {
+  if (filtered) {
+    out <- KFS(object, filtering = "mean", smoothing = "none", nsim = nsim, ...)
+  } else {
+    out <- KFS(object, filtering = "none", smoothing = "mean", nsim = nsim, ...)
+  }
+  fitted(out, start, end, filtered)
 }
