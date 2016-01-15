@@ -25,14 +25,14 @@
 #'   relating to trend. These can be combined. Default is \code{"all"}.
 #' @param last If \code{TRUE}, extract only the last time point as numeric vector
 #'   (ignoring \code{start} and \code{end}). Default is \code{FALSE}.
-#' @param nsim Only for method for class \code{SSModel}.
+#' @param nsim Only for method for for non-Gaussian model of class \code{SSModel}.
 #' The number of independent samples used in importance sampling.
-#' Only used for non-Gaussian model. Default is 0, which computes the
+#' Default is 0, which computes the
 #' approximating Gaussian model by \code{\link{approxSSM}} and performs the
 #' usual Gaussian filtering/smoothing so that the smoothed state estimates
 #' equals to the conditional mode of \eqn{p(\alpha_t|y)}{p(\alpha[t]|y)}.
 #' In case of \code{nsim = 0}, the mean estimates and their variances are computed using
-#' the Delta method.
+#' the Delta method (ignoring the covariance terms).
 #' @param \dots Additional arguments to \code{\link{KFS}}.
 #' Ignored in method for object of class \code{KFS}.
 #' @return Multivariate time series containing estimates states.

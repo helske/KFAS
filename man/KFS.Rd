@@ -38,7 +38,7 @@ approximating Gaussian model by \code{\link{approxSSM}} and performs the
 usual Gaussian filtering/smoothing so that the smoothed state estimates
 equals to the conditional mode of \eqn{p(\alpha_t|y)}{p(\alpha[t]|y)}.
 In case of \code{nsim = 0}, the mean estimates and their variances are computed using
-the Delta method.}
+the Delta method (ignoring the covariance terms).}
 
 \item{maxiter}{The maximum number of iterations used in Gaussian
 approximation. Default is 50. Only used for non-Gaussian model.}

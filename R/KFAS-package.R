@@ -5,11 +5,12 @@
 #'
 #' The linear Gaussian state space model is given by
 #'
-#' \deqn{y_t = Z_t \alpha_t + \epsilon_t, }{y[t] = Z[t]\alpha[t] + \epsilon[t],}
-#' (observation equation)
+#' \deqn{y_t = Z_t \alpha_t + \epsilon_t, (observation equation)}{
+#'  y[t] = Z[t]\alpha[t] + \epsilon[t], (observation equation)}
 #'
-#' \deqn{\alpha_{t+1} = T_t \alpha_t + R_t \eta_t, }{\alpha[t+1] = T[t]\alpha[t]
-#' + R[t]\eta[t], } (transition equation)
+#'
+#' \deqn{\alpha_{t+1} = T_t \alpha_t + R_t \eta_t, (transition equation)}{\alpha[t+1] = T[t]\alpha[t]
+#' + R[t]\eta[t], (transition equation)}
 #'
 #' where \eqn{\epsilon_t \sim N(0, H_t)}{\epsilon[t] ~ N(0, H[t])}, \eqn{\eta_t
 #' \sim N(0, Q_t)}{\eta[t] ~ N(0, Q[t])} and \eqn{\alpha_1 \sim

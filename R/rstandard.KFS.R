@@ -62,8 +62,8 @@
 #'
 #' plot(cbind(
 #'     recursive = rstandard(out),
-#'     "irregular" = rstandard(out, "pearson"),
-#'     "state" = rstandard(out, "state")),
+#'     irregular = rstandard(out, "pearson"),
+#'     state = rstandard(out, "state")),
 #'   main = "recursive and auxiliary residuals")
 rstandard.KFS <- function(model,
   type = c("recursive", "pearson", "state"),
