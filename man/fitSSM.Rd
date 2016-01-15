@@ -9,18 +9,21 @@ fitSSM(model, inits, updatefn, checkfn, update_args = NULL, ...)
 \arguments{
 \item{model}{Model object of class \code{SSModel}.}
 
-\item{inits}{Initial values for \code{optim}}
+\item{inits}{Initial values for \code{\link{optim}}.}
 
 \item{updatefn}{User defined function which updates the model given the
-parameters. Must be of form \code{updatefn(pars, model, ...)}.
+parameters. Must be of form \code{updatefn(pars, model, ...)},
+where \code{...} correspond to optional additional arguments.
+Function should return the original model with updated parameters.
 If not supplied, a default function is used,
-which estimates the values marked as NA in unconstrained time-invariant
+which updates the values marked as \code{NA} in unconstrained time-invariant
 covariance matrices Q and H. Note that the default \code{updatefn} function
 cannot be used with trigonometric seasonal components as its covariance
 structure is of form \eqn{\sigma}{\sigma}I.}
 
-\item{checkfn}{Optional function for checking the validity of the model. See
-details.}
+\item{checkfn}{Optional function of form \code{checkfn(model)} for checking
+the validity of the model. Should return \code{TRUE} if the model is valid,
+and \code{FALSE} otherwise.}
 
 \item{update_args}{Optional list containing additional arguments to \code{updatefn}.}
 
@@ -38,17 +41,19 @@ parameters of an arbitary state space model, given the user-defined model
 updating function.
 }
 \details{
-This function is simple wrapper around \code{optim}. For optimal performance in
+This function is simple wrapper around \code{\link{optim}}. For optimal performance in
 complicated problems, it is more efficient to use problem specific codes with
 calls to \code{logLik} method directly.
 
-After updating the model, if  \code{checkfn(model) == TRUE}, the
+In \code{fitSSM}, the objective function for \code{\link{optim}} first
+updates the model based on the current values of the parameters under optimization,
+using unction \code{updatefn}. Then function \code{checkfn}
+is used for checking that the resulting model is valid
+(the default \code{checkfn} checks for non-finite values and overly large (>1e7)
+values in covariance matrices). If \code{checkfn} returns \code{TRUE},  the
 log-likelihood is computed using a call \code{-logLik(model,check.model = FALSE)}.
-Otherwise objective function returns \code{.Machine$double.xmax}.
-If \code{checkfn} is missing, default \code{checkfn} is used which checks
-that system matrices contain only finite values (components \code{y} and
-\code{Z} are not tested), and checks that \code{Q} and \code{H} contain only
-values smaller than 1e7 (larger values can cause numerical instability).'
+Otherwise objective function returns value corresponding to
+ \code{.Machine$double.xmax^0.75}.
 
 Note that for non-Gaussian models derivative-free optimization methods such as
 Nelder-Mead might be more reliable than methods which use finite difference
@@ -110,5 +115,8 @@ check_model <- function(model) {
 
 fit <- fitSSM(inits = rep(var(Nile)/5, 2), model = model,
                  updatefn = update_model, checkfn = check_model)
+}
+\seealso{
+\code{\link{KFAS}} for examples.
 }
 

@@ -10,22 +10,22 @@
 \alias{SSMtrend}
 \title{Create a State Space Model Object of Class SSModel}
 \usage{
-SSMarima(ar = NULL, ma = NULL, d = 0, Q, stationary = TRUE, index, n,
-  ynames)
+SSMarima(ar = NULL, ma = NULL, d = 0, Q, stationary = TRUE, index,
+  n = 1, ynames)
 
-SSMcustom(Z, T, R, Q, a1, P1, P1inf, index, n)
+SSMcustom(Z, T, R, Q, a1, P1, P1inf, index, n = 1)
 
-SSMcycle(period, Q, type, index, a1, P1, P1inf, n, ynames)
+SSMcycle(period, Q, type, index, a1, P1, P1inf, n = 1, ynames)
 
 SSModel(formula, data, H, u, distribution, tol = .Machine$double.eps^0.5)
 
-SSMregression(rformula, data, type, Q, index, R, a1, P1, P1inf, n, ynames,
+SSMregression(rformula, data, type, Q, index, R, a1, P1, P1inf, n = 1, ynames,
   remove.intercept = TRUE)
 
 SSMseasonal(period, Q, sea.type = c("dummy", "trigonometric"), type, index,
   a1, P1, P1inf, n, ynames)
 
-SSMtrend(degree = 1, Q, type, index, a1, P1, P1inf, n, ynames)
+SSMtrend(degree = 1, Q, type, index, a1, P1, P1inf, n = 1, ynames)
 }
 \arguments{
 \item{ar}{for arima component, a numeric vector containing the autoregressive

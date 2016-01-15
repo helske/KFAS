@@ -512,7 +512,7 @@ NULL
 #' logLik(fit_sim$model)
 #' logLik(model_DK)
 #'
-#' # and using importance sampling fit_sim is best:
+#' # and using importance sampling fit_sim is the best:
 #' logLik(fit_nosim$model, nsim = 100)
 #' logLik(fit_sim$model, nsim = 100)
 #' logLik(model_DK, nsim = 100)
