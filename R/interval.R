@@ -43,7 +43,7 @@ interval <- function(model, interval = c("confidence", "prediction"), level,
         switch(model$distribution[j], 
           gaussian = imp$samples[, j, ], 
           poisson = exp(imp$samples[, j, ]), 
-          binomial = (if (!prob) model$u[, j] else 1) * 
+          binomial = (if (!prob) c(model$u[, j]) else 1) * 
             exp(imp$samples[, j, ])/(1 + exp(imp$samples[, j, ])), 
           gamma = exp(imp$samples[, j, ]), 
           `negative binomial` = exp(imp$samples[, j, ]))
