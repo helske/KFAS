@@ -43,7 +43,7 @@
 #'   col = c(1, 2, 4), lty = c(1, 2, 1))
 #'
 signal <- function(object, states = "all", filtered = FALSE) {
-
+  
   if (!inherits(object, "KFS"))
     stop("Object must be an output from function KFS.")
   if (is.numeric(states)) {
@@ -64,23 +64,27 @@ signal <- function(object, states = "all", filtered = FALSE) {
   }
   if (!isTRUE(length(states) > 0))
     stop("Selected states not in the model.")
+  
   if (identical(states, as.integer(1:attr(object$model, "m")))) {
     if (all(object$model$distribution == "gaussian")) {
       if (filtered && !is.null(object[["m", exact = TRUE]])) {
         return(list(signal = object$m, variance = object$P_mu))
       } else {
-        if (!is.null(object$muhat))
+        if (!filtered && !is.null(object$muhat)) {
           return(list(signal = object$muhat, variance = object$V_mu))
-      }
+        }
+      } 
     } else {
       if (filtered && !is.null(object[["t", exact = TRUE]])) {
         return(list(signal = object$t, variance = object$P_theta))
       } else {
-        if (!is.null(object$thetahat))
+        if (!filtered && !is.null(object$thetahat)) {
           return(list(signal = object$thetahat, variance = object$V_theta))
+        }
       }
     }
   }
+  
   if (filtered) {
     if (is.null(object[["a", exact = TRUE]]))
       stop("Object does not contain filtered estimates of states.")
