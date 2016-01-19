@@ -23,7 +23,7 @@ SSMregression(rformula, data, type, Q, index, R, a1, P1, P1inf, n = 1, ynames,
   remove.intercept = TRUE)
 
 SSMseasonal(period, Q, sea.type = c("dummy", "trigonometric"), type, index,
-  a1, P1, P1inf, n, ynames)
+  a1, P1, P1inf, n = 1, ynames)
 
 SSMtrend(degree = 1, Q, type, index, a1, P1, P1inf, n = 1, ynames)
 }

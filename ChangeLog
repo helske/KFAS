@@ -2,9 +2,13 @@ Changes from version 1.1.3 to 1.1.4:
  * signal: Corrected case of extracting filtered mean when it was missing from the input.
  * signal: Corrected extraction of smoothed mean variance which previously returned NULL.
  * predict.SSModel: corrected tsp attribute for one step ahead prediction.
- * fitSSM: Additional arguments to updatefn are now passed via optional argument list update_args  in order to avoid possible conflicts between the updatefn and optim functions.
- * fitSSM: For non-Gaussian models the initial values for linear predictor are precalculated and passed to logLik in optimization, as there is no need to compute them again in each iteration.
- * fitSSM: By default, fitSSM does not anymore run the is.SSModel as checkfn in each iteration, now only invalid values in system matrices are checked.
+ * fitSSM: Additional arguments to updatefn are now passed via optional argument
+   list update_args  in order to avoid possible conflicts between the updatefn and optim functions.
+ * fitSSM: For non-Gaussian models the initial values for linear predictor are
+   precalculated and passed to logLik in optimization, as there is no need to
+   compute them again in each iteration.
+ * fitSSM: By default, fitSSM does not anymore run the is.SSModel as checkfn in
+   each iteration, now only invalid values in system matrices are checked.
  * Added example for boat race data.
  * Added examples to multiple functions.
  * coef.KFS: Added argument last which extracts only the last time point.
@@ -12,6 +16,10 @@ Changes from version 1.1.3 to 1.1.4:
  * Extraction and assignment methods of SSModel object now work also with numeric values
    (but improper assignment can cause the result in non-valid SSModel object).
  * Added default value (1) for n in auxiliary model building functions.
+ * Added coef and fitted methods for SSModel object.
+ * Added diagnostic plot method for SSModel object.
+ * SSMseasonal: Corrected a bug where the matrix R was not defined properly for
+   multivariate models causing erronenous covariance matrix RQR for Q!=0.
 
 Changes from version 1.1.2 to 1.1.3:
  * is.SSModel: Tweaked code for performance.
