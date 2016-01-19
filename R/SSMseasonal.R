@@ -94,7 +94,7 @@ SSMseasonal <- function(period, Q, sea.type = c("dummy", "trigonometric"),
         Qm <- array(Q, c(p, p, tvq * (n - 1) + 1))
         k <- p
         R <- matrix(0, m, k)
-        R[cbind(seq(1, by = k, length = k), 1:k)] <- 1
+        R[cbind(seq(1, m, period - 1), 1:k)] <- 1
       } else {
         Qm <- array(Q, c(1, 1, tvq * (n - 1) + 1))
         k <- 1
@@ -102,7 +102,7 @@ SSMseasonal <- function(period, Q, sea.type = c("dummy", "trigonometric"),
       }
     } else {
       Qm <- array(0, c(m, m, tvq * (n - 1) + 1))
-      if (type == 1){
+      if (type == 1) {
         if (tvq == 1) {
           for (i in 1:(tvq * (n - 1) + 1)){
             Qm[cbind(rep(1:(p * (period - 1)), p),
