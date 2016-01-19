@@ -29,14 +29,14 @@ plot.SSModel <- function(x, nsim = 0, plot_args = NULL, acf_args = NULL, ...) {
   on.exit(par(op))
 
   acf2 <- function(x, acf_args) {
-    tmp <- acf(x, plot = FALSE, na.action = na.pass, acf_args)
+    tmp <- acf(unclass(x), plot = FALSE, na.action = na.pass, acf_args)
     tmp$n.used <- sum(!is.na(x))
-    plot(tmp, main = "ACF of recursive residuals")
+    plot(tmp)
   }
 
   par(ask = TRUE)
   if (all(x$distribution == "gaussian")) {
-    out <- KFS(x, smoothing = c("mean", "disturbance"), filtering = "mean")
+    out <- KFS(x, smoothing = c("mean", "disturbance"), filtering = c("state","mean"))
     res <- rstandard(out)
     if (attr(x, "p") == 1) {
       do.call(plot,
@@ -63,7 +63,7 @@ plot.SSModel <- function(x, nsim = 0, plot_args = NULL, acf_args = NULL, ...) {
       do.call(acf2,
         list(x = res, acf_args = acf_args))
       for (i in 1:attr(x, "p")) {
-        qqnorm(res[, i])
+        qqnorm(res[, i], main = paste("Normal Q-Q plot for",colnames(res)[i]))
         qqline(res[, i])
       }
 
