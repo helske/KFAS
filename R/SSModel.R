@@ -9,78 +9,81 @@
 #' \code{SSMarima}, \code{SSMcustom}, \code{SSMcycle}, \code{SSMregression},
 #' \code{SSMseasonal} and \code{SSMtrend}.
 #'
+#' For more details, see package vignette (the mathematical notation is somewhat non-readable in ASCII).
+#'
 #' @export
 #' @rdname SSModel
 #' @name SSModel
 #' @seealso \code{\link{KFAS}} for examples.
-#' @param formula an object of class \code{\link{formula}} containing the
+#' @param formula An object of class \code{\link{formula}} containing the
 #'   symbolic description of the model. The intercept term can be removed with
-#'   \code{-1} as in \code{lm}. In case of trend or differenced arima component
+#'   \code{-1} as in \code{lm}. In case of trend or differenced arima component the
 #'   intercept is removed automatically in order to keep the model identifiable.
-#'   See details and examples in \code{\link{KFAS}} for special functions used in model construction.
-#' @param data an optional data frame, list or environment containing the
+#'   See package vignette and examples in \code{\link{KFAS}} for special functions
+#'   used in model construction.
+#' @param data An optional data frame, list or environment containing the
 #'   variables in the model.
-#' @param H covariance matrix or array of disturbance terms
-#'   \eqn{\epsilon_t}{\epsilon[t]} of observation equation. Defaults to an identity matrix. Omitted in case of
-#'   non-Gaussian distributions. Augment the state vector if you want to add
-#'   additional noise.
-#' @param u additional parameters for non-Gaussian models. See details in
+#' @param H Covariance matrix or array of disturbance terms
+#'   \eqn{\epsilon_t}{\epsilon[t]} of observation equation. Defaults to an identity matrix.
+#'   Omitted in case of non-Gaussian distributions (augment the state vector if you want to add
+#'   additional noise).
+#' @param u Additional parameters for non-Gaussian models. See details in
 #'   \code{\link{KFAS}}.
-#' @param distribution a vector of distributions of the observations. Default is
-#'   \code{rep("gaussian",p)}, where \code{p} is the number of series.
-#' @param tol a tolerance parameter used in checking whether \code{Finf} or \code{F} is numerically zero.
-#'   Defaults to \code{.Machine$double.eps^0.5}. Ifsmoothing gives negative variances for
-#'   smoothed states, try adjusting this.#'
-#' @param index a vector indicating for which series the corresponding
+#' @param distribution A vector of distributions of the observations. Default is
+#'   \code{rep("gaussian", p)}, where \code{p} is the number of series.
+#' @param tol A tolerance parameter used in checking whether \code{Finf} or \code{F} is numerically zero.
+#'   Defaults to \code{.Machine$double.eps^0.5}. If smoothing gives negative variances for
+#'   smoothed states, try adjusting this.
+#' @param index A vector indicating for which series the corresponding
 #'   components are constructed.
-#' @param type for cycle, seasonal, trend and regression components, character
-#'   string defining if \code{'distinct'} or \code{'common'} states are used for
+#' @param type For cycle, seasonal, trend and regression components, character
+#'   string defining if \code{"distinct"} or \code{"common"} states are used for
 #'   different series.
-#' @param Q for arima, cycle and seasonal component, a \eqn{p \times p}{p x p}
+#' @param Q For arima, cycle and seasonal component, a \eqn{p \times p}{p x p}
 #'   covariance matrix of the disturbances (or in the time varying case \eqn{p
-#'   \times p \times n}{p x p x n} array), where where p=\code{length(index)}.
+#'   \times p \times n}{p x p x n} array), where where $p$ = \code{length(index)}.
 #'   For trend component, list of length \code{degree} containing the \eqn{p
 #'   \times p} or \eqn{p \times p \times n} covariance matrices. For a custom
 #'   component, arbitrary covariance matrix or array of disturbance terms
 #'   \eqn{\eta_t}{\eta[t]}
-#' @param a1 optional \eqn{m \times 1}{m x 1} matrix giving the expected value
+#' @param a1 Optional \eqn{m \times 1}{m x 1} matrix giving the expected value
 #'   of the initial state vector \eqn{\alpha_1}{\alpha[1]}.
-#' @param P1 optional \eqn{m \times m}{m x m} matrix giving the covariance
+#' @param P1 Optional \eqn{m \times m}{m x m} matrix giving the covariance
 #'   matrix of \eqn{\alpha_1}{\alpha[1]}.  In the diffuse case the non-diffuse
 #'   part of \eqn{P_1}{P[1]}.
-#' @param P1inf optional \eqn{m \times m}{m x m} matrix giving the diffuse part
+#' @param P1inf Optional \eqn{m \times m}{m x m} matrix giving the diffuse part
 #'   of \eqn{P_1}{P[1]}. Diagonal matrix with ones on diagonal elements which
 #'   correspond to the unknown initial states.
-#' @param R for a custom and regression components, optional \eqn{m \times k}
+#' @param R For a custom and regression components, optional \eqn{m \times k}
 #'   system matrix or array of transition equation.
-#' @param ar for arima component, a numeric vector containing the autoregressive
+#' @param ar For arima component, a numeric vector containing the autoregressive
 #'   coeffients.
-#' @param ma for arima component, a numericvector containing the moving average
+#' @param ma For arima component, a numericvector containing the moving average
 #'   coeffients.
-#' @param d for arima component, a degree of differencing.
-#' @param stationary for arima component, logical value indicating whether a
+#' @param d For arima component, a degree of differencing.
+#' @param stationary For arima component, logical value indicating whether a
 #'   stationarity of the arima part is assumed. Defaults to TRUE.
-#' @param Z for a custom component, system matrix or array of observation
+#' @param Z For a custom component, system matrix or array of observation
 #'   equation.
-#' @param T for a custom component, system matrix or array of transition
+#' @param T For a custom component, system matrix or array of transition
 #'   equation.
-#' @param period for a cycle and seasonal components, the length of the
+#' @param period For a cycle and seasonal components, the length of the
 #'   cycle/seasonal pattern.
-#' @param sea.type for seasonal component, character string defining whether to
+#' @param sea.type For seasonal component, character string defining whether to
 #'   use \code{"dummy"} or \code{"trigonometric"} form of the seasonal
 #'   component.
-#' @param degree for trend component, integer defining the degree of the
+#' @param degree For trend component, integer defining the degree of the
 #'   polynomial trend. 1 corresponds to local level, 2 for local linear trend
 #'   and so forth.
-#' @param rformula for regression component, right hand side formula or list of
+#' @param rformula For regression component, right hand side formula or list of
 #'   of such formulas defining the custom regression part.
 #' @param remove.intercept Remove intercept term from regression model. Default
 #'   is \code{TRUE}. This tries to ensure that there are no extra intercept
 #'   terms in the model.
-#' @param n length of the series, only used internally for dimensionality check.
-#' @param ynames names of the times series, only used internally.
+#' @param n Length of the series, only used internally for dimensionality check.
+#' @param ynames names of the times series, used internally.
 #'
-#' @return object of class \code{SSModel}, which is a list with the following
+#' @return Object of class \code{SSModel}, which is a list with the following
 #'   components:
 #'   \item{y}{A n x p matrix containing the observations. }
 #'   \item{Z}{A p x m x 1 or p x m x n array corresponding to the system matrix
@@ -118,6 +121,7 @@
 #'   state disturbances in the model. }
 #'   \item{tv}{Integer vector stating whether \code{Z},\code{H},\code{T},\code{R} or \code{Q} is
 #'    time-varying (indicated by 1 in \code{tv} and 0 otherwise). }
+#' @seealso \code{\link{KFAS}} for examples.
 #' @examples
 #'
 #' # example of using data argument

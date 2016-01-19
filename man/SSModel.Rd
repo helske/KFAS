@@ -28,100 +28,101 @@ SSMseasonal(period, Q, sea.type = c("dummy", "trigonometric"), type, index,
 SSMtrend(degree = 1, Q, type, index, a1, P1, P1inf, n = 1, ynames)
 }
 \arguments{
-\item{ar}{for arima component, a numeric vector containing the autoregressive
+\item{ar}{For arima component, a numeric vector containing the autoregressive
 coeffients.}
 
-\item{ma}{for arima component, a numericvector containing the moving average
+\item{ma}{For arima component, a numericvector containing the moving average
 coeffients.}
 
-\item{d}{for arima component, a degree of differencing.}
+\item{d}{For arima component, a degree of differencing.}
 
-\item{Q}{for arima, cycle and seasonal component, a \eqn{p \times p}{p x p}
+\item{Q}{For arima, cycle and seasonal component, a \eqn{p \times p}{p x p}
 covariance matrix of the disturbances (or in the time varying case \eqn{p
-\times p \times n}{p x p x n} array), where where p=\code{length(index)}.
+\times p \times n}{p x p x n} array), where where $p$ = \code{length(index)}.
 For trend component, list of length \code{degree} containing the \eqn{p
 \times p} or \eqn{p \times p \times n} covariance matrices. For a custom
 component, arbitrary covariance matrix or array of disturbance terms
 \eqn{\eta_t}{\eta[t]}}
 
-\item{stationary}{for arima component, logical value indicating whether a
+\item{stationary}{For arima component, logical value indicating whether a
 stationarity of the arima part is assumed. Defaults to TRUE.}
 
-\item{index}{a vector indicating for which series the corresponding
+\item{index}{A vector indicating for which series the corresponding
 components are constructed.}
 
-\item{n}{length of the series, only used internally for dimensionality check.}
+\item{n}{Length of the series, only used internally for dimensionality check.}
 
-\item{ynames}{names of the times series, only used internally.}
+\item{ynames}{names of the times series, used internally.}
 
-\item{Z}{for a custom component, system matrix or array of observation
+\item{Z}{For a custom component, system matrix or array of observation
 equation.}
 
-\item{T}{for a custom component, system matrix or array of transition
+\item{T}{For a custom component, system matrix or array of transition
 equation.}
 
-\item{R}{for a custom and regression components, optional \eqn{m \times k}
+\item{R}{For a custom and regression components, optional \eqn{m \times k}
 system matrix or array of transition equation.}
 
-\item{a1}{optional \eqn{m \times 1}{m x 1} matrix giving the expected value
+\item{a1}{Optional \eqn{m \times 1}{m x 1} matrix giving the expected value
 of the initial state vector \eqn{\alpha_1}{\alpha[1]}.}
 
-\item{P1}{optional \eqn{m \times m}{m x m} matrix giving the covariance
+\item{P1}{Optional \eqn{m \times m}{m x m} matrix giving the covariance
 matrix of \eqn{\alpha_1}{\alpha[1]}.  In the diffuse case the non-diffuse
 part of \eqn{P_1}{P[1]}.}
 
-\item{P1inf}{optional \eqn{m \times m}{m x m} matrix giving the diffuse part
+\item{P1inf}{Optional \eqn{m \times m}{m x m} matrix giving the diffuse part
 of \eqn{P_1}{P[1]}. Diagonal matrix with ones on diagonal elements which
 correspond to the unknown initial states.}
 
-\item{period}{for a cycle and seasonal components, the length of the
+\item{period}{For a cycle and seasonal components, the length of the
 cycle/seasonal pattern.}
 
-\item{type}{for cycle, seasonal, trend and regression components, character
-string defining if \code{'distinct'} or \code{'common'} states are used for
+\item{type}{For cycle, seasonal, trend and regression components, character
+string defining if \code{"distinct"} or \code{"common"} states are used for
 different series.}
 
-\item{formula}{an object of class \code{\link{formula}} containing the
+\item{formula}{An object of class \code{\link{formula}} containing the
 symbolic description of the model. The intercept term can be removed with
-\code{-1} as in \code{lm}. In case of trend or differenced arima component
+\code{-1} as in \code{lm}. In case of trend or differenced arima component the
 intercept is removed automatically in order to keep the model identifiable.
-See details and examples in \code{\link{KFAS}} for special functions used in model construction.}
+See package vignette and examples in \code{\link{KFAS}} for special functions
+used in model construction.}
 
-\item{data}{an optional data frame, list or environment containing the
+\item{data}{An optional data frame, list or environment containing the
 variables in the model.}
 
-\item{H}{covariance matrix or array of disturbance terms
-\eqn{\epsilon_t}{\epsilon[t]} of observation equation. Defaults to an identity matrix. Omitted in case of
-non-Gaussian distributions. Augment the state vector if you want to add
-additional noise.}
+\item{H}{Covariance matrix or array of disturbance terms
+\eqn{\epsilon_t}{\epsilon[t]} of observation equation. Defaults to an identity matrix.
+Omitted in case of non-Gaussian distributions (augment the state vector if you want to add
+additional noise).}
 
-\item{u}{additional parameters for non-Gaussian models. See details in
+\item{u}{Additional parameters for non-Gaussian models. See details in
 \code{\link{KFAS}}.}
 
-\item{distribution}{a vector of distributions of the observations. Default is
-\code{rep("gaussian",p)}, where \code{p} is the number of series.}
+\item{distribution}{A vector of distributions of the observations. Default is
+\code{rep("gaussian", p)}, where \code{p} is the number of series.}
 
-\item{tol}{a tolerance parameter used in checking whether \code{Finf} or \code{F} is numerically zero.
-Defaults to \code{.Machine$double.eps^0.5}. Ifsmoothing gives negative variances for
-smoothed states, try adjusting this.#'}
+\item{tol}{A tolerance parameter used in checking whether \code{Finf} or \code{F} is numerically zero.
+Defaults to \code{.Machine$double.eps^0.5}. If smoothing gives negative variances for
+smoothed states, try adjusting this.}
 
-\item{rformula}{for regression component, right hand side formula or list of
+\item{rformula}{For regression component, right hand side formula or list of
 of such formulas defining the custom regression part.}
 
 \item{remove.intercept}{Remove intercept term from regression model. Default
 is \code{TRUE}. This tries to ensure that there are no extra intercept
 terms in the model.}
 
-\item{sea.type}{for seasonal component, character string defining whether to
+\item{sea.type}{For seasonal component, character string defining whether to
 use \code{"dummy"} or \code{"trigonometric"} form of the seasonal
 component.}
 
-\item{degree}{for trend component, integer defining the degree of the
+\item{degree}{For trend component, integer defining the degree of the
 polynomial trend. 1 corresponds to local level, 2 for local linear trend
 and so forth.}
 }
 \value{
-object of class \code{SSModel}, which is a list with the following
+Object of class \code{SSModel}, which is a list with the following
   components:
   \item{y}{A n x p matrix containing the observations. }
   \item{Z}{A p x m x 1 or p x m x n array corresponding to the system matrix
@@ -170,6 +171,8 @@ Formula of the model can contain the usual regression part and additional
 functions defining different types of components of the model, named as
 \code{SSMarima}, \code{SSMcustom}, \code{SSMcycle}, \code{SSMregression},
 \code{SSMseasonal} and \code{SSMtrend}.
+
+For more details, see package vignette (the mathematical notation is somewhat non-readable in ASCII).
 }
 \examples{
 
@@ -205,6 +208,8 @@ try(c(SSModel(y ~ -1 + SSMregression(f), data = data1)$Z))
 }
 \seealso{
 \code{artransform}
+
+\code{\link{KFAS}} for examples.
 
 \code{\link{KFAS}} for examples.
 }
