@@ -120,7 +120,8 @@
 #'   \item{eta_types}{Types of the
 #'   state disturbances in the model. }
 #'   \item{tv}{Integer vector stating whether \code{Z},\code{H},\code{T},\code{R} or \code{Q} is
-#'    time-varying (indicated by 1 in \code{tv} and 0 otherwise). }
+#'    time-varying (indicated by 1 in \code{tv} and 0 otherwise).
+#'    If you manually change the dimensions of the matrices you must change this attribute also.}
 #' @seealso \code{\link{KFAS}} for examples.
 #' @examples
 #'
