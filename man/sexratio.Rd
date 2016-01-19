@@ -11,5 +11,43 @@ Statistics Finland,  \url{http://pxweb2.stat.fi/database/StatFin/vrm/synt/synt_e
 \description{
 A time series object containing the number of males and females born in Finland from 1751 to 2011.
 }
+\examples{
+data("sexratio")
+model <- SSModel(Male ~ SSMtrend(1, Q = NA), u = sexratio[, "Total"], 
+  data = sexratio, distribution = "binomial")
+fit <- fitSSM(model, inits = -15, method = "BFGS")
+fit$model["Q"]
+
+# Computing confidence intervals in response scale
+# Uses importance sampling on response scale (400 samples with antithetics)
+
+pred <- predict(fit$model, type = "response", interval = "conf", nsim = 100)
+
+ts.plot(cbind(model$y/model$u, pred), col = c(1, 2, 3, 3), lty = c(1, 1, 2, 2))
+
+\dontrun{
+# Now with sex ratio instead of the probabilities:
+imp <- importanceSSM(fit$model, nsim = 1000, antithetics = TRUE)
+sexratio.smooth <- numeric(length(model$y))
+sexratio.ci <- matrix(0, length(model$y), 2)
+w <- imp$w/sum(imp$w)
+for(i in 1:length(model$y)){
+ sexr <- exp(imp$sample[i, 1, ])
+ sexratio.smooth[i] <- sum(sexr*w)
+ oo <- order(sexr)
+ sexratio.ci[i, ] <- c(sexr[oo][which.min(abs(cumsum(w[oo]) - 0.05))],
+                      sexr[oo][which.min(abs(cumsum(w[oo]) - 0.95))])
+}
+
+# Same by direct transformation:
+out <- KFS(fit$model, smoothing = "signal", nsim = 1000)
+sexratio.smooth2 <- exp(out$thetahat)
+sexratio.ci2 <- exp(c(out$thetahat) + qnorm(0.025) * 
+  sqrt(drop(out$V_theta))\%o\%c(1, -1))
+
+ts.plot(cbind(sexratio.smooth, sexratio.ci, sexratio.smooth2, sexratio.ci2),
+        col = c(1, 1, 1, 2, 2, 2), lty = c(1, 2, 2, 1, 2, 2))
+}
+}
 \keyword{datasets}
 
