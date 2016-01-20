@@ -522,7 +522,7 @@ NULL
 #' @name sexratio
 #' @docType data
 #' @format A time series object containing the number of males and females born in Finland from 1751 to 2011.
-#' @source Statistics Finland,  \url{http://pxweb2.stat.fi/database/StatFin/vrm/synt/synt_en.asp}
+#' @source Statistics Finland \url{http://pxnet2.stat.fi/PXWeb/pxweb/en/StatFin/}.
 #' @keywords datasets
 #' @examples
 #' data("sexratio")
