@@ -13,7 +13,7 @@ A time series object containing the number of males and females born in Finland 
 }
 \examples{
 data("sexratio")
-model <- SSModel(Male ~ SSMtrend(1, Q = NA), u = sexratio[, "Total"], 
+model <- SSModel(Male ~ SSMtrend(1, Q = NA), u = sexratio[, "Total"],
   data = sexratio, distribution = "binomial")
 fit <- fitSSM(model, inits = -15, method = "BFGS")
 fit$model["Q"]
@@ -42,7 +42,7 @@ for(i in 1:length(model$y)){
 # Same by direct transformation:
 out <- KFS(fit$model, smoothing = "signal", nsim = 1000)
 sexratio.smooth2 <- exp(out$thetahat)
-sexratio.ci2 <- exp(c(out$thetahat) + qnorm(0.025) * 
+sexratio.ci2 <- exp(c(out$thetahat) + qnorm(0.025) *
   sqrt(drop(out$V_theta))\%o\%c(1, -1))
 
 ts.plot(cbind(sexratio.smooth, sexratio.ci, sexratio.smooth2, sexratio.ci2),

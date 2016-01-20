@@ -8,6 +8,7 @@
 #' these are the estimates of conditional means of states.
 #'
 #' @export
+#' @importFrom stats coef window
 #' @name coef.SSModel
 #' @param object An object of class \code{KFS} or \code{SSModel}.
 #' @param start The start time of the period of interest. Defaults to first time

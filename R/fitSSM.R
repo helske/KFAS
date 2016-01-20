@@ -25,6 +25,7 @@
 #' seem to cause any problems though.
 #'
 #' @export
+#' @importFrom stats optim
 #' @param inits Initial values for \code{\link{optim}}.
 #' @param model Model object of class \code{SSModel}.
 #' @param updatefn User defined function which updates the model given the

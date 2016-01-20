@@ -12,6 +12,7 @@
 #' For more details, see package vignette (the mathematical notation is somewhat non-readable in ASCII).
 #'
 #' @export
+#' @importFrom stats terms update.formula drop.terms model.response model.matrix delete.response update.formula
 #' @rdname SSModel
 #' @name SSModel
 #' @seealso \code{\link{KFAS}} for examples.

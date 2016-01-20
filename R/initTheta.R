@@ -1,4 +1,5 @@
 # Default initial values for linear predictor theta
+#' @importFrom stats qlogis
 initTheta <- function(y, u, distribution) {
   # time series division is much slower than matrix division
   y <- unclass(y)
@@ -22,4 +23,4 @@ initTheta <- function(y, u, distribution) {
     y[, ind] <- log(x)
   }
   y
-} 
+}

@@ -10,6 +10,7 @@
 #' \eqn{f} is multiplied with the exposure \eqn{u_t}{u[t]}.
 #'
 #' @export
+#' @importFrom stats fitted
 #' @name fitted.SSModel
 #' @inheritParams coef.SSModel
 #' @return Multivariate time series containing fitted values.

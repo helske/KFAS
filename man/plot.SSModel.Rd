@@ -4,8 +4,7 @@
 \alias{plot.SSModel}
 \title{Diagnostic Plots of State Space Models}
 \usage{
-\method{plot}{SSModel}(x, nsim = 0, plot_args = NULL, acf_args = NULL,
-  ...)
+\method{plot}{SSModel}(x, nsim = 0, ...)
 }
 \arguments{
 \item{x}{Object of class \code{SSModel}.}
@@ -17,10 +16,6 @@ usual Gaussian filtering/smoothing so that the smoothed state estimates
 equals to the conditional mode of \eqn{p(\alpha_t|y)}{p(\alpha[t]|y)}.
 In case of \code{nsim = 0}, the mean estimates and their variances are computed using
 the Delta method (ignoring the covariance terms).}
-
-\item{plot_args}{Additional arguments to \code{\link{plot.ts}}}
-
-\item{acf_args}{Additional arguments to \code{\link{acf}}.}
 
 \item{...}{Ignored.}
 }

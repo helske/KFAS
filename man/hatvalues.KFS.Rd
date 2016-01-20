@@ -15,15 +15,15 @@
 Multivariate time series containing hat values.
 }
 \description{
-Extract hat values from KFS output, when \code{KFS} was run with signal 
+Extract hat values from KFS output, when \code{KFS} was run with signal
 (non-Gaussian case) or mean smoothing (Gaussian case).
 }
 \details{
-Hat values in \code{KFAS} are defined as the diagonal elements of \code{V_t/H_t} where V_t 
-is the covariance matrix of signal/mean at time t and H_t is the covariance 
+Hat values in \code{KFAS} are defined as the diagonal elements of \code{V_t/H_t} where V_t
+is the covariance matrix of signal/mean at time t and H_t is the covariance
 matrix of disturbance vector \eqn{\epsilon} of (approximating) Gaussian model
-at time t. This definition gives identical results with the standard 
-definition in case of GLMs. Note that it is possible to construct a state 
+at time t. This definition gives identical results with the standard
+definition in case of GLMs. Note that it is possible to construct a state
 space model where this definition is not meaningful (for example the
 covariance matrix H_t can contain zeros on diagonal).
 }

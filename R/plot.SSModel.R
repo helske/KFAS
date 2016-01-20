@@ -3,6 +3,8 @@
 #' Diagnostic plots based on standardized residuals for objects of class \code{SSModel}.
 #'
 #' @export
+#' @importFrom graphics plot par hist
+#' @importFrom stats na.pass density
 #' @param x Object of class \code{SSModel}.
 #' @param nsim The number of independent samples used in importance sampling.
 #' Only used for non-Gaussian model. Default is 0, which computes the
@@ -11,8 +13,6 @@
 #' equals to the conditional mode of \eqn{p(\alpha_t|y)}{p(\alpha[t]|y)}.
 #' In case of \code{nsim = 0}, the mean estimates and their variances are computed using
 #' the Delta method (ignoring the covariance terms).
-#' @param plot_args Additional arguments to \code{\link{plot.ts}}
-#' @param acf_args Additional arguments to \code{\link{acf}}.
 #' @param ... Ignored.
 #' @examples
 #' modelNile <- SSModel(Nile ~ SSMtrend(1, Q = list(matrix(NA))), H = matrix(NA))
@@ -23,13 +23,14 @@
 #'   plot(modelNile)
 #' }
 
-plot.SSModel <- function(x, nsim = 0, plot_args = NULL, acf_args = NULL, ...) {
+plot.SSModel <- function(x, nsim = 0, ...) {
 
   op <- par(no.readonly = TRUE)
   on.exit(par(op))
 
   acf2 <- function(x, acf_args) {
-    tmp <- acf(unclass(x), plot = FALSE, na.action = na.pass, acf_args)
+    tsp(x) <- NULL
+    tmp <- acf(x, plot = FALSE, na.action = na.pass)
     tmp$n.used <- sum(!is.na(x))
     plot(tmp)
   }
@@ -39,32 +40,24 @@ plot.SSModel <- function(x, nsim = 0, plot_args = NULL, acf_args = NULL, ...) {
     out <- KFS(x, smoothing = c("mean", "disturbance"), filtering = c("state","mean"))
     res <- rstandard(out)
     if (attr(x, "p") == 1) {
-      do.call(plot,
-        list(x = cbind(
+      plot(cbind(
           observations = x$y,
           recursive = res,
           irregular = rstandard(out, "pearson")),
-          main = "recursive (one-step ahead) and irregular (smoothed) residuals", plot_args))
-      do.call(acf2,
-        list(x = res, acf_args = acf_args))
-      qqnorm(as.numeric(res))
-      qqline(as.numeric(res))
+          main = "Recursive (one-step ahead) and irregular (smoothed) residuals")
+      acf2(res)
+      hist(res, main = "Histogram of recursive residuals", freq = FALSE)
+      lines(density(as.numeric(res), na.rm = TRUE))
     } else {
 
-      do.call(plot,
-        list(x = x$y,
-          main = "Observations", plot_args))
-      do.call(plot,
-        list(x = res,
-          main = "Recursive (one-step ahead) residuals", plot_args))
-      do.call(plot,
-        list(x = rstandard(out, "pearson"),
-          main = "Irregular (smoothed) residuals", plot_args))
-      do.call(acf2,
-        list(x = res, acf_args = acf_args))
+      plot(x$y, main = "Observations")
+      plot(res, main = "Recursive (one-step ahead) residuals")
+      plot(rstandard(out, "pearson"), main = "Irregular (smoothed) residuals")
+      acf2(res)
       for (i in 1:attr(x, "p")) {
-        qqnorm(res[, i], main = paste("Normal Q-Q plot for",colnames(res)[i]))
-        qqline(res[, i])
+        hist(res[, i], main = paste("Histogram for recursive residuals of ", colnames(res)[i]),
+          freq = FALSE)
+        lines(density(res[, i], na.rm = TRUE))
       }
 
     }
@@ -74,27 +67,25 @@ plot.SSModel <- function(x, nsim = 0, plot_args = NULL, acf_args = NULL, ...) {
     res <- rstandard(out)
 
     if (attr(x, "p") == 1) {
-      do.call(plot,
-        list(x = cbind(
+      plot(cbind(
           observations = x$y,
           recursive = res,
           irregular = rstandard(out, "pearson")),
-          main = "recursive (one-step ahead) and irregular (smoothed) residuals", plot_args))
-      do.call(acf2,
-        list(x = res, acf_args = acf_args))
+          main = "recursive (one-step ahead) and irregular (smoothed) residuals")
+     acf2(res)
+     hist(res, main = "Histogram of recursive residuals", freq = FALSE)
+     lines(density(as.numeric(res), na.rm = TRUE))
     } else {
 
-      do.call(plot,
-        list(x = x$y,
-          main = "Observations", plot_args))
-      do.call(plot,
-        list(x = res,
-          main = "Recursive (one-step ahead) residuals", plot_args))
-      do.call(plot,
-        list(x = rstandard(out, "pearson"),
-          main = "Irregular (smoothed) residuals", plot_args))
-      do.call(acf2,
-        list(x = res, acf_args = acf_args))
+      plot(x$y, main = "Observations")
+      plot(res, main = "Recursive (one-step ahead) residuals")
+      plot(rstandard(out, "pearson"),main = "Irregular (smoothed) residuals")
+      acf2(res)
+      for (i in 1:attr(x, "p")) {
+        hist(res[, i], main = paste("Histogram for recursive residuals of ", colnames(res)[i]),
+          freq = FALSE)
+        lines(density(res[, i], na.rm = TRUE))
+      }
     }
   }
 

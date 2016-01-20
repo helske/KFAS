@@ -1,5 +1,6 @@
 #' Extract Standardized Residuals from KFS output
 #' @export
+#' @importFrom stats rstandard
 #' @details For object of class KFS with fully Gaussian observations, several
 #'   types of standardized residuals can be computed. Also the standardization
 #'   for multivariate residuals can be done either by Cholesky decomposition

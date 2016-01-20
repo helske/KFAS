@@ -136,7 +136,7 @@
 #' @name KFAS
 #' @aliases KFAS
 #' @useDynLib KFAS, .registration = TRUE
-#' @seealso examples in \code{\link{boat}}, \code{\link{sexratio}}, 
+#' @seealso examples in \code{\link{boat}}, \code{\link{sexratio}},
 #' \code{\link{importanceSSM}}, \code{\link{approxSSM}}.
 #' @examples
 #'
@@ -524,9 +524,9 @@ NULL
 #' @format A time series object containing the number of males and females born in Finland from 1751 to 2011.
 #' @source Statistics Finland,  \url{http://pxweb2.stat.fi/database/StatFin/vrm/synt/synt_en.asp}
 #' @keywords datasets
-#' @examples 
+#' @examples
 #' data("sexratio")
-#' model <- SSModel(Male ~ SSMtrend(1, Q = NA), u = sexratio[, "Total"], 
+#' model <- SSModel(Male ~ SSMtrend(1, Q = NA), u = sexratio[, "Total"],
 #'   data = sexratio, distribution = "binomial")
 #' fit <- fitSSM(model, inits = -15, method = "BFGS")
 #' fit$model["Q"]
@@ -555,7 +555,7 @@ NULL
 #' # Same by direct transformation:
 #' out <- KFS(fit$model, smoothing = "signal", nsim = 1000)
 #' sexratio.smooth2 <- exp(out$thetahat)
-#' sexratio.ci2 <- exp(c(out$thetahat) + qnorm(0.025) * 
+#' sexratio.ci2 <- exp(c(out$thetahat) + qnorm(0.025) *
 #'   sqrt(drop(out$V_theta))%o%c(1, -1))
 #'
 #' ts.plot(cbind(sexratio.smooth, sexratio.ci, sexratio.smooth2, sexratio.ci2),
@@ -565,13 +565,11 @@ NULL
 #' Alcohol related deaths in Finland 1969--2013
 #'
 #' A multivariate time series object containing the number of alcohol related
-#' deaths and population sizes (divided by 100, 000) of Finland in four age groups.
+#' deaths and population sizes (divided by 100000) of Finland in four age groups.
 #'
 #' @name alcohol
 #' @docType data
 #' @format A multivariate time series object with 45 times 8 observations.
-#' @source Statistics Finland:
-#' \url{http://pxweb2.stat.fi/database/StatFin/ter/ksyyt/ksyyt_en.asp} and
-#' \url{pxweb2.stat.fi/database/StatFin/vrm/vaerak/vaerak_en.asp}
+#' @source Statistics Finland \url{http://pxnet2.stat.fi/PXWeb/pxweb/en/StatFin/}.
 #' @keywords datasets
 NULL

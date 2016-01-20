@@ -28,6 +28,7 @@
 #'   American Statistician, Vol. 60.
 #'
 #' @export
+#' @importFrom stats logLik
 #' @aliases logLik logLik.SSModel
 #' @param object State space model of class \code{SSModel}.
 #' @param marginal Logical. Compute marginal instead of diffuse likelihood (see
