@@ -21,7 +21,7 @@
 #' @param object Object of class \code{SSModel}.
 #' @param newdata A compatible \code{SSModel} object to be added in the end of
 #'   the old object for which the predictions are required. If omitted,
-#'   predictions are either for the whole data (fitted values), or if argument
+#'   predictions are either for the past data points, or if argument
 #'   \code{n.ahead} is given, \code{n.ahead} time steps ahead.
 #' @param n.ahead Number of steps ahead at which to predict. Only used if
 #'   \code{newdata} is omitted. Note that when using \code{n.ahead}, object
@@ -43,6 +43,10 @@
 #'   probabilities instead of counts.
 #' @param maxiter The maximum number of iterations used in approximation Default
 #'   is 50. Only used for non-Gaussian model.
+#' @param filtered If \code{TRUE}, compute predictions based on filtered 
+#' (one-step ahead) estimates. Default is FALSE i.e. predictions are based on 
+#' all available observations given by user.  Only relevant if \code{n.ahead} is 
+#' missing.
 #' @param \dots Ignored.
 #' @return A matrix or list of matrices containing the predictions, and
 #'   optionally standard errors.
@@ -62,10 +66,10 @@
 #' pred <- predict(model,n.ahead=10,interval="prediction",level=0.9)
 #' pred
 predict.SSModel <- function(object, newdata, n.ahead,
-                            interval = c("none", "confidence", "prediction"), level = 0.95,
-                            type = c("response", "link"), states = NULL, se.fit = FALSE,  nsim = 0,
-                            prob = TRUE, maxiter = 50, ...) {
-
+  interval = c("none", "confidence", "prediction"), level = 0.95,
+  type = c("response", "link"), states = NULL, se.fit = FALSE,  nsim = 0,
+  prob = TRUE, maxiter = 50, filtered = FALSE, ...) {
+  
   interval <- match.arg(interval)
   type <- match.arg(type)
   # Check that the model object is of proper form
@@ -82,8 +86,8 @@ predict.SSModel <- function(object, newdata, n.ahead,
         stop("Vector states should contain the indices or types of the states which are combined.")
     } else {
       states <- match.arg(arg = states, choices = c("all", "arima", "custom", "level","slope",
-                                                    "cycle", "seasonal", "trend", "regression"),
-                          several.ok = TRUE)
+        "cycle", "seasonal", "trend", "regression"),
+        several.ok = TRUE)
       if ("all" %in% states) {
         states <- as.integer(1:attr(object, "m"))
       } else {
@@ -111,36 +115,36 @@ predict.SSModel <- function(object, newdata, n.ahead,
     n <- attr(object, "n") <- no + nn
     timespan <- (no + 1):n
     object$y <- ts(rbind(object$y, newdata$y),
-                   start = start(object$y), frequency = frequency(object$y))
+      start = start(object$y), frequency = frequency(object$y))
     endtime <- end(object$y)
     tvo <- attr(object, "tv")
     tvn <- attr(newdata, "tv")
     same <- function(x, y) isTRUE(all.equal(x, y, tolerance = 0,
-                                            check.attributes = FALSE))
+      check.attributes = FALSE))
     if (tvo[1] || tvn[1] || !same(object$Z, newdata$Z)) {
       object$Z <- array(data = c(array(object$Z, dim = c(m, p, no)),
-                                 array(newdata$Z, dim = c(m, p, nn))), dim = c(p, m, n))
+        array(newdata$Z, dim = c(m, p, nn))), dim = c(p, m, n))
       attr(object, "tv")[1] <- 1L
     }
     if (gaussianmodel && (tvo[2] || tvn[2] || !same(object$H, newdata$H))) {
       object$H <- array(data = c(array(object$H, dim = c(p, p, no)),
-                                 array(newdata$H, dim = c(p, p, nn))), dim = c(p, p, n))
+        array(newdata$H, dim = c(p, p, nn))), dim = c(p, p, n))
       attr(object, "tv")[2] <- 1L
     } else if(!gaussianmodel) object$u <- rbind(object$u, matrix(newdata$u, nn, p))
-
+    
     if (tvo[3] || tvn[3] || !same(object$T, newdata$T)) {
       object$T <- array(data = c(array(object$T, dim = c(m, m, no)),
-                                 array(newdata$T, dim = c(m, m, nn))), dim = c(m, m, n))
+        array(newdata$T, dim = c(m, m, nn))), dim = c(m, m, n))
       attr(object, "tv")[3] <- 1L
     }
     if (tvo[4] || tvn[4] || !same(object$R, newdata$R)) {
       object$R <- array(data = c(array(object$R, dim = c(m, k, no)),
-                                 array(newdata$R, dim = c(m, k, nn))), dim = c(m, k, n))
+        array(newdata$R, dim = c(m, k, nn))), dim = c(m, k, n))
       attr(object, "tv")[4] <- 1L
     }
     if (tvo[5] || tvn[5] || !same(object$Q, newdata$Q)) {
       object$Q <- array(data = c(array(data = object$Q, dim = c(k, k, no)),
-                                 array(data = newdata$Q, dim = c(k, k, nn))), dim = c(k, k, n))
+        array(data = newdata$Q, dim = c(k, k, nn))), dim = c(k, k, n))
       attr(object, "tv")[5] <- 1L
     }
   } else {
@@ -154,7 +158,7 @@ predict.SSModel <- function(object, newdata, n.ahead,
       object$y <- window(object$y, end = endtime, extend = TRUE)
       if (any(object$distribution != "gaussian"))
         object$u <- rbind(object$u, matrix(object$u[1, ], nrow = n.ahead,
-                                           ncol = ncol(object$u), byrow = TRUE))
+          ncol = ncol(object$u), byrow = TRUE))
     } else {
       timespan <- 1:attr(object, "n")
       endtime <- end(object$y)
@@ -169,43 +173,65 @@ predict.SSModel <- function(object, newdata, n.ahead,
   pred <- vector("list", length = p)
   if (gaussianmodel) { #Gaussian case
     if (identical(states, as.integer(1:m))) {
-      out <- KFS(model = object, smoothing = "mean")
+      if (filtered) {
+        out <- KFS(model = object, filtering = "mean", smoothing = "none") 
+        names(out)[6:7] <- c("muhat", "V_mu")
+      } else {
+        out <- KFS(model = object, filtering = "none", smoothing = "mean") 
+      }
     } else {
-      out <- signal(KFS(model = object, smoothing = "state"), states = states)
+      if (filtered) {
+        out <- signal(KFS(model = object, filtering = "state", smoothing = "none"), 
+          states = states, filtered = TRUE)
+      } else {
+        out <- signal(KFS(model = object, filtering = "none", smoothing = "state"), 
+          states = states)
+      }
       names(out) <- c("muhat", "V_mu")
     }
     for (i in 1:p) {
       pred[[i]] <- cbind(fit = out$muhat[timespan, i],
-                         switch(interval, none = NULL,
-                                confidence = out$muhat[timespan, i] +
-                                  qnorm((1 - level)/2) * sqrt(out$V_mu[i, i, timespan]) %o% c(1, -1),
-                                prediction = out$muhat[timespan, i] + qnorm((1 - level)/2) *
-                                  sqrt(out$V_mu[i, i, timespan] +
-                                         object$H[i, i, if (dim(object$H)[3] > 1) timespan else 1]) %o% c(1, -1)),
-                         se.fit = if (se.fit)
-                           sqrt(out$V_mu[i, i, timespan]))
+        switch(interval, none = NULL,
+          confidence = out$muhat[timespan, i] +
+            qnorm((1 - level)/2) * sqrt(out$V_mu[i, i, timespan]) %o% c(1, -1),
+          prediction = out$muhat[timespan, i] + qnorm((1 - level)/2) *
+            sqrt(out$V_mu[i, i, timespan] +
+                object$H[i, i, if (dim(object$H)[3] > 1) timespan else 1]) %o% c(1, -1)),
+        se.fit = if (se.fit)
+          sqrt(out$V_mu[i, i, timespan]))
       if (interval != "none")
         colnames(pred[[i]])[2:3] <- c("lwr", "upr")
     }
   } else {
     if (nsim < 1) { #Using approximating model
       if (identical(states, as.integer(1:m))) {
+        if (filtered) {
+          out <- KFS(model = object, filtering = "signal", smoothing = "none", 
+            maxiter = maxiter)
+          names(out)[5:6] <- c("thetahat", "V_theta")
+        } else {
         out <- KFS(model = object, smoothing = "signal", maxiter = maxiter)
+        }
       } else {
+        if (filtered) {
+          out <- signal(KFS(model = object, filtering = "state", smoothing = "none", 
+            maxiter = maxiter), states = states, filtered = TRUE)
+        } else {
         out <- signal(KFS(model = object, smoothing = "state", maxiter = maxiter),
-                      states = states)
+          states = states)
+        }
         names(out) <- c("thetahat", "V_theta")
       }
-
+      
       for (i in 1:p) {
         pred[[i]] <- cbind(fit = out$thetahat[timespan, i] +
-                             (if (object$distribution[i] == "poisson")  log(object$u[timespan, i]) else 0),
-                           switch(interval, none = NULL,
-                                  out$thetahat[timespan, i] +
-                                    (if (object$distribution[i] == "poisson") log(object$u[timespan, i]) else 0) +
-                                    qnorm((1 - level)/2) * sqrt(out$V_theta[i, i, timespan]) %o%
-                                    c(1, -1)), se.fit = if (se.fit)
-                                      sqrt(out$V_theta[i, i, timespan]))
+            (if (object$distribution[i] == "poisson")  log(object$u[timespan, i]) else 0),
+          switch(interval, none = NULL,
+            out$thetahat[timespan, i] +
+              (if (object$distribution[i] == "poisson") log(object$u[timespan, i]) else 0) +
+              qnorm((1 - level)/2) * sqrt(out$V_theta[i, i, timespan]) %o%
+              c(1, -1)), se.fit = if (se.fit)
+                sqrt(out$V_theta[i, i, timespan]))
         if (interval == "confidence")
           colnames(pred[[i]])[2:3] <- c("lwr", "upr")
       }
@@ -214,73 +240,74 @@ predict.SSModel <- function(object, newdata, n.ahead,
           tmp <- which(colnames(pred[[1]]) == "se.fit")
           for (i in 1:p) {
             pred[[i]][, "se.fit"] <- switch(object$distribution[i],
-                                            gaussian = pred[[i]][,"se.fit"],
-                                            poisson = pred[[i]][, "se.fit"] * exp(pred[[i]][, 1]),
-                                            binomial = pred[[i]][, "se.fit"] *
-                                              (if (!prob) object$u[timespan, i] else 1) *
-                                              exp(pred[[i]][, 1])/(1 + exp(pred[[i]][, 1]))^2,
-                                            gamma = pred[[i]][, "se.fit"] * exp(pred[[i]][, 1]),
-                                            `negative binomial` = pred[[i]][, "se.fit"] * exp(pred[[i]][, 1]))
+              gaussian = pred[[i]][,"se.fit"],
+              poisson = pred[[i]][, "se.fit"] * exp(pred[[i]][, 1]),
+              binomial = pred[[i]][, "se.fit"] *
+                (if (!prob) object$u[timespan, i] else 1) *
+                exp(pred[[i]][, 1])/(1 + exp(pred[[i]][, 1]))^2,
+              gamma = pred[[i]][, "se.fit"] * exp(pred[[i]][, 1]),
+              `negative binomial` = pred[[i]][, "se.fit"] * exp(pred[[i]][, 1]))
             pred[[i]][, -tmp] <- switch(object$distribution[i],
-                                        gaussian = pred[[i]][, -tmp],
-                                        poisson = exp(pred[[i]][, -tmp]),
-                                        binomial = (if (!prob) object$u[timespan, i] else 1) *
-                                          exp(pred[[i]][, -tmp])/(1 + exp(pred[[i]][, -tmp])),
-                                        gamma = exp(pred[[i]][, -tmp]),
-                                        `negative binomial` = exp(pred[[i]][, -tmp]))
+              gaussian = pred[[i]][, -tmp],
+              poisson = exp(pred[[i]][, -tmp]),
+              binomial = (if (!prob) object$u[timespan, i] else 1) *
+                exp(pred[[i]][, -tmp])/(1 + exp(pred[[i]][, -tmp])),
+              gamma = exp(pred[[i]][, -tmp]),
+              `negative binomial` = exp(pred[[i]][, -tmp]))
           }
         } else {
           for (i in 1:p) pred[[i]] <- switch(object$distribution[i],
-                                             gaussian = pred[[i]],
-                                             poisson = exp(pred[[i]]),
-                                             binomial = (if (!prob) object$u[timespan, i] else 1) *
-                                               exp(pred[[i]])/(1 + exp(pred[[i]])),
-                                             gamma = exp(pred[[i]]),
-                                             `negative binomial` = exp(pred[[i]]))
+            gaussian = pred[[i]],
+            poisson = exp(pred[[i]]),
+            binomial = (if (!prob) object$u[timespan, i] else 1) *
+              exp(pred[[i]])/(1 + exp(pred[[i]])),
+            gamma = exp(pred[[i]]),
+            `negative binomial` = exp(pred[[i]]))
         }
       }
-
-    } else { # with importance sampling
+      
+    } else {# with importance sampling
       if (interval == "none") {
-        imp <- importanceSSM(object, ifelse(identical(states, as.integer(1:m)), "signal", "states"),
-                             nsim = nsim, antithetics = TRUE, maxiter = maxiter)
+        imp <- importanceSSM(object, 
+          ifelse(identical(states, as.integer(1:m)), "signal", "states"),
+          nsim = nsim, antithetics = TRUE, maxiter = maxiter, filtered = filtered)
         nsim <- as.integer(4 * nsim)
-        if (!identical(states, as.integer(1:m))){
+        if (!identical(states, as.integer(1:m))) {
           imp$samples <- .Fortran(fzalpha, as.integer(dim(object$Z)[3] > 1),
-                                  object$Z, imp$samples, signal = array(0, c(n, p, nsim)),
-                                  p, m, n, nsim, length(states), states)$signal
+            object$Z, imp$samples, signal = array(0, c(n, p, nsim)),
+            p, m, n, nsim, length(states), states)$signal
         }
-
+        
         w <- imp$weights/sum(imp$weights)
         if (type == "response") {
           for (i in 1:p) {
             imp$samples[timespan, i, ] <- switch(object$distribution[i],
-                                                 gaussian = imp$samples[timespan, i, ],
-                                                 poisson = object$u[timespan, i] * exp(imp$samples[timespan, i, ]),
-                                                 binomial = (if (!prob) object$u[timespan, i] else 1) *
-                                                   exp(imp$samples[timespan, i, ])/(1 + exp(imp$samples[timespan, i, ])),
-                                                 gamma = exp(imp$samples[timespan, i, ]),
-                                                 `negative binomial` = exp(imp$samples[timespan, i, ]))
+              gaussian = imp$samples[timespan, i, ],
+              poisson = object$u[timespan, i] * exp(imp$samples[timespan, i, ]),
+              binomial = (if (!prob) object$u[timespan, i] else 1) *
+                exp(imp$samples[timespan, i, ])/(1 + exp(imp$samples[timespan, i, ])),
+              gamma = exp(imp$samples[timespan, i, ]),
+              `negative binomial` = exp(imp$samples[timespan, i, ]))
           }
         } else {
           for (i in 1:p) if (object$distribution[i] == "poisson")
             imp$samples[timespan, i, ] <- imp$samples[timespan, i, ] + log(object$u[timespan,
-                                                                                    i])
+              i])
         }
         varmean <- .Fortran(fvarmeanw, imp$samples[timespan, , ,drop=FALSE], w,
-                            p, length(timespan),
-                            nsim, mean = array(0, c(length(timespan), p)),
-                            var = array(0, c(length(timespan), p)), as.integer(se.fit))
+          p, length(timespan),
+          nsim, mean = array(0, c(length(timespan), p)),
+          var = array(0, c(length(timespan), p)), as.integer(se.fit))
         if (se.fit) {
           pred <- lapply(1:p, function(j) cbind(fit = varmean$mean[, j],
-                                                se.fit = sqrt(varmean$var[, j])))
+            se.fit = sqrt(varmean$var[, j])))
         } else {
           pred <- lapply(1:p, function(j) varmean$mean[, j])
         }
       } else {
         pred <- interval(object, interval = interval, level = level, type = type,
-                         states = states, nsim = nsim, se.fit = se.fit, timespan = timespan,
-                         prob = prob, maxiter = maxiter)
+          states = states, nsim = nsim, se.fit = se.fit, timespan = timespan,
+          prob = prob, maxiter = maxiter)
       }
     }
   }

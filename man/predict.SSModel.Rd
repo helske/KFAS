@@ -8,14 +8,14 @@
 \method{predict}{SSModel}(object, newdata, n.ahead, interval = c("none",
   "confidence", "prediction"), level = 0.95, type = c("response", "link"),
   states = NULL, se.fit = FALSE, nsim = 0, prob = TRUE, maxiter = 50,
-  ...)
+  filtered = FALSE, ...)
 }
 \arguments{
 \item{object}{Object of class \code{SSModel}.}
 
 \item{newdata}{A compatible \code{SSModel} object to be added in the end of
 the old object for which the predictions are required. If omitted,
-predictions are either for the whole data (fitted values), or if argument
+predictions are either for the past data points, or if argument
 \code{n.ahead} is given, \code{n.ahead} time steps ahead.}
 
 \item{n.ahead}{Number of steps ahead at which to predict. Only used if
@@ -46,6 +46,11 @@ probabilities instead of counts.}
 
 \item{maxiter}{The maximum number of iterations used in approximation Default
 is 50. Only used for non-Gaussian model.}
+
+\item{filtered}{If \code{TRUE}, compute predictions based on filtered 
+(one-step ahead) estimates. Default is FALSE i.e. predictions are based on 
+all available observations given by user.  Only relevant if \code{n.ahead} is 
+missing.}
 
 \item{\dots}{Ignored.}
 }

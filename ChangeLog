@@ -2,6 +2,8 @@ Changes from version 1.1.3 to 1.2.0:
  * signal: Corrected case of extracting filtered mean when it was missing from the input.
  * signal: Corrected extraction of smoothed mean variance which previously returned NULL.
  * predict.SSModel: corrected tsp attribute for one step ahead prediction.
+ * predict.SSModel: Added argument filtered. When TRUE, produces (in sample) predictions
+   based on filtered estimates.
  * fitSSM: Additional arguments to updatefn are now passed via optional argument
    list update_args  in order to avoid possible conflicts between the updatefn and optim functions.
  * fitSSM: For non-Gaussian models the initial values for linear predictor are
