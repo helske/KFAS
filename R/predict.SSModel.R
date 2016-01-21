@@ -337,7 +337,7 @@ predict.SSModel <- function(object, newdata, n.ahead,
       } else {
         pred <- interval(object, interval = interval, level = level, type = type,
           states = states, nsim = nsim, se.fit = se.fit, timespan = timespan,
-          prob = prob, maxiter = maxiter)
+          prob = prob, maxiter = maxiter, filtered = filtered)
         if (filtered && d > 0) {
           for (i in 1:p) {
             pred[[i]][1:d, "lwr"] <- pred[[i]][1:d, "upr"] <- NA #diffuse phase
