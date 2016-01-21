@@ -45,8 +45,10 @@
 #'   is 50. Only used for non-Gaussian model.
 #' @param filtered If \code{TRUE}, compute predictions based on filtered 
 #' (one-step ahead) estimates. Default is FALSE i.e. predictions are based on 
-#' all available observations given by user.  Only relevant if \code{n.ahead} is 
-#' missing.
+#' all available observations given by user. For diffuse phase, 
+#' interval bounds and standard errors of fitted values are set to NA
+#' (If the interest is in the first time points it might be useful to use 
+#' non-exact diffuse initialization.).
 #' @param \dots Ignored.
 #' @return A matrix or list of matrices containing the predictions, and
 #'   optionally standard errors.
@@ -176,18 +178,27 @@ predict.SSModel <- function(object, newdata, n.ahead,
       if (filtered) {
         out <- KFS(model = object, filtering = "mean", smoothing = "none") 
         names(out)[6:7] <- c("muhat", "V_mu")
+        if (out$d > 0) {
+        out$V_mu[,,1:out$d] <- NA #diffuse phase
+        }
       } else {
         out <- KFS(model = object, filtering = "none", smoothing = "mean") 
       }
     } else {
       if (filtered) {
-        out <- signal(KFS(model = object, filtering = "state", smoothing = "none"), 
-          states = states, filtered = TRUE)
+        out <- KFS(model = object, filtering = "state", smoothing = "none")
+        d <- out$d
+        out <- signal(out,  states = states, filtered = TRUE)
+        names(out) <- c("muhat", "V_mu")
+        if (d > 0) {
+        out$V_mu[,,1:d] <- NA #diffuse phase
+        }
       } else {
         out <- signal(KFS(model = object, filtering = "none", smoothing = "state"), 
           states = states)
+        names(out) <- c("muhat", "V_mu")
       }
-      names(out) <- c("muhat", "V_mu")
+      
     }
     for (i in 1:p) {
       pred[[i]] <- cbind(fit = out$muhat[timespan, i],
@@ -209,18 +220,28 @@ predict.SSModel <- function(object, newdata, n.ahead,
           out <- KFS(model = object, filtering = "signal", smoothing = "none", 
             maxiter = maxiter)
           names(out)[5:6] <- c("thetahat", "V_theta")
+          if (out$d > 0) {
+          out$V_theta[,,1:out$d] <- NA #diffuse phase
+          }
         } else {
-        out <- KFS(model = object, smoothing = "signal", maxiter = maxiter)
+          out <- KFS(model = object, smoothing = "signal", maxiter = maxiter)
         }
       } else {
         if (filtered) {
-          out <- signal(KFS(model = object, filtering = "state", smoothing = "none", 
-            maxiter = maxiter), states = states, filtered = TRUE)
+          out <- KFS(model = object, filtering = "state", smoothing = "none", 
+            maxiter = maxiter)
+          d <- out$d
+          out <- signal(out, states = states, filtered = TRUE)
+          names(out) <- c("thetahat", "V_theta")
+          if (d > 0) {
+          out$V_theta[,,1:d] <- NA #diffuse phase
+          }
         } else {
-        out <- signal(KFS(model = object, smoothing = "state", maxiter = maxiter),
-          states = states)
+          out <- signal(KFS(model = object, smoothing = "state", maxiter = maxiter),
+            states = states)
+          names(out) <- c("thetahat", "V_theta")
         }
-        names(out) <- c("thetahat", "V_theta")
+        
       }
       
       for (i in 1:p) {
@@ -267,6 +288,10 @@ predict.SSModel <- function(object, newdata, n.ahead,
       }
       
     } else {# with importance sampling
+      if (filtered) {
+        d <- KFS(approxSSM(object, maxiter = maxiter), smoothing = "none")$d
+      } 
+      
       if (interval == "none") {
         imp <- importanceSSM(object, 
           ifelse(identical(states, as.integer(1:m)), "signal", "states"),
@@ -294,13 +319,18 @@ predict.SSModel <- function(object, newdata, n.ahead,
             imp$samples[timespan, i, ] <- imp$samples[timespan, i, ] + log(object$u[timespan,
               i])
         }
-        varmean <- .Fortran(fvarmeanw, imp$samples[timespan, , ,drop=FALSE], w,
+        varmean <- .Fortran(fvarmeanw, imp$samples[timespan, , , drop = FALSE], w,
           p, length(timespan),
           nsim, mean = array(0, c(length(timespan), p)),
           var = array(0, c(length(timespan), p)), as.integer(se.fit))
+        
         if (se.fit) {
+          if (filtered && d > 0) {
+            varmean$var[1:d, ] <- NA #diffuse phase
+          }
           pred <- lapply(1:p, function(j) cbind(fit = varmean$mean[, j],
             se.fit = sqrt(varmean$var[, j])))
+          
         } else {
           pred <- lapply(1:p, function(j) varmean$mean[, j])
         }
@@ -308,6 +338,15 @@ predict.SSModel <- function(object, newdata, n.ahead,
         pred <- interval(object, interval = interval, level = level, type = type,
           states = states, nsim = nsim, se.fit = se.fit, timespan = timespan,
           prob = prob, maxiter = maxiter)
+        if (filtered && d > 0) {
+          for (i in 1:p) {
+            pred[[i]][1:d, "lwr"] <- pred[[i]][1:d, "upr"] <- NA #diffuse phase
+            if (se.fit) {
+              pred[[i]][1:d, "se.fit"] <- NA #diffuse phase
+            }
+          }
+          
+        }
       }
     }
   }

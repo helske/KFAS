@@ -49,8 +49,10 @@ is 50. Only used for non-Gaussian model.}
 
 \item{filtered}{If \code{TRUE}, compute predictions based on filtered 
 (one-step ahead) estimates. Default is FALSE i.e. predictions are based on 
-all available observations given by user.  Only relevant if \code{n.ahead} is 
-missing.}
+all available observations given by user. For diffuse phase, 
+interval bounds and standard errors of fitted values are set to NA
+(If the interest is in the first time points it might be useful to use 
+non-exact diffuse initialization.).}
 
 \item{\dots}{Ignored.}
 }
