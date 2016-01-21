@@ -45,8 +45,8 @@
 #'   is 50. Only used for non-Gaussian model.
 #' @param filtered If \code{TRUE}, compute predictions based on filtered 
 #' (one-step ahead) estimates. Default is FALSE i.e. predictions are based on 
-#' all available observations given by user. For diffuse phase, 
-#' interval bounds and standard errors of fitted values are set to NA
+#' all available observations given by user. For diffuse phase,
+#' interval bounds and standard errors of fitted values are set to \code{-Inf}/\code{Inf}
 #' (If the interest is in the first time points it might be useful to use 
 #' non-exact diffuse initialization.).
 #' @param \dots Ignored.
@@ -179,7 +179,7 @@ predict.SSModel <- function(object, newdata, n.ahead,
         out <- KFS(model = object, filtering = "mean", smoothing = "none") 
         names(out)[6:7] <- c("muhat", "V_mu")
         if (out$d > 0) {
-        out$V_mu[,,1:out$d] <- NA #diffuse phase
+        out$V_mu[,,1:out$d] <- Inf #diffuse phase
         }
       } else {
         out <- KFS(model = object, filtering = "none", smoothing = "mean") 
@@ -191,7 +191,7 @@ predict.SSModel <- function(object, newdata, n.ahead,
         out <- signal(out,  states = states, filtered = TRUE)
         names(out) <- c("muhat", "V_mu")
         if (d > 0) {
-        out$V_mu[,,1:d] <- NA #diffuse phase
+        out$V_mu[,,1:d] <- Inf #diffuse phase
         }
       } else {
         out <- signal(KFS(model = object, filtering = "none", smoothing = "state"), 
@@ -221,7 +221,7 @@ predict.SSModel <- function(object, newdata, n.ahead,
             maxiter = maxiter)
           names(out)[5:6] <- c("thetahat", "V_theta")
           if (out$d > 0) {
-          out$V_theta[,,1:out$d] <- NA #diffuse phase
+          out$V_theta[,,1:out$d] <- Inf #diffuse phase
           }
         } else {
           out <- KFS(model = object, smoothing = "signal", maxiter = maxiter)
@@ -234,7 +234,7 @@ predict.SSModel <- function(object, newdata, n.ahead,
           out <- signal(out, states = states, filtered = TRUE)
           names(out) <- c("thetahat", "V_theta")
           if (d > 0) {
-          out$V_theta[,,1:d] <- NA #diffuse phase
+          out$V_theta[,,1:d] <- Inf #diffuse phase
           }
         } else {
           out <- signal(KFS(model = object, smoothing = "state", maxiter = maxiter),
@@ -326,7 +326,7 @@ predict.SSModel <- function(object, newdata, n.ahead,
         
         if (se.fit) {
           if (filtered && d > 0) {
-            varmean$var[1:d, ] <- NA #diffuse phase
+            varmean$var[1:d, ] <- Inf #diffuse phase
           }
           pred <- lapply(1:p, function(j) cbind(fit = varmean$mean[, j],
             se.fit = sqrt(varmean$var[, j])))
@@ -340,9 +340,10 @@ predict.SSModel <- function(object, newdata, n.ahead,
           prob = prob, maxiter = maxiter, filtered = filtered)
         if (filtered && d > 0) {
           for (i in 1:p) {
-            pred[[i]][1:d, "lwr"] <- pred[[i]][1:d, "upr"] <- NA #diffuse phase
+            pred[[i]][1:d, "lwr"] <- -Inf
+            pred[[i]][1:d, "upr"] <- Inf #diffuse phase
             if (se.fit) {
-              pred[[i]][1:d, "se.fit"] <- NA #diffuse phase
+              pred[[i]][1:d, "se.fit"] <- Inf #diffuse phase
             }
           }
           
