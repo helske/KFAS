@@ -32,7 +32,12 @@ plot.SSModel <- function(x, nsim = 0, ...) {
     tsp(x) <- NULL
     tmp <- acf(x, plot = FALSE, na.action = na.pass)
     tmp$n.used <- sum(!is.na(x))
-    plot(tmp)
+    if (ncol(x) == 1) {
+      plot(tmp, main = "ACF of recursive residuals")
+    } else {
+      plot(tmp)
+    }
+
   }
 
   par(ask = TRUE)
