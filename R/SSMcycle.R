@@ -55,7 +55,6 @@ SSMcycle <- function(period, Q, type, index, a1, P1, P1inf, n = 1, ynames) {
     P1inf <- matrix(P1inf, m, m)
   }
   diag(P1inf)[diag(P1) > 0 || is.na(diag(P1))] <- 0
-  a1[diag(P1inf) > 0] <- 0
   if (missing(Q)) {
     k <- 0
     Qm <- R <- NULL

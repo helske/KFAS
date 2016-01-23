@@ -70,7 +70,6 @@ SSMcustom <- function(Z, T, R, Q, a1, P1, P1inf, index, n = 1) {
     }
   }
   diag(P1inf)[diag(P1) > 0 || is.na(diag(P1))] <- 0
-  a1[diag(P1inf) > 0] <- 0
   state_names <- paste0("custom", 1:m)
   list(index = index, m = m, k = k, p = p, n = n, Z = Z, T = T, R = R, Q = Q, a1 = a1,
     P1 = P1, P1inf = P1inf, tvz = dim(Z)[3] > 1, tvt = dim(T)[3] > 1, tvr = dim(R)[3] >

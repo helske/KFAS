@@ -74,7 +74,6 @@ SSMseasonal <- function(period, Q, sea.type = c("dummy", "trigonometric"),
     P1inf <- matrix(P1inf, m, m)
   }
   diag(P1inf)[diag(P1) > 0 || is.na(diag(P1))] <- 0
-  a1[diag(P1inf) > 0] <- 0
   if (missing(Q)) {
     k <- 0
     Qm <- R <- NULL

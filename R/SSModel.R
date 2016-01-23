@@ -104,7 +104,8 @@
 #'   containing the covariance matrix of the nondiffuse part of the initial
 #'   state vector. }
 #'   \item{P1inf}{A m x m matrix containing the covariance
-#'   matrix of the diffuse part of the initial state vector. }
+#'   matrix of the diffuse part of the initial state vector. 
+#'   If \code{P1[i,i]} is non-zero then \code{P1inf[i,i]} is automatically set to zero. }
 #'   \item{u}{A n x p
 #'   matrix of an additional parameters in case of non-Gaussian model.}
 #'   \item{distribution}{A vector of length p giving the distributions of the
