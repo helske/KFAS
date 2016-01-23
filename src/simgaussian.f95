@@ -114,9 +114,10 @@ tol,nd,ndl,sim,c,simwhat,simdim,antithetics)
   
     do i = 1, nsim
         aplus = 0.0d0
-        if(ndl.GT.0) then
-            aplus(nd,1) = a1(nd)
-        end if
+        !if(ndl.GT.0) then
+        !    aplus(nd,1) = a1(nd)
+        !end if
+        aplus(:,1) = a1
         if(nnd.GT.0) then
             call dtrmv('l','n','n',m,cholp1,m,aplus1(:,i),1)
             aplus(:,1) = aplus(:,1)+aplus1(:,i)
