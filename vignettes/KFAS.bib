@@ -1,14 +1,100 @@
+
+@book{Harvey1989, 
+  author = {Harvey, A. C.}, 
+  publisher = {Cambridge University Press},  
+  title = {Forecasting, Structural Time Series Models and the {K}alman Filter},
+  year = {1989},
+}
+
+@article{koopman2015,
+author = {Koopman, Siem Jan and Lucas, André and Scharth, Marcel},
+ title = {Predicting Time-Varying Parameters with Parameter-Driven and Observation-Driven Models},
+ journal = {Review of Economics and Statistics},
+ year = {2015},
+ volume = {},
+ doi = {10.1162/REST_a_00533},
+ publisher = {MIT Press},
+ }
+
+@Manual{acp,
+    title = {\pkg{acp}: Autoregressive Conditional Poisson},
+    author = {Siakoulis Vasileios},
+    year = {2015},
+    note = {\proglang{R} package version 2.1},
+    url = {https://CRAN.R-project.org/package=acp},
+  }
+  @Article{glarma,
+    title = {The \pkg{glarma} Package for Observation-Driven Time Series Regression of Counts},
+    author = {William T. M. Dunsmuir and David J. Scott},
+    journal = {Journal of Statistical Software},
+    year = {2015},
+    volume = {67},
+    number = {7},
+    pages = {1--36},
+    doi = {10.18637/jss.v067.i07},
+  }
+  @Manual{tscount,
+    title = {\pkg{tscount}: Analysis of Count Time Series},
+    author = {Tobias Liboschik and Roland Fried and Konstantinos Fokianos and Philipp Probst},
+    year = {2015},
+    note = {\proglang{R} package version 1.0.0},
+    url = {https://CRAN.R-project.org/package=tscount},
+  }
+  
+  @Article{gamlss,
+    title = {Generalized additive models for location, scale and shape,(with discussion)},
+    journal = {Applied Statistics},
+    volume = {54},
+    part = {3},
+    pages = {507-554},
+    year = {2005},
+    author = {R. A. Rigby and D. M. Stasinopoulos},
+  }
+    @Manual{gamlss.util,
+    title = {\pkg{gamlss.util}: {GAMLSS} Utilities},
+    author = {Mikis Stasinopoulos and Bob Rigby and Paul Eilers},
+    year = {2015},
+    note = {\proglang{R} package version 4.3-2},
+    url = {https://CRAN.R-project.org/package=gamlss.util},
+  }
+  
+  @Article{VGAM,
+  title = {The \pkg{VGAM} Package for Categorical Data Analysis},
+  author = {Thomas W. Yee},
+  journal = {Journal of Statistical Software},
+  year = {2010},
+  volume = {32},
+  number = {10},
+  pages = {1--34},
+  url = {http://www.jstatsoft.org/v32/i10/},
+}
+@Manual{ZIM,
+    title = {\pkg{ZIM}: Zero-Inflated Models for Count Time Series with Excess Zeros},
+    author = {Ming Yang and Gideon K. D. Zamba and Joseph E. Cavanaugh},
+    year = {2014},
+    note = {\proglang{R} package version 1.0.2},
+    url = {https://CRAN.R-project.org/package=ZIM},
+  }
+  
+  @Manual{tsintermittent,
+    title = {\pkg{tsintermittent}: Intermittent Time Series Forecasting},
+    author = {Nikolaos Kourentzes and Fotios Petropoulos},
+    year = {2015},
+    note = {\proglang{R} package version 1.8},
+    url = {https://CRAN.R-project.org/package=tsintermittent},
+  }
+  
 @misc{stat1,
     author    = "{Statistics Finland}",
-    title     = "Deaths by Gender, Age and Underlying Cause of Death 1969-2013",
-    url     = "http://pxweb2.stat.fi/database/StatFin/ter/ksyyt/ksyyt_en.asp",
+    title     = "Deaths by Gender, Age and Underlying Cause of Death 1969--2013",
+    url     = "http://pxnet2.stat.fi/PXWeb/pxweb/en/StatFin/",
     year = 2014
 }
 
 @misc{stat2,
     author    = "{Statistics Finland}",
-    title     = "Population According to Age (5-year) and Sex in the Whole Country 1865 - 2014",
-    url     = "pxweb2.stat.fi/database/StatFin/vrm/vaerak/vaerak_en.asp",
+    title     = "Population According to Age (5-year) and Sex in the Whole Country 1865--2014",
+    url     = "http://pxnet2.stat.fi/PXWeb/pxweb/en/StatFin/",
     year = 2014
 }
 
@@ -36,10 +122,21 @@ year = {1981}
 
 @book{DK2012,
 author = {Durbin, J. and Koopman, S. J.},
-title = {Time Series Analysis by State Space Methods (Second Edition)},
+title = {Time Series Analysis by State Space Methods},
+edition = {2nd},
 year = {2012},
 address = {New York},
 publisher = {Oxford University Press}
+}
+
+
+@book{MN1989,
+  author = {McCullagh, P. and Nelder, J. A.},
+  title = {Generalized Linear Models},
+edition = {2nd},
+  year = {1989},
+address = {London},
+  publisher = {Chapman \& Hall},
 }
 
 @article{lme4article,
@@ -54,16 +151,16 @@ year = {2015}
     title = {\pkg{lme4}: Linear Mixed-Effects Models Using Eigen and S4},
     author = {Bates, D and Maechler, M and Bolker, B. M. and Walker, S.},
     year = {2014},
-    note = {R package version version 1.1-8},
+    note = {\proglang{R} package version version 1.1-8},
     url = {http://CRAN.R-project.org/package=lme4},
   }
 
 @Manual{R,
     title = {\proglang{R}: A Language and Environment for Statistical Computing},
-    author = {{R Core Team}},
-    organization = {R Foundation for Statistical Computing},
+    author = {{\proglang{R} Core Team}},
+    organization = {\proglang{R} Foundation for Statistical Computing},
     address = {Vienna, Austria},
-    year = {2014},
+    year = {2015},
     url = {http://www.R-project.org/},
   }
 
@@ -72,13 +169,13 @@ year = {2015}
     author = {Dethlefsen, C. and Lundbye-Christensen, S. and Christensen, L.},
     year = {2012},
     url = {http://cran.r-project.org/src/contrib/Archive/sspir/},
-    note = {Orphaned on 2013-12-20}
+    note = {\proglang{R} package orphaned on 2013-12-20}
   }
 @Manual{rucm,
     title = {\pkg{rucm}: Implementation of Unobserved Components Model (UCM) in \proglang{R}},
     author = {Kaushik Roy Chowdhury},
     year = {2014},
-    note = {R package version 0.4},
+    note = {\proglang{R} package version 0.4},
     url = {http://CRAN.R-project.org/package=rucm},
   }
 
@@ -86,7 +183,7 @@ year = {2015}
     title = {\pkg{dlmodeler}: Generalized Dynamic Linear Modeler},
     author = {Cyrille Szymanski},
     year = {2014},
-    note = {R package version 1.4-2},
+    note = {\proglang{R} package version 1.4-2},
     url = {http://CRAN.R-project.org/package=dlmodeler},
   }
 
@@ -94,7 +191,7 @@ year = {2015}
     title = {\pkg{MARSS}: Multivariate Autoregressive State-Space Modeling},
     author = {Elizabeth Holmes and Eric Ward and Kellie Wills},
     year = {2013},
-    note = {R package version 3.9},
+    note = {\proglang{R} package version 3.9},
     url = {http://cran.r-project.org/web/packages/MARSS/},
   }
 
@@ -103,15 +200,16 @@ year = {2015}
       Analyzing Time-series Data},
     author = {Elizabeth E. Holmes and Eric J. Ward and Kellie Wills},
     year = {2012},
-    journal = {The R Journal},
+    journal = {The \proglang{R} Journal},
     volume = {4},
     number = {1},
     pages = {30},
   }
 @Manual{pomp,
-    title = {\pkg{pomp}: Statistical Inference for Partially Observed Markov Processes (\proglang{R} Package)},
+    title = {\pkg{pomp}: Statistical Inference for Partially Observed Markov Processes},
     author = {Aaron A. King and Edward L. Ionides and Carles Martinez Bret\'o and Stephen P. Ellner and Matthew J. Ferrari and Bruce E. Kendall and Michael Lavine and Dao Nguyen and Daniel C. Reuman and Helen Wearing and Simon N. Wood},
-    year = {2014},
+    year = {2015},
+note = {\proglang{R} package version 0.65-1},
     url = {http://pomp.r-forge.r-rproject.org},
   }
 
@@ -119,7 +217,7 @@ year = {2015}
     title = {\pkg{INLA}: Functions Which Allow to Perform Full Bayesian Analysis of Latent Gaussian Models Using Integrated Nested Laplace Approximaxion},
     author = {Havard Rue and Sara Martino and Finn Lindgren and Daniel Simpson and Andrea Riebler and Elias Teixeira Krainski},
     year = {2015},
-    note = {R package version 0.0-1420281647},
+    note = {\proglang{R} package version 0.0-1420281647},
   }
 
   @Article{dlm,
@@ -142,29 +240,14 @@ year = {2015}
     publisher = {Springer-Verlag, New York},
   }
 
-@article{Ruiz,
-title = "Direct Fitting of Dynamic Models Using Integrated Nested Laplace Approximations — INLA",
-journal = "Computational Statistics & Data Analysis ",
-volume = "56",
-number = "6",
-pages = "1808 - 1828",
-year = "2012",
-note = "",
-issn = "0167-9473",
-doi = "http://dx.doi.org/10.1016/j.csda.2011.10.024",
-url = "http://www.sciencedirect.com/science/article/pii/S0167947311003999",
-author = "Ramiro Ruiz-Cárdenas and Elias T. Krainski and Håvard Rue",
-}
 
 @article {Rue,
-author = {Rue, Håvard and Martino, Sara and Chopin, Nicolas},
+author = {Rue, H?vard and Martino, Sara and Chopin, Nicolas},
 title = {Approximate Bayesian Inference for Latent Gaussian Models by Using Integrated Nested Laplace Approximations},
 journal = {Journal of the Royal Statistical Society: Series B (Statistical Methodology)},
 volume = {71},
 number = {2},
 publisher = {Blackwell Publishing Ltd},
-issn = {1467-9868},
-url = {http://dx.doi.org/10.1111/j.1467-9868.2008.00700.x},
 doi = {10.1111/j.1467-9868.2008.00700.x},
 pages = {319--392},
 year = {2009},
@@ -186,7 +269,7 @@ year = {2009},
   @Book{rcppB,
     title = {Seamless \proglang{R} and \proglang{C++} Integration with \pkg{Rcpp}},
     author = {Dirk Eddelbuettel},
-    publisher = {Springer},
+    publisher = {Springer-Verlag},
     address = {New York},
     year = {2013},
   }
@@ -197,25 +280,11 @@ journal = {Journal of Time Series Analysis},
 volume = {31},
 number = {6},
 publisher = {Blackwell Publishing Ltd},
-issn = {1467-9892},
-url = {http://dx.doi.org/10.1111/j.1467-9892.2010.00673.x},
 doi = {10.1111/j.1467-9892.2010.00673.x},
 pages = {407--414},
 year = {2010},
 }
 
-
-@article{Koopman1997,
-    title = {Exact Initial Kalman Filtering and Smoothing for Nonstationary Time Series Models},
-    author = {Koopman, S. J.},
-    journal = {Journal of the American Statistical Association},
-    volume = {92},
-    number = {440},     
-    pages = {1630-1638},    
-    year = {1997},
-    publisher = {American Statistical Association},
-    doi = {10.1080/01621459.1997.10473685}
-}
 
 @article{KD2000,
     author = {Koopman, S. J. and Durbin, J.},
@@ -229,22 +298,16 @@ year = {2010},
 
 @article{KD2003,
     author = {Koopman, S. J. and Durbin, J.},
-    title = {Filtering and Smoothing of State Vector for Diffuse State-space Models},
+    title = {Filtering and Smoothing of State Vector for Diffuse State-Space Models},
     journal = {Journal of Time Series Analysis},
     volume = {24},
     pages = {85--98},
     year = {2003},
-    doi = {10.1111/1467-9892.0029}
+    doi = {10.1111/1467-9892.00294}
 }
 
 
-@book{DK2001,
-author = {Durbin, J. and Koopman, S. J.},
-title = {Time Series Analysis by State Space Methods},
-year = {2001},
-address = {New York},
-publisher = {Oxford University Press}
-}
+
 @article{DK2002,
 author = {Durbin, J. and Koopman, S. J.},
 title = {A Simple and Efficient Simulation Smoother for State Space Time Series Analysis},
@@ -256,20 +319,13 @@ pages = {603--615}
 
 @article{DK2000,
 author = {Durbin, J. and Koopman, S. J.},
-title = {Time Series Analysis of Non-Gaussian Observations Based on State Space Models from Both Classical and Bayesian Perspectives},
+title = {Time Series Analysis of Non-{G}aussian Observations Based on State Space Models from Both Classical and {B}ayesian Perspectives},
 journal = {Journal of Royal Statistical Society B},
 year = {2000},
 volume = {62},
 pages = {3--56}
 }
-@article{DK1997,
-author = {Durbin, J. and Koopman, S. J.},
-title = {Monte Carlo maximum Likelihood Estimation for Non-Gaussian State Space Models},
-journal = {Biometrika},
-year = {1997},
-volume = {84},
-pages = {669--684}
-}
+
 @book{AM1979,
 author = {Anderson, B.D.O and Moore, J.B.},
 title = {Optimal Filtering},
@@ -313,11 +369,3 @@ address = {Englewood Cliffs}
   submitted =	"2010-01-12"
 }
 
-
-@book{MN1989,
-  AUTHOR = {McCullagh, P. and Nelder, J. A.},
-  TITLE = {Generalized Linear Models (Second Edition)},
-  YEAR = {1989},
-  PAGES = {500},
-  PUBLISHER = {London: Chapman \& Hall}
-}
