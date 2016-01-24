@@ -14,8 +14,8 @@ test_that("StructTS and KFS give equivalent results",{
   
   model<-SSModel(y~SSMtrend(degree=1,Q=NA),H=NA)
   fit2<-fitSSM(model,inits=c(7,10),method="BFGS")
-  expect_equal(fit2$model["Q"],fit$coef[1],tolerance=tol, check.attributes=FALSE)
-  expect_equal(fit2$model["H"],fit$coef[2],tolerance=tol, check.attributes=FALSE)
+  expect_equal(fit2$model["Q",1],fit$coef[1],tolerance=tol, check.attributes=FALSE)
+  expect_equal(fit2$model["H",1],fit$coef[2],tolerance=tol, check.attributes=FALSE)
 
   pred <- predict(fit, n.ahead = 5)
   expect_equal(pred$pred, predict(fit2$model, n.ahead = 5),tolerance=tol, check.attributes=FALSE)  

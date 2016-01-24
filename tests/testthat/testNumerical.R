@@ -55,7 +55,7 @@ test_that("Test numerical issues",{
               not(gives_warning()))
   expect_that(out <- KFS(fit$model), not(gives_warning()))
   expect_equal(out$logLik, 14530.62, tolerance = tol, check.attributes = FALSE)
-  expect_equal(fit$model["H"], 0, tolerance = tol, check.attributes = FALSE)
+  expect_equal(fit$model["H",1], 0, tolerance = tol, check.attributes = FALSE)
   expect_equal(fit$model["Q", eta = 1], 0.03556689, tolerance = tol,
                check.attributes = FALSE)
 })
