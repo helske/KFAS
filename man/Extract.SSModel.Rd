@@ -51,12 +51,16 @@ S3 methods for getting and setting parts of object of class
 not altered.
 }
 \details{
-If \code{element} is not a character vector of length one,
+If \code{element} is not one of 
+\code{"y"}, \code{"Z"}, \code{"H"}, \code{"T"}, \code{"R"}, \code{"Q"}, 
+\code{"a1"}, \code{"P1"}, \code{"P1inf"}, \code{"u"},
 the default single bracket list extraction 
 and assignments (\code{x[element]} and \code{x[element] <- value}) 
 are used (and other arguments are ignored).
 
-If \code{element} is a character vector of length one and if arguments 
+If \code{element} is one of 
+\code{"y"}, \code{"Z"}, \code{"H"}, \code{"T"}, \code{"R"}, \code{"Q"}, 
+\code{"a1"}, \code{"P1"}, \code{"P1inf"}, \code{"u"} and if the arguments 
 \code{states}, \code{etas}, \code{times} and \code{series} are 
 all missing, the double bracket list 
 extraction \code{x[[element]]} and modified double bracket list assignment
