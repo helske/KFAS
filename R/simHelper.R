@@ -1,6 +1,6 @@
 # simulate error terms from standard normal distribution
 # transformation to correct distribution is done in Fortran
-#' @importFrom stats pchisq
+#' @importFrom stats pchisq qchisq
 simHelper <- function(model, ymiss, nsim, antithetics) {
 
   epsplus <- array(0, c(attr(model, "p"), attr(model, "n"), nsim))

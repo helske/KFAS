@@ -25,7 +25,7 @@
 #' (\code{nsim>0}), results correspond to the conditional mean.
 #'
 #' @export
-#' @importFrom stats start frequency tsp<- tsp
+#' @importFrom stats start frequency tsp<- tsp ts
 #' @param model Object of class \code{SSModel}.
 #' @param filtering Types of filtering. Possible choices are \code{"state"},
 #'   \code{"signal"}, \code{"mean"}, and \code{"none"}. Default is

@@ -24,7 +24,6 @@
 #' @return Logical value or nothing, depending on the value of
 #'   \code{return.logical}.
 #' @examples
-#' set.seed(1)
 #' model <- SSModel(rnorm(10) ~ 1)
 #' is.SSModel(model)
 #' model['H'] <- 1

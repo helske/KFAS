@@ -34,7 +34,6 @@ also have NA value. In this case \code{Z[i,,t]} is not referenced in
 filtering and smoothing, and algorithms works properly.
 }
 \examples{
-set.seed(1)
 model <- SSModel(rnorm(10) ~ 1)
 is.SSModel(model)
 model['H'] <- 1

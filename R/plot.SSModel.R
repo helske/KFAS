@@ -3,8 +3,8 @@
 #' Diagnostic plots based on standardized residuals for objects of class \code{SSModel}.
 #'
 #' @export
-#' @importFrom graphics plot par hist
-#' @importFrom stats na.pass density
+#' @importFrom graphics plot par hist lines
+#' @importFrom stats na.pass density acf
 #' @param x Object of class \code{SSModel}.
 #' @param nsim The number of independent samples used in importance sampling.
 #' Only used for non-Gaussian model. Default is 0, which computes the

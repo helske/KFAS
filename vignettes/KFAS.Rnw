@@ -624,13 +624,12 @@ model_gamma <- SSModel(cbind(lot1, lot2) ~ -1 + log(u) +
   data = clotting, distribution = "gamma")
 
 update_shapes <- function(pars, model) {
-  model$u[, 1] <- pars[1]
-  model$u[, 2] <- pars[2]
+  model["u", series = 1] <- pars[1]
+  model["u", series = 2] <- pars[2]
   model
 }
 fit_gamma <- fitSSM(model_gamma, inits = c(1, 1), updatefn = update_shapes, 
   method = "L-BFGS-B", lower = 0, upper = 100)
-logLik(fit_gamma$model)
 KFS(fit_gamma$model)
 fit_gamma$model["u", times = 1]
 @

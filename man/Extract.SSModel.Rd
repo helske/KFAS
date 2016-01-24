@@ -7,15 +7,12 @@
 \usage{
 \method{[}{SSModel}(x, element, states, etas, series, times, ...) <- value
 
-\method{[}{SSModel}(x, element, states, etas, series, times, drop, ...)
+\method{[}{SSModel}(x, element, states, etas, series, times, drop = TRUE, ...)
 }
 \arguments{
 \item{x}{Object of class \code{SSModel}.}
 
-\item{element}{Which element is chosen. Possible choices are \code{"y"}, \code{"Z"}, \code{"H"},
-\code{"T"}, \code{"R"}, \code{"Q"}, \code{"a1"}, \code{"P1"}, \code{"P1inf"}, and \code{"u"}.
-For other values of \code{element}, default list extraction and assignments are used
-(which do not check that the model components are of proper form).}
+\item{element}{Which element(s) is chosen. See details.}
 
 \item{states}{Which states are chosen. Either a numeric vector containing the indices of the
 states, or a character vector defining the types of the states. Possible choices are
@@ -40,9 +37,8 @@ These can be combined. Default is \code{"all"}.}
 
 \item{value}{A value to be assigned to x.}
 
-\item{drop}{Logical. If \code{TRUE} the result is coerced to the lowest possible
-dimension. Default is \code{FALSE} for extraction of complete model 
-components (e.g. \code{x["y"]} and \code{TRUE} for subsets (\code{x[y, series = 1:2]}).}
+\item{drop}{Logical. If \code{TRUE} (default) the result is coerced to the lowest possible
+dimension.}
 }
 \value{
 A selected subset of the chosen element or a value.
@@ -51,6 +47,18 @@ A selected subset of the chosen element or a value.
 S3 methods for getting and setting parts of object of class
 \code{SSModel}. These methods ensure that dimensions of system matrices are
 not altered.
+}
+\details{
+Typical values for argument \code{element} are \code{"y"}, \code{"Z"}, \code{"H"},
+  \code{"T"}, \code{"R"}, \code{"Q"}, \code{"a1"}, \code{"P1"}, \code{"P1inf"}, and \code{"u"}.
+  For other (possibly multiple) values of \code{element}, or if arguments 
+  \code{states}, \code{etas}, \code{times} and \code{series} are all missing, 
+  the behaviour depends on the length of argument \code{element}. If 
+  \code{length(element) != 1} the default single bracket list 
+  extraction and assignments (\code{x[element]} and \code{x[element] <- value}) 
+  is used. If \code{length(element) == 1}, the double bracket list 
+  extraction \code{x[[element]]} and
+  modfied double bracket list assignment \code{x[[element]][] <- value} is used.
 }
 \examples{
 set.seed(1)
