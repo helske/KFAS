@@ -12,7 +12,9 @@
 \arguments{
 \item{x}{Object of class \code{SSModel}.}
 
-\item{element}{Which element(s) is chosen. See details.}
+\item{element}{Which element(s) is chosen.  Typical values are \code{"y"}, 
+\code{"Z"}, \code{"H"}, \code{"T"}, \code{"R"}, \code{"Q"}, \code{"a1"}, 
+\code{"P1"}, \code{"P1inf"}, and \code{"u"}. See details.}
 
 \item{states}{Which states are chosen. Either a numeric vector containing the indices of the
 states, or a character vector defining the types of the states. Possible choices are
@@ -49,16 +51,19 @@ S3 methods for getting and setting parts of object of class
 not altered.
 }
 \details{
-Typical values for argument \code{element} are \code{"y"}, \code{"Z"}, \code{"H"},
-  \code{"T"}, \code{"R"}, \code{"Q"}, \code{"a1"}, \code{"P1"}, \code{"P1inf"}, and \code{"u"}.
-  For other (possibly multiple) values of \code{element}, or if arguments 
-  \code{states}, \code{etas}, \code{times} and \code{series} are all missing, 
-  the behaviour depends on the length of argument \code{element}. If 
-  \code{length(element) != 1} the default single bracket list 
-  extraction and assignments (\code{x[element]} and \code{x[element] <- value}) 
-  is used. If \code{length(element) == 1}, the double bracket list 
-  extraction \code{x[[element]]} and
-  modfied double bracket list assignment \code{x[[element]][] <- value} is used.
+If \code{element} is not a character vector of length one,
+the default single bracket list extraction 
+and assignments (\code{x[element]} and \code{x[element] <- value}) 
+are used (and other arguments are ignored).
+
+If \code{element} is a character vector of length one and if arguments 
+\code{states}, \code{etas}, \code{times} and \code{series} are 
+all missing, the double bracket list 
+extraction \code{x[[element]]} and modified double bracket list assignment
+\code{x[[element]][] <- value} are used.
+
+If neither of above holds, then for example in case of \code{element = Z} 
+the extraction is of form \code{x$Z[series, states, times, drop]}.
 }
 \examples{
 set.seed(1)
