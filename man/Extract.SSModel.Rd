@@ -7,7 +7,7 @@
 \usage{
 \method{[}{SSModel}(x, element, states, etas, series, times, ...) <- value
 
-\method{[}{SSModel}(x, element, states, etas, series, times, drop = TRUE, ...)
+\method{[}{SSModel}(x, element, states, etas, series, times, drop, ...)
 }
 \arguments{
 \item{x}{Object of class \code{SSModel}.}
@@ -40,8 +40,9 @@ These can be combined. Default is \code{"all"}.}
 
 \item{value}{A value to be assigned to x.}
 
-\item{drop}{Logical. If \code{TRUE} (default) the result is coerced to the lowest possible
-dimension.}
+\item{drop}{Logical. If \code{TRUE} the result is coerced to the lowest possible
+dimension. Default is \code{FALSE} for extraction of complete model 
+components (e.g. \code{x["y"]} and \code{TRUE} for subsets (\code{x[y, series = 1:2]}).}
 }
 \value{
 A selected subset of the chosen element or a value.

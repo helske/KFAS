@@ -15,15 +15,11 @@ fitSSM(model, inits, updatefn, checkfn, update_args = NULL, ...)
 parameters. Must be of form \code{updatefn(pars, model, ...)},
 where \code{...} correspond to optional additional arguments.
 Function should return the original model with updated parameters.
-If not supplied, a default function is used,
-which updates the values marked as \code{NA} in unconstrained time-invariant
-covariance matrices Q and H. Note that the default \code{updatefn} function
-cannot be used with trigonometric seasonal components as its covariance
-structure is of form \eqn{\sigma}{\sigma}I.}
+See details for description of the default \code{updatefn}.}
 
 \item{checkfn}{Optional function of form \code{checkfn(model)} for checking
 the validity of the model. Should return \code{TRUE} if the model is valid,
-and \code{FALSE} otherwise.}
+and \code{FALSE} otherwise. See details.}
 
 \item{update_args}{Optional list containing additional arguments to \code{updatefn}.}
 
@@ -47,13 +43,23 @@ calls to \code{logLik} method directly.
 
 In \code{fitSSM}, the objective function for \code{\link{optim}} first
 updates the model based on the current values of the parameters under optimization,
-using unction \code{updatefn}. Then function \code{checkfn}
+using function \code{updatefn}. Then function \code{checkfn}
 is used for checking that the resulting model is valid
 (the default \code{checkfn} checks for non-finite values and overly large (>1e7)
 values in covariance matrices). If \code{checkfn} returns \code{TRUE},  the
 log-likelihood is computed using a call \code{-logLik(model,check.model = FALSE)}.
 Otherwise objective function returns value corresponding to
  \code{.Machine$double.xmax^0.75}.
+
+The default \code{updatefn} can be used to estimate the values marked as \code{NA}
+in unconstrained time-invariant covariance matrices Q and H. Note that the
+default \code{updatefn} function cannot be used with trigonometric seasonal
+components as its covariance structure is of form \eqn{\sigma}{\sigma}I,
+i.e. not all \code{NA}'s correspond to unique value.
+
+The code for the default \code{updatefn} can be found in the examples.
+As can be seen from the function definition, it is assumed that
+unconstrained optimization method such as \code{BFGS} is used.
 
 Note that for non-Gaussian models derivative-free optimization methods such as
 Nelder-Mead might be more reliable than methods which use finite difference
