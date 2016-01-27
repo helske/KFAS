@@ -43,7 +43,8 @@
 #'   \item Koopman, S.J. and Durbin, J. (2012).
 #'   Time Series Analysis by State Space Methods. Second edition. Oxford University Press. }
 #' @examples
-#' # A Gamma example modified from ?glm
+#'
+#' # A Gamma example modified from ?glm (with log-link)
 #' clotting <- data.frame(
 #'   u = c(5,10,15,20,30,40,60,80,100),
 #'   lot1 = c(118,58,42,35,27,25,21,19,18),
@@ -66,6 +67,13 @@
 #' KFS(approxmodel)
 #' summary(glmfit1)
 #' summary(glmfit2)
+#'
+#' # approxSSM uses modified step-halving for more robust convergence than glm:
+#' y <- rep (0:1, c(15, 10))
+#' suppressWarnings(glm(formula = y ~ 1, family = binomial(link = "logit"), start = 2))
+#' model <- SSModel(y~1, dist = "binomial")
+#' KFS(model, theta = 2)
+#' KFS(model, theta = 7)
 approxSSM <- function(model, theta, maxiter = 50, tol = 1e-08) {
 
   if (maxiter < 1) {
