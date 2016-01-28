@@ -146,8 +146,8 @@
 #' model_Nile <- SSModel(Nile ~
 #'   SSMtrend(1, Q = list(matrix(NA))), H = matrix(NA))
 #' model_Nile
-#' model_Nile <- fitSSM(inits = c(log(var(Nile)), log(var(Nile))),
-#'   model = modelNile, method = "BFGS")$model
+#' model_Nile <- fitSSM(modelNile, c(log(var(Nile)), log(var(Nile))),
+#'   method = "BFGS")$model
 #'
 #' # Filtering and state smoothing
 #' out_Nile <- KFS(model_Nile, filtering = "state", smoothing = "state")
@@ -162,14 +162,14 @@
 #'         ylab = "Predicted Annual flow", main = "River Nile")
 #'
 #'
-#' # Missing observations, using same parameter estimates
+#' # Missing observations, using the same parameter estimates
 #'
 #' NileNA <- Nile
 #' NileNA[c(21:40, 61:80)] <- NA
 #' model_NileNA <- SSModel(NileNA ~ SSMtrend(1, Q = list(model_Nile$Q)),
 #' H = model_Nile$H)
 #'
-#' out_NileNA <- KFS(model_NileNA, filtering = "mean", smoothing = "mean")
+#' out_NileNA <- KFS(model_NileNA, "mean", "mean")
 #'
 #' # Filtered and smoothed states
 #' ts.plot(NileNA, fitted(out_NileNA, filtered = TRUE), fitted(out_NileNA),
@@ -181,26 +181,30 @@
 #' # Two series of average global temperature deviations for years 1880-1987
 #' # See Shumway and Stoffer (2006), p. 327 for details
 #'
-#' data(GlobalTemp)
+#' data("GlobalTemp")
 #'
-#' model <- SSModel(GlobalTemp~SSMtrend(1, Q = NA, type = "common"), H = matrix(NA, 2, 2))
+#' model_temp <- SSModel(GlobalTemp ~ SSMtrend(1, Q = NA, type = "common"),
+#'   H = matrix(NA, 2, 2))
 #'
 #' # Estimating the variance parameters
 #' inits <- chol(cov(GlobalTemp))[c(1, 4, 3)]
 #' inits[1:2] <- log(inits[1:2])
-#' fit <- fitSSM(inits = c(0.5*log(.1), inits), model = model, method = "BFGS")
+#' fit_temp <- fitSSM(model_temp, c(0.5*log(.1), inits), method = "BFGS")
 #'
-#' out <- KFS(fit$model)
+#' out_temp <- KFS(fit_temp$model)
 #'
-#' ts.plot(cbind(model$y, coef(out)), col = 1:3)
-#' legend("bottomright", legend = c(colnames(GlobalTemp), "Smoothed signal"), col = 1:3, lty = 1)
+#' ts.plot(cbind(model_temp$y, coef(out_temp)), col = 1:3)
+#' legend("bottomright",
+#'   legend = c(colnames(GlobalTemp), "Smoothed signal"), col = 1:3, lty = 1)
 #'
 #'
-#' # Seatbelts data
 #' \dontrun{
-#' model <- SSModel(log(drivers)~SSMtrend(1, Q = list(NA))+
-#'                SSMseasonal(period = 12, sea.type = "trigonometric", Q = NA)+
-#'                log(PetrolPrice)+law, data = Seatbelts, H = NA)
+#' #' # Seatbelts data
+#' # See Durbin and Koopman (2012)
+#'
+#' model_drivers <- SSModel(log(drivers) ~ SSMtrend(1, Q = list(NA))+
+#'    SSMseasonal(period = 12, sea.type = "trigonometric", Q = NA) +
+#'    log(PetrolPrice) + law, data = Seatbelts, H = NA)
 #'
 #' # As trigonometric seasonal contains several disturbances which are all
 #' # identically distributed, default behaviour of fitSSM is not enough,
@@ -208,73 +212,81 @@
 #' # model updating function with fitSSM, or just use optim directly:
 #'
 #' # option 1:
-#' ownupdatefn <- function(pars, model, ...){
+#' ownupdatefn <- function(pars, model){
 #'   model$H[] <- exp(pars[1])
 #'   diag(model$Q[, , 1]) <- exp(c(pars[2], rep(pars[3], 11)))
-#'   model #for option 2, replace this with -logLik(model) and call optim directly
+#'   model #for optim, replace this with -logLik(model) and call optim directly
 #' }
 #'
-#' fit <- fitSSM(inits = log(c(var(log(Seatbelts[, "drivers"])), 0.001, 0.0001)),
-#'             model = model, updatefn = ownupdatefn, method = "BFGS")
+#' fit_drivers <- fitSSM(model_drivers,
+#'   log(c(var(log(Seatbelts[, "drivers"])), 0.001, 0.0001)),
+#'   ownupdatefn, method = "BFGS")
 #'
-#' out <- KFS(fit$model, smoothing = c("state", "mean"))
-#' out
-#' ts.plot(cbind(out$model$y, fitted(out)), lty = 1:2, col = 1:2,
-#' main = "Observations and smoothed signal with and without seasonal component")
-#' lines(signal(out, states = c("regression", "trend"))$signal, col = 4, lty = 1)
-#' legend("bottomleft",
-#' legend = c("Observations", "Smoothed signal", "Smoothed level"),
-#' col = c(1, 2, 4), lty = c(1, 2, 1))
-#'
+#' out_drivers <- KFS(fit_drivers$model, smoothing = c("state", "mean"))
+#' out_drivers
+#' ts.plot(out_drivers$model$y, fitted(out_drivers), lty = 1:2, col = 1:2,
+#'   main = "Observations and smoothed signal with and without seasonal component")
+#' lines(signal(out_drivers, states = c("regression", "trend"))$signal,
+#'   col = 4, lty = 1)
+#' legend("bottomleft", col = c(1, 2, 4), lty = c(1, 2, 1),
+#'   legend = c("Observations", "Smoothed signal", "Smoothed level"))
 #'
 #' # Multivariate model with constant seasonal pattern,
 #' # using the the seat belt law dummy only for the front seat passangers,
 #' # and restricting the rank of the level component by using custom component
 #'
-#' model <- SSModel(log(cbind(front, rear))~ -1 + log(PetrolPrice) + log(kms)
-#'                + SSMregression(~law, data = Seatbelts, index = 1)
-#'                + SSMcustom(Z = diag(2), T = diag(2), R = matrix(1, 2, 1),
-#'                            Q = matrix(1), P1inf = diag(2))
-#'                + SSMseasonal(period = 12, sea.type = "trigonometric"),
-#'                  data = Seatbelts, H = matrix(NA, 2, 2))
+#' model_drivers2 <- SSModel(log(cbind(front, rear)) ~ -1 +
+#'     log(PetrolPrice) + log(kms) +
+#'     SSMregression(~law, data = Seatbelts, index = 1) +
+#'     SSMcustom(Z = diag(2), T = diag(2), R = matrix(1, 2, 1),
+#'       Q = matrix(1), P1inf = diag(2)) +
+#'     SSMseasonal(period = 12, sea.type = "trigonometric"),
+#'   data = Seatbelts, H = matrix(NA, 2, 2))
 #'
 #' # An alternative way for defining the rank deficient trend component:
 #'
-#' # model <- SSModel(log(cbind(front, rear))~ -1 + log(PetrolPrice) + log(kms)
-#' #                + SSMregression(~law, data = Seatbelts, index = 1)
-#' #                + SSMtrend(degree = 1, Q = list(matrix(0, 2, 2)))
-#' #                + SSMseasonal(period = 12, sea.type = "trigonometric"),
-#' #                  data = Seatbelts, H = matrix(NA, 2, 2))
+#' # model_drivers2 <- SSModel(log(cbind(front, rear)) ~ -1 +
+#' #     log(PetrolPrice) + log(kms) +
+#' #     SSMregression(~law, data = Seatbelts, index = 1) +
+#' #     SSMtrend(degree = 1, Q = list(matrix(0, 2, 2))) +
+#' #     SSMseasonal(period = 12, sea.type = "trigonometric"),
+#' #   data = Seatbelts, H = matrix(NA, 2, 2))
+#' #
 #' # Modify model manually:
-#' # model$Q <- array(1, c(1, 1, 1))
-#' # model$R <- model$R[, -2, , drop = FALSE]
-#' # attr(model, "k") <- as.integer(1)
-#' # attr(model, "eta_types") <- attr(model, "eta_types")[1]
+#' # model_drivers2$Q <- array(1, c(1, 1, 1))
+#' # model_drivers2$R <- model_drivers2$R[, -2, , drop = FALSE]
+#' # attr(model_drivers2, "k") <- 1L
+#' # attr(model_drivers2, "eta_types") <- attr(model_drivers2, "eta_types")[1]
 #'
 #'
 #' likfn <- function(pars, model, estimate = TRUE){
-#'   diag(model$H[, , 1]) <- exp(0.5*pars[1:2])
-#'   model$H[1, 2, 1] <- model$H[2, 1, 1] <- tanh(pars[3])*prod(sqrt(exp(0.5*pars[1:2])))
+#'   diag(model$H[, , 1]) <- exp(0.5 * pars[1:2])
+#'   model$H[1, 2, 1] <- model$H[2, 1, 1] <-
+#'     tanh(pars[3]) * prod(sqrt(exp(0.5 * pars[1:2])))
 #'   model$R[28:29] <- exp(pars[4:5])
 #'   if(estimate) return(-logLik(model))
 #'   model
 #' }
-#
-#' fit <- optim(f = likfn, p = c(-8, -8, 1, -1, -3), method = "BFGS", model = model)
-#' model <- likfn(fit$p, model, estimate = FALSE)
-#' model$R[28:29, , 1]%*%t(model$R[28:29, , 1])
-#' model$H
 #'
-#' out <- KFS(model)
-#' out
-#' ts.plot(cbind(signal(out, states = c("custom", "regression"))$signal, model$y), col = 1:4)
+#' fit_drivers2 <- optim(f = likfn, p = c(-8, -8, 1, -1, -3), method = "BFGS",
+#'   model = model_drivers2)
+#' model_drivers2 <- likfn(fit_drivers2$p, model_drivers2, estimate = FALSE)
+#' model_drivers2$R[28:29, , 1]%*%t(model_drivers2$R[28:29, , 1])
+#' model_drivers2$H
+#'
+#' out_drivers2 <- KFS(model_drivers2)
+#' out_drivers2
+#' ts.plot(signal(out_drivers2, states = c("custom", "regression"))$signal,
+#'   model_drivers2$y, col = 1:4)
 #'
 #' # For confidence or prediction intervals, use predict on the original model
-#' pred <- predict(model, states = c("custom", "regression"), interval = "prediction")
+#' pred <- predict(model_drivers2,
+#'   states = c("custom", "regression"), interval = "prediction")
+#'
 #' # Note that even though the intervals were computed without seasonal pattern,
 #' # PetrolPrice induces seasonal pattern to predictions
-#' ts.plot(pred$front, pred$rear, model$y, col = c(1, 2, 2, 3, 4, 4, 5, 6),
-#'   lty = c(1, 2, 2, 1, 2, 2, 1, 1))
+#' ts.plot(pred$front, pred$rear, model_drivers2$y,
+#'   col = c(1, 2, 2, 3, 4, 4, 5, 6), lty = c(1, 2, 2, 1, 2, 2, 1, 1))
 #' }
 #'
 #' ## Simulate ARMA(2, 2) process
@@ -283,7 +295,8 @@
 #'                innov = rnorm(1000) * sqrt(0.5))
 #'
 #'
-#' model <- SSModel(y~SSMarima(ar = c(0, 0), ma = c(0, 0), Q = 1), H = 0)
+#' model_arima <- SSModel(y ~ SSMarima(ar = c(0, 0), ma = c(0, 0), Q = 1), H = 0)
+#'
 #' likfn <- function(pars, model, estimate = TRUE){
 #'   tmp <- try(SSMarima(artransform(pars[1:2]), artransform(pars[3:4]),
 #'     Q = exp(pars[5])), silent = TRUE)
@@ -302,34 +315,38 @@
 #'   }
 #' }
 #'
-#' fit_kfas <- optim(par = c(rep(0, 4), log(1)), model = model, fn = likfn, method = "BFGS")
-#' model <- likfn(fit_kfas$par, model, FALSE)
+#' fit_arima <- optim(par = c(rep(0, 4), log(1)), fn = likfn, method = "BFGS",
+#'   model = model_arima)
+#' model_arima <- likfn(fit_arima$par, model_arima, FALSE)
 #'
 #' # AR coefficients:
-#' model$T[2:3, 2, 1]
+#' model_arima$T[2:3, 2, 1]
 #' # MA coefficients:
-#' model$R[3:4]
+#' model_arima$R[3:4]
 #' # sigma2:
-#' model$Q[1]
+#' model_arima$Q[1]
 #' # intercept
-#' KFS(model)
+#' KFS(model_arima)
 #' # same with arima:
 #' arima(y, c(2, 0, 2))
+#' # small differences because the intercept is handled differently in arima
+#'
 #' \dontrun{
 #' # Poisson model
-#' model <- SSModel(VanKilled~law+SSMtrend(1, Q = list(matrix(NA)))+
+#' # See Durbin and Koopman (2012)
+#' model_van <- SSModel(VanKilled ~ law + SSMtrend(1, Q = list(matrix(NA)))+
 #'                SSMseasonal(period = 12, sea.type = "dummy", Q = NA),
 #'                data = Seatbelts, distribution = "poisson")
 #'
 #' # Estimate variance parameters
-#' fit <- fitSSM(inits = c(-4, -7), model = model, method = "BFGS")
+#' fit_van <- fitSSM(model_van, c(-4, -7), method = "BFGS")
 #'
-#' model <- fit$model
+#' model_van <- fit_van$model
 #'
-#' # use approximating model, gives posterior modes, but the variances might not be reliable
-#' out_nosim <- KFS(model, nsim = 0)
+#' # use approximating model, gives posterior modes
+#' out_nosim <- KFS(model_van, nsim = 0)
 #' # State smoothing via importance sampling
-#' out_sim <- KFS(model, nsim = 1000)
+#' out_sim <- KFS(model_van, nsim = 1000)
 #'
 #' out_nosim
 #' out_sim
@@ -357,6 +374,7 @@
 #'
 #' # approximating model as in GLM
 #' out_D93_nosim <- KFS(model_D93, smoothing = c("state", "signal", "mean"))
+#'
 #' # with importance sampling. Number of simulations is too small here,
 #' # with large enough nsim the importance sampling actually gives
 #' # very similar results as the approximating model in this case
@@ -372,7 +390,6 @@
 #' c(out_D93_nosim$thetahat)
 #' # importance sampling on theta, gives E(theta|y)
 #' c(out_D93_sim$thetahat)
-#'
 #'
 #'
 #' ## predictions on response scale
@@ -423,15 +440,18 @@
 #' fit_gamma$model["u", times = 1]
 #'
 #'
-#' # Example of Cubic spline smoothing
-#' \dontrun{
-#' require(MASS)
-#' data(mcycle)
 #'
-#' model <- SSModel(accel~-1+SSMcustom(Z = matrix(c(1, 0), 1, 2),
-#'                                  T = array(diag(2), c(2, 2, nrow(mcycle))),
-#'                                  Q = array(0, c(2, 2, nrow(mcycle))),
-#'                                  P1inf = diag(2), P1 = diag(0, 2)), data = mcycle)
+#' \dontrun{
+#' # Example of Cubic spline smoothing
+#' # See Durbin and Koopman (2012)
+#' require("MASS")
+#' data("mcycle")
+#'
+#' model <- SSModel(accel ~ -1 +
+#'     SSMcustom(Z = matrix(c(1, 0), 1, 2),
+#'       T = array(diag(2), c(2, 2, nrow(mcycle))),
+#'       Q = array(0, c(2, 2, nrow(mcycle))),
+#'       P1inf = diag(2), P1 = diag(0, 2)), data = mcycle)
 #'
 #' model$T[1, 2, ] <- c(diff(mcycle$times), 1)
 #' model$Q[1, 1, ] <- c(diff(mcycle$times), 1)^3/3
@@ -440,8 +460,8 @@
 #'
 #'
 #' updatefn <- function(pars, model, ...){
-#'   model$H[] <- exp(pars[1])
-#'   model$Q[] <- model$Q[]*exp(pars[2])
+#'   model["H"] <- exp(pars[1])
+#'   model["Q"] <- model["Q"] * exp(pars[2])
 #'   model
 #' }
 #'
