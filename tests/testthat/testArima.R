@@ -44,10 +44,10 @@ test_that("AR modelling works properly",{
     }
   }
 
-  fit_kfas <- optim(par = c(rep(0,3),log(var(lh,na.rm=TRUE))), model = model,
-                    fn = likfn, method="BFGS")
-  model <- likfn(fit_kfas$par,model,FALSE)
-  fit_arima <- arima(lh, order = c(3,0,0),include=FALSE)
+  fit_kfas <- optim(par = c(rep(0, 3), log(var(lh,na.rm = TRUE))), model = model,
+                    fn = likfn, method = "BFGS")
+  model <- likfn(fit_kfas$par,model, FALSE)
+  fit_arima <- arima(lh, order = c(3, 0, 0), include = FALSE)
 
   expect_equal(fit_arima$coef,model$T[,1,1],check.attributes=FALSE,tol=tol)
   expect_equal(fit_arima$sigma,model$Q[1],check.attributes=FALSE,tol=tol)

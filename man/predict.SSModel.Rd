@@ -47,11 +47,11 @@ probabilities instead of counts.}
 \item{maxiter}{The maximum number of iterations used in approximation Default
 is 50. Only used for non-Gaussian model.}
 
-\item{filtered}{If \code{TRUE}, compute predictions based on filtered 
-(one-step ahead) estimates. Default is FALSE i.e. predictions are based on 
+\item{filtered}{If \code{TRUE}, compute predictions based on filtered
+(one-step ahead) estimates. Default is FALSE i.e. predictions are based on
 all available observations given by user. For diffuse phase,
 interval bounds and standard errors of fitted values are set to \code{-Inf}/\code{Inf}
-(If the interest is in the first time points it might be useful to use 
+(If the interest is in the first time points it might be useful to use
 non-exact diffuse initialization.).}
 
 \item{\dots}{Ignored.}
@@ -62,7 +62,7 @@ A matrix or list of matrices containing the predictions, and
 }
 \description{
 Function \code{predict.SSModel} predicts the future observations of a state
-space model of class \code{\link{SSModel}}
+space model of class \code{\link{SSModel}}.
 }
 \details{
 For non-Gaussian models, the results depend whether importance sampling is
@@ -73,6 +73,12 @@ importance sampling, the confidence intervals are computed as the empirical
 quantiles from the weighted sample, whereas the prediction intervals contain
 additional step of simulating the response variables from the sampling
 distribution \eqn{p(y|\theta^i)}.
+
+Predictions take account the uncertainty in state estimation
+(given the prior distribution for the initial states), but not the uncertainty
+of estimating the parameters in the system matrices (i.e. \eqn{Z}, \eqn{Q} etc.).
+Thus the obtained confidence/prediction intervals can underestimate the true
+uncertainty for short time series and/or complex models.
 
 If no simulations are used, the standard errors in response scale are
 computed using delta method.

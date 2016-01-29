@@ -24,16 +24,16 @@
 #' model <- SSModel(log(drivers) ~ SSMtrend(1, NA) +
 #'     SSMseasonal(12, sea.type = 'trigonometric', Q = NA) +
 #'     log(PetrolPrice) + law,data = Seatbelts, H = NA)
-#' 
+#'
 #' ownupdatefn <- function(pars,model,...){
 #'   model$H[] <- exp(pars[1])
 #'   diag(model$Q[,,1]) <- exp(c(pars[2], rep(pars[3], 11)))
 #'   model
 #' }
-#' 
+#'
 #' fit <- fitSSM(inits = log(c(var(log(Seatbelts[,'drivers'])), 0.001, 0.0001)),
 #'   model = model, updatefn = ownupdatefn, method = 'BFGS')
-#' 
+#'
 #' out <- KFS(fit$model, smoothing = c('state', 'mean'))
 #' ts.plot(cbind(out$model$y, fitted(out)),lty = 1:2, col = 1:2,
 #'   main = 'Observations and smoothed signal with and without seasonal component')
@@ -43,13 +43,13 @@
 #'   col = c(1, 2, 4), lty = c(1, 2, 1))
 #'
 signal <- function(object, states = "all", filtered = FALSE) {
-  
+
   if (!inherits(object, "KFS"))
     stop("Object must be an output from function KFS.")
   if (is.numeric(states)) {
     states <- as.integer(states)
     if (min(states) < 1 | max(states) > attr(object$model, "m"))
-      stop("Vector states should contain the indices or names of the states which are combined.")
+      stop("Vector states should contain the indices or names of the states (state types) which are combined.")
   } else {
     states <- match.arg(arg = states, choices = c("all", "arima", "custom", "level","slope",
       "cycle", "seasonal", "trend", "regression"),
@@ -64,7 +64,7 @@ signal <- function(object, states = "all", filtered = FALSE) {
   }
   if (!isTRUE(length(states) > 0))
     stop("Selected states not in the model.")
-  
+
   if (identical(states, as.integer(1:attr(object$model, "m")))) {
     if (all(object$model$distribution == "gaussian")) {
       if (filtered && !is.null(object[["m", exact = TRUE]])) {
@@ -73,7 +73,7 @@ signal <- function(object, states = "all", filtered = FALSE) {
         if (!filtered && !is.null(object$muhat)) {
           return(list(signal = object$muhat, variance = object$V_mu))
         }
-      } 
+      }
     } else {
       if (filtered && !is.null(object[["t", exact = TRUE]])) {
         return(list(signal = object$t, variance = object$P_theta))
@@ -84,7 +84,7 @@ signal <- function(object, states = "all", filtered = FALSE) {
       }
     }
   }
-  
+
   if (filtered) {
     if (is.null(object[["a", exact = TRUE]]))
       stop("Object does not contain filtered estimates of states.")

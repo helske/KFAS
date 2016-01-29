@@ -399,6 +399,9 @@ KFS <-  function(model, filtering, smoothing, simplify = TRUE,
 
   if (filterout$d == n & filterout$j == p)
     warning("Model is degenerate, diffuse phase did not end.")
+  if (!all(is.finite(filterout$P))) {
+    stop("Non-finite values on covariance matrix P. ")
+  }
   filterout$Pinf <- filterout$Pinf[1:m, 1:m, 1:filterout$d, drop = FALSE]
   if (filterout$d > 0 & m > 1 & min(apply(filterout$Pinf, 3, diag)) < -.Machine$double.eps^0.5)
     warning(paste0("Possible error in diffuse filtering: Negative variances in Pinf, ",

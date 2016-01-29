@@ -50,7 +50,7 @@
 #' coef(out, start = c(1983, 12), end = c(1984, 2))
 #'
 coef.KFS <- function(object, start = NULL, end = NULL, filtered = FALSE,
-                     states = "all", last = FALSE, ...) {
+  states = "all", last = FALSE, ...) {
 
   if (!filtered) {
     if (!is.null(object$alphahat)) {
@@ -61,18 +61,24 @@ coef.KFS <- function(object, start = NULL, end = NULL, filtered = FALSE,
       tmp <- object$a
     } else stop("Input does not contain filtered estimates for states, rerun KFS with state filtering.")
   }
-  states <- match.arg(arg = states,
-                      choices = c("all", "arima", "custom", "level","slope", "cycle",
-                                  "seasonal", "trend", "regression"),
-                      several.ok = TRUE)
-
-  if ("all" %in% states) {
-    states <- 1:attr(object$model, "m")
+  if (is.numeric(states)) {
+    states <- as.integer(states)
+    if (min(states) < 1 | max(states) > attr(object$model, "m"))
+      stop("Vector states should contain the indices or names (state types) of the states.")
   } else {
-    if ("trend" %in% states) {
-      states <- c(states, "level", "slope")
+    states <- match.arg(arg = states,
+      choices = c("all", "arima", "custom", "level","slope", "cycle",
+        "seasonal", "trend", "regression"),
+      several.ok = TRUE)
+
+    if ("all" %in% states) {
+      states <- 1:attr(object$model, "m")
+    } else {
+      if ("trend" %in% states) {
+        states <- c(states, "level", "slope")
+      }
+      states <- which(attr(object$model, "state_types") %in% states)
     }
-    states <- which(attr(object$model, "state_types") %in% states)
   }
   if (last) {
     window(tmp[,states], start = end(tmp), end = end(tmp))[1, ]

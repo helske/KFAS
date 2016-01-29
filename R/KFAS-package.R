@@ -3,13 +3,16 @@
 #' Package KFAS contains functions for Kalman filtering, smoothing and
 #' simulation of linear state space models with exact diffuse initialization.
 #'
+#' Note, this help page might be more readable in pdf format due to the mathematical
+#' formulas containing subscripts.
+#'
 #' The linear Gaussian state space model is given by
 #'
-#' \deqn{y_t = Z_t \alpha_t + \epsilon_t, (observation equation)}{
+#' \deqn{y_t = Z_t \alpha_t + \epsilon_t, (\textrm{observation equation})}{
 #'  y[t] = Z[t]\alpha[t] + \epsilon[t], (observation equation)}
 #'
 #'
-#' \deqn{\alpha_{t+1} = T_t \alpha_t + R_t \eta_t, (transition equation)}{\alpha[t+1] = T[t]\alpha[t]
+#' \deqn{\alpha_{t+1} = T_t \alpha_t + R_t \eta_t, (\textrm{transition equation})}{\alpha[t+1] = T[t]\alpha[t]
 #' + R[t]\eta[t], (transition equation)}
 #'
 #' where \eqn{\epsilon_t \sim N(0, H_t)}{\epsilon[t] ~ N(0, H[t])}, \eqn{\eta_t
@@ -73,7 +76,7 @@
 #' \item \eqn{y_t \sim \textrm{negative binomial}(u_t, \mu_t), }{y[t]~negative binomial(u[t], \mu[t]), }
 #'  with expected value \eqn{\mu_t}{\mu[t]} and variance \eqn{\mu_t+ \mu_t^2/u_t}{\mu[t]+
 #' \mu[t]^2/u[t]} (see \code{\link{dnbinom}}), then \eqn{\theta_t =
-#' log[\mu_t]}{\theta[t] = log(\mu[t])}.
+#' log(\mu_t)}{\theta[t] = log(\mu[t])}.
 #' }
 #'
 #' For exponential family models \eqn{u_t = 1}{u[t] = 1} as a default.
@@ -89,7 +92,7 @@
 #' elements corresponding to unknown initial states.
 #'
 #' This method is basically a equivalent of setting uninformative priors for the
-#' initial states in a Bayesian setting.
+#' initial states in a Bayesian framework.
 #'
 #' Diffuse phase is continued until rank of \eqn{P_{\infty, t}}{P[inf, t]} becomes
 #' zero. Rank of \eqn{P_{\infty, t}}{P[inf, t]} decreases by 1, if
@@ -115,7 +118,8 @@
 #' faster filtering and smoothing than normal multivariate Kalman filter
 #' algorithm, and simplifies the formulas for diffuse filtering and smoothing.
 #' If covariance matrix H is not diagonal, it is possible to transform the model by either using
-#' LDL decomposition on H, or augmenting the state vector with \eqn{\epsilon} disturbances.
+#' LDL decomposition on H, or augmenting the state vector with \eqn{\epsilon}
+#' disturbances (this is done automatically in KFAS if needed).
 #' See \code{\link{transformSSM}} for more details.
 #'
 #'
@@ -146,7 +150,7 @@
 #' model_Nile <- SSModel(Nile ~
 #'   SSMtrend(1, Q = list(matrix(NA))), H = matrix(NA))
 #' model_Nile
-#' model_Nile <- fitSSM(modelNile, c(log(var(Nile)), log(var(Nile))),
+#' model_Nile <- fitSSM(model_Nile, c(log(var(Nile)), log(var(Nile))),
 #'   method = "BFGS")$model
 #'
 #' # Filtering and state smoothing
@@ -441,6 +445,57 @@
 #'
 #'
 #'
+#' \dontrun{
+#' ####################################
+#' ### Linear mixed model with KFAS ###
+#' ####################################
+#'
+#' # example from ?lmer of lme4 pacakge
+#' data("sleepstudy", package = "lme4")
+#'
+#' model_lmm <- SSModel(Reaction ~ Days +
+#'     SSMregression(~ Days, Q = array(0, c(2, 2, 180)),
+#'        P1 = matrix(NA, 2, 2), remove.intercept = FALSE), sleepstudy, H = NA)
+#'
+#' # The first 10 time points the third and fouth state
+#' # defined with SSMregression correspond to the first subject, and next 10 time points
+#' # are related to second subject and so on.
+#'
+#' # need to use ordinary $ assignment as [ assignment operator for SSModel
+#' # object guards against dimension altering
+#' model_lmm$T <- array(model_lmm["T"], c(4, 4, 180))
+#' attr(model_lmm, "tv")[3] <- 1L #needs to be integer type!
+#'
+#' # "cut the connection" between the subjects
+#' times <- seq(10, 180, by = 10)
+#' model_lmm["T",states = 3:4, times = times] <- 0
+#'
+#' # for the first subject the variance of the random effect is defined via P1
+#' # for others, we use Q
+#' model_lmm["Q", times = times] <- NA
+#'
+#' update_lmm <- function(pars = init, model){
+#'   P1 <- diag(exp(pars[1:2]))
+#'   P1[1, 2] <- pars[3]
+#'   model["P1", states = 3:4] <- model["Q", times = times] <-
+#'     crossprod(P1)
+#'   model["H"] <- exp(pars[4])
+#'   model
+#' }
+#'
+#' inits <- c(0, 0, 0, 3)
+#'
+#' fit_lmm <- fitSSM(model_lmm, inits, update_lmm, method = "BFGS")
+#' out_lmm <- KFS(fit_lmm$model)
+#' # unconditional covariance matrix of random effects
+#' fit_lmm$model["P1", states = 3:4]
+#'
+#' # conditional covariance matrix of random effects
+#' # same for each subject and time point due to model structure
+#' # these differ from the ones obtained from lmer as these are not conditioned
+#' # on the fixed effects
+#' out_lmm$V[3:4,3:4,1]
+#' }
 #' \dontrun{
 #' # Example of Cubic spline smoothing
 #' # See Durbin and Koopman (2012)

@@ -1,7 +1,7 @@
 #' State Space Model Predictions
 #'
 #' Function \code{predict.SSModel} predicts the future observations of a state
-#' space model of class \code{\link{SSModel}}
+#' space model of class \code{\link{SSModel}}.
 #'
 #' For non-Gaussian models, the results depend whether importance sampling is
 #' used (\code{nsim>0}). without simulations, the confidence intervals in
@@ -11,6 +11,12 @@
 #' quantiles from the weighted sample, whereas the prediction intervals contain
 #' additional step of simulating the response variables from the sampling
 #' distribution \eqn{p(y|\theta^i)}.
+#'
+#' Predictions take account the uncertainty in state estimation
+#' (given the prior distribution for the initial states), but not the uncertainty
+#' of estimating the parameters in the system matrices (i.e. \eqn{Z}, \eqn{Q} etc.).
+#' Thus the obtained confidence/prediction intervals can underestimate the true
+#' uncertainty for short time series and/or complex models.
 #'
 #' If no simulations are used, the standard errors in response scale are
 #' computed using delta method.
@@ -43,11 +49,11 @@
 #'   probabilities instead of counts.
 #' @param maxiter The maximum number of iterations used in approximation Default
 #'   is 50. Only used for non-Gaussian model.
-#' @param filtered If \code{TRUE}, compute predictions based on filtered 
-#' (one-step ahead) estimates. Default is FALSE i.e. predictions are based on 
+#' @param filtered If \code{TRUE}, compute predictions based on filtered
+#' (one-step ahead) estimates. Default is FALSE i.e. predictions are based on
 #' all available observations given by user. For diffuse phase,
 #' interval bounds and standard errors of fitted values are set to \code{-Inf}/\code{Inf}
-#' (If the interest is in the first time points it might be useful to use 
+#' (If the interest is in the first time points it might be useful to use
 #' non-exact diffuse initialization.).
 #' @param \dots Ignored.
 #' @return A matrix or list of matrices containing the predictions, and
@@ -71,7 +77,7 @@ predict.SSModel <- function(object, newdata, n.ahead,
   interval = c("none", "confidence", "prediction"), level = 0.95,
   type = c("response", "link"), states = NULL, se.fit = FALSE,  nsim = 0,
   prob = TRUE, maxiter = 50, filtered = FALSE, ...) {
-  
+
   interval <- match.arg(interval)
   type <- match.arg(type)
   # Check that the model object is of proper form
@@ -133,7 +139,7 @@ predict.SSModel <- function(object, newdata, n.ahead,
         array(newdata$H, dim = c(p, p, nn))), dim = c(p, p, n))
       attr(object, "tv")[2] <- 1L
     } else if(!gaussianmodel) object$u <- rbind(object$u, matrix(newdata$u, nn, p))
-    
+
     if (tvo[3] || tvn[3] || !same(object$T, newdata$T)) {
       object$T <- array(data = c(array(object$T, dim = c(m, m, no)),
         array(newdata$T, dim = c(m, m, nn))), dim = c(m, m, n))
@@ -176,13 +182,13 @@ predict.SSModel <- function(object, newdata, n.ahead,
   if (gaussianmodel) { #Gaussian case
     if (identical(states, as.integer(1:m))) {
       if (filtered) {
-        out <- KFS(model = object, filtering = "mean", smoothing = "none") 
+        out <- KFS(model = object, filtering = "mean", smoothing = "none")
         names(out)[6:7] <- c("muhat", "V_mu")
         if (out$d > 0) {
         out$V_mu[,,1:out$d] <- Inf #diffuse phase
         }
       } else {
-        out <- KFS(model = object, filtering = "none", smoothing = "mean") 
+        out <- KFS(model = object, filtering = "none", smoothing = "mean")
       }
     } else {
       if (filtered) {
@@ -194,11 +200,11 @@ predict.SSModel <- function(object, newdata, n.ahead,
         out$V_mu[,,1:d] <- Inf #diffuse phase
         }
       } else {
-        out <- signal(KFS(model = object, filtering = "none", smoothing = "state"), 
+        out <- signal(KFS(model = object, filtering = "none", smoothing = "state"),
           states = states)
         names(out) <- c("muhat", "V_mu")
       }
-      
+
     }
     for (i in 1:p) {
       pred[[i]] <- cbind(fit = out$muhat[timespan, i],
@@ -217,7 +223,7 @@ predict.SSModel <- function(object, newdata, n.ahead,
     if (nsim < 1) { #Using approximating model
       if (identical(states, as.integer(1:m))) {
         if (filtered) {
-          out <- KFS(model = object, filtering = "signal", smoothing = "none", 
+          out <- KFS(model = object, filtering = "signal", smoothing = "none",
             maxiter = maxiter)
           names(out)[5:6] <- c("thetahat", "V_theta")
           if (out$d > 0) {
@@ -228,7 +234,7 @@ predict.SSModel <- function(object, newdata, n.ahead,
         }
       } else {
         if (filtered) {
-          out <- KFS(model = object, filtering = "state", smoothing = "none", 
+          out <- KFS(model = object, filtering = "state", smoothing = "none",
             maxiter = maxiter)
           d <- out$d
           out <- signal(out, states = states, filtered = TRUE)
@@ -241,9 +247,9 @@ predict.SSModel <- function(object, newdata, n.ahead,
             states = states)
           names(out) <- c("thetahat", "V_theta")
         }
-        
+
       }
-      
+
       for (i in 1:p) {
         pred[[i]] <- cbind(fit = out$thetahat[timespan, i] +
             (if (object$distribution[i] == "poisson")  log(object$u[timespan, i]) else 0),
@@ -286,14 +292,14 @@ predict.SSModel <- function(object, newdata, n.ahead,
             `negative binomial` = exp(pred[[i]]))
         }
       }
-      
+
     } else {# with importance sampling
       if (filtered) {
         d <- KFS(approxSSM(object, maxiter = maxiter), smoothing = "none")$d
-      } 
-      
+      }
+
       if (interval == "none") {
-        imp <- importanceSSM(object, 
+        imp <- importanceSSM(object,
           ifelse(identical(states, as.integer(1:m)), "signal", "states"),
           nsim = nsim, antithetics = TRUE, maxiter = maxiter, filtered = filtered)
         nsim <- as.integer(4 * nsim)
@@ -302,7 +308,7 @@ predict.SSModel <- function(object, newdata, n.ahead,
             object$Z, imp$samples, signal = array(0, c(n, p, nsim)),
             p, m, n, nsim, length(states), states)$signal
         }
-        
+
         w <- imp$weights/sum(imp$weights)
         if (type == "response") {
           for (i in 1:p) {
@@ -323,14 +329,14 @@ predict.SSModel <- function(object, newdata, n.ahead,
           p, length(timespan),
           nsim, mean = array(0, c(length(timespan), p)),
           var = array(0, c(length(timespan), p)), as.integer(se.fit))
-        
+
         if (se.fit) {
           if (filtered && d > 0) {
             varmean$var[1:d, ] <- Inf #diffuse phase
           }
           pred <- lapply(1:p, function(j) cbind(fit = varmean$mean[, j],
             se.fit = sqrt(varmean$var[, j])))
-          
+
         } else {
           pred <- lapply(1:p, function(j) varmean$mean[, j])
         }
@@ -346,7 +352,7 @@ predict.SSModel <- function(object, newdata, n.ahead,
               pred[[i]][1:d, "se.fit"] <- Inf #diffuse phase
             }
           }
-          
+
         }
       }
     }
