@@ -13,7 +13,7 @@
 #'   decomposition, whereas observations \eqn{y_t}{y[t]} and system matrices \eqn{Z_t}{Z[t]} are 
 #'   multiplied with the inverse of \eqn{L_t}{L[t]}. Note that although the state estimates and 
 #'   their error covariances obtained by Kalman filtering and smoothing are identical with those 
-#'   obtained from ordinary multivariate filtering, the one step ahead errors 
+#'   obtained from ordinary multivariate filtering, the one-step-ahead errors 
 #'   \eqn{v_t}{v[t]} and their variances \eqn{F_t}{F[t]} do differ. The typical 
 #'   multivariate versions can be obtained from output of \code{\link{KFS}}
 #'   using \code{\link{mvInnovations}} function.

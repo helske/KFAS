@@ -1,6 +1,6 @@
-#' Smoothed Estimates or One-step Ahead Predictions of States
+#' Smoothed Estimates or One-step-ahead Predictions of States
 #'
-#' Compute smoothed estimates or one-step ahead predictions of states of
+#' Compute smoothed estimates or one-step-ahead predictions of states of
 #' \code{SSModel} object or extract them from output of \code{KFS}.
 #' For non-Gaussian models without simulation (\code{nsim = 0}),
 #' these are the estimates of conditional modes of

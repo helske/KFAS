@@ -3,7 +3,7 @@
 \name{coef.SSModel}
 \alias{coef.KFS}
 \alias{coef.SSModel}
-\title{Smoothed Estimates or One-step Ahead Predictions of States}
+\title{Smoothed Estimates or One-step-ahead Predictions of States}
 \usage{
 \method{coef}{KFS}(object, start = NULL, end = NULL, filtered = FALSE,
   states = "all", last = FALSE, ...)
@@ -50,7 +50,7 @@ Ignored in method for object of class \code{KFS}.}
 Multivariate time series containing estimates states.
 }
 \description{
-Compute smoothed estimates or one-step ahead predictions of states of
+Compute smoothed estimates or one-step-ahead predictions of states of
 \code{SSModel} object or extract them from output of \code{KFS}.
 For non-Gaussian models without simulation (\code{nsim = 0}),
 these are the estimates of conditional modes of

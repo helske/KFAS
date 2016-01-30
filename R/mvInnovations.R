@@ -1,7 +1,7 @@
 #'Multivariate Innovations
 #'
 #'Function \code{mvInnovations} computes the multivariate versions of one 
-#'step-ahead prediction errors and their variances using the output of \code{KFS}.
+#'step-ahead prediction errors and their variances using the output of \code{\link{KFS}}.
 #'@export
 #'@param x Object of class \code{KFS}.
 #'@return 
@@ -11,7 +11,7 @@
 #'\item{Finf}{Diffuse part of \eqn{F_t}{F[t]}.}
 mvInnovations <- function(x){
   
-  # Compute the multivariate versions of one step-ahead prediction errors and variances
+  # Compute the multivariate versions of one-step-ahead prediction errors and variances
   # Used in rstandard.KFS
   if(any(x$model$distribution!="gaussian"))
     stop("Function is only compatible with fully Gaussian models.")

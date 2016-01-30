@@ -49,14 +49,14 @@ plot.SSModel <- function(x, nsim = 0, ...) {
           observations = x$y,
           recursive = res,
           irregular = rstandard(out, "pearson")),
-          main = "Recursive (one-step ahead) and irregular (smoothed) residuals")
+          main = "Recursive (one-step-ahead) and irregular (smoothed) residuals")
       acf2(res)
       hist(res, main = "Histogram of recursive residuals", freq = FALSE)
       lines(density(as.numeric(res), na.rm = TRUE))
     } else {
 
       plot(x$y, main = "Observations")
-      plot(res, main = "Recursive (one-step ahead) residuals")
+      plot(res, main = "Recursive (one-step-ahead) residuals")
       plot(rstandard(out, "pearson"), main = "Irregular (smoothed) residuals")
       acf2(res)
       for (i in 1:attr(x, "p")) {
@@ -76,14 +76,14 @@ plot.SSModel <- function(x, nsim = 0, ...) {
           observations = x$y,
           recursive = res,
           irregular = rstandard(out, "pearson")),
-          main = "recursive (one-step ahead) and irregular (smoothed) residuals")
+          main = "recursive (one-step-ahead) and irregular (smoothed) residuals")
      acf2(res)
      hist(res, main = "Histogram of recursive residuals", freq = FALSE)
      lines(density(as.numeric(res), na.rm = TRUE))
     } else {
 
       plot(x$y, main = "Observations")
-      plot(res, main = "Recursive (one-step ahead) residuals")
+      plot(res, main = "Recursive (one-step-ahead) residuals")
       plot(rstandard(out, "pearson"),main = "Irregular (smoothed) residuals")
       acf2(res)
       for (i in 1:attr(x, "p")) {

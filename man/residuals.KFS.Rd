@@ -20,7 +20,7 @@ Extract Residuals of KFS output
 \details{
 For object of class KFS, several types of residuals can be computed:
 
-  \itemize{ \item  \code{"recursive"}: One-step ahead prediction residuals
+  \itemize{ \item  \code{"recursive"}: One-step-ahead prediction residuals
   \eqn{v_{t,i}=y_{t,i}-Z_{t,i}a_{t,i}}{v[t,i]=y[t,i]-Z[t,i]a[t,i]}. For non-Gaussian case recursive
   residuals are computed as \eqn{y_{t}-f(Z_{t}a_{t})}{y[t]-Z[t]a[t]}, i.e.
   non-sequentially. Computing recursive residuals for large non-Gaussian

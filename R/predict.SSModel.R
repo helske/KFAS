@@ -50,7 +50,7 @@
 #' @param maxiter The maximum number of iterations used in approximation Default
 #'   is 50. Only used for non-Gaussian model.
 #' @param filtered If \code{TRUE}, compute predictions based on filtered
-#' (one-step ahead) estimates. Default is FALSE i.e. predictions are based on
+#' (one-step-ahead) estimates. Default is FALSE i.e. predictions are based on
 #' all available observations given by user. For diffuse phase,
 #' interval bounds and standard errors of fitted values are set to \code{-Inf}/\code{Inf}
 #' (If the interest is in the first time points it might be useful to use

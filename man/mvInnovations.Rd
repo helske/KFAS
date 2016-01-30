@@ -17,6 +17,6 @@ mvInnovations(x)
 }
 \description{
 Function \code{mvInnovations} computes the multivariate versions of one 
-step-ahead prediction errors and their variances using the output of \code{KFS}.
+step-ahead prediction errors and their variances using the output of \code{\link{KFS}}.
 }
 

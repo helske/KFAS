@@ -1,7 +1,7 @@
-#' Smoothed Estimates or One-step Ahead Predictions of Fitted Values
+#' Smoothed Estimates or One-step-ahead Predictions of Fitted Values
 #'
 #' Computes fitted values from output of \code{KFS}
-#' (or using the \code{SSModel} object), i.e. one-step ahead
+#' (or using the \code{SSModel} object), i.e. one-step-ahead
 #' predictions  \eqn{f(\theta_t | y_{t-1}, \ldots, y_1)}{
 #' f(\theta[t] | y[t-1], ... , y[1]),} (\code{m}) or smoothed estimates
 #' \eqn{f(\theta_t | y_n, \ldots, y_1)}{f(\theta[t] | y[n], ... , y[1]),} (\code{muhat}),

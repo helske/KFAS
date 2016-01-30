@@ -8,7 +8,7 @@
 #'   \eqn{residual_t/sd(residual_t),}{residual[t]/sd(residual[t])}.
 #'
 #'   \itemize{
-#'   \item "recursive": For Gaussian models the vector standardized one-step ahead prediction
+#'   \item "recursive": For Gaussian models the vector standardized one-step-ahead prediction
 #'   residuals are defined as
 #'   \deqn{v_{t,i}/\sqrt{F_{i,t}},}{v[t,i]/\sqrt{F[i,t]},} with residuals
 #'   being undefined in diffuse phase. Note that even in multivariate case these
@@ -21,7 +21,7 @@
 #'   of \eqn{Var(y_t|y_{t-1},\ldots,y_1)}{Var(y[t]|y[t-1],\ldots,y[1])}. Computing these for large
 #'   non-Gaussian models can be time consuming as filtering is needed.
 #'
-#'   For Gaussian models the component-wise standardized one-step ahead prediction
+#'   For Gaussian models the component-wise standardized one-step-ahead prediction
 #'   residuals are defined as
 #'   \deqn{v_{t}/\sqrt{diag(F_{t})},}{v[t])/\sqrt{diag(F[t])},} where \eqn{v_{t}}{v[t]} and
 #'   \eqn{F_{t}}{F[t]} are based on the standard multivariate processing.
