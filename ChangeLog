@@ -1,3 +1,7 @@
+Changes from version 1.1.3 to 1.2.1:
+  * SSMtrend: Now works with cases where degree > 3. Previously naming of states 
+    produced an error.
+  
 Changes from version 1.1.3 to 1.2.0:
  * signal: Corrected case of extracting filtered mean when it was missing from the input.
  * signal: Corrected extraction of smoothed mean variance which previously returned NULL.
