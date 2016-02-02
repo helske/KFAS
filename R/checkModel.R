@@ -41,7 +41,7 @@ is.SSModel <- function(object, na.check = FALSE, return.logical = TRUE) {
   m <- attr(object, "m")
   k <- attr(object, "k")
   n <- attr(object, "n")
-  tv <- attr(object, "tv")
+  tv <- unname(attr(object, "tv"))
 
   if (return.logical) {
     x <- inherits(object, "SSModel") &&
