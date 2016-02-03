@@ -1,8 +1,9 @@
 Changes from version 1.1.3 to 1.2.1:
-  * SSMtrend: Now works with cases where degree > 3. Previously naming of states 
-    produced an error.
-  * Added names to tv attribute of SSModel.
-  
+ * SSMtrend: Now works with cases where degree > 3. Previously naming of states
+   produced an error.
+ * Added names to tv attribute of SSModel.
+ * Updated vignette.
+
 Changes from version 1.1.3 to 1.2.0:
  * signal: Corrected case of extracting filtered mean when it was missing from the input.
  * signal: Corrected extraction of smoothed mean variance which previously returned NULL.
@@ -10,7 +11,7 @@ Changes from version 1.1.3 to 1.2.0:
  * predict.SSModel: Added argument filtered. When TRUE, produces (in sample) predictions
    based on filtered estimates.
  * fitSSM: Additional arguments to updatefn are now passed via optional argument
-   list update_args  in order to avoid possible conflicts between the updatefn and 
+   list update_args  in order to avoid possible conflicts between the updatefn and
    optim functions.
  * fitSSM: For non-Gaussian models the initial values for linear predictor are
    precalculated and passed to logLik in optimization, as there is no need to
@@ -21,7 +22,7 @@ Changes from version 1.1.3 to 1.2.0:
  * Added examples to multiple functions.
  * coef.KFS: Added argument last which extracts only the last time point.
  * Subset methods for SSModel and deviance.KFS are now defunct.
- * Extraction and assignment methods of SSModel object now work also with numeric 
+ * Extraction and assignment methods of SSModel object now work also with numeric
    values (but improper assignment can cause the result in non-valid SSModel object).
  * Added default value (1) for n in auxiliary model building functions.
  * Added coef and fitted methods for SSModel object.
@@ -29,7 +30,7 @@ Changes from version 1.1.3 to 1.2.0:
  * SSMseasonal: Corrected a bug where the matrix R was not defined properly for
    multivariate models causing erronenous covariance matrix RQR for Q!=0.
  * Allow nonzero a1 for diffuse elements. Mainly useful for plotting purposes as it does not    affect likelihood etc.
- 
+
 Changes from version 1.1.2 to 1.1.3 (not public):
  * is.SSModel: Tweaked code for performance.
  * is.SSmodel: Corrected bug relating for check of tv attribute.
