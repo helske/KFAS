@@ -12,7 +12,7 @@ structural time series, ARIMA models, generalized linear models and generalized 
 
 [Vignette at CRAN](http://cran.r-project.org/web/packages/KFAS/vignettes/KFAS.pdf)
 
-If you use KFAS in your paper, please cite properly, see `citation("KFAS")` in R. For collection of papers mentioning KFAS, see: [Usage of KFAS](https://rawgit.com/helske/helske.github.io/master/kfas_citedby.html)
+If you use KFAS in your paper, please cite properly, see `citation("KFAS")` in R. For collection of papers mentioning KFAS, see: [Who uses KFAS](https://rawgit.com/helske/helske.github.io/master/kfas_citedby.html)
 Main features
 --------------------------------------------------------------------------
 
