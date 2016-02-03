@@ -12,6 +12,7 @@ structural time series, ARIMA models, generalized linear models and generalized 
 
 [Vignette at CRAN](http://cran.r-project.org/web/packages/KFAS/vignettes/KFAS.pdf)
 
+If you use KFAS in your paper, please cite properly, see `citation("KFAS")` in R. For collection of papers mentioning KFAS, see: [Usage of KFAS](https://rawgit.com/helske/helske.github.io/master/kfas_citedby.html)
 Main features
 --------------------------------------------------------------------------
 
@@ -25,7 +26,7 @@ Main features
 
 Most of the algorithms are based on book "Time Series Analysis by State Space Methods" and related articles by J. Durbin and S.J. Koopman.
 
-Current version of KFAS in [CRAN](http://cran.r-project.org/web/packages/KFAS/index.html) is 1.1.2. You can install the latest development version from github using devtools package:
+Current version of KFAS in [CRAN](http://cran.r-project.org/web/packages/KFAS/index.html) is 1.2.0. You can install the latest development version from github using devtools package:
 
 ```R
 install.packages("devtools")
@@ -36,4 +37,4 @@ install_github("helske/KFAS")
 See
 * help(KFAS) in R for examples
 * [ChangeLog](https://github.com/helske/KFAS/blob/master/ChangeLog) for upcoming, already completed changes
-* [TODO](https://github.com/helske/KFAS/blob/master/TODO) for future changes
+
