@@ -353,6 +353,7 @@ SSModel <- function(formula, data, H, u, distribution,
   attr(model, "m") <- as.integer(m)
   attr(model, "k") <- as.integer(k)
   attr(model, "n") <- as.integer(n)
+  names(tv) <- c("Z","H","T","R","Q")
   attr(model, "tv") <- as.integer(tv)
   attr(model, "state_types") <- state_types
   attr(model, "eta_types") <- eta_types

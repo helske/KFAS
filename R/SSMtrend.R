@@ -25,9 +25,10 @@ SSMtrend <- function(degree = 1, Q, type, index, a1, P1, P1inf, n = 1, ynames) {
   } else {
     for (i in 1:p) Z[i, (i - 1) * degree + 1] <- 1
   }
-  state_names <- switch(degree, `1` = paste0("level", ynames), `2` = paste0(c("level",
-    "slope"), rep(ynames, each = degree)), paste0("trend", rep(1:degree), rep(ynames,
-      each = degree)))
+  state_names <- switch(as.character(degree), 
+    "1" = paste0("level", ynames), 
+    "2" = paste0(c("level", "slope"), rep(ynames, each = degree)), 
+    paste0("trend", rep(1:degree), rep(ynames, each = degree)))
   dxm <- 1 + 0:(m - 1) * (m + 1)
   T[dxm] <- 1
   if (degree > 1)
