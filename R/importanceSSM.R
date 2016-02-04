@@ -94,7 +94,7 @@ importanceSSM <-  function(model, type = c("states", "signals"),
   } else theta <- array(theta, dim = c(n, p))
 
   # generate standard normal variables for importance sampling
-  simtmp <- simHelper(model, ymiss, nsim, antithetics)
+  simtmp <- simHelper(model, nsim, antithetics)
   sim.what <- which(c("epsilon", "eta", "disturbances", "states", "signals", "observations") ==
       match.arg(arg = type, choices = c("states", "signals")))
   simdim <- as.integer(switch(sim.what, p, k, p + k, m, p, p))

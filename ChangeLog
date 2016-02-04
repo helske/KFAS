@@ -3,6 +3,12 @@ Changes from version 1.1.3 to 1.2.1:
    produced an error.
  * Added names to tv attribute of SSModel.
  * Updated vignette.
+ * simulateSSM: Unconditional simulation smoother now does not fix the first
+   state expect for elements which were defined via exact diffuse initialization.
+ * simulateSSM: Corrected bug related to uninitialized variables. As a result,
+   simulation smoother for epsilon disturbances now work properly for missing
+   time points.
+ * Adjusted tolerance checks for nonzero non-diagonal elements in H.
 
 Changes from version 1.1.3 to 1.2.0:
  * signal: Corrected case of extracting filtered mean when it was missing from the input.

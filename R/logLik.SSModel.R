@@ -75,9 +75,9 @@ logLik.SSModel <- function(object, marginal=FALSE, nsim = 0,
   if (all(object$distribution == "gaussian")) {
     # degenerate case
     if (all(c(object$Q, object$H) < .Machine$double.eps) || all(c(object$R, object$H) < .Machine$double.eps))
-      return(-.Machine$double.xmax^0.75)
-
-    if (p > 1 && any(abs(apply(object$H, 3, "[", !diag(p))) > object$tol)) {
+      return(-.Machine$double.xmax ^ 0.75)
+    htol <- max(apply(object$H, 3, diag)) * .Machine$double.eps
+    if (p > 1 && any(abs(apply(object$H, 3, "[", !diag(p))) > htol)) {
       object <-
         tryCatch(transformSSM(object, type = match.arg(arg = transform, choices = c("ldl", "augment"))),
           error = function(e) e)
@@ -122,7 +122,7 @@ logLik.SSModel <- function(object, marginal=FALSE, nsim = 0,
       if (missing(seed))
         seed <- 123
       set.seed(seed)
-      simtmp <- simHelper(object, ymiss, nsim, antithetics)
+      simtmp <- simHelper(object, nsim, antithetics)
     }
     nsim2 <- as.integer(max(sim * (3 * antithetics * nsim + nsim), 1))
     out <- .Fortran(fngloglik, NAOK = TRUE, object$y, ymiss, tv,

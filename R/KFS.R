@@ -10,8 +10,8 @@
 #' observation element at the time, the elements of the prediction error
 #' \eqn{v_t}{v[t]} are uncorrelated, and \code{F}, \code{Finf}, \code{K} and
 #' \code{Kinf} contain only the diagonal elemens of the corresponding covariance
-#' matrices. The usual multivariate versions of \code{F} and \code{v} can be 
-#' obtained from the output of \code{KFS} using the function 
+#' matrices. The usual multivariate versions of \code{F} and \code{v} can be
+#' obtained from the output of \code{KFS} using the function
 #' \code{\link{mvInnovations}}.
 #'
 #' In rare cases of a diffuse initialization phase with highly correlated
@@ -19,16 +19,16 @@
 #' can sometimes cause the diffuse phase end too early,
 #' or the backward smoothing gives negative variances. Changing the tolerance
 #' parameter \code{tol} of the model (see \code{\link{SSModel}}) to smaller (or
-#' larger) can sometimes help. Another option is to redefine the prior state 
+#' larger) can sometimes help. Another option is to redefine the prior state
 #' variances more informative.
-#'  
-#' Fon non-Gaussian models the components corresponding to diffuse filtering 
+#'
+#' Fon non-Gaussian models the components corresponding to diffuse filtering
 #' (\code{Finf}, \code{Pinf}, \code{d}, \code{Kinf}) are not returned even
 #' when \code{filtering} is used. Results based on approximating Gaussian model
-#' can be obtained by running \code{KFS} using the output of \code{approxSSM}. 
-#' 
+#' can be obtained by running \code{KFS} using the output of \code{approxSSM}.
+#'
 #' In case of non-Gaussian models with \code{nsim = 0}, the smoothed estimates
-#' relate to the conditional mode of \eqn{p(\alpha|y)}. When using importance 
+#' relate to the conditional mode of \eqn{p(\alpha|y)}. When using importance
 #' sampling (\code{nsim>0}), results correspond to the conditional mean of
 #'  \eqn{p(\alpha|y)}.
 #'
@@ -79,11 +79,11 @@
 #'   \item{a}{One-step-ahead predictions of states, \eqn{a_t = E(\alpha_t | y_{t-1},
 #'   \ldots, y_{1})}{a[t] = E(\alpha[t] | y[t-1], \ldots, y[1])}. }
 #'
-#'   \item{P}{Non-diffuse parts of the covariance matrix of predicted states, 
+#'   \item{P}{Non-diffuse parts of the covariance matrix of predicted states,
 #'   \eqn{P_t = Var(\alpha_t | y_{t-1}, \ldots, y_{1})
 #'   }{P[t] = Var(\alpha[t] | y[t-1], \ldots, y[1])}. }
 #'
-#'   \item{Pinf}{Diffuse part of the covariance matrix of predicted states. 
+#'   \item{Pinf}{Diffuse part of the covariance matrix of predicted states.
 #'   Only returned for Gaussian models. }
 #'
 #'   \item{t}{One-step-ahead predictions of signals, \eqn{E(Z_t\alpha_t | y_{t-1},
@@ -99,22 +99,22 @@
 #'
 #'   \item{P_mu}{Non-diffuse part of \eqn{Var(f(\theta_t) |
 #'   y_{t-1}, \ldots, y_{1})}{Var(f(\theta[t]) | y[t-1], \ldots, y[1])}.
-#'   In case of Poisson distribution this is \eqn{Var(u_t f(\theta_t) | y_{t-1}, 
+#'   In case of Poisson distribution this is \eqn{Var(u_t f(\theta_t) | y_{t-1},
 #'   \ldots, y_{1})}{Var(t[t]f(\theta[t]) | y[t-1], \ldots, y[1])}.
 #'   If \code{nsim = 0}, only diagonal elements (variances) are computed, using the
 #'   Delta method. }
 #'
-#'   \item{alphahat}{Smoothed estimates of states, \eqn{E(\alpha_t | y_1, \ldots, 
+#'   \item{alphahat}{Smoothed estimates of states, \eqn{E(\alpha_t | y_1, \ldots,
 #'   y_n)}{E(\alpha[t] | y[1], \ldots, y[n])}. }
 #'
-#'   \item{V}{Covariance matrices of smoothed states, \eqn{Var(\alpha_t | y_1, 
+#'   \item{V}{Covariance matrices of smoothed states, \eqn{Var(\alpha_t | y_1,
 #'   \ldots, y_n)}{Var(\alpha[t] | y[1], \ldots, y[n])}. }
 #'
 #'   \item{thetahat}{Smoothed estimates of signals, \eqn{E(Z_t\alpha_t | y_1,
 #'   \ldots, y_n)}{E(Z[t]\alpha[t] | y[1], \ldots, y[n])}. }
 #'
-#'   \item{V_theta}{Covariance matrices of smoothed signals 
-#'   \eqn{Var(Z[t]\alpha_t | y_1, \ldots, y_n).}{Var(Z[t]\alpha[t] 
+#'   \item{V_theta}{Covariance matrices of smoothed signals
+#'   \eqn{Var(Z[t]\alpha_t | y_1, \ldots, y_n).}{Var(Z[t]\alpha[t]
 #'   | y[1], \ldot , y[n])}. }
 #'
 #'   \item{muhat}{Smoothed estimates of \eqn{f(\theta_t) | y_1, \ldots,
@@ -124,9 +124,9 @@
 #'
 #'
 #'   \item{V_mu}{Covariances \eqn{Cov(f(\theta_t)| y_1, \ldots,
-#'   y_n)}{Cov(f(\theta[t]) | y[1], \ldots, y[n])} (or the covariances of 
-#'   \eqn{u_t f(\theta_t)}{u[t]f(\theta[t])} given the data in case of Poisson 
-#'   distribution). If \code{nsim = 0}, only diagonal elements (variances) are 
+#'   y_n)}{Cov(f(\theta[t]) | y[1], \ldots, y[n])} (or the covariances of
+#'   \eqn{u_t f(\theta_t)}{u[t]f(\theta[t])} given the data in case of Poisson
+#'   distribution). If \code{nsim = 0}, only diagonal elements (variances) are
 #'   computed, using the Delta method.  }
 #'
 #'   \item{etahat}{Smoothed disturbance terms \eqn{E(\eta_t | y_1, \ldots,
@@ -137,12 +137,12 @@
 #'
 #'   \item{epshat}{Smoothed disturbance terms \eqn{E(\epsilon_{t,i} | y_1,
 #'   \ldots, y_n)}{E(\epsilon[t,i] | y[1], \ldots, y[n])}. Note that due to
-#'   the possible diagonalization these are on transformed scale. 
+#'   the possible diagonalization these are on transformed scale.
 #'   Only for Gaussian models. }
 #'
 #'   \item{V_eps}{Diagonal elements of \eqn{Var(\epsilon_{t} | y_1, \ldots,
 #'   y_n)}{Var(\epsilon[t] | y[1], \ldots, y[n])}. Note that due to the
-#'   diagonalization the off-diagonal elements are zero. 
+#'   diagonalization the off-diagonal elements are zero.
 #'   Only for Gaussian models.  }
 #'
 #'   \item{iterations}{The number of iterations used in linearization of
@@ -158,13 +158,13 @@
 #'   returned for Gaussian models. }
 #'
 #'   \item{Finf}{Diffuse part of prediction error variances. Only returned for Gaussian
-#'   models. } 
-#'   
+#'   models. }
+#'
 #'   \item{d}{The last time index of diffuse phase, i.e. the non-diffuse
 #'   phase began at time \eqn{d+1}. Only returned for Gaussian models.  }
 #'
 #'
-#'   \item{j}{The last observation index \eqn{i} of \eqn{y_{i,t}}{y[i,t]} of the 
+#'   \item{j}{The last observation index \eqn{i} of \eqn{y_{i,t}}{y[i,t]} of the
 #'   diffuse phase. Only returned for Gaussian models.  }
 #'
 #'   In addition, if argument \code{simplify = FALSE}, list contains following
@@ -174,7 +174,7 @@
 #'   y_{t,1}, y_{t-1}, \ldots , y_{1}), \quad i = 1, \ldots, p}{Cov(\alpha[t,i],
 #'   y[t,i] | y[t,i-1], \ldots, y[t,1], y[t-1], \ldots, y[1]), i = 1, \ldots, p}.
 #'   }
-#'   
+#'
 #'   \item{Kinf}{Diffuse part of \eqn{K_t}{K[t]}.  }
 #'
 #'   \item{r}{Weighted sums of innovations \eqn{v_{t+1}, \ldots, v_{n}}{v[t+1],
@@ -256,7 +256,7 @@ KFS <-  function(model, filtering, smoothing, simplify = TRUE,
 
 
     if (nsim > 0) {
-      simtmp <- simHelper(model, ymiss, nsim, TRUE)
+      simtmp <- simHelper(model, nsim, TRUE)
 
       if (!("none" %in% filtering)) {
         filterout <- .Fortran(fngfilter, NAOK = TRUE, model$y, ymiss, tv,
@@ -392,7 +392,8 @@ KFS <-  function(model, filtering, smoothing, simplify = TRUE,
   if (all(model$distribution == "gaussian")) {
     transform <- match.arg(arg = transform, choices = c("ldl", "augment"))
     # Deal with the possible non-diagonality of H
-    if (any(abs(apply(model$H, 3, "[", !diag(p))) > model$tol)) {
+    htol <- max(apply(model$H, 3, diag)) * .Machine$double.eps
+    if (any(abs(apply(model$H, 3, "[", !diag(p))) > htol)) {
       model <- transformSSM(model, type = transform)
       KFS_transform <- transform
       tv <- attr(model, "tv")
