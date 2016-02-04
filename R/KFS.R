@@ -79,11 +79,11 @@
 #'   \item{a}{One-step-ahead predictions of states, \eqn{a_t = E(\alpha_t | y_{t-1},
 #'   \ldots, y_{1})}{a[t] = E(\alpha[t] | y[t-1], \ldots, y[1])}. }
 #'
-#'   \item{P}{Non-diffuse parts of the covariance matrix of predicted states,
+#'   \item{P}{Non-diffuse parts of the error covariance matrix of predicted states,
 #'   \eqn{P_t = Var(\alpha_t | y_{t-1}, \ldots, y_{1})
 #'   }{P[t] = Var(\alpha[t] | y[t-1], \ldots, y[1])}. }
 #'
-#'   \item{Pinf}{Diffuse part of the covariance matrix of predicted states.
+#'   \item{Pinf}{Diffuse part of the error covariance matrix of predicted states.
 #'   Only returned for Gaussian models. }
 #'
 #'   \item{t}{One-step-ahead predictions of signals, \eqn{E(Z_t\alpha_t | y_{t-1},
@@ -107,13 +107,13 @@
 #'   \item{alphahat}{Smoothed estimates of states, \eqn{E(\alpha_t | y_1, \ldots,
 #'   y_n)}{E(\alpha[t] | y[1], \ldots, y[n])}. }
 #'
-#'   \item{V}{Covariance matrices of smoothed states, \eqn{Var(\alpha_t | y_1,
+#'   \item{V}{Error covariance matrices of smoothed states, \eqn{Var(\alpha_t | y_1,
 #'   \ldots, y_n)}{Var(\alpha[t] | y[1], \ldots, y[n])}. }
 #'
 #'   \item{thetahat}{Smoothed estimates of signals, \eqn{E(Z_t\alpha_t | y_1,
 #'   \ldots, y_n)}{E(Z[t]\alpha[t] | y[1], \ldots, y[n])}. }
 #'
-#'   \item{V_theta}{Covariance matrices of smoothed signals
+#'   \item{V_theta}{Error covariance matrices of smoothed signals
 #'   \eqn{Var(Z[t]\alpha_t | y_1, \ldots, y_n).}{Var(Z[t]\alpha[t]
 #'   | y[1], \ldot , y[n])}. }
 #'
@@ -123,7 +123,7 @@
 #'   y_n)}{u[t]f(\theta[t]) | y[1], \ldots, y[n])}, where \eqn{u} is the exposure term. }
 #'
 #'
-#'   \item{V_mu}{Covariances \eqn{Cov(f(\theta_t)| y_1, \ldots,
+#'   \item{V_mu}{Error covariances \eqn{Cov(f(\theta_t)| y_1, \ldots,
 #'   y_n)}{Cov(f(\theta[t]) | y[1], \ldots, y[n])} (or the covariances of
 #'   \eqn{u_t f(\theta_t)}{u[t]f(\theta[t])} given the data in case of Poisson
 #'   distribution). If \code{nsim = 0}, only diagonal elements (variances) are
@@ -132,7 +132,7 @@
 #'   \item{etahat}{Smoothed disturbance terms \eqn{E(\eta_t | y_1, \ldots,
 #'   y_n)}{E(\eta[t] | y[1], \ldots, y[n])}. Only for Gaussian models. }
 #'
-#'   \item{V_eta}{Covariances \eqn{Var(\eta_t | y_1, \ldots, y_n)}{Var(\eta[t]
+#'   \item{V_eta}{Error covariances \eqn{Var(\eta_t | y_1, \ldots, y_n)}{Var(\eta[t]
 #'   | y[1], \ldots, y[n])}. }
 #'
 #'   \item{epshat}{Smoothed disturbance terms \eqn{E(\epsilon_{t,i} | y_1,
@@ -392,7 +392,7 @@ KFS <-  function(model, filtering, smoothing, simplify = TRUE,
   if (all(model$distribution == "gaussian")) {
     transform <- match.arg(arg = transform, choices = c("ldl", "augment"))
     # Deal with the possible non-diagonality of H
-    htol <- max(apply(model$H, 3, diag)) * .Machine$double.eps
+    htol <- max(100, max(apply(model$H, 3, diag))) * .Machine$double.eps
     if (any(abs(apply(model$H, 3, "[", !diag(p))) > htol)) {
       model <- transformSSM(model, type = transform)
       KFS_transform <- transform

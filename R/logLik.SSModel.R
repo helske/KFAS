@@ -62,7 +62,7 @@ logLik.SSModel <- function(object, marginal=FALSE, nsim = 0,
   # Check that the model object is of proper form
   if (check.model) {
     if (!is.SSModel(object, na.check = TRUE)) {
-      return(-.Machine$double.xmax)
+      return(-.Machine$double.xmax ^ 0.75)
     }
   }
   p <- attr(object, "p")
@@ -76,14 +76,14 @@ logLik.SSModel <- function(object, marginal=FALSE, nsim = 0,
     # degenerate case
     if (all(c(object$Q, object$H) < .Machine$double.eps) || all(c(object$R, object$H) < .Machine$double.eps))
       return(-.Machine$double.xmax ^ 0.75)
-    htol <- max(apply(object$H, 3, diag)) * .Machine$double.eps
+    htol <- max(100, max(apply(object$H, 3, diag))) * .Machine$double.eps
     if (p > 1 && any(abs(apply(object$H, 3, "[", !diag(p))) > htol)) {
       object <-
         tryCatch(transformSSM(object, type = match.arg(arg = transform, choices = c("ldl", "augment"))),
           error = function(e) e)
       if (!inherits(object, "SSModel")) {
         warning(object$message)
-        return(-.Machine$double.xmax^0.75)
+        return(-.Machine$double.xmax ^ 0.75)
       }
       m <- attr(object, "m")
       k <- attr(object, "k")

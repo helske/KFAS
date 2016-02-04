@@ -34,7 +34,7 @@
 #'   state space time series analysis, Biometrika, Volume 89, Issue 3
 #' @examples
 #'
-#' model <- SSModel(matrix(NA, 100, 1) ~ SSMtrend(1, 1), H = 1)
+#' model <- SSModel(matrix(NA, 100, 1) ~ SSMtrend(1, 1, P1inf = 0), H = 1)
 #'
 #' set.seed(123)
 #' sim <- simulateSSM(model, "obs", nsim = 2, antithetics = TRUE)
@@ -42,7 +42,35 @@
 #' sim[1,,]
 #' # correlation structure between simulations with two antithetics
 #' cor(sim[,1,])
-#'
+#' 
+#' out_NA <- KFS(model, filtering = "none", smoothing = "state")
+#' model["y"] <- sim[, 1, 1] 
+#' out_obs <- KFS(model, filtering = "none", smoothing = "state")
+#' 
+#' set.seed(40216)
+#' # simulate states from the p(alpha | y)
+#' sim_conditional <- simulateSSM(model, nsim = 10, antithetics = TRUE)
+#' 
+#' # mean of the simulated states is exactly correct due to antithetic variables
+#' mean(sim_conditional[2, 1, ])
+#' out_obs$alpha[2]
+#' # for variances more simulations are needed
+#' var(sim_conditional[2, 1, ])
+#' out_obs$V[2]
+#' 
+#' set.seed(40216)
+#' # no data, simulations from p(alpha)
+#' sim_unconditional <- simulateSSM(model, nsim = 10, antithetics = TRUE, 
+#'   conditional = FALSE)
+#' mean(sim_unconditional[2, 1, ])
+#' out_NA$alpha[2]
+#' var(sim_unconditional[2, 1, ])
+#' out_NA$V[2] 
+#' 
+#' ts.plot(cbind(sim_conditional[,1,1:5], sim_unconditional[,1,1:5]), 
+#'   col = rep(c(2,4), each = 5))
+#' lines(out_obs$alpha, lwd=2)
+#' 
 simulateSSM <- function(object,
   type = c("states", "signals", "disturbances", "observations", "epsilon", "eta"),
   filtered = FALSE, nsim = 1, antithetics = FALSE, conditional = TRUE) {
@@ -60,7 +88,7 @@ simulateSSM <- function(object,
   if (sim.what == "observations") {
     object <- transformSSM(object, type = "augment")
   } else {
-    htol <- max(apply(object$H, 3, diag)) * .Machine$double.eps
+    htol <- max(100, max(apply(object$H, 3, diag))) * .Machine$double.eps
     if (p > 1 && any(abs(apply(object$H, 3, "[", !diag(p))) > htol))
       object <- transformSSM(object = object, type = "ldl")
   }

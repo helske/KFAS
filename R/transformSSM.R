@@ -91,7 +91,7 @@ transformSSM <- function(object, type = c("ldl", "augment")) {
         tv = as.integer(tv), Zt = Z, p = p, m = m, 
         n = n, ichols = ichols, nh = as.integer(nh), hchol = hchol, 
         unidim = as.integer(unidim), info = as.integer(0), hobs = hobs, 
-        tol = max(abs(apply(object$H, 3, diag))) * .Machine$double.eps)
+        tol = max(100, max(abs(apply(object$H, 3, diag)))) * .Machine$double.eps)
       if(out$info!=0){
         stop(switch(as.character(out$info),
           "1" = "LDL decomposition of H failed.",

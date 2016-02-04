@@ -17,7 +17,10 @@
 #' d <- diag(diag(l))
 #' diag(l) <- 1
 #' all.equal(l %*% d %*% t(l), m, tol = 1e-15)
-ldl <- function(x, tol = max(abs(diag(x))) * .Machine$double.eps) {
+ldl <- function(x, tol) {
+  if (missing(tol)) {
+    tol <- max(100, max(abs(diag(as.matrix(x))))) * .Machine$double.eps
+  }
   if (!isSymmetric(x, tol = tol))
     stop("Matrix is not symmetric!")
   out <- .Fortran(fldl, x = x, as.integer(dim(x)[1]), tol = tol, info = integer(1))
