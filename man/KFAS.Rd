@@ -189,7 +189,7 @@ legend("bottomright",
 
 
 \dontrun{
-#' # Seatbelts data
+# Seatbelts data
 # See Durbin and Koopman (2012)
 
 model_drivers <- SSModel(log(drivers) ~ SSMtrend(1, Q = list(NA))+

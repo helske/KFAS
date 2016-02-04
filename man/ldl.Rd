@@ -4,7 +4,7 @@
 \alias{ldl}
 \title{LDL Decomposition of a Matrix}
 \usage{
-ldl(x, tol = max(abs(diag(x))) * .Machine$double.eps)
+ldl(x, tol)
 }
 \arguments{
 \item{x}{Symmetrix matrix.}
