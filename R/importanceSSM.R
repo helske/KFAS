@@ -71,7 +71,9 @@ importanceSSM <-  function(model, type = c("states", "signals"),
   filtered = FALSE,  nsim = 1000, save.model = FALSE, theta,
   antithetics = FALSE, maxiter = 50) {
 
-
+  if (all(model$distribution == "gaussian")) {
+    stop("Model is completely Gaussian, use simulateSSM instead. ")
+  }
   if(maxiter<1)
     stop("Argument maxiter must a positive integer. ")
   if(nsim<1)
