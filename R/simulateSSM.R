@@ -82,7 +82,7 @@ simulateSSM <- function(object,
   if (any(object$distribution != "gaussian"))
     stop("Function is only for Gaussian models.")
 
-  if (sim.what == "observations" && any(!is.na(object$y)))
+  if (sim.what == "observations" && all(!is.na(object$y)))
     stop("There is no missing observations, nothing to simulate.")
   p <- attr(object, "p")
   if (sim.what == "observations") {
