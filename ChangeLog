@@ -1,5 +1,10 @@
 Changes from version 1.2.1 to 1.2.2:
-  * Calling importanceSSM with fully Gaussian model now produces an error.
+  * importanceSSM: Calling importanceSSM with fully Gaussian model now produces 
+    an error.
+  * simulateSSM: Corrected a bug from version 1.2.1 which produced an error 
+    with type = "observations".
+  * fitSSM: The argument names of the updatefn function can now be arbitrary, 
+    only the ordering (parameters, model, additional arguments) matters.
 
 Changes from version 1.2.0 to 1.2.1:
  * SSMtrend: Now works with cases where degree > 3. Previously naming of states
