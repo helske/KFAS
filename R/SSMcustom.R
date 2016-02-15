@@ -47,7 +47,7 @@ SSMcustom <- function(Z, T, R, Q, a1, P1, P1inf, index, n = 1) {
   } else {
     if (length(a1) <= m) {
       a1 <- matrix(a1, m, 1)
-    } else stop("Misspecified a1, argument a1 must be a vector of length t, or (m x 1) matrix, where m is the number of state_names and 1<=t<=m.")
+    } else stop("Misspecified a1, argument a1 must be a vector of length m, or (m x 1) matrix, where m is the number of state_names and 1<=t<=m.")
   }
   if (missing(P1)) {
     P1 <- matrix(0, m, m)
