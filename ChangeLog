@@ -1,9 +1,12 @@
 Changes from version 1.2.1 to 1.2.2:
-  * importanceSSM: Calling importanceSSM with fully Gaussian model now produces 
+  * importanceSSM: Calling importanceSSM with fully Gaussian model now produces
     an error.
-  * simulateSSM: Corrected a bug from version 1.2.1 which produced an error 
+  * simulateSSM: Corrected a bug from version 1.2.1 which produced an error
     with type = "observations".
-  * fitSSM: The argument names of the updatefn function can now be arbitrary, 
+  * simulateSSM: Corrected a bug from version 1.2.1 relating to unconditional
+    simulation which caused the function to produce spurious results when some
+    of the observations of the model were not missing.
+  * fitSSM: The argument names of the updatefn function can now be arbitrary,
     only the ordering (parameters, model, additional arguments) matters.
 
 Changes from version 1.2.0 to 1.2.1:

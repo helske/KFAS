@@ -1,18 +1,16 @@
 !simulate gaussian state space model
-subroutine simgaussianuncond(ymiss,timevar, yt, zt, ht, tt, rtv, qt, a1, p1, &
+subroutine simgaussianuncond(timevar, zt, ht, tt, rtv, qt, a1, p1, &
 p1inf, nnd,nsim, epsplus, etaplus, aplus1, p, n, m, r, info,rankp,&
 tol,nd,ndl,sim,c,simwhat,simdim,antithetics)
 
     implicit none
 
     integer, intent(in) :: p, m, r, n, nsim,nnd,ndl,simdim,simwhat,antithetics,rankp
-    integer, intent(in), dimension(n,p) :: ymiss
     integer, intent(in), dimension(5) :: timevar
     integer, intent(in), dimension(ndl) :: nd
     integer, intent(inout) :: info
     integer ::  t, i, d, j,k,tv,l,rankp2
     double precision, intent(in) :: tol
-    double precision, intent(in), dimension(n,p) :: yt
     double precision, intent(in), dimension(p,m,(n-1)*timevar(1)+1) :: zt
     double precision, intent(in), dimension(p,p,(n-1)*timevar(2)+1) :: ht
     double precision, intent(in), dimension(m,m,(n-1)*timevar(3)+1) :: tt
@@ -198,9 +196,8 @@ tol,nd,ndl,sim,c,simwhat,simdim,antithetics)
                 end if
                 do k = 1, 3*antithetics+1
                     do l = 1, p
-                        if(ymiss(1,l).GT.0) then
-                            sim(l,1,i+(k-1)*nsim) = ddot(m,zt(l,:,1),1,alphatmp(:,1,k),1)
-                        end if
+                          sim(l,1,i+(k-1)*nsim) = ddot(m,zt(l,:,1),1,alphatmp(:,1,k),1)
+
                     end do
                     do t = 2, n
                         call dgemv('n',m,m,1.0d0,tt(:,:,(t-2)*timevar(3)+1),m,alphatmp(:,t-1,k),&
@@ -208,9 +205,9 @@ tol,nd,ndl,sim,c,simwhat,simdim,antithetics)
                         call dgemv('n',m,r,1.0d0,rtv(:,:,(t-2)*timevar(4)+1),m,etatmp(:,t-1,k),1,&
                         1.0d0,alphatmp(:,t,k),1)
                         do l = 1, p
-                            if(ymiss(t,l).GT.0) then
+
                                 sim(l,t,i+(k-1)*nsim) = ddot(m,zt(l,:,(t-1)*timevar(1)+1),1,alphatmp(:,t,k),1)
-                            end if
+
                         end do
                     end do
                 end do

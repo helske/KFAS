@@ -22,7 +22,7 @@ static R_FortranMethodDef FortEntries[] = {
 		{"fngfilter", (DL_FUNC) &F77_SUB(ngfilter), 39},
 		{"fisamplefilter", (DL_FUNC) &F77_SUB(isamplefilter), 35},
 		{"fsimgaussian", (DL_FUNC) &F77_SUB(simgaussian), 30},
-		{"fsimgaussianuncond", (DL_FUNC) &F77_SUB(simgaussianuncond), 30},
+		{"fsimgaussianuncond", (DL_FUNC) &F77_SUB(simgaussianuncond), 28},
 		{"fmvfilter", (DL_FUNC) &F77_SUB(mvfilter), 12},
 		{NULL, NULL, 0}
 };

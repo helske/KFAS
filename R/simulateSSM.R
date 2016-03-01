@@ -42,35 +42,35 @@
 #' sim[1,,]
 #' # correlation structure between simulations with two antithetics
 #' cor(sim[,1,])
-#' 
+#'
 #' out_NA <- KFS(model, filtering = "none", smoothing = "state")
-#' model["y"] <- sim[, 1, 1] 
+#' model["y"] <- sim[, 1, 1]
 #' out_obs <- KFS(model, filtering = "none", smoothing = "state")
-#' 
+#'
 #' set.seed(40216)
 #' # simulate states from the p(alpha | y)
 #' sim_conditional <- simulateSSM(model, nsim = 10, antithetics = TRUE)
-#' 
+#'
 #' # mean of the simulated states is exactly correct due to antithetic variables
 #' mean(sim_conditional[2, 1, ])
 #' out_obs$alpha[2]
 #' # for variances more simulations are needed
 #' var(sim_conditional[2, 1, ])
 #' out_obs$V[2]
-#' 
+#'
 #' set.seed(40216)
 #' # no data, simulations from p(alpha)
-#' sim_unconditional <- simulateSSM(model, nsim = 10, antithetics = TRUE, 
+#' sim_unconditional <- simulateSSM(model, nsim = 10, antithetics = TRUE,
 #'   conditional = FALSE)
 #' mean(sim_unconditional[2, 1, ])
 #' out_NA$alpha[2]
 #' var(sim_unconditional[2, 1, ])
-#' out_NA$V[2] 
-#' 
-#' ts.plot(cbind(sim_conditional[,1,1:5], sim_unconditional[,1,1:5]), 
+#' out_NA$V[2]
+#'
+#' ts.plot(cbind(sim_conditional[,1,1:5], sim_unconditional[,1,1:5]),
 #'   col = rep(c(2,4), each = 5))
 #' lines(out_obs$alpha, lwd=2)
-#' 
+#'
 simulateSSM <- function(object,
   type = c("states", "signals", "disturbances", "observations", "epsilon", "eta"),
   filtered = FALSE, nsim = 1, antithetics = FALSE, conditional = TRUE) {
@@ -82,7 +82,7 @@ simulateSSM <- function(object,
   if (any(object$distribution != "gaussian"))
     stop("Function is only for Gaussian models.")
 
-  if (sim.what == "observations" && all(!is.na(object$y)))
+  if (conditional && sim.what == "observations" && all(!is.na(object$y)))
     stop("There is no missing observations, nothing to simulate.")
   p <- attr(object, "p")
   if (sim.what == "observations") {
@@ -108,7 +108,7 @@ simulateSSM <- function(object,
   simdim <- as.integer(switch(sim.what, p, k, p + k, m, p, p))
 
   if (!conditional || all(is.na(object$y))) {
-    out <- .Fortran(fsimgaussianuncond, NAOK = TRUE, ymiss, tv, object$y,
+    out <- .Fortran(fsimgaussianuncond, NAOK = TRUE, tv,
       object$Z, object$H, object$T, object$R, object$Q, object$a1, object$P1,
       object$P1inf, simtmp$nNonzeroP1, as.integer(nsim), simtmp$epsplus,
       simtmp$etaplus, simtmp$aplus1, p, n, m, k, info = as.integer(0),
