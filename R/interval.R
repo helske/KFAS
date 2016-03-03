@@ -44,7 +44,7 @@ interval <- function(model, interval = c("confidence", "prediction"), level,
         switch(model$distribution[j],
           gaussian = imp$samples[, j, ],
           poisson = exp(imp$samples[, j, ]),
-          binomial = (if (!prob) c(model$u[, j]) else 1) *
+          binomial = (if (!prob) c(model$u[timespan, j]) else 1) *
             exp(imp$samples[, j, ])/(1 + exp(imp$samples[, j, ])),
           gamma = exp(imp$samples[, j, ]),
           `negative binomial` = exp(imp$samples[, j, ]))
@@ -64,13 +64,13 @@ interval <- function(model, interval = c("confidence", "prediction"), level,
           sample_mu <- sample(imp$samples[i, j, ], size = nsim, replace = TRUE,
             prob = w)
           quantile(switch(model$distribution[j],
-            gaussian = rnorm(n = nsim, mean = sample_mu, sd = model$u[i, j]),
+            gaussian = rnorm(n = nsim, mean = sample_mu, sd = model$u[timespan[i], j]),
             poisson = rpois(n = nsim, lambda = sample_mu),
-            binomial = rbinom(n = nsim, size = (if (!prob) model$u[i, j] else 1),
-              prob = sample_mu/(if (!prob) model$u[i, j] else 1)),
-            gamma = rgamma(n = nsim, shape = model$u[i, j],
-              scale = sample_mu/model$u[i, j]),
-            `negative binomial` = rnbinom(n = nsim, size = model$u[i,j], mu = sample_mu)),
+            binomial = rbinom(n = nsim, size = (if (!prob) model$u[timespan[i], j] else 1),
+              prob = sample_mu/(if (!prob) model$u[timespan[i], j] else 1)),
+            gamma = rgamma(n = nsim, shape = model$u[timespan[i], j],
+              scale = sample_mu/model$u[timespan[i], j]),
+            `negative binomial` = rnbinom(n = nsim, size = model$u[timespan[i],j], mu = sample_mu)),
             prob = c((1 - level)/2, 1 - (1 - level)/2))
         })
       })

@@ -8,6 +8,9 @@ Changes from version 1.2.1 to 1.2.2:
     of the observations of the model were not missing.
   * fitSSM: The argument names of the updatefn function can now be arbitrary,
     only the ordering (parameters, model, additional arguments) matters.
+  * predict.SSModel: Corrected a bug in prediction interval
+    computation for non-Gaussian models where wrong values of parameter u were
+    used if timespan of prediction was other than the whole time interval 1 to n.
 
 Changes from version 1.2.0 to 1.2.1:
  * SSMtrend: Now works with cases where degree > 3. Previously naming of states
