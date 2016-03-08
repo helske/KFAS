@@ -50,10 +50,9 @@ test_that("Test numerical issues",{
     model["Q",etas = 1] <- model["P1", states = 1] <- exp(pars[2])
     model
   }
-  expect_that(fit <- fitSSM(model = model, updatefn = updatefn,
-                            inits = c(-4, -4), method = "BFGS"),
-              not(gives_warning()))
-  expect_that(out <- KFS(fit$model), not(gives_warning()))
+  expect_warning(fit <- fitSSM(model = model, updatefn = updatefn,
+                            inits = c(-4, -4), method = "BFGS"), NA)
+  expect_warning(out <- KFS(fit$model), NA)
   expect_equal(out$logLik, 14530.62, tolerance = tol, check.attributes = FALSE)
   expect_equal(fit$model["H",1], 0, tolerance = tol, check.attributes = FALSE)
   expect_equal(fit$model["Q", eta = 1], 0.03556689, tolerance = tol,

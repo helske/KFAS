@@ -14,16 +14,16 @@ test_that("FitSSM, transformSSM and simulateSSM works",{
     model$R[28:29]<-exp(pars[4:5])
     model
   }
-  expect_that(fit<-fitSSM(model=model,updatefn=updatefn,inits=c(-10,-10,0.7,-4,-4),method="BFGS"),not(gives_warning()))
+  expect_warning(fit<-fitSSM(model=model,updatefn=updatefn,inits=c(-10,-10,0.7,-4,-4),method="BFGS"),NA)
   expect_equal(fit$optim.out$p,c(-10.431,-9.460,0.732,-4.182,-4.218),tolerance=1e-4,check.attributes=FALSE)
   expect_equal(fit$optim.out$value,-337.3011,tolerance=1e-6,check.attributes=FALSE)
 
-  expect_that(mod <- transformSSM(fit$model, "augment"),not(gives_warning()))
+  expect_warning(mod <- transformSSM(fit$model, "augment"),NA)
 
   set.seed(123)
 
-  expect_that(out <- KFS(mod,smoothing="state"),not(gives_warning()))
-  expect_that(sim <- simulateSSM(mod,"states",nsim=25,antithetics=TRUE),not(gives_warning()))
+  expect_warning(out <- KFS(mod,smoothing="state"),NA)
+  expect_warning(sim <- simulateSSM(mod,"states",nsim=25,antithetics=TRUE),NA)
 
   expect_equal(rowMeans(sim[192,,]), out$alpha[192,],tolerance=tol)
   expect_equal(rowMeans(sim[1,,]), out$alpha[1,],tolerance=tol)
@@ -32,8 +32,8 @@ test_that("FitSSM, transformSSM and simulateSSM works",{
   expect_equal(cov(t(sim[192,,])), out$V[,,192],tolerance=1e-2,check.attributes=FALSE)
   expect_equal(var(sim[192,29,]), 1.219971, tolerance=tol,check.attributes=FALSE)
 
-  expect_that(out <- KFS(fit$model,smoothing=c("state","disturbance")),not(gives_warning()))
-  expect_that(sim <- simulateSSM(fit$model,"disturbances",nsim=25,antithetics=TRUE),not(gives_warning()))
+  expect_warning(out <- KFS(fit$model,smoothing=c("state","disturbance")),NA)
+  expect_warning(sim <- simulateSSM(fit$model,"disturbances",nsim=25,antithetics=TRUE),NA)
 
   expect_equal(rowMeans(sim[192,,]), c(out$eps[192,],0), check.attributes=FALSE)
   expect_equal(rowMeans(sim[1,,]), c(out$eps[1,],out$eta[1,]), check.attributes=FALSE)
