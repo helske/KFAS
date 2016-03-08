@@ -12,7 +12,9 @@
 #' suboptimal results in model estimation if there is unknown parameters in
 #' diffuse parts of Zt or Tt (Francke et al. 2010). See also Gurka (2006) for
 #' model comparison in mixed model settings with and without the additional
-#' (constant) term.
+#' (constant) term (for BIC it might be better to use marginal likelihood instead
+#' of diffuse likelihood and vice versa for AIC). The marginal likelihood can
+#' be computed by setting \code{marginal = TRUE}.
 #'
 #' Note that for non-Gaussian models with importance sampling derivative-free
 #' optimization methods such as Nelder-Mead might be more reliable than methods
