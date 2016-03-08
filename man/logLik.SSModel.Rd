@@ -62,7 +62,9 @@ term is not necessarily constant. Therefore omitting this term can lead to
 suboptimal results in model estimation if there is unknown parameters in
 diffuse parts of Zt or Tt (Francke et al. 2010). See also Gurka (2006) for
 model comparison in mixed model settings with and without the additional
-(constant) term.
+(constant) term (for BIC it could be better to use marginal likelihood instead
+of diffuse likelihood and vice versa for AIC) and Casals et al. (2014).
+The marginal likelihood can be computed by setting \code{marginal = TRUE}.
 
 Note that for non-Gaussian models with importance sampling derivative-free
 optimization methods such as Nelder-Mead might be more reliable than methods
@@ -76,6 +78,10 @@ Francke, M. K., Koopman, S. J. and De Vos, A. F. (2010),
   conditions. Journal of Time Series Analysis, 31: 407--414.\cr
 
   Gurka, M. J (2006), Selecting the Best Linear Mixed Model Under REML. The
-  American Statistician, Vol. 60.
+  American Statistician, Vol. 60.\cr
+
+  Casals, J., Sotoca, S., Jerez, M. (2014), Minimally conditioned likelihood
+  for a nonstationary state space model. Mathematics and Computers in
+  Simulation, Vol. 100.
 }
 

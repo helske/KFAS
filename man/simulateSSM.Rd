@@ -60,7 +60,7 @@ sim[1,,]
 cor(sim[,1,])
 
 out_NA <- KFS(model, filtering = "none", smoothing = "state")
-model["y"] <- sim[, 1, 1] 
+model["y"] <- sim[, 1, 1]
 out_obs <- KFS(model, filtering = "none", smoothing = "state")
 
 set.seed(40216)
@@ -76,14 +76,14 @@ out_obs$V[2]
 
 set.seed(40216)
 # no data, simulations from p(alpha)
-sim_unconditional <- simulateSSM(model, nsim = 10, antithetics = TRUE, 
+sim_unconditional <- simulateSSM(model, nsim = 10, antithetics = TRUE,
   conditional = FALSE)
 mean(sim_unconditional[2, 1, ])
 out_NA$alpha[2]
 var(sim_unconditional[2, 1, ])
-out_NA$V[2] 
+out_NA$V[2]
 
-ts.plot(cbind(sim_conditional[,1,1:5], sim_unconditional[,1,1:5]), 
+ts.plot(cbind(sim_conditional[,1,1:5], sim_unconditional[,1,1:5]),
   col = rep(c(2,4), each = 5))
 lines(out_obs$alpha, lwd=2)
 
