@@ -50,11 +50,12 @@
 #' and \code{FALSE} otherwise. See details.
 #' @param update_args Optional list containing additional arguments to \code{updatefn}.
 #' @param ... Further arguments for functions \code{optim} and
-#'  \code{logLik.SSModel}, such as \code{nsim = 1000} and \code{method = "BFGS"}.
+#'  \code{logLik.SSModel}, such as \code{nsim = 1000}, \code{marginal = TRUE}, 
+#'   and \code{method = "BFGS"}.
 #'@return A list with elements
 #'\item{optim.out}{Output from function \code{optim}. }
 #'\item{model}{Model with estimated parameters. }
-#'@seealso \code{\link{KFAS}} for examples.
+#'@seealso \code{\link{logLik}}, \code{\link{KFAS}}.
 #' @examples
 #'
 #' # Example function for updating covariance matrices H and Q
