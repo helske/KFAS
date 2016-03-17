@@ -4,7 +4,8 @@
 #' space model of class \code{\link{SSModel}}.
 #'
 #' For non-Gaussian models, the results depend whether importance sampling is
-#' used (\code{nsim>0}). without simulations, the confidence intervals in
+#' used (\code{nsim>0}). without simulations, the confidence intervals are based
+#' on the Gaussian approximation of \eqn{p(\alpha | y)}. Confidence intervals in
 #' response scale are computed in linear predictor scale, and then transformed
 #' to response scale. The prediction intervals are not supported. With
 #' importance sampling, the confidence intervals are computed as the empirical
@@ -19,7 +20,7 @@
 #' uncertainty for short time series and/or complex models.
 #'
 #' If no simulations are used, the standard errors in response scale are
-#' computed using delta method.
+#' computed using the Delta method.
 #'
 #' @export
 #' @importFrom stats predict end qnorm
