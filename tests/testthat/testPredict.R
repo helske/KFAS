@@ -1,3 +1,5 @@
+context("Prediction")
+
 test_that("predict.SSModel works",{
   tol <- 1e-10
 

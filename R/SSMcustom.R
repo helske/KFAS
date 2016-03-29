@@ -1,5 +1,16 @@
 #' @rdname SSModel
 #' @export
+#' @examples
+#' # add intercept to state equation by augmenting the state vector:
+#' # diffuse initialization for the intercept, gets estimated like other states:
+#' # for known fixed intercept, just set P1 = P1inf = 0 (default in SSMcustom).
+#' intercept <- 0
+#' model_int <- SSModel(Nile ~ SSMtrend(1, Q = 1469) +
+#' SSMcustom(Z = 0, T = 1, Q = 0, a1 = intercept, P1inf = 1), H = 15099)
+#'
+#' model_int$T
+#' model_int$T[1, 2, 1] <- 1 # add the intercept value to level
+#' out <- KFS(model_int)
 SSMcustom <- function(Z, T, R, Q, a1, P1, P1inf, index, n = 1) {
   if (missing(index))
     index <- 1

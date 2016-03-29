@@ -1,3 +1,5 @@
+context("Fit, transform and simulation")
+
 test_that("FitSSM, transformSSM and simulateSSM works",{
   tol<-1e-4
 

@@ -1,3 +1,5 @@
+context("Test basics")
+
 test_that("SSModel works properly",{
   tol<-1e-3
   set.seed(123)
