@@ -1,3 +1,5 @@
+context("Importance sampling")
+
 test_that("importanceSSM works",{
   tol <- 1e-10
   data(sexratio)

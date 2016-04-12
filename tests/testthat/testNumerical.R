@@ -1,3 +1,5 @@
+context("Numerical issues")
+
 test_that("Test numerical issues",{
   tol<-1e-6
 

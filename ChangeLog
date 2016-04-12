@@ -11,6 +11,8 @@ Changes from version 1.2.1 to 1.2.2:
   * predict.SSModel: Corrected a bug in prediction interval
     computation for non-Gaussian models where wrong values of parameter u were
     used if timespan of prediction was other than the whole time interval 1 to n.
+  * some of the tests were rewritten in order to be compatible with 
+    new version of testthat.
 
 Changes from version 1.2.0 to 1.2.1:
  * SSMtrend: Now works with cases where degree > 3. Previously naming of states

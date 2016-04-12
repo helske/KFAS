@@ -4,9 +4,14 @@
 #' parameters of an arbitary state space model, given the user-defined model
 #' updating function.
 #'
+#' Note that \code{fitSSM} actually minimizes \code{-logLik(model)}, so for
+#' example the Hessian matrix returned by \code{hessian = TRUE} has an opposite
+#' sign than expected.
+#'
 #' This function is simple wrapper around \code{\link{optim}}. For optimal performance in
 #' complicated problems, it is more efficient to use problem specific codes with
 #' calls to \code{logLik} method directly.
+#'
 #'
 #' In \code{fitSSM}, the objective function for \code{\link{optim}} first
 #' updates the model based on the current values of the parameters under optimization,

@@ -34,6 +34,28 @@
 #'   state space time series analysis, Biometrika, Volume 89, Issue 3
 #' @examples
 #'
+#' set.seed(123)
+#' # simulate new observations from the "fitted" model
+#' model <- SSModel(Nile ~ SSMtrend(1, Q = 1469), H = 15099)
+#' # signal conditional on the data i.e. samples from p(theta | y)
+#' # unconditional simulation is not reasonable as the model is nonstationary
+#' signal_sim <- simulateSSM(model, type = "signals", nsim = 10)
+#' # and add unconditional noise term i.e samples from p(epsilon)
+#' epsilon_sim <- simulateSSM(model, type = "epsilon", nsim = 10,
+#'   conditional = FALSE)
+#' observation_sim <- signal_sim + epsilon_sim
+#'
+#' ts.plot(observation_sim[,1,], Nile, col = c(rep(2, 10), 1),
+#'   lty = c(rep(2, 10), 1), lwd = c(rep(1, 10), 2))
+#'
+#' # fully unconditional simulation:
+#' observation_sim2 <- simulateSSM(model, type = "observations", nsim = 10,
+#'   conditional = FALSE)
+#' ts.plot(observation_sim[,1,], observation_sim2[,1,], Nile,
+#' col = c(rep(2:3, each = 10), 1), lty = c(rep(2, 20), 1),
+#' lwd = c(rep(1, 20), 2))
+#'
+#' # illustrating use of antithetics
 #' model <- SSModel(matrix(NA, 100, 1) ~ SSMtrend(1, 1, P1inf = 0), H = 1)
 #'
 #' set.seed(123)
