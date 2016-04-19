@@ -1,14 +1,13 @@
 ! Non-Gaussian log-likelihood computation
 subroutine ngloglik(yt, ymiss, timevar, zt, tt, rtv, qt, a1, p1,p1inf, p,m,&
 r, n, lik, theta, u, dist,maxiter,rankp,convtol, &
-nnd,nsim,epsplus,etaplus,aplus1,c,tol,info,antit,sim,nsim2,nd,ndl,diff,marginal)
+nnd,nsim,epsplus,etaplus,aplus1,c,tol,info,antit,sim,nsim2,diff,marginal)
 
     implicit none
 
-    integer, intent(in) ::  p, m, r, n,nnd,antit,nsim,sim,nsim2,ndl,rankp
+    integer, intent(in) ::  p, m, r, n,nnd,antit,nsim,sim,nsim2,rankp
     integer, intent(in), dimension(n,p) :: ymiss
     integer, intent(in), dimension(p) :: dist
-    integer, intent(in), dimension(ndl) :: nd
     integer, intent(in), dimension(5) :: timevar
     integer, intent(inout) :: maxiter,marginal,info
     integer ::  j,t,info2
@@ -43,7 +42,7 @@ nnd,nsim,epsplus,etaplus,aplus1,c,tol,info,antit,sim,nsim2,nd,ndl,diff,marginal)
     if(info .ne. 0 .and. info .ne. 3) then
         return
     end if
-        
+
     if(marginal.EQ.1) then
         j = int(sum(p1inf))
         if(j.GT.0) then
@@ -97,7 +96,7 @@ nnd,nsim,epsplus,etaplus,aplus1,c,tol,info,antit,sim,nsim2,nd,ndl,diff,marginal)
         ! simulate signals
         call simgaussian(ymiss,timevar, ytilde, zt, ht, tt, rtv, qt, a1, p1, &
         p1inf, nnd,nsim, epsplus, etaplus, aplus1, p, n, m, r, info2,rankp,&
-        tol,nd,ndl,tsim,c,5,p,antit)
+        tol,tsim,c,5,p,antit)
 
         if(info2.EQ.0) then
             ! Compute weights

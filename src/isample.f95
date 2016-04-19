@@ -2,14 +2,13 @@
 
 subroutine isample(yt, ymiss, timevar, zt, tt, rtv, qt, a1, p1,p1inf, u, dist, &
 p, n, m, r, theta, maxiter,rankp,convtol, nnd,nsim,epsplus,etaplus,&
-aplus1,c,tol,info,antithetics,w,sim,nd,ndl,simwhat,simdim)
+aplus1,c,tol,info,antithetics,w,sim,simwhat,simdim)
 
     implicit none
 
-    integer, intent(in) ::  p,m, r, n,nnd,antithetics,nsim, ndl,simwhat,simdim,rankp
+    integer, intent(in) ::  p,m, r, n,nnd,antithetics,nsim,simwhat,simdim,rankp
     integer, intent(in), dimension(p) :: dist
     integer, intent(in), dimension(n,p) :: ymiss
-    integer, intent(in), dimension(ndl) :: nd
     integer, intent(in), dimension(5) :: timevar
     integer, intent(inout) :: maxiter,info
     integer ::  t, j,i,info2
@@ -53,7 +52,7 @@ aplus1,c,tol,info,antithetics,w,sim,nd,ndl,simwhat,simdim)
     ! simulate signals
     call simgaussian(ymiss,timevar, ytilde, zt, ht, tt, rtv, qt, a1, p1, &
     p1inf, nnd,nsim, epsplus, etaplus, aplus1, p, n, m, r, info2,rankp,&
-    tol,nd,ndl,sim,c,simwhat,simdim,antithetics)
+    tol,sim,c,simwhat,simdim,antithetics)
 
     if(info2 /= 0) then
         info = info2
@@ -75,18 +74,18 @@ aplus1,c,tol,info,antithetics,w,sim,nd,ndl,simwhat,simdim)
                             w = w*exp(yt(t,j)*(sim(j,t,:)-theta(t,j))-&
                             u(t,j)*(exp(sim(j,t,:))-tmp(t)))/&
                             exp(-0.5d0/ht(j,j,t)*( (ytilde(t,j)-sim(j,t,:))**2 - (ytilde(t,j)-theta(t,j))**2))
-                     
+
                         end if
                     end do
                 case(3) !binomial
                     tmp = log(1.0d0+exp(theta(:,j)))
                     do t=1,n
                         if(ymiss(t,j) .EQ. 0) then
-                       
+
                             w = w*exp( yt(t,j)*(sim(j,t,:)-theta(t,j))-&
                             u(t,j)*(log(1.0d0+exp(sim(j,t,:)))-tmp(t)))/&
                             exp(-0.5d0/ht(j,j,t)*( (ytilde(t,j)-sim(j,t,:))**2 -(ytilde(t,j)-theta(t,j))**2))
-                     
+
                         end if
                     end do
                 case(4) ! gamma

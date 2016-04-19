@@ -1,3 +1,8 @@
+Changes from version 1.2.2 to 1.2.3:
+  * is.SSModel now test that for the diffuse states there are no non-zero
+    elements on the corresponding diagonal elements of P1.
+  * Removed unused variables in simulation algorithms.
+
 Changes from version 1.2.1 to 1.2.2:
   * importanceSSM: Calling importanceSSM with fully Gaussian model now produces
     an error.
@@ -11,7 +16,7 @@ Changes from version 1.2.1 to 1.2.2:
   * predict.SSModel: Corrected a bug in prediction interval
     computation for non-Gaussian models where wrong values of parameter u were
     used if timespan of prediction was other than the whole time interval 1 to n.
-  * some of the tests were rewritten in order to be compatible with 
+  * some of the tests were rewritten in order to be compatible with
     new version of testthat.
 
 Changes from version 1.2.0 to 1.2.1:

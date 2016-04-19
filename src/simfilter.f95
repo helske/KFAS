@@ -1,14 +1,13 @@
 ! simulation filter
 subroutine simfilter(ymiss,timevar, yt, zt, ht, tt, rtv, qt, a1, p1, &
 p1inf, nnd,nsim, epsplus, etaplus, aplus1, p, n, m, r, info,rankp,&
-tol,nd,ndl,sim,c,simwhat,simdim,antithetics)
+tol,sim,c,simwhat,simdim,antithetics)
 
     implicit none
 
-    integer, intent(in) :: p, m, r, n, nsim,nnd,ndl,simdim,simwhat,antithetics
+    integer, intent(in) :: p, m, r, n, nsim,nnd,simdim,simwhat,antithetics
     integer, intent(in), dimension(n,p) :: ymiss
     integer, intent(in), dimension(5) :: timevar
-    integer, intent(in), dimension(ndl) :: nd
     integer, intent(inout) :: info,rankp
     integer ::  t, i, d, j,k
     double precision, intent(in) :: tol
@@ -70,8 +69,8 @@ tol,nd,ndl,sim,c,simwhat,simdim,antithetics)
             end do
         end if
     end do
-  
-  
+
+
     if(nnd.GT.0) then
         if(m.EQ.1) then
             cholp1(1,1)=sqrt(p1(1,1))
@@ -90,12 +89,10 @@ tol,nd,ndl,sim,c,simwhat,simdim,antithetics)
             end do
         end if
     end if
-  
+
     do i = 1, nsim
         aplus=0.0d0
-        if(ndl.GT.0) then
-            aplus(nd,1) = a1(nd)
-        end if
+         aplus(:,1) = a1
         if(nnd.GT.0) then
             call dtrmv('l','n','n',m,cholp1,m,aplus1(:,i),1)
             aplus(:,1) = aplus(:,1)+aplus1(:,i)

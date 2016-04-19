@@ -1,15 +1,14 @@
 !simulate gaussian state space model
 subroutine simgaussianuncond(timevar, zt, ht, tt, rtv, qt, a1, p1, &
-p1inf, nnd,nsim, epsplus, etaplus, aplus1, p, n, m, r, info,rankp,&
-tol,nd,ndl,sim,c,simwhat,simdim,antithetics)
+nnd,nsim, epsplus, etaplus, aplus1, p, n, m, r, info,&
+tol,sim,c,simwhat,simdim,antithetics)
 
     implicit none
 
-    integer, intent(in) :: p, m, r, n, nsim,nnd,ndl,simdim,simwhat,antithetics,rankp
+    integer, intent(in) :: p, m, r, n, nsim,nnd,simdim,simwhat,antithetics
     integer, intent(in), dimension(5) :: timevar
-    integer, intent(in), dimension(ndl) :: nd
     integer, intent(inout) :: info
-    integer ::  t, i, d, j,k,tv,l,rankp2
+    integer ::  t, i,k,l
     double precision, intent(in) :: tol
     double precision, intent(in), dimension(p,m,(n-1)*timevar(1)+1) :: zt
     double precision, intent(in), dimension(p,p,(n-1)*timevar(2)+1) :: ht
@@ -17,24 +16,17 @@ tol,nd,ndl,sim,c,simwhat,simdim,antithetics)
     double precision, intent(in), dimension(m,r,(n-1)*timevar(4)+1) :: rtv
     double precision, intent(in), dimension(r,r,(n-1)*timevar(5)+1) :: qt
     double precision, intent(in), dimension(m) :: a1
-    double precision, intent(in), dimension(m,m) ::  p1,p1inf
+    double precision, intent(in), dimension(m,m) ::  p1
     double precision, intent(in),dimension(nsim) :: c
     double precision, intent(inout), dimension(simdim,n,3 * nsim * antithetics + nsim) :: sim
     double precision, intent(inout), dimension(r,n,nsim) :: etaplus
     double precision, intent(inout), dimension(p,n,nsim) :: epsplus
     double precision, intent(inout), dimension(m,nsim) :: aplus1
 
-    double precision, dimension(n,p) :: yplus
     double precision, dimension(m,n+1) :: aplus
-    double precision, dimension(m) :: ahat
-    double precision, dimension(m) :: aplushat
-    double precision, dimension(p,n) :: ft,finf
-    double precision, dimension(m,p,n) :: kt,kinf
     double precision, dimension(r,r,(n-1)*timevar(5)+1) :: cholqt
     double precision, dimension(m,m) :: cholp1
     double precision, dimension(r,r) :: rcholtmp
-    double precision, dimension(m) :: rt0,rt1
-    double precision, dimension(m,r) :: mr
     double precision, dimension(r,n-1,4) :: etatmp
     double precision, dimension(m,n,4) :: alphatmp
     double precision, external :: ddot
@@ -85,7 +77,6 @@ tol,nd,ndl,sim,c,simwhat,simdim,antithetics)
 
     do i = 1, nsim
         aplus = 0.0d0
-
         aplus(:,1) = a1
         if(nnd.GT.0) then
             call dtrmv('l','n','n',m,cholp1,m,aplus1(:,i),1)

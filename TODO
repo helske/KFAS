@@ -1,5 +1,0 @@
-TODO list
- * Add more tests, at least for structural time series, ARIMA and mixed models and multiple tests 
-   for SSModel and auxiliary functions.
-TODO in distant future:
- ** Move everything from Fortran to C++ with Rcpp and start using S4 and sparse matrices...

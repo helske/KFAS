@@ -2,15 +2,14 @@
 
 subroutine isamplefilter(yt, ymiss, timevar, zt, tt, rtv, qt, a1, p1,p1inf, u, dist, &
 p, n, m, r, theta, maxiter,rankp,convtol, nnd,nsim,epsplus,etaplus,&
-aplus1,c,tol,info,antithetics,w,sim,nd,ndl,simwhat,simdim)
+aplus1,c,tol,info,antithetics,w,sim,simwhat,simdim)
 
     implicit none
 
     integer, intent(in) ::  p,m, r, n,nnd,antithetics,nsim&
-    ,ndl,simwhat,simdim,rankp
+    ,simwhat,simdim,rankp
     integer, intent(in), dimension(p) :: dist
     integer, intent(in), dimension(n,p) :: ymiss
-    integer, intent(in), dimension(ndl) :: nd
     integer, intent(in), dimension(5) :: timevar
     integer, intent(inout) ::info, maxiter
     integer ::  t, j,i,k,maxiter2,maxitermax,info2
@@ -59,7 +58,7 @@ aplus1,c,tol,info,antithetics,w,sim,nd,ndl,simwhat,simdim)
     call simgaussian(ymiss2(1,:),timevar, ytilde(1,:), zt(:,:,1), &
     ht(:,:,1), tt(:,:,1), rtv(:,:,1), &
     qt(:,:,1), a1, p1, p1inf, nnd,nsim, epsplus2(:,1,:), etaplus2(:,1,:), aplus12(:,:), &
-    p, 1, m, r, info,rankp,tol,nd,ndl,sim(:,1,:),c,simwhat,simdim,antithetics)
+    p, 1, m, r, info,rankp,tol,sim(:,1,:),c,simwhat,simdim,antithetics)
 
 
     if(info /= 0) then
@@ -100,7 +99,7 @@ aplus1,c,tol,info,antithetics,w,sim,nd,ndl,simwhat,simdim)
         ht(:,:,1:(i+1)), tt(:,:,1:(i*timevar(3)+1)), rtv(:,:,1:(i*timevar(4)+1)), &
         qt(:,:,1:(i*timevar(5)+1)), a1, p1, p1inf, nnd,nsim, epsplus2(:,1:(i+1),:), &
         etaplus2(:,1:(i+1),:), aplus12(:,:),p, i+1, m, r, info2,rankp,tol,&
-        nd,ndl,sim2(:,1:(i+1),:),c,simwhat,simdim,antithetics)
+        sim2(:,1:(i+1),:),c,simwhat,simdim,antithetics)
 
         if(info2 /= 0) then
             info = info2
@@ -125,11 +124,11 @@ aplus1,c,tol,info,antithetics,w,sim,nd,ndl,simwhat,simdim)
                         tmp(1:i) = log(1.0d0+exp(theta(1:i,j)))
                         do t=1,i
                             if(ymiss2(t,j) .EQ. 0) then
-                       
+
                                 w(i+1,:) = w(i+1,:)*exp( yt(t,j)*(sim2(j,t,:)-theta(t,j))-&
                                 u(t,j)*(log(1.0d0+exp(sim2(j,t,:)))-tmp(t)))/&
                                 exp(-0.5d0/ht(j,j,t)*( (ytilde(t,j)-sim2(j,t,:))**2 -(ytilde(t,j)-theta(t,j))**2))
-                     
+
                             end if
                         end do
                     case(4) ! gamma

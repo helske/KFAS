@@ -24,7 +24,8 @@ and \code{FALSE} otherwise. See details.}
 \item{update_args}{Optional list containing additional arguments to \code{updatefn}.}
 
 \item{...}{Further arguments for functions \code{optim} and
-\code{logLik.SSModel}, such as \code{nsim = 1000} and \code{method = "BFGS"}.}
+\code{logLik.SSModel}, such as \code{nsim = 1000}, \code{marginal = TRUE}, 
+ and \code{method = "BFGS"}.}
 }
 \value{
 A list with elements
@@ -127,6 +128,6 @@ fit <- fitSSM(inits = rep(var(Nile)/5, 2), model = model,
                  updatefn = update_model, checkfn = check_model)
 }
 \seealso{
-\code{\link{KFAS}} for examples.
+\code{\link{logLik}}, \code{\link{KFAS}}.
 }
 

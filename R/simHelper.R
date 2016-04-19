@@ -40,7 +40,6 @@ simHelper <- function(model, nsim, antithetics) {
     c2 <- sqrt(qchisq(1 - q, dfu)/c2)
   }
   list(epsplus = epsplus, etaplus = etaplus, aplus1 = aplus1, c2 = c2,
-    nonzeroP1 = as.integer(nonzeroP1), nNonzeroP1 = nNonzeroP1,
-    zeroP1inf = which(diag(model$P1inf) > 0),
+    nNonzeroP1 = nNonzeroP1,
     nNonzeroP1inf = as.integer(sum(model$P1inf)))
 }

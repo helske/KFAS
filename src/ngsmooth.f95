@@ -2,15 +2,14 @@
 
 subroutine ngsmooth(yt, ymiss, timevar, zt, tt, rtv, qt, a1, p1,p1inf, u, theta,&
 dist, p,n, m, r, rankp, nnd,nsim,epsplus,etaplus,aplus1,c,tol,info,maxiter,&
-convtol,nd,ndl,alphahat,alphavar,thetahat,thetavar,yhat,yvar,smootha,smooths,smoothy)
+convtol,alphahat,alphavar,thetahat,thetavar,yhat,yvar,smootha,smooths,smoothy)
 
     implicit none
 
-    integer, intent(in) ::  p,m, r, n,nnd,nsim,ndl,smootha,smooths,smoothy, rankp
+    integer, intent(in) ::  p,m, r, n,nnd,nsim,smootha,smooths,smoothy, rankp
     integer, intent(in), dimension(p) :: dist
     integer, intent(in), dimension(n,p) :: ymiss
     integer, intent(in), dimension(5) :: timevar
-    integer, intent(in), dimension(ndl) :: nd
     integer, intent(inout) :: maxiter,info
     integer ::  t, j
     double precision, intent(in) :: tol,convtol
@@ -45,7 +44,7 @@ external isample, covmeanwprotect, dgemv, dsymm, dgemm, covmeanw
 
         call isample(yt, ymiss, timevar, zt, tt, rtv, qt, a1, p1,p1inf, u, dist, &
         p, n, m, r, theta, maxiter,rankp,convtol, nnd,nsim,epsplus,etaplus,&
-        aplus1,c,tol,info,1,w,sim,nd,ndl,4,m)
+        aplus1,c,tol,info,1,w,sim,4,m)
 
         if(info /= 0) then
             return
@@ -88,7 +87,7 @@ external isample, covmeanwprotect, dgemv, dsymm, dgemm, covmeanw
     else
         call isample(yt, ymiss, timevar, zt, tt, rtv, qt, a1, p1,p1inf, u, dist, &
         p, n, m, r, theta, maxiter,rankp,convtol, nnd,nsim,epsplus,etaplus,&
-        aplus1,c,tol,info,1,w,sim,nd,ndl,5,p)
+        aplus1,c,tol,info,1,w,sim,5,p)
 
         if(info /= 0) then
             return

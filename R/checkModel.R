@@ -64,7 +64,8 @@ is.SSModel <- function(object, na.check = FALSE, return.logical = TRUE) {
       (identical(object$u, "Omitted") ||
          identical(dim(object$u), dim(object$y))) &&
       all(diag(object$P1inf) %in% c(0,1)) &&
-      all(object$P1inf[col(diag(m)) != row(diag(m))] == 0)
+      all(object$P1inf[col(diag(m)) != row(diag(m))] == 0) &&
+      all(diag(object$P1)[diag(object$P1inf > 0)] == 0)
     if (na.check) {
       x <- x && !any(sapply(c("H", "u", "T", "R", "Q", "a1", "P1", "P1inf"),
                             function(x) any(is.na(object[[x]])) ||
@@ -128,6 +129,9 @@ is.SSModel <- function(object, na.check = FALSE, return.logical = TRUE) {
         !all(object$P1inf[col(diag(m)) != row(diag(m))] == 0)) {
       stop(paste0("Matrix P1inf is not a diagonal matrix with zeros and ",
                   "ones on diagonal."))
+    }
+    if (!all(diag(object$P1)[diag(object$P1inf > 0)] == 0)) {
+      stop(paste0("Matrix P1 contains nonzero diagonal elements for diffuse states."))
     }
   }
 }

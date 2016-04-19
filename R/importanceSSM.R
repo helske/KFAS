@@ -111,8 +111,7 @@ importanceSSM <-  function(model, type = c("states", "signals"),
       simtmp$epsplus, simtmp$etaplus, simtmp$aplus1, simtmp$c2, model$tol,
       info = integer(1), as.integer(antithetics),
       w = numeric(3 * nsim * antithetics + nsim),
-      sim = array(0, c(simdim,  n, 3 * nsim * antithetics + nsim)), simtmp$zeroP1inf,
-      length(simtmp$zeroP1inf), sim.what, simdim)
+      sim = array(0, c(simdim,  n, 3 * nsim * antithetics + nsim)), sim.what, simdim)
   } else {
     out <- .Fortran(fisamplefilter, NAOK = TRUE, model$y, ymiss, as.integer(tv),
       model$Z, model$T, model$R, model$Q, model$a1, model$P1, model$P1inf,model$u,
@@ -124,8 +123,7 @@ importanceSSM <-  function(model, type = c("states", "signals"),
       simtmp$epsplus, simtmp$etaplus, simtmp$aplus1, simtmp$c2,
       model$tol, info = integer(1), as.integer(antithetics),
       w = array(0, c(n, 3 * nsim * antithetics + nsim)),
-      sim = array(0, c(simdim, n, 3 * nsim * antithetics + nsim)), simtmp$zeroP1inf,
-      length(simtmp$zeroP1inf), sim.what, simdim)
+      sim = array(0, c(simdim, n, 3 * nsim * antithetics + nsim)), sim.what, simdim)
   }
   if(out$info!=0){
     switch(as.character(out$info),

@@ -132,9 +132,9 @@ simulateSSM <- function(object,
   if (!conditional || all(is.na(object$y))) {
     out <- .Fortran(fsimgaussianuncond, NAOK = TRUE, tv,
       object$Z, object$H, object$T, object$R, object$Q, object$a1, object$P1,
-      object$P1inf, simtmp$nNonzeroP1, as.integer(nsim), simtmp$epsplus,
+      simtmp$nNonzeroP1, as.integer(nsim), simtmp$epsplus,
       simtmp$etaplus, simtmp$aplus1, p, n, m, k, info = as.integer(0),
-      simtmp$nNonzeroP1inf, object$tol, simtmp$zeroP1inf, length(simtmp$zeroP1inf),
+      object$tol,
       sim = array({
         if (sim.what == 6) t(object$y) else 0
       }, c(simdim, n, 3 * nsim * antithetics + nsim)), simtmp$c2, sim.what,
@@ -145,7 +145,7 @@ simulateSSM <- function(object,
         object$Z, object$H, object$T, object$R, object$Q, object$a1, object$P1,
         object$P1inf, simtmp$nNonzeroP1, as.integer(nsim), simtmp$epsplus,
         simtmp$etaplus, simtmp$aplus1, p, n, m, k, info = as.integer(0),
-        simtmp$nNonzeroP1inf, object$tol, simtmp$zeroP1inf, length(simtmp$zeroP1inf),
+        simtmp$nNonzeroP1inf, object$tol,
         sim = array({
           if (sim.what == 6) t(object$y) else 0
         }, c(simdim, n, 3 * nsim * antithetics + nsim)), simtmp$c2, sim.what,
@@ -157,7 +157,7 @@ simulateSSM <- function(object,
         object$Z, object$H, object$T, object$R, object$Q, object$a1, object$P1,
         object$P1inf, simtmp$nNonzeroP1, as.integer(nsim), simtmp$epsplus,
         simtmp$etaplus, simtmp$aplus1, p, n, m, k, info = as.integer(0),
-        simtmp$nNonzeroP1inf, object$tol, simtmp$zeroP1inf, length(simtmp$zeroP1inf),
+        simtmp$nNonzeroP1inf, object$tol,
         sim = array(0, c(simdim, n, 3 * nsim * antithetics + nsim)),
         simtmp$c2, sim.what, simdim, as.integer(antithetics))
     }
