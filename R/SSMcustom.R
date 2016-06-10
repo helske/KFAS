@@ -1,4 +1,6 @@
 #' @rdname SSModel
+
+#' @param state_names A vector of character naming state for a custom component.
 #' @export
 #' @examples
 #' # add intercept to state equation by augmenting the state vector:
@@ -11,7 +13,7 @@
 #' model_int$T
 #' model_int$T[1, 2, 1] <- 1 # add the intercept value to level
 #' out <- KFS(model_int)
-SSMcustom <- function(Z, T, R, Q, a1, P1, P1inf, index, n = 1) {
+SSMcustom <- function(Z, T, R, Q, a1, P1, P1inf, index, n = 1, state_names = NULL) {
   if (missing(index))
     index <- 1
   p <- length(index)
@@ -81,7 +83,13 @@ SSMcustom <- function(Z, T, R, Q, a1, P1, P1inf, index, n = 1) {
     }
   }
   diag(P1inf)[diag(P1) > 0 || is.na(diag(P1))] <- 0
-  state_names <- paste0("custom", 1:m)
+  if (is.null(state_names)) {
+    state_names <- paste0("custom", 1:m)
+  } else {
+    if (length(state_names) != m) {
+        stop("Misspecified state_names, argument state_names must be a m vector, where m is the number of states..")
+    }
+  }
   list(index = index, m = m, k = k, p = p, n = n, Z = Z, T = T, R = R, Q = Q, a1 = a1,
     P1 = P1, P1inf = P1inf, tvz = dim(Z)[3] > 1, tvt = dim(T)[3] > 1, tvr = dim(R)[3] >
       1, tvq = dim(Q)[3] > 1, state_names = state_names)

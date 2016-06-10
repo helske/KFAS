@@ -13,7 +13,7 @@
 SSMarima(ar = NULL, ma = NULL, d = 0, Q, stationary = TRUE, index,
   n = 1, ynames)
 
-SSMcustom(Z, T, R, Q, a1, P1, P1inf, index, n = 1)
+SSMcustom(Z, T, R, Q, a1, P1, P1inf, index, n = 1, state_names = NULL)
 
 SSMcycle(period, Q, type, index, a1, P1, P1inf, n = 1, ynames)
 
@@ -74,6 +74,8 @@ part of \eqn{P_1}{P[1]}.}
 of \eqn{P_1}{P[1]}. Diagonal matrix with ones on diagonal elements which
 correspond to the diffuse initial states. If \code{P1inf[i,i]>0}, corresponding
 row and column of \code{P1} should be zero.}
+
+\item{state_names}{A vector of character naming state for a custom component.}
 
 \item{period}{For a cycle and seasonal components, the length of the
 cycle/seasonal pattern.}
