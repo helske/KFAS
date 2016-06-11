@@ -75,7 +75,7 @@ of \eqn{P_1}{P[1]}. Diagonal matrix with ones on diagonal elements which
 correspond to the diffuse initial states. If \code{P1inf[i,i]>0}, corresponding
 row and column of \code{P1} should be zero.}
 
-\item{state_names}{A vector of character naming state for a custom component.}
+\item{state_names}{A character vector giving the state names.}
 
 \item{period}{For a cycle and seasonal components, the length of the
 cycle/seasonal pattern.}
