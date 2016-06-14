@@ -84,7 +84,7 @@
 #'   terms in the model.
 #' @param n Length of the series, only used internally for dimensionality check.
 #' @param ynames names of the times series, used internally.
-#'
+#' @param state_names A character vector giving the state names.
 #' @return Object of class \code{SSModel}, which is a list with the following
 #'   components:
 #'   \item{y}{A n x p matrix containing the observations. }

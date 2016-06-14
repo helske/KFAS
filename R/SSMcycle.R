@@ -1,6 +1,6 @@
 #' @rdname SSModel
 #' @export
-SSMcycle <- function(period, Q, type, index, a1, P1, P1inf, n = 1, ynames) {
+SSMcycle <- function(period, Q, type, index, a1, P1, P1inf, n = 1, state_names = NULL, ynames) {
   if (missing(index))
     index <- 1
   p <- length(index)
@@ -32,7 +32,14 @@ SSMcycle <- function(period, Q, type, index, a1, P1, P1inf, n = 1, ynames) {
     Z <- matrix(Z_univariate, nrow = p, ncol = m, byrow = TRUE)
     T <- T_univariate
   }
-  state_names <- paste0(c("cycle", "cycle*"), rep(ynames, each = 2))
+  if (is.null(state_names)) {
+    state_names <- paste0(c("cycle", "cycle*"), rep(ynames, each = 2))
+  } else {
+    if (length(state_names) != m) {
+      stop("Misspecified state_names, argument state_names must be a vector of length m, where m is the number of states.")
+    }
+  }
+ 
   if (missing(a1)) {
     a1 <- matrix(0, m, 1)
   } else {

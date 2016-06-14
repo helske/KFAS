@@ -11,21 +11,23 @@
 \title{Create a State Space Model Object of Class SSModel}
 \usage{
 SSMarima(ar = NULL, ma = NULL, d = 0, Q, stationary = TRUE, index,
-  n = 1, ynames)
+  n = 1, state_names = NULL, ynames)
 
-SSMcustom(Z, T, R, Q, a1, P1, P1inf, index, n = 1)
+SSMcustom(Z, T, R, Q, a1, P1, P1inf, index, n = 1, state_names = NULL)
 
-SSMcycle(period, Q, type, index, a1, P1, P1inf, n = 1, ynames)
+SSMcycle(period, Q, type, index, a1, P1, P1inf, n = 1, state_names = NULL,
+  ynames)
 
 SSModel(formula, data, H, u, distribution, tol = .Machine$double.eps^0.5)
 
-SSMregression(rformula, data, type, Q, index, R, a1, P1, P1inf, n = 1, ynames,
-  remove.intercept = TRUE)
+SSMregression(rformula, data, type, Q, index, R, a1, P1, P1inf, n = 1,
+  remove.intercept = TRUE, state_names = NULL, ynames)
 
 SSMseasonal(period, Q, sea.type = c("dummy", "trigonometric"), type, index,
-  a1, P1, P1inf, n = 1, ynames)
+  a1, P1, P1inf, n = 1, state_names = NULL, ynames)
 
-SSMtrend(degree = 1, Q, type, index, a1, P1, P1inf, n = 1, ynames)
+SSMtrend(degree = 1, Q, type, index, a1, P1, P1inf, n = 1,
+  state_names = NULL, ynames)
 }
 \arguments{
 \item{ar}{For arima component, a numeric vector containing the autoregressive
@@ -51,6 +53,8 @@ stationarity of the arima part is assumed. Defaults to TRUE.}
 components are constructed.}
 
 \item{n}{Length of the series, only used internally for dimensionality check.}
+
+\item{state_names}{A character vector giving the state names.}
 
 \item{ynames}{names of the times series, used internally.}
 

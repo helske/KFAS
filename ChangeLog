@@ -4,6 +4,11 @@ Changes from version 1.2.2 to 1.2.3:
   * Removed unused variables in simulation algorithms.
   * Exracting single state with coef.KFS caused error do to dimension reduction,
     now fixed.
+  * Added argument state_names to auxiliary functions for user-defined state
+    names.
+  * Added new function rename_states for renaming the states of SSModel object.
+
+>>>>>>> 0264561e8f03eced1651f805518c8d69a1c388ff
 Changes from version 1.2.1 to 1.2.2:
   * importanceSSM: Calling importanceSSM with fully Gaussian model now produces
     an error.

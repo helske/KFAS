@@ -1,6 +1,6 @@
 #' @rdname SSModel
 #' @export
-SSMtrend <- function(degree = 1, Q, type, index, a1, P1, P1inf, n = 1, ynames) {
+SSMtrend <- function(degree = 1, Q, type, index, a1, P1, P1inf, n = 1, state_names = NULL, ynames) {
   if (missing(index))
     index <- 1
   p <- length(index)
@@ -25,10 +25,7 @@ SSMtrend <- function(degree = 1, Q, type, index, a1, P1, P1inf, n = 1, ynames) {
   } else {
     for (i in 1:p) Z[i, (i - 1) * degree + 1] <- 1
   }
-  state_names <- switch(as.character(degree), 
-    "1" = paste0("level", ynames), 
-    "2" = paste0(c("level", "slope"), rep(ynames, each = degree)), 
-    paste0("trend", rep(1:degree), rep(ynames, each = degree)))
+
   dxm <- 1 + 0:(m - 1) * (m + 1)
   T[dxm] <- 1
   if (degree > 1)
@@ -87,6 +84,16 @@ SSMtrend <- function(degree = 1, Q, type, index, a1, P1, P1inf, n = 1, ynames) {
       Qm <- Q
       k <- dim(Qm)[1]
       R <- diag(k)
+    }
+  }
+  if (is.null(state_names)) {
+    state_names <- switch(as.character(degree), 
+      "1" = paste0("level", ynames), 
+      "2" = paste0(c("level", "slope"), rep(ynames, each = degree)), 
+      paste0("trend", rep(1:degree), rep(ynames, each = degree)))
+  } else {
+    if (length(state_names) != m) {
+      stop("Misspecified state_names, argument state_names must be a vector of length m, where m is the number of states.")
     }
   }
   list(index = index, m = m, k = k, Z = Z, T = T, R = R, Q = Qm, a1 = a1, P1 = P1,

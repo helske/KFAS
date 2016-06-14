@@ -2,7 +2,7 @@
 #' @seealso \code{artransform}
 #' @export
 SSMarima <- function(ar = NULL, ma = NULL, d = 0, Q, stationary = TRUE,
-  index, n = 1, ynames) {
+  index, n = 1, state_names = NULL, ynames) {
 
   # Q is either a p times p matrix or scalar (in univariate case)
   if (!is.null(ar) && stationary && !all(Mod(polyroot(c(1, -ar))) > 1))
@@ -63,7 +63,14 @@ SSMarima <- function(ar = NULL, ma = NULL, d = 0, Q, stationary = TRUE,
       stop("ARIMA part is numerically too close to non-stationarity.")
     } else P1[nd, nd] <- temp
   } else diag(P1inf) <- 1
-  state_names <- paste0(rep(paste0("arima", 1:m1), p), rep(ynames, each = m1))
+  if (is.null(state_names)) {
+    state_names <- paste0(rep(paste0("arima", 1:m1), p), rep(ynames, each = m1))
+  } else {
+    if (length(state_names) != m) {
+      stop("Misspecified state_names, argument state_names must be a vector of length m, where m is the number of states.")
+    }
+  }
+ 
   list(index = index, m = m, k = k, Z = Z, T = T, R = R, Q = Q, a1 = matrix(0,
     m, 1), P1 = P1, P1inf = P1inf, tvq = 0, tvr = 0, tvz = 0, state_names = state_names)
 }

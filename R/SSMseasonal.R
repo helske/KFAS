@@ -1,7 +1,10 @@
 #' @rdname SSModel
 #' @export
 SSMseasonal <- function(period, Q, sea.type = c("dummy", "trigonometric"),
-  type, index, a1, P1, P1inf, n = 1, ynames) {
+  type, index, a1, P1, P1inf, n = 1, state_names = NULL, ynames) {
+  
+  state_names_tmp <- state_names
+  
   if (missing(index))
     index <- 1
   p <- length(index)
@@ -121,6 +124,14 @@ SSMseasonal <- function(period, Q, sea.type = c("dummy", "trigonometric"),
       }
       k <- m
       R <- diag(k)
+    }
+  }
+  # lazy solution...
+  if (!is.null(state_names_tmp)) {
+    if (length(state_names_tmp) != m) {
+      stop("Misspecified state_names, argument state_names must be a vector of length m, where m is the number of states.")
+    } else {
+      state_names <- state_names_tmp
     }
   }
   list(index = index, m = m, k = k, Z = Z, T = T, R = R, Q = Qm, a1 = a1, P1 = P1,

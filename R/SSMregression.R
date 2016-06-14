@@ -1,7 +1,10 @@
 #' @rdname SSModel
 #' @export
 SSMregression <-  function(rformula, data, type, Q, index, R, a1, P1,
-  P1inf, n = 1, ynames,remove.intercept=TRUE) {
+  P1inf, n = 1, remove.intercept = TRUE, state_names = NULL, ynames) {
+  
+  state_names_tmp <- state_names
+  
   if (missing(index))
     index <- 1
   p <- length(index)
@@ -32,7 +35,7 @@ SSMregression <-  function(rformula, data, type, Q, index, R, a1, P1,
         X <- matrix(1, nrow = n, ncol = 1)
         colnames(X) <- "(Intercept)"
       } else  X <- model.matrix(rformula, data = data)
-
+      
     }
     Xnames <- colnames(X)
     dims <- dim(X)
@@ -51,8 +54,10 @@ SSMregression <-  function(rformula, data, type, Q, index, R, a1, P1,
     } else {
       for (i in 1:p) Z[i, ((i - 1) * dims[2] + 1):(i * dims[2]), ] <- t(X)
     }
+    
     state_names <- paste0(rep(Xnames, times = (p - 1) * (type == 1) + 1), rep(ynames,
       each = dims[2]))
+    
   } else {
     if (length(rformula) != p)
       stop("Length of the formula list is not equal to the number of series.")
@@ -75,11 +80,11 @@ SSMregression <-  function(rformula, data, type, Q, index, R, a1, P1,
       }
     } else {
       for (i in 1:p) {
-        if(remove.intercept){
+        if (remove.intercept) {
           rformula[[i]] <- update.formula(rformula[[i]], ~. + 1)
           X[[i]] <- model.matrix(rformula[[i]], data = data)
           X[[i]] <- X[[i]][, -(colnames(X[[i]]) == "(Intercept)"), drop = FALSE]
-        }else {
+        } else {
           if (length(attr(terms(rformula[[i]], data = data), "term.labels")) == 0 &&
               attr(terms(rformula[[i]],  data = data), "intercept") == 1) {
             X[[i]] <- matrix(1, nrow = n, ncol = 1)
@@ -117,7 +122,7 @@ SSMregression <-  function(rformula, data, type, Q, index, R, a1, P1,
           Z[j, i, ] <- X[[j]][, i]
         }
       }
-      state_names <- colnames(X[[1]])  #paste0(rep('beta',m),1:m)
+      state_names <- colnames(X[[1]])
     }
   }
   T <- diag(m)
@@ -175,6 +180,16 @@ SSMregression <-  function(rformula, data, type, Q, index, R, a1, P1,
   }
   else tvz <- 1
   options(na.action = old_option)
+  
+  # lazy solution...
+  if (!is.null(state_names_tmp)) {
+    if (length(state_names_tmp) != m) {
+      stop("Misspecified state_names, argument state_names must be a vector of length m, where m is the number of states.")
+    } else {
+      state_names <- state_names_tmp
+    }
+  }
+  
   list(index = index, m = m, k = k, Z = Z, T = T, R = R, Q = Q,
     a1 = a1, P1 = P1, P1inf = P1inf, tvq = tvq, tvr = tvr,
     tvz = tvz, state_names = state_names)
