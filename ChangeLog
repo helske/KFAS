@@ -2,7 +2,8 @@ Changes from version 1.2.2 to 1.2.3:
   * is.SSModel now test that for the diffuse states there are no non-zero
     elements on the corresponding diagonal elements of P1.
   * Removed unused variables in simulation algorithms.
-
+  * Exracting single state with coef.KFS caused error do to dimension reduction,
+    now fixed.
 Changes from version 1.2.1 to 1.2.2:
   * importanceSSM: Calling importanceSSM with fully Gaussian model now produces
     an error.

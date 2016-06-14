@@ -81,9 +81,9 @@ coef.KFS <- function(object, start = NULL, end = NULL, filtered = FALSE,
     }
   }
   if (last) {
-    window(tmp[,states], start = end(tmp), end = end(tmp))[1, ]
+    window(tmp[, states, drop = FALSE], start = end(tmp), end = end(tmp))[1, ]
   } else {
-    tmp <- window(tmp[,states], start = start, end = end)
+    tmp <- window(tmp[, states, drop = FALSE], start = start, end = end)
     if (!is.null(start) && identical(start,end)) {
       tmp[1, ]
     } else {
