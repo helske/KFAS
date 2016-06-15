@@ -1,7 +1,7 @@
 c(
   bibentry(
     bibtype = "Manual",
-    title = "{KFAS}: Kalman Filter and Smoother for Exponential Family State Space Models",
+    title = "{KFAS}: {K}alman Filter and Smoother for Exponential Family State Space Models",
     author = "Jouni Helske",
     year = sub("-.*", "", meta$Date),
     note = sprintf("R package version %s", meta$Version),
@@ -10,9 +10,9 @@ c(
   ),
   bibentry(
     bibtype = "Article",
-    title = "{KFAS}: Exponential Family State Space Models in R",
+    title = "{KFAS}: Exponential Family State Space Models in {R}",
     author = "Jouni Helske",
-    journal = "Submitted",
+    journal = "Accepted to Journal of Statistical Software",
     year = sub("-.*", "", meta$Date),
     key = "KFASarticle"
   )

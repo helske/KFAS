@@ -69,13 +69,13 @@ E-mail: \email{Jouni.Helske@jyu.fi}
 
 <<include=FALSE>>=
 library("knitr")
-options(prompt = "R> ", continue = "+  ", width = 75, useFancyQuotes = FALSE)
+options(prompt = "R> ", continue = "+  ", width = 77, useFancyQuotes = FALSE)
 opts_chunk$set(fig.align = 'center')
 render_sweave()
 library("KFAS")
 @
 
-Modification of manuscript submitted to \emph{Journal of Statistical Software}.
+Accepted to \emph{Journal of Statistical Software}. 
 
 \section{Introduction}
 
@@ -83,7 +83,7 @@ State space models offer a unified framework for modelling several types of time
 
 \citet{Petris2010} and \citet{Tusell2010} introduce and review some of the contributed \proglang{R} \citep{R} packages available at Comprehensive \proglang{R} Archive Network (CRAN) for Gaussian state space modelling. Since then, several new additions have emerged in CRAN. Most of these packages use one package or multiple packages reviewed in \citet{Tusell2010} for filtering and smoothing and add new user interfaces and functionality for certain type of models. For example, package \pkg{rucm} \citep{rucm} is focused on structural time series, \pkg{dlmodeler} \citep{dlmodeler} provides a unified interface compatible with multiple packages, and \pkg{MARSS} \citep{MARSSarticle,MARSS} provides functions for the  maximum likelihood estimation of a large class of Gaussian state space models via the EM-algorithm.
 
-One of the packages reviewed in the aforementioned papers is \pkg{KFAS} (the Kalman Filtering And Smoothing). Besides of modelling the general linear Gaussian state space models, \pkg{KFAS} can also be used in cases where the observations are from other exponential family models, namely binomial, Poisson, negative binomial, and Gamma models.
+One of the packages reviewed in the aforementioned papers is \pkg{KFAS} (the Kalman Filtering And Smoothing). Besides of modelling the general linear Gaussian state space models, \pkg{KFAS} can also be used in cases where the observations are from other exponential family models, namely binomial, Poisson, negative binomial, and Gamma models. 
 
 After the papers by \citet{Petris2010} and \citet{Tusell2010}, \pkg{KFAS} has been completely rewritten. The package is now much more user-friendly due to the use of \proglang{R}'s symbolic formulas in model definition. The non-Gaussian modelling, which was somewhat experimental in the old versions of \pkg{KFAS}, is now fully functional supporting multivariate models with different distributions. Many other features have also been added (such as methods for computing model residuals and predictions), the performance of the main functions has improved and in the process several bugs have been fixed.
 
@@ -91,7 +91,7 @@ In this paper I first introduce the basic theory related to state space modellin
 
 \section{Gaussian state space model}
 
-In this section an introduction to key concepts regarding the theory of Gaussian state space modelling as in \pkg{KFAS} is given. As the algorithms behind \pkg{KFAS} are mostly based on \citet{DK2012} and the related articles by the same authors, the basic notation is nearly identical with the one used by Durbin and Koopman.
+In this section an introduction to key concepts regarding the theory of Gaussian state space modelling as in \pkg{KFAS} is given. As the algorithms behind \pkg{KFAS} are mostly based on \citet{DK2012} and the related articles by the same authors, the basic notation is nearly identical with the one used by Durbin and Koopman. 
 
 For the linear Gaussian state space model with continuous states and discrete time intervals $t=1,\ldots,n,$ we have
 \begin{equation}\label{ssgeneral}
@@ -130,7 +130,7 @@ V_{t} &= \VAR(\alpha_{t}|y_n,\ldots,y_1).
 \end{equation*}
 Similar smoothed estimates can also be computed for the disturbance terms $\epsilon_t$ and $\eta_t$, and straightforwardly for the signal $\theta_t=Z_t\alpha_t$. For details on these algorithms, see Appendix~\ref{appendix} and \citet{DK2012}.
 
-A prior distribution of the initial state vector $\alpha_1$ can be defined as a multivariate Gaussian distribution with mean $a_1$ and covariance matrix $P_1$. For an uninformative diffuse prior, one typically sets $P_1 = \kappa\textrm{I}$, where $\kappa$ is $10^7$, for example. However, this method can be numerically unstable due to cumulative roundoff errors. To solve this issue \citet{KD2003} present the exact diffuse initialization method, where the diffuse elements in $a_1$ are set to zero and $P_1$ is decomposed as $\kappa P_{\infty,1} + P_{*,1}$, where $\kappa\to\infty$. Here $P_{\infty,1}$ is a diagonal matrix with ones on those diagonal elements which relate to the nonstationary elements of $\alpha_1$, and $P_{*,1}$ contains the covariances of the stationary elements of $\alpha_1$ (and zeros elsewhere). At the start of the Kalman filtering (and at the end of backward smoothing) we use so-called exact diffuse initialisation formulas until $P_{\infty,t}$ becomes a zero matrix, and then continue with the usual Kalman filtering equations. This exact method should be less prone to numerical errors, although they can still occur especially in the smoothing phase, if we, for example, have high collinearity between the explanatory variables of the model. Note that given all the parameters in the system matrices, results from the Kalman filter and smoother are equivalent with Bayesian analysis given the same prior distribution for $\alpha_1$.
+A prior distribution of the initial state vector $\alpha_1$ can be defined as a multivariate Gaussian distribution with mean $a_1$ and covariance matrix $P_1$. For an uninformative diffuse prior, one typically sets $P_1 = \kappa\textrm{I}$, where $\kappa$ is $10^7$, for example. However, this method can be numerically unstable due to cumulative roundoff errors. To solve this issue \citet{KD2003} present the exact diffuse initialization method, where the diffuse elements in $a_1$ are set to zero and $P_1$ is decomposed as $\kappa P_{\infty,1} + P_{*,1}$, where $\kappa\to\infty$. Here $P_{\infty,1}$ is a diagonal matrix with ones on those diagonal elements which relate to the diffuse elements of $\alpha_1$, and $P_{*,1}$ contains the covariances of the nondiffuse elements of $\alpha_1$ (and zeros elsewhere). At the start of the Kalman filtering (and at the end of backward smoothing) we use so-called exact diffuse initialisation formulas until $P_{\infty,t}$ becomes a zero matrix, and then continue with the usual Kalman filtering equations. This exact method should be less prone to numerical errors, although they can still occur especially in the smoothing phase, if we, for example, have high collinearity between the explanatory variables of the model. Note that given all the parameters in the system matrices, results from the Kalman filter and smoother are equivalent with Bayesian analysis given the same prior distribution for $\alpha_1$.
 
 When we have multivariate observations, it is possible that in the diffuse phase the matrix $F_t$ is not invertible, and the computation of $a_{t+1}$ and $P_{t+1}$ becomes impossible. On the other hand, even if $F_t$ is invertible, the computations can become slow when the dimensionality of $F_t$, that is, the number of series increases. Also in the case of multivariate observations, the formulas relating to the diffuse initialization become cumbersome. Based on the ideas of \citet{AM1979}, a complete univariate approach for filtering and smoothing was introduced by \citet{KD2000} (known as sequential processing by Anderson and Moore). The univariate approach is based on the alternative representation of the model~\eqref{ssgeneral}, namely
 \begin{equation*}
@@ -145,7 +145,7 @@ and $a_{1,1} \sim N(a_1,P_1)$, with the assumption that $H_t$ is diagonal for al
 In theory, when using the univariate approach, the computational costs of filtering and smoothing
 decrease, as the number of matrix multiplications decrease, and there is no need for solving the system of equations \citep[p. 159]{DK2012}. As noted in \citet{Tusell2010}, these gains can somewhat cancel out as more calls to linear algebra functions are needed and the memory management might not be as effective as working with larger objects at once. Nevertheless, as noted previously, sequential processing has also other clear benefits, especially with diffuse initialization where the univariate approach simplifies the recursions considerably \citep{DK2012}.
 
-\pkg{KFAS} uses this univariate approach in all cases. Although $K_t = P_t Z_t^\top = \COV(a_t,y_t|y_{t-1},\ldots,y_1)$, $v_t$, and $F_t$ differ from the standard multivariate versions, we get $a_t=a_{t,1}$ and $P_t=P_{t,1}$ by using the univariate approach. If standard multivariate matrices $F_t$ and $K_t$ are needed for inference, they can be computed later from the results of the univariate filter. As the covariances $F_{\ast,i,t}$, $K_{\ast,i,t}$, and $P_{\ast,t}$ relating to the diffuse phase (see Appendix~\ref{appendix}) coincide with the
+\pkg{KFAS} uses this univariate approach in all cases. Although $v_t$, $F_t$, and $K_t = P_t Z_t^\top = \COV(a_t,y_t|y_{t-1},\ldots,y_1)$ differ from the standard multivariate versions, we get $a_t=a_{t,1}$ and $P_t=P_{t,1}$ by using the univariate approach. If standard multivariate matrices $F_t$ and $K_t$ are needed for inference, they can be computed later from the results of the univariate filter. As the covariances $F_{\ast,i,t}$, $K_{\ast,i,t}$, and $P_{\ast,t}$ relating to the diffuse phase (see Appendix~\ref{appendix}) coincide with the
 nondiffuse counterparts if $F_{\infty,i,t}=0$, the asterisk is dropped from the variable names in \pkg{KFAS}, and, for example, the variable \code{F} is an $n \times p$ array containing $F_{\ast,i,t}$ and $F_{i,t}$, whereas \code{Finf} is an $n \times d$, where $d$ is the last time point before the diffuse phase ended.
 
 \subsection{Log-likelihood of the Gaussian state space model}
@@ -191,7 +191,7 @@ H = \sigma_{\epsilon}^2,
 T =
 \left( \begin{array}{cc}
 1 & 1 \\
-0 &1
+0 &1  
 \end{array} \right),
 \end{displaymath}
 \begin{displaymath}
@@ -240,9 +240,10 @@ a1 <- matrix(c(1, 0), 2, 1)
 P1 <- matrix(0, 2, 2)
 P1inf <- diag(2)
 
-model_gaussian <- SSModel(deaths / population ~ -1 +
-    SSMcustom(Z = Zt, T = Tt, R = Rt, Q = Qt, a1 = a1,
-      P1 = P1, P1inf = P1inf), H = Ht)
+model_gaussian <- SSModel(deaths / population ~ -1 + 
+    SSMcustom(Z = Zt, T = Tt, R = Rt, Q = Qt, a1 = a1, P1 = P1, 
+      P1inf = P1inf), 
+  H = Ht)
 @
 The first argument to the \code{SSModel} function is the formula which defines the observations (left side of tilde operator \code{~}) and the structure of the state equation (right side of tilde). Here \code{deaths / population} is a univariate time series, and the state equation is defined using the system matrices with auxiliary function \code{SSMcustom}, and the intercept term is omitted with \code{-1} in order to keep the model identifiable. The observation level variance is defined via the argument \code{H}. The \code{NA} values represent the unknown variance parameters $\sigma_{\epsilon}^2$ and $\sigma_{\eta}^2$ which can be estimated using the function \code{fitSSM}. After estimation, the filtering and smoothing recursions are performed using the \code{KFS} function.
 <<'gaussian_fit'>>=
@@ -251,14 +252,14 @@ out_gaussian <- KFS(fit_gaussian$model)
 @
 In this case, the maximum likelihood estimates are \Sexpr{signif(fit_gaussian$model["H"],2)} for $\sigma_{\epsilon}^2 $ and \Sexpr{signif(fit_gaussian$model["Q",1,1],2)} for $\sigma_{\eta}^2$.
 
-From the Kalman filter algorithm we get one-step-ahead predictions for the states $a_t = (\mu_t, \nu_t)^{\top}$. Note that even though the slope term $\nu$ was defined as time-invariant ($\nu_t = \nu$) in our model, it is recursively estimated by the Kalman filter. Thus at each time point $t$ when the new observation $y_t$ becomes available, the estimate of $\nu$ is updated to take account of the new information given by $y_t$. At the end of Kalman filtering, $a_{n+1}$ gives our final estimate of the constant slope term given all of our data. Here the slope term is estimated as \Sexpr{signif(out_gaussian$a[40,2],2)} with standard error \Sexpr{signif(sqrt(out_gaussian$P[2,2,40]),2)}. For $\mu_t$, the Kalman filter gives the one-step-ahead predictions, but as the state is time-varying, we need to run also the smoothing algorithm if we are interested in the estimates of $\mu_t$ for $t=1,\ldots,n$ given all the data.
+From the Kalman filter algorithm we get one-step-ahead predictions for the states $a_t = (\mu_t, \nu_t)^{\top}$. Note that even though the slope term $\nu$ was defined as time-invariant ($\nu_t = \nu$) in our model, it is recursively estimated by the Kalman filter. Thus at each time point $t$ when the new observation $y_t$ becomes available, the estimate of $\nu$ is updated to take account of the new information given by $y_t$. At the end of Kalman filtering, $a_{n+1}$ gives our final estimate of the constant slope term given all of our data. Here the slope term is estimated as \Sexpr{signif(out_gaussian$a[40,2],2)} with standard error \Sexpr{signif(sqrt(out_gaussian$P[2,2,40]),2)}. For $\mu_t$, the Kalman filter gives the one-step-ahead predictions, but as the state is time-varying, we need to run also the smoothing algorithm if we are interested in the estimates of $\mu_t$ for $t=1,\ldots,n$ given all the data. 
 
 Figure~\ref{fig:gaussian_plot} shows the observations with one-step-ahead predictions (red) and smoothed (blue) estimates of the random walk process $\mu_t$. Notice the typical pattern; at the time $t$ the Kalman filter computes the one-step-ahead prediction error $v_t = y_t - \mu_t$, and uses this and the the previous prediction to correct the prediction for the next time point (see Appendix~\ref{appendix} for the detailed update formula). Here this is most easily seen at the beginning of the series where our predictions seem to be lagging the observations by one time step. On the other hand, the smoothing algorithm takes account of both the past and the future values at each time point, thus producing more smoothed estimates of the latent process.
 
 <<'gaussian_plot', fig.pos = '!ht', fig.cap = 'Alcohol-related deaths in Finland in the age group of 40--49 years (black line) with predicted (red) and smoothed (blue) estimates.',out.width='0.7\\linewidth', echo = FALSE>>=
-ts.plot(cbind(deaths / population,
-  out_gaussian$a[-(length(deaths) + 1), 1], out_gaussian$alphahat[, 1]),
-  ylab = "Alcohol-related deaths in Finland per 100,000 persons",
+ts.plot(cbind(deaths / population, 
+  out_gaussian$a[-(length(deaths) + 1), 1], out_gaussian$alphahat[, 1]), 
+  ylab = "Alcohol-related deaths in Finland per 100,000 persons", 
   xlab = "Year", col = c(1, 2, 4))
 @
 
@@ -320,7 +321,7 @@ For non-Gaussian exponential family models in the context of generalized linear 
 \item[(4)] Compute the the prediction intervals as empirical quantiles from $y^1,\ldots,y^N$.
 \end{enumerate}
 
-Assuming all the model parameters are known, these intervals coincide with the one obtained from Bayesian analysis using the same priors for states.
+Assuming all the model parameters are known, these intervals coincide (within the Monte Carlo error) with the ones obtained from Bayesian analysis using the same priors for states.
 
 \subsection{Log-likelihood of the non-Gaussian state space model}
 
@@ -353,11 +354,11 @@ where $\hat w = p(y|\hat \theta)/g(y|\hat \theta)$.
 
 \subsection{Example of non-Gaussian state space model}\label{nongaussian_example}
 
-The alcohol-related deaths of Section~\ref{gaussian_example} can also be modelled naturally as a Poisson process. Now our observations $y_t$ are the actual counts of alcohol-related deaths in year $t$, whereas the varying population size is taken account of by the exposure term $u_t$. The state equation remains the same, but the observation equation is now of form $p(y_t|\mu_t) = \textrm{Poisson}(u_t e^{\mu_t})$.
+The alcohol-related deaths of Section~\ref{gaussian_example} can also be modelled naturally as a Poisson process. Now our observations $y_t$ are the actual counts of alcohol-related deaths in year $t$, whereas the varying population size is taken account of by the exposure term $u_t$. The state equation remains the same, but the observation equation is now of form $p(y_t|\mu_t) = \textrm{Poisson}(u_t e^{\mu_t})$. 
 
 <<'nongaussian_model'>>=
-model_poisson <- SSModel(deaths ~ -1 +
-    SSMcustom(Z = Zt, T = Tt, R = Rt, Q = Qt, P1inf = P1inf),
+model_poisson <- SSModel(deaths ~ -1 + 
+    SSMcustom(Z = Zt, T = Tt, R = Rt, Q = Qt, P1inf = P1inf), 
   distribution = "poisson", u = population)
 @
 Compared to the Gaussian model of Section~\ref{gaussian_example}, we now need to define the distribution of the observations using the argument \code{distribution} (which defaults to \code{"gaussian"}). We also define the exposure term via the argument \code{u} (for non-Gaussian models the \code{H} is omitted and vice versa), and use default values for \code{a1} and \code{P1} in the \code{SSMcustom}.
@@ -373,10 +374,11 @@ In this model there is only one unknown parameter, $\sigma^2_{\eta}$. This is es
 Figure~\ref{fig:nongaussian_example} shows the smoothed estimates of the intensity (deaths per 100,000 persons) modelled as Gaussian process (blue), and as a Poisson process (red).
 
 <<'nongaussian_example', fig.pos = '!ht', fig.cap = 'Alcohol-related deaths in Finland (black line) with smoothed estimates from Gaussian model (blue) and Poisson model (red).',out.width='0.7\\linewidth', echo = FALSE>>=
-ts.plot(deaths / population, out_gaussian$alphahat[, 1], exp(out_poisson$alphahat[, 1]),
-  ylab = "Alcohol-related deaths in Finland per 100,000 persons",
-  xlab = "Year", col = c(1,4,2))
-@
+ts.plot(deaths / population, out_gaussian$alphahat[, 1], 
+  exp(out_poisson$alphahat[, 1]), xlab = "Year",
+  ylab = "Alcohol-related deaths in Finland per 100,000 persons", 
+  col = c(1,4,2))
+@  
 
 \section{Residuals}\label{residuals}
 
@@ -402,7 +404,7 @@ v_{i,t} F_{i_t}^{-\frac{1}{2}}, \quad j=1,\ldots,p,\quad t=d+1\ldots,n.
 \end{equation*}
 These multivariate residuals depend on the ordering of the series, so if the residual diagnostics exhibit deviations from model assumptions, then the interpretation is somewhat more difficult than when using the marginal residuals. Therefore marginal residuals might be preferred. Note that if we want quadratic form residuals $(y_t- \hat y_t)F_t^{-1}(y_t- \hat y_t)$, then the ordering of the series does not matter.
 
-The recursive residuals are defined just for the non-diffuse phase, which is problematic if the model contains a long diffuse phase, for example, because a dummy variable with a diffuse prior is incorporated to the model. This is because the diffuse phase cannot end before the dummy variable changes its value at least once. In order to circumvent this, one can set the a proper but highly non-informative prior distribution for the intervention variable when computing the residuals, which should have a negligible effect on the visual inspection of the residual plots.
+The recursive residuals are defined just for the non-diffuse phase, which is problematic if the model contains a long diffuse phase, for example, because a dummy variable with a diffuse prior is incorporated to the model. This is because the diffuse phase cannot end before the dummy variable changes its value at least once. In order to circumvent this, one can use a proper but highly non-informative prior distribution for the intervention variable when computing the residuals, which should have a negligible effect on the visual inspection of the residual plots.
 
 Other potentially useful residuals are auxiliary residuals, which are based on smoothed values of states. For details, see \citet{HarveyKoopman1992} and \citet[Chapter 7]{DK2012}.
 
@@ -431,7 +433,7 @@ Methods \code{coef} and \code{fitted} for the quick extraction of state or mean 
 
 \section{Constructing common state space models with KFAS}\label{models}
 
-This section presents some typical models which can be formulated in a state space form. More examples can be found on the main help page of \pkg{KFAS} by typing \code{?KFAS} after the package is loaded via \code{"library("KFAS")}. These examples include most of the examples presented in \citet{DK2012}. Additional examples illustrating the functionality of \pkg{KFAS} can be found from the documentation of the particular functions.
+This section presents some typical models which can be formulated in a state space form. More examples can be found on the main help page of \pkg{KFAS} by typing \code{?KFAS} after the package is loaded via \code{"library("KFAS")}. These examples include most of the examples presented in \citet{DK2012}. Additional examples illustrating the functionality of \pkg{KFAS} can be found from the documentation of the particular functions. 
 
 All the auxiliary functions used in the formula argument of the function \code{SSModel} have some common arguments which are not directly related to the system matrices of the corresponding component. In complex multivariate models, an important argument is \code{index}, which defines the series for which the corresponding component is constructed. For example, if we have four time series ($p=4$), we may want to use a certain regression component only for series 2 and 4. In this case we use the argument \code{index = c(2,4)} when calling the appropriate \code{SSMregression} function. By default the index is \code{1:p} so the component is constructed for all series.
 
@@ -472,16 +474,16 @@ with $\omega_t$ and $\omega^{\ast}_{t}$ being independent variables from $N(0, Q
 
 For non-Gaussian models the observation equation of~\eqref{structural} is replaced by $p(y_t|\theta_t)$, where $\theta_t = \mu_t + \gamma_t + c_t$. An additional Gaussian noise term $\epsilon_t$ can also be included in $\theta_t$ using the \code{SSMcustom} function (this is illustrated in Section~\ref{custom}). The general matrix formulation of structural time series can be found, for example, in \citet[Chapter 3]{DK2012}.
 
-Three auxiliary functions, \code{SSMtrend}, \code{SSMcycle}, and \code{SSMseasonal}, for building structural time series are provided in \pkg{KFAS}. The argument \code{degree} of \code{SSMtrend} defines the degree of the polynomial component, where \code{1} corresponds to a local level model and \code{2} to alocal linear trend model. Higher order polynomials can also be defined with larger values. Another important argument for \code{SSMtrend} is \code{Q}, which defines the covariance structure of the trend component. This is typically a list of $p \times p$ matrices (with $p$ being the number of series for which the component is defined), where the first matrix corresponds to the level component ($\mu$ in~\eqref{structural}), the second to the slope component $\nu$ and so forth.
+Three auxiliary functions, \code{SSMtrend}, \code{SSMcycle}, and \code{SSMseasonal}, for building structural time series are provided in \pkg{KFAS}. The argument \code{degree} of \code{SSMtrend} defines the degree of the polynomial component, where \code{1} corresponds to a local level model and \code{2} to a local linear trend model. Higher order polynomials can also be defined with larger values. Another important argument for \code{SSMtrend} is \code{Q}, which defines the covariance structure of the trend component. This is typically a list of $p \times p$ matrices (with $p$ being the number of series for which the component is defined), where the first matrix corresponds to the level component ($\mu$ in~\eqref{structural}), the second to the slope component $\nu$ and so forth.
 
 The function \code{SSMcycle} differs from \code{SSMtrend} only by one argument. \code{SSMcycle} does not have argument \code{degree}, but instead it has argument \code{period} which defines the length of the cycle $c_t$. The same argument is also used in the function \code{SSMseasonal}, which contains also another important argument \code{sea.type}, which can be used to define whether the user wants a \code{dummy} or a \code{trigonometric} seasonal.
 
 The example models of Sections~\ref{gaussian_example} and \ref{nongaussian_example} are special cases of the local linear trend model, where the variance of $\zeta_t$ is zero, and there are no seasonal or cycle components. Thus the Gaussian model of Section~\ref{gaussian_example} can be built with \pkg{KFAS} more easily by the following code:
 <<'structural_time_series'>>=
-model_structural <- SSModel(deaths / population ~
+model_structural <- SSModel(deaths / population ~ 
     SSMtrend(degree = 2, Q = list(matrix(NA), matrix(0))), H = matrix(NA))
-fit_structural <- fitSSM(model_structural,
-  inits = c(0, 0), method = "BFGS")
+fit_structural <- fitSSM(model_structural, inits = c(0, 0), 
+  method = "BFGS")
 fit_structural$model["Q"]
 @
 
@@ -556,10 +558,10 @@ where $\phi_{p+1}=\ldots=\phi_r=\theta_{q+1}=\ldots=\theta_{r-1}=0$, $1_{d+1}$ i
 
 Note that the \code{arima} function from \pkg{stats} also uses the same state space approach for ARIMA modelling, although the handling of the intercept and possible covariates is done in a slightly different manner (see documentation of \code{arima} for details).
 
-As an example, we again model the alcohol-related deaths but now use the ARIMA(0,1,1) model with drift:
+As an example, we again model the alcohol-related deaths but now use the ARIMA(0,1,1) model with drift: 
 <<'arima_time_series'>>=
 drift <- 1:length(deaths)
-model_arima <- SSModel(deaths / population ~ drift +
+model_arima <- SSModel(deaths / population ~ drift + 
     SSMarima(ma = 0, d = 1, Q = 1))
 
 update_model <- function(pars, model) {
@@ -570,9 +572,8 @@ update_model <- function(pars, model) {
   model
 }
 
-fit_arima <- fitSSM(model_arima, inits = c(0, 1),
-  updatefn = update_model, method = "L-BFGS-B",
-  lower = c(-1, 0), upper = c(1, 100))
+fit_arima <- fitSSM(model_arima, inits = c(0, 1), updatefn = update_model, 
+  method = "L-BFGS-B", lower = c(-1, 0), upper = c(1, 100))
 fit_arima$optim.out$par
 @
 
@@ -607,18 +608,18 @@ A simple (generalized) linear model can be defined using \code{SSModel} without 
 counts <- c(18, 17, 15, 20, 10, 20, 25, 13, 12)
 outcome <- gl(3, 1, 9)
 treatment <- gl(3, 3)
-model_glm1 <- SSModel(counts ~ outcome + treatment,
+model_glm1 <- SSModel(counts ~ outcome + treatment, 
   distribution = "poisson")
 @
 The previous model could also be defined using the auxiliary function \code{SSMregression}:
 <<'glmexample2'>>=
-model_glm2 <- SSModel(counts ~ SSMregression(~ outcome + treatment),
+model_glm2 <- SSModel(counts ~ SSMregression(~ outcome + treatment), 
   distribution = "poisson")
 @
 
 If our observations are multivariate, distinct regression components are defined for each of the series. For example, if counts \code{counts} above were a bivariate series, then both series would have ther own regression coefficients but the same covariate values. By using \code{SSMregression} explicitly, one could also define \code{type = "common"}, which would construct common regression coefficients for all series.
 
-With \code{SSMregression} one can also define more complex regression models. The first argument of \code{SSMregression}, \code{rformula} can be used to provide a single formula or a list of formulas, where each component of the list contains the appropriate formula to be used for the corresponding series ($i$th formula in the list is used for the $i$th series defined by the argument \code{index}). When \code{rformula} is a list, the \code{data} argument of \code{SSMregression} can be a single data frame (or environment), or a list of such data objects. If \code{data} is a list, $i$th element of that list is used for $i$th formula, and if \code{data} is a single data frame or environment, the same data is used for all formulas.
+With \code{SSMregression} one can also define more complex regression models. The first argument of \code{SSMregression}, \code{rformula} can be used to provide a single formula or a list of formulas, where each component of the list contains the appropriate formula to be used for the corresponding series ($i$th formula in the list is used for the $i$th series defined by the argument \code{index}). When \code{rformula} is a list, the \code{data} argument of \code{SSMregression} can be a single data frame (or environment), or a list of such data objects. If \code{data} is a list, $i$th element of that list is used for $i$th formula, and if \code{data} is a single data frame or environment, the same data is used for all formulas. 
 
 The state space approach makes it possible to extend classical GLMs in many ways. The extension to multivariate GLMs is straightforward, allowing, for example, the modelling of multiple groups of data where some of the model parameters are assumed to be identical between the groups, or where the number of explanatory variables differs between groups. For Gaussian models, a correlation of error terms $\epsilon$ between groups can also be incorporated. The use of dynamic GLM, where the regression coefficients follow a random walk process, can be defined by using argument \code{Q} in \code{SSMregression}. By manually altering the corresponding elements in the $T$ matrix, one can also define autoregressive behaviour for the coefficients. An additional parameter $u_t$ is defined separately for each observation, making it possible to define models where, for example, the dispersion parameter of a negative binomial model varies in time. One can also compute prediction intervals and other interesting measures efficiently via the importance sampling approach discussed in Section~\ref{exp}.
 
@@ -641,12 +642,12 @@ The data frame with explanatory variables is also split to a list where each lis
 dataf <- split(sleepstudy, sleepstudy["Subject"])
 @
 
-The only explanatory variable \code{Days} in the data is identical to each Subject so the previous split of the data frame is not necessary, but illustrates the workflow for more complex data.
+The only explanatory variable \code{Days} in the data is identical to each Subject so the previous split of the data frame is not necessary, but illustrates the workflow for more complex data. 
 
 We can now build the state space model by defining the common fixed part for each group (\code{SSMregression} function with argument \code{type = "common"}). Using the same function we can define the distinct random effect parts for each group, and the covariance structure of the random effects using the argument \code{P1} (the diffuse part \code{P1inf} is automatically set to zero for those states where the corresponding element in \code{P1} is nonzero). The function \code{.bdiag} from the \pkg{Matrix} package \citep{Matrix} is used for building a block diagonal covariance matrix for the random effects.
 <<'lmmexample4'>>=
 P1 <- as.matrix(.bdiag(replicate(p, matrix(NA, 2, 2), simplify = FALSE)))
-model_lmm <- SSModel(y ~ - 1 +
+model_lmm <- SSModel(y ~ -1 +
     SSMregression(rep(list(~ Days), p), type = "common", data = dataf,
       remove.intercept = FALSE) +
     SSMregression(rep(list(~ Days), p), data = dataf,
@@ -667,7 +668,7 @@ update_lmm <- function(pars, model) {
   P1 <- diag(exp(pars[1:2]))
   P1[1, 2] <- pars[3]
   P1 <- crossprod(P1)
-  model["P1", states = 3:38] <-
+  model["P1", states = 3:38] <- 
     as.matrix(.bdiag(replicate(p, P1, simplify = FALSE)))
   model["H"] <- diag(exp(pars[4]), p)
   model
@@ -678,7 +679,7 @@ fit_lmm <- fitSSM(model_lmm, c(1, 1, 1, 5), update_lmm, method = "BFGS")
 
 The estimated likelihood, variance/covariance parameters, and the estimates of fixed and random effects are practically identical to the ones obtained by \pkg{lmer} function of \pkg{lme4} package. The only major difference is in the estimation of conditional covariance matrices of the random effects, which is due to the fact that in \pkg{lme4} these matrices are computed conditionally on all the other model parameters, including the fixed effects \citep[p.28]{lme4article}. In \pkg{KFAS} the conditioning is only on the the numerically estimated variance/covariance parameters, and thus the resulting standard errors of random effects take account of the uncertainty of the estimation of fixed effects also.
 
-In this example different groups were thought of as separate response vectors. In cases where the sample sizes in different groups are not equal, the same approach can be used after appropriately filling the data matrix with missing values. The corresponding \code{NA} values in covariates do not cause problems as they are not referenced in the Kalman filter.
+In this example different groups were thought of as separate response vectors. In cases where the sample sizes in different groups are not equal, the same approach can be used after appropriately filling the data matrix with missing values. The corresponding \code{NA} values in covariates do not cause problems as they are not referenced in the Kalman filter. 
 
 It is also possible to define the mixed model using univariate response and time-varying system matrices $T_t$ and $Q_t$. This reduces the state space and thus makes the model computationally more efficient, but adding other stochastic components to the model can be more problematic. For building such a model we need to use either the \code{customSSM} function for defining the corresponding time-varying system matrices, or we can use \code{SSMregression} as a starting point and alter the model components manually. This univariate approach is illustated on the main help page of \pkg{KFAS}.
 
@@ -692,8 +693,8 @@ By combining the auxialiary functions presented in the previous sections and pos
 \end{equation*}
 where $\eta_{t} \sim N(0,\sigma^2_{\eta})$ as before, and $\epsilon_t ~ \sim N(0,\sigma^2_{\epsilon})$. This model can be written in a state space form by defining
 <<'customexample_model'>>=
-model_poisson <- SSModel(deaths ~ SSMtrend(2, Q = list(NA, 0)) +
-    SSMcustom(Z = 1, T = 0, Q = NA, P1 = NA),
+model_poisson <- SSModel(deaths ~ SSMtrend(2, Q = list(NA, 0)) + 
+    SSMcustom(Z = 1, T = 0, Q = NA, P1 = NA), 
   distribution = "poisson",  u = population)
 @
 
@@ -705,7 +706,7 @@ update_poisson <- function(pars, model) {
   model["P1", states = "custom"] <- exp(pars[2])
   model
 }
-fit_poisson <- fitSSM(model_poisson, c(-3, -3),
+fit_poisson <- fitSSM(model_poisson, c(-3, -3), 
   update_poisson, method = "BFGS")
 fit_poisson$model["Q", etas = "level"]
 fit_poisson$model["Q", etas = "custom"]
@@ -715,11 +716,11 @@ From Figure~\ref{fig:customexample_output} we see that the Gaussian structural t
 
 <<'customexample_output',fig.pos = '!ht', fig.cap = 'Alcohol-related deaths in Finland (black line) with smoothed estimates from Gaussian model (blue) and Poisson model with additional noise (red).',out.width='0.7\\linewidth', echo =FALSE>>=
 out_poisson <- KFS(fit_poisson$model)
-ts.plot(deaths / population, coef(out_structural, states = "level"),
+ts.plot(deaths / population, coef(out_structural, states = "level"), 
   exp(coef(out_poisson, states = "level")),
-  ylab = "Alcohol-related deaths in Finland per 100,000 persons",
+  ylab = "Alcohol-related deaths in Finland per 100,000 persons", 
   xlab = "Year", col = c(1, 4, 2))
-@
+@  
 
 
 \section{Illustration}\label{illustration}
@@ -730,19 +731,19 @@ I now illustrate the use of \pkg{KFAS} with a more complete example case than th
 data("alcohol")
 colnames(alcohol)
 ts.plot(window(alcohol[, 1:4] / alcohol[, 5:8], end = 2007), col = 1:4,
-  ylab = "Alcohol-related deaths in Finland per 100,000 persons",
+  ylab = "Alcohol-related deaths in Finland per 100,000 persons", 
   xlab = "Year")
 legend("topleft",col = 1:4, lty = 1, legend = colnames(alcohol)[1:4])
 @
 Here I choose a multivariate extension of the Poisson model used in Section~\ref{custom}:
-\begin{equation*}\label{alcohol}
+\begin{equation}\label{alcohol}
 \begin{aligned}
 p(y_t|\theta_t) &= \textrm{Poisson}(u_t e^{\theta_t}), \quad u_t = \textrm{population}_t,\\
 \theta_t &= \mu_t + \epsilon_t, \quad \epsilon_t \sim N(0, Q_{\textrm{noise}}),\\
 \mu_{t+1} &= \mu_t + \nu_t + \xi_t, \quad \xi_t \sim N(0, Q_{\textrm{level}}),\\
 \nu_{t+1} &= \nu_t.
 \end{aligned}
-\end{equation*}
+\end{equation}
 
 Here $\mu_t$ is the random walk with drift component, $\nu_t$ is a constant slope and $\epsilon_t$ is an additional white noise component which captures the extra variation of the series. I make no restrictions for the covariance structures of the level or the noise component.
 
@@ -764,7 +765,7 @@ updatefn <- function(pars, model, ...){
   model["Q", etas = "level"] <- crossprod(Q)
   Q <- diag(exp(pars[11:14]))
   Q[upper.tri(Q)] <- pars[15:20]
-  model["Q", etas = "custom"] <- model["P1", states = "custom"] <-
+  model["Q", etas = "custom"] <- model["P1", states = "custom"] <- 
     crossprod(Q)
   model
 }
@@ -825,18 +826,19 @@ We can now predict the intensity $e^{\theta_t}$ of alcohol-related deaths per 10
 
 <<'prediction'>>=
 pred <- predict(fit$model,
-  newdata = SSModel(ts(matrix(NA, 6, 4), start = 2008) ~ - 1 +
+  newdata = SSModel(ts(matrix(NA, 6, 4), start = 2008) ~ -1 +
       SSMcustom(Z = fit$model$Z, T = fit$model$T, R = fit$model$R,
-        Q = fit$model$Q), u = 1, distribution= "poisson"),
+        Q = fit$model$Q), u = 1, distribution = "poisson"),
   interval = "confidence", nsim = 10000)
 @
 <<'predictplot',fig.pos = '!ht', fig.cap = 'Observed number of alcohol related deaths per 100,000 persons in Finland (black), fitted values (red) and intensity predictions for years the 2008--2013 together with 95\\% prediction intervals (green).',out.width='\\linewidth'>>=
 trend <- exp(signal(out, "trend")$signal)
 par(mfrow = c(2, 2), mar = c(2, 2, 2, 2) + 0.1, oma = c(2, 2, 0, 0))
-for(i in 1:4)
-  ts.plot(alcohol[, i]/alcohol[, 4+i], trend[, i], pred[[i]],
+for (i in 1:4) {
+  ts.plot(alcohol[, i]/alcohol[, 4 + i], trend[, i], pred[[i]],
     col = c(1, 2, rep(3, 3)), xlab = NULL, ylab = NULL,
     main = colnames(alcohol)[i])
+}
 mtext("Number of alcohol related deaths per 100,000 persons in Finland",
   side = 2, outer = TRUE)
 mtext("Year", side = 1, outer = TRUE)
@@ -851,16 +853,15 @@ There are also other packages in CRAN which can be used for modelling non-Gaussi
 
 \pkg{KFAS} is based on a parameter-driven approach where the latent states $\alpha_t$ evolve in time as stochastic processes with the noise term $\eta_t$ which does not depend on the past observations or covariates. This approach offers a flexible and conceptually simple way of introducing multiple types of latent structures into the model. In contrast, in the observation-driven approach the state equation is defined using the past observations and possibly other covariates. This makes the states perfectly predictable (one-step-ahead) given the past information, allowing closed-form evaluation of the likelihood, and thus leading to computational gains compared to simulation-based estimation methods used in the parameter-driven approach for non-Gaussian models. Both approaches have their merits, see, for example, \citep{Koopman2015} for a comparison of parameter-driven and observation-driven approaches in a complex non-Gaussian non-linear setting.
 
-\pkg{acp} \citep{acp} is a compact package based on the observation-driven approach for count data regression via Autoregressive Conditional Poisson (ACP) processes. In the ACP models the mean of the Poisson process is assumed to depend on the previous values of the observations and the previous values of the mean (which in turn can depend on covariates). A more general framework to the observation-driven approach for time series regression is implemented in the package \pkg{glarma} \citep{glarma}, which implements Generalized Linear Autoregressive Moving Average models (GLARMA) supporting Poisson, binomial and negative binomial distributions. Package \pkg{tscount} \citep{tscount} offers similar functionality using Poisson and negative binomial distributions with a closely related theoretic framework. All of these three packages assume univariate responses.
+\pkg{acp} \citep{acp} is a compact package based on the observation-driven approach for count data regression via Autoregressive Conditional Poisson (ACP) processes. In the ACP models the mean of the Poisson process is assumed to depend on the previous values of the observations and the previous values of the mean (which in turn can depend on covariates). A more general framework to the observation-driven approach for time series regression is implemented in the package \pkg{glarma} \citep{glarma}, which implements Generalized Linear Autoregressive Moving Average models (GLARMA) supporting Poisson, binomial and negative binomial distributions. Package \pkg{tscount} \citep{tscount} offers similar functionality using Poisson and negative binomial distributions with a closely related theoretic framework. All of these three packages assume univariate responses. 
 
-The scope of the packages \pkg{gamlls} \citep{gamlss} and \pkg{VGAM} \citep{VGAM} is mainly on complex non-time series data, but they also have some capabilities for non-Gaussian time series modelling. Package \pkg{gamlss.util} \citep{gamlss.util} extends \pkg{gamlls} with the function \code{garmaFit} for univariate time series regression via GARMA models, which are closely related to the GLARMA models of the \pkg{glarma} package. A large number of distributions are supported. The GARMA models can also be estimated with \pkg{VGAM} \citep{VGAM} package, which contains function the \code{garma} for the estimation of GARMA models, but the documentation warns that the function is very unpolished.
+The scope of the packages \pkg{gamlls} \citep{gamlss} and \pkg{VGAM} \citep{VGAM} is mainly on complex non-time series data, but they also have some capabilities for non-Gaussian time series modelling. Package \pkg{gamlss.util} \citep{gamlss.util} extends \pkg{gamlls} with the function \code{garmaFit} for univariate time series regression via GARMA models, which are closely related to the GLARMA models of the \pkg{glarma} package. A large number of distributions are supported. The GARMA models can also be estimated with \pkg{VGAM} \citep{VGAM} package, which contains the function \code{garma} for the estimation of GARMA models, but the documentation warns that the function is very unpolished.
 
 Time series of counts often exhibit overdispersion or an excess amount of zeroes. Although previously mentioned packages can deal with these issues to some extent, there are also packages on CRAN designed specifically for these type of problems. Package \pkg{ZIM} \citep{ZIM} offers functions for both observation-driven and parameter-driven modelling of zero-inflated count series. For the parameter-driven approach a particle filtering approach is used. From the very scarce documentation of the package, it is not clear how the observation-driven approach is implemented. Package \pkg{tsintermittent} \citep{tsintermittent} contain forecasting methods for intermittent time series stemming, for example, from sales of slow moving items. Covariates are not supported.
 
 Overall, there are multiple packages on CRAN which offer different approaches to non-Gaussian time series modelling, and preferring one package over another is likely dependent on the current problem in hand. For example, in some cases, time-dependency in the data can be more thought of as a nuisance which must be taken into account in order to make reliable inferences regarding the regression coefficients of the model. However, in some cases it can be that the interest is in the underlying latent time-varying processes itself. Due to the parameter-driven approach, packages such as \pkg{KFAS} and \pkg{pomp} can be used for the flexible modelling of, for example, a stochastic trend, seasonal and cyclic components. For packages such as \pkg{glarma} and \pkg{tscount} options are more limited because of the nature of the general model specification.
 
 Time-varying regression coefficients and random effects can be incorporated to time series models with \pkg{INLA}, \pkg{KFAS} and \pkg{pomp}. These packages can also deal with missing observations in the response variable straightforwardly, whereas other packages do not seem to handle missing values properly. Most of the packages produce informative or non-informative error messages in the case of missing observations, whereas some just omit the missing time points of the data without taking account of the unevenness of the time points during the parameter estimation.
-
 
 \subsection[Comparison to INLA]{Comparison to \pkg{INLA}}\label{comparison}
 
@@ -869,7 +870,7 @@ Time-varying regression coefficients and random effects can be incorporated to t
 I will now briefly compare \pkg{KFAS} and \pkg{INLA}. As an illustration, we reanalyze the salmonella data analyzed by \citet{Margolin} which is available from \pkg{INLA}. The data consists of the number of revertant colonies of TA98 Salmonella with different doses of quinoline. We model the number of colonies as a Poisson GLMM with two explanatory variables and a random intercept term which tries to capture the overdispersion in the data. The codes for inference with \pkg{INLA} used here can be found from \url{http://www.r-inla.org/examples/volume-1/code-for-salm-example}. The \pkg{INLA} is not available at CRAN but can be downloaded from \url{http://www.math.ntnu.no/inla/R/stable}.
 
 <<'salmonellaINLA'>>=
-#   library("INLA", quietly = TRUE)
+# library("INLA", quietly = TRUE)
 # data("Salm")
 # mod.salm <- inla(y ~ log(dose + 10) + dose +
 #     f(rand, model = "iid", param = c(0.001, 0.001)),
@@ -880,23 +881,23 @@ I will now briefly compare \pkg{KFAS} and \pkg{INLA}. As an illustration, we rea
 There are two ways to define the random intercept component in \pkg{KFAS}. The first one uses the \code{SSMregression} function and constructs a factor with 18 levels (one for each case) with non-diffuse initial variance $\sigma^2$. This gives 18 identically distributed time-invariant states, where each state corresponds to the random effect of one observation. Another option would be to use the \code{SSMcustom} function and define just one time-varying state as \code{SSMcustom(Z = 1, T = 0,  R = 1, Q = sigma2, a1 = 0, P1 = sigma2,  P1inf = 0)}. Both approaches give identical results. However, for large data the former approach is less efficient as the number of states depends on the number of observations. Nevertheless, we use the former approach here for illustration.
 
 <<'salmonellaKFAS'>>=
-#   Salm$rand <- as.factor(Salm$rand)
+# Salm$rand <- as.factor(Salm$rand)
 # model <- SSModel(y ~ log(dose + 10) + dose +
-#     SSMregression(~ - 1 + rand, P1 = diag(NA, 18),
+#     SSMregression(~ -1 + rand, P1 = diag(NA, 18), 
 #       remove.intercept = FALSE),
 #   data = Salm, distribution = "poisson")
-#
-# updatefn<-function(pars,model,...){
+# 
+# updatefn <- function(pars,model,...){
 #   diag(model["P1", states = 4:21]) <- exp(pars)
 #   model
 # }
-#
+# 
 # fit <- fitSSM(model, updatefn = updatefn, inits = -3, method = "BFGS",
 #   nsim = 1000)
 @
 
 <<'salmonellaResults'>>=
-#   out <- KFS(fit$model, nsim = 10000)
+# out <- KFS(fit$model, nsim = 10000)
 # out
 # h.salm$summary.fixed[, 1:2]
 # h.salm$summary.random$rand[, 2:3]
@@ -904,14 +905,8 @@ There are two ways to define the random intercept component in \pkg{KFAS}. The f
 # fit$model["P1", states = 4]
 @
 
-Although \pkg{INLA} uses a Bayesian approach, which takes account of the parameter estimation uncertainty,
-the results from \pkg{INLA} and \pkg{KFAS} are practically same,
-even with such small data. The Kalman filtering with diffuse initialization still takes account of
-the uncertainty of the estimation of regression coefficients, so the differences here
-are related to the different prior definitions and the estimation of the hyperparameter $\sigma^2$,
-which is estimated as precision $1/\sigma^2$ by \pkg{INLA}. The estimate of $\sigma^2$ by \pkg{KFAS} is
-0.066 whereas \pkg{INLA} gives $\sigma^2=0.048$. Note that changing the
-estimated $\sigma^2$ from \pkg{INLA} into the model estimated by \pkg{KFAS} produces a slightly lower log-likelihood value (-73.50 versus -73.66).
+Although \pkg{INLA} uses a Bayesian approach, which takes account of the parameter estimation uncertainty, the results from \pkg{INLA} and \pkg{KFAS} are practically the same, even with such small data. The Kalman filtering with diffuse initialization still takes account of the uncertainty of the estimation of regression coefficients, so the differences here are related to the different prior definitions and the estimation of the hyperparameter $\sigma^2$, which is estimated as precision $1/\sigma^2$ by \pkg{INLA}. The estimate of $\sigma^2$ by \pkg{KFAS} is $0.066$ whereas \pkg{INLA} gives $\sigma^2=0.048$. Note that changing the estimated $\sigma^2$ from \pkg{INLA} into the model estimated by \pkg{KFAS} produces a slightly lower log-likelihood value (-73.50 versus -73.66).
+
 
 As \pkg{INLA} and \pkg{KFAS} are based on a different (although related) theoretical framework, the extensive study of their performances in terms of the computational efficiency and accuracy of results is somewhat pointless. Nevertheless, some remarks can be made. I feel that the biggest advantage of \pkg{INLA} is the Bayesian framework which allows us to take account of the parameter uncertainty in predictions and other inference. On the other hand, the computational burden related to the numerical integration over the hyperparameters can become infeasible as the number of hyperparameters increases. It is not uncommon to have a time series model with tens (or even hundreds) of parameters (such as multivariate structural time series or dynamic factor models). Of course, these same models can cause problems also to the maximum likelihood estimation, as noted in the Section~\ref{illustration}. Also the Bayesian approach eliminates the need for defining good initial values for the maximum likelihood estimation but the problem transforms into defining good priors for the same hyperparameters, which again is a non-trivial task in practice.
 
@@ -1057,9 +1052,10 @@ L^\top_{t,i}r_{0,t,i}, \\
 N_{0,t,i-1} &= L_{\infty,t,i}^\top N_{0,t,i}L_{\infty,t,i}\\
 N_{1,t,i-1} &= L_{t,i}^\top N_{0,t,i}L_{\infty,t,i}+
 L_{\infty,t,i}^\top N_{1,t,i}L_{\infty,t,i}+Z_{t,i}^\top Z_{t,i}F_{\infty,t,i}^{-1},\\
-N_{2,t,i-1} &= L_{t,i}^\top N_{0,t,i}L_{t,i}+ L_{\infty,t,i}^\top N_{1,t,i}L_{t,i} +
+N_{2,t,i-1} &= L_{t,i}^\top N_{0,t,i}L_{t,i} + L_{\infty,t,i}^\top N_{1,t,i}L_{t,i} +
 (L_{\infty,t,i}^\top N_{1,t,i}L_{t,i})^\top +
-L_{\infty,t,i}N_{2,t,i}^\top L_{\infty,t,i}-Z_{t,i}^\top Z_{t,i}F_{t,i}F_{\infty,t,i}^{-2},\\
+L_{\infty,t,i}N_{2,t,i}^\top L_{\infty,t,i} \\
+&- Z_{t,i}^\top Z_{t,i}F_{t,i}F_{\infty,t,i}^{-2},\\
 N_{t-1,p_t} &= T_{t-1}^\top N_{t,0}T_{t-1},
 \end{aligned}
 \end{equation*}
