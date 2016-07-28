@@ -1,3 +1,7 @@
+Changes from version 1.2.3 to 1.2.4:
+  * Corrected a bug in marginal likelihood computation which resulted failure in 
+    multivariate Gaussian models.
+
 Changes from version 1.2.2 to 1.2.3:
   * is.SSModel now test that for the diffuse states there are no non-zero
     elements on the corresponding diagonal elements of P1.

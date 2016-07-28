@@ -17,3 +17,5 @@ void F77_NAME(isamplefilter)(double *yt, int *ymiss, int *timevar, double *zt, d
 void F77_NAME(simgaussian)(int *ymiss, int *timevar, double *yt, double *zt, double *ht, double *tt, double *rtv, double *qt, double *a1, double *p1, int *nnd, int *nsim, double *epsplus, double *etaplus, double *aplus1, int *p, int *n, int *m, int *r, int *info, double *tol, double *sim, double *c, int *simwhat, int *simdim, int *antithetics);
 void F77_NAME(simgaussianuncond)(int *timevar, double *zt, double *ht, double *tt, double *rtv, double *qt, double *a1, double *p1, double *p1inf, int *nnd, int *nsim, double *epsplus, double *etaplus, double *aplus1, int *p, int *n, int *m, int *r, int *info,int *rankp, double *tol, double *sim, double *c, int *simwhat, int *simdim, int *antithetics);
 void F77_NAME(mvfilter)(int *tvz, double *zt, int *p, int *m, int *n, int *d, double *at, double *pt, double *pinf, double *vt, double *ft, double *finf);
+void F77_NAME(marginalxx)(double *p1inf, double *zt, double *tt, int *m, int *p, int *n, int *k, int *timevar, double *lik, int *info);
+  

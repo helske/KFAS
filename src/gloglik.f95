@@ -1,13 +1,13 @@
 ! Subroutine for computing the log-Likelihood of general linear gaussian state space model
 
 subroutine gloglik(yt, ymiss, timevar, zt, ht, tt, rt, qt, a1, p1, p1inf,&
-p, m, r, n, lik, tol,rankp,marginal)
+p, m, r, n, lik, tol,rankp)
 
 
     implicit none
 
     integer, intent(in) ::  p, m, r, n
-    integer, intent(inout) :: rankp,marginal
+    integer, intent(inout) :: rankp
     integer ::  t,d,j,tv
     integer, intent(in), dimension(p,n) :: ymiss
     integer, intent(in), dimension(5) :: timevar
@@ -81,13 +81,5 @@ p, m, r, n, lik, tol,rankp,marginal)
         tt(:,:,(t-1)*timevar(3)+1),rqr(:,:,(t-1)*tv+1),at,pt,vt,ft,kt,lik,tol,c,p,m,0)
 
     end do
-
-    if(marginal.EQ.1) then
-        t = int(sum(p1inf))
-        if(t.GT.0) then
-            call marginalxx(p1inf,zt,tt,m,p,n,t,timevar,lik,marginal)
-        end if
-    end if
-
 
 end subroutine gloglik
