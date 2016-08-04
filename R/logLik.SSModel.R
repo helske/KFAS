@@ -98,13 +98,22 @@ logLik.SSModel <- function(object, marginal=FALSE, nsim = 0,
     out <- .Fortran(fgloglik, NAOK = TRUE, t(object$y), t(ymiss), tv,
       aperm(object$Z,c(2,1,3)), object$H, object$T, object$R, object$Q, object$a1, object$P1,
       object$P1inf, p, m, k, n,
-      lik = double(1), object$tol, as.integer(sum(object$P1inf)),marginal=as.integer(marginal))
-
-
-    if (out$marginal == -1) {
-      warning("Computation of marginal likelihood failed, could not compute the additional term.")
-      return(-.Machine$double.xmax ^ 0.75)
+      lik = double(1), object$tol, as.integer(sum(object$P1inf)))
+    
+    if (marginal) {
+      logdetxx <- .Fortran(fmarginalxx, NAOK = TRUE, object$P1inf, object$Z, object$T, m, p, n, 
+        as.integer(sum(object$P1inf)), tv, lik = double(1), info = integer(1))
+      
+      if (logdetxx$info == -1) {
+        warning("Computation of marginal likelihood failed, could not compute the additional term.")
+        return(-.Machine$double.xmax ^ 0.75)
+      } else {
+        out$lik <- out$lik + logdetxx$lik
+      }
     }
+
+
+    
   } else {
     if (maxiter < 1)
       stop("Argument maxiter must a positive integer. ")
