@@ -193,6 +193,27 @@ model_int$T
 model_int$T[1, 2, 1] <- 1 # add the intercept value to level
 out <- KFS(model_int)
 
+# dynamic regression model
+
+set.seed(1)
+x1 <- rnorm(100)
+x2 <- rnorm(100)
+b1 <- 1 + cumsum(rnorm(100, sd = 1))
+b2 <- 2 + cumsum(rnorm(100, sd = 0.1))
+y <- 1 + b1 * x1 + b2 * x2 + rnorm(100, sd = 0.1)
+
+model <- SSModel(y ~ SSMregression(~ x1 + x2, Q = diag(NA,2)), H = NA)
+
+fit <- fitSSM(model, inits = c(0,0,0), method = "BFGS")
+
+model <- fit$model
+model$Q
+model$H
+out <- KFS(model)
+
+ts.plot(out$alphahat[,-1], b1, b2, col = 1:4)
+
+
 # example of using data argument
 y <- x <- rep(1, 3)
 data1 <- data.frame(x = rep(2, 3))
