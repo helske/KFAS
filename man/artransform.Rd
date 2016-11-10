@@ -18,6 +18,12 @@ stationary region of \eqn{p}th order autoregressive process using
 parametrization suggested by Jones (1980). Fortran code is a converted from
 \code{stats} package's C-function \code{partrans}.
 }
+\note{
+This should in theory always work, but in practice the initial transformation 
+by \code{tanh} can produce values numerically identical to 1, leading to AR coefficients 
+which do not satisfy the stationarity constraints. See example in \code{logLik.SSModel} on how
+to scope with those issues.
+}
 \examples{
 artransform(1:3)
 }

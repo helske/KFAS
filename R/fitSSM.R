@@ -60,7 +60,7 @@
 #'@return A list with elements
 #'\item{optim.out}{Output from function \code{optim}. }
 #'\item{model}{Model with estimated parameters. }
-#'@seealso \code{\link{logLik}}, \code{\link{KFAS}}.
+#'@seealso \code{\link{logLik}}, and \code{\link{KFAS}} for examples.
 #' @examples
 #'
 #' # Example function for updating covariance matrices H and Q

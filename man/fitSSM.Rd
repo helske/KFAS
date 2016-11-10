@@ -128,6 +128,6 @@ fit <- fitSSM(inits = rep(var(Nile)/5, 2), model = model,
                  updatefn = update_model, checkfn = check_model)
 }
 \seealso{
-\code{\link{logLik}}, \code{\link{KFAS}}.
+\code{\link{logLik}}, and \code{\link{KFAS}} for examples.
 }
 
