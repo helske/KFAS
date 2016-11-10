@@ -26,11 +26,11 @@
 #' fitted(model)
 fitted.KFS <- function(object, start = NULL, end = NULL, filtered = FALSE, ...) {
   if (!filtered) {
-    if (!is.null(object$muhat)) {
+    if ("muhat" %in% names(object)) {
       tmp <- object$muhat
     } else stop("Input does not contain smoothed estimates for means, rerun KFS with mean smoothing.")
   } else {
-    if (!is.null(object[["m", exact = TRUE]])) {
+    if ("m" %in% names(object)) {
       tmp <- object$m
     } else stop("Input does not contain filtered estimates for means, rerun KFS with mean filtering.")
   }

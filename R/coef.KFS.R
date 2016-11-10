@@ -53,11 +53,11 @@ coef.KFS <- function(object, start = NULL, end = NULL, filtered = FALSE,
   states = "all", last = FALSE, ...) {
 
   if (!filtered) {
-    if (!is.null(object$alphahat)) {
+    if ("alphahat" %in% names(object)) {
       tmp <- object$alphahat
     } else stop("Input does not contain smoothed estimates for states, rerun KFS with state smoothing.")
   } else {
-    if (!is.null(object[["a", exact = TRUE]])) {
+    if ("a" %in% names(object)) {
       tmp <- object$a
     } else stop("Input does not contain filtered estimates for states, rerun KFS with state filtering.")
   }

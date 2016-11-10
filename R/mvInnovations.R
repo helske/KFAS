@@ -15,7 +15,7 @@ mvInnovations <- function(x){
   # Used in rstandard.KFS
   if(any(x$model$distribution!="gaussian"))
     stop("Function is only compatible with fully Gaussian models.")
-  if(is.null(x[["a", exact = TRUE]]))
+  if(!("a" %in% names(x)))
     stop("Function needs filtered estimates of states and their covariances.")
   out<-.Fortran(fmvfilter, NAOK = TRUE, attr(x$model, "tv")[1], 
                 x$model$Z, attr(x$model, "p"), attr(x$model, "m"), attr(x$model, "n"),

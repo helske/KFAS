@@ -43,8 +43,9 @@ print.KFS <-
 
     pdiag <- 1 + 0:(p - 1) * (p + 1)
     mdiag <- 1 + 0:(m - 1) * (m + 1)
-    if("state" %in% type && (!is.null(x[["a", exact = TRUE]]) || !is.null(x$alphahat))){
-      if (is.null(x$alphahat)) {
+    namesx <- names(x)
+    if("state" %in% type && any(c("a", "alphahat") %in% namesx)) {
+      if (!("alphahat" %in% namesx)) {
         gaussian<-all(x$model$distribution=="gaussian")
         print_this <- cbind(x$a[n + gaussian, ], sqrt(x$P[, , n + gaussian][mdiag]))
         colnames(print_this) <- c("Estimate", "Std. Error")
@@ -60,8 +61,8 @@ print.KFS <-
       }
       cat("\n")
     }
-    if("signal" %in% type && (!is.null(x[["t", exact = TRUE]]) || !is.null(x$thetahat))){
-      if (is.null(x$thetahat)) {
+    if("signal" %in% type && any(c("t", "thetahat") %in% namesx)){
+      if (!("thetahat" %in% namesx)) {
         print_this <- cbind(x$t[n, ], sqrt(x$P_theta[, , n][pdiag]))
         colnames(print_this) <- c("Estimate", "Std. Error")
         cat(paste0("Filtered values of signal and standard errors at time n = ",n,":\n"))
@@ -74,8 +75,8 @@ print.KFS <-
       }
       cat("\n")
     }
-    if("mean" %in% type && (!is.null(x[["m", exact = TRUE]]) || !is.null(x$muhat))){
-      if (is.null(x$muhat)) {
+    if("mean" %in% type && any(c("m", "muhat") %in% namesx)){
+      if (!("muhat" %in% namesx)) {
         print_this <- cbind(x$m[n, ], sqrt(x$P_mu[, , n][pdiag]))
         colnames(print_this) <- c("Estimate", "Std. Error")
         cat(paste0("Filtered values of mean and standard errors at time n = ",n,":\n"))

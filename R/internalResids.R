@@ -27,11 +27,11 @@ varianceSmoother <- function(object) {
   vars
 }
 
-recursive_standardized <- function(object,stype) {
+recursive_standardized <- function(object, stype) {
   
-  if(any(object$model$distribution !=  "gaussian") && is.null(object[["m", exact = TRUE]]))
+  if(any(object$model$distribution !=  "gaussian") && !("m" %in% names(object)))
     stop("KFS object does not contain filtered means. ")
-  if (all(object$model$distribution ==  "gaussian") && is.null(object[["v", exact = TRUE]])) 
+  if (all(object$model$distribution ==  "gaussian") && !("v" %in% names(object)))
     stop("KFS object does not contain prediction errors v. ")
   
   p<-attr(object$model,"p")
@@ -84,7 +84,7 @@ pearson_standardized <- function(object, stype) {
   
   n <- attr(object$model, "n")
   
-  if(is.null(object$muhat))
+  if(!("muhat" %in% names(object)))
     stop("KFS object needs to contain smoothed means. ")
   p<-attr(object$model,"p")
   
@@ -141,7 +141,7 @@ pearson_standardized <- function(object, stype) {
 
 state_standardized <- function(object, stype) {
   
-  if (is.null(object$etahat))
+  if (!("etahat" %in% names(object)))
     stop("KFS object needs to contain smoothed estimates of state disturbances eta.")
   
   k <- attr(object$model, "k")

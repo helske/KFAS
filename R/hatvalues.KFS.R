@@ -29,12 +29,12 @@
 hatvalues.KFS <- function(model, ...) {
   if (any(model$model$distribution != "gaussian")) {
     app <- approxSSM(model$model, ...)
-    if (is.null(model$V_theta))
+    if (!("V_theta" %in% names(model)))
       stop("KFS was run without signal smoothing, cannot compute hat values.")
     hatv <- matrix(apply(model$V_theta/app$H, 3, diag), attr(model$model, "n"),
       attr(model$model, "p"), byrow = TRUE)
   } else {
-    if (is.null(model$V_mu))
+    if (!("V_mu" %in% names(model)))
       stop("KFS was run without mean smoothing, cannot compute hat values.")
     hatv <- matrix(apply(model$V_mu, 3, diag),
       attr(model$model, "n"), attr(model$model,"p"), byrow = TRUE)/

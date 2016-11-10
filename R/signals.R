@@ -67,18 +67,18 @@ signal <- function(object, states = "all", filtered = FALSE) {
 
   if (identical(states, as.integer(1:attr(object$model, "m")))) {
     if (all(object$model$distribution == "gaussian")) {
-      if (filtered && !is.null(object[["m", exact = TRUE]])) {
+      if (filtered && "m" %in% names(object)) {
         return(list(signal = object$m, variance = object$P_mu))
       } else {
-        if (!filtered && !is.null(object$muhat)) {
+        if (!filtered && "muhat" %in% names(object)) {
           return(list(signal = object$muhat, variance = object$V_mu))
         }
       }
     } else {
-      if (filtered && !is.null(object[["t", exact = TRUE]])) {
+      if (filtered && "t" %in% names(object)) {
         return(list(signal = object$t, variance = object$P_theta))
       } else {
-        if (!filtered && !is.null(object$thetahat)) {
+        if (!filtered && "thetahat" %in% names(object)) {
           return(list(signal = object$thetahat, variance = object$V_theta))
         }
       }
@@ -86,12 +86,12 @@ signal <- function(object, states = "all", filtered = FALSE) {
   }
 
   if (filtered) {
-    if (is.null(object[["a", exact = TRUE]]))
+    if (!("a" %in% names(object)))
       stop("Object does not contain filtered estimates of states.")
     a <- object$a
     P <- object$P
   } else {
-    if (is.null(object$alphahat))
+    if (!("alphahat" %in% names(object)))
       stop("Object does not contain smoothed estimates of states.")
     a <- object$alphahat
     P <- object$V
