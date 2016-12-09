@@ -13,9 +13,9 @@ c(
     title = "{KFAS}: Exponential Family State Space Models in {R}",
     author = "Jouni Helske",
     journal = "Ar{X}iv e-prints",
-     eprint = {1612.01907},
+    eprint = "1612.01907",
     url = "https://arxiv.org/abs/1612.01907"
-    year = 2016,
+    year = "2016",
     key = "KFASarticle"
   )
 )
