@@ -133,7 +133,8 @@
 #'   y_n)}{E(\eta[t] | y[1], \ldots, y[n])}. Only for Gaussian models. }
 #'
 #'   \item{V_eta}{Error covariances \eqn{Var(\eta_t | y_1, \ldots, y_n)}{Var(\eta[t]
-#'   | y[1], \ldots, y[n])}. }
+#'   | y[1], \ldots, y[n])}. Note that for computing auxiliary residuals you shoud use method
+#'   \code{\link{rstandard.KFS}}.}
 #'
 #'   \item{epshat}{Smoothed disturbance terms \eqn{E(\epsilon_{t,i} | y_1,
 #'   \ldots, y_n)}{E(\epsilon[t,i] | y[1], \ldots, y[n])}. Note that due to
@@ -143,7 +144,8 @@
 #'   \item{V_eps}{Diagonal elements of \eqn{Var(\epsilon_{t} | y_1, \ldots,
 #'   y_n)}{Var(\epsilon[t] | y[1], \ldots, y[n])}. Note that due to the
 #'   diagonalization the off-diagonal elements are zero.
-#'   Only for Gaussian models.  }
+#'   Only for Gaussian models. Note that for computing auxiliary residuals you shoud use method
+#'   \code{\link{rstandard.KFS}}.}
 #'
 #'   \item{iterations}{The number of iterations used in linearization of
 #'   non-Gaussian model. }

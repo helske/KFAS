@@ -12,8 +12,10 @@ c(
     bibtype = "Article",
     title = "{KFAS}: Exponential Family State Space Models in {R}",
     author = "Jouni Helske",
-    journal = "Accepted to Journal of Statistical Software",
-    year = sub("-.*", "", meta$Date),
+    journal = "Ar{X}iv e-prints",
+     eprint = {1612.01907},
+    url = "https://arxiv.org/abs/1612.01907"
+    year = 2016,
     key = "KFASarticle"
   )
 )
