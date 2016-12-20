@@ -11,6 +11,7 @@ Package KFAS provides tools for modelling exponential family state space models 
 structural time series, ARIMA models, generalized linear models and generalized linear mixed models.
 
 [Paper at arXiv](https://arxiv.org/pdf/1612.01907v1)
+
 [Vignette at CRAN](http://cran.r-project.org/web/packages/KFAS/vignettes/KFAS.pdf)
 
 If you use KFAS in your paper, please cite properly, see `citation("KFAS")` in R. For collection of papers mentioning KFAS, see: [Who uses KFAS](https://rawgit.com/helske/helske.github.io/master/kfas_citedby.html)
