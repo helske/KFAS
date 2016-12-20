@@ -1,3 +1,9 @@
+Changes from version 1.2.4 to 1.2.5:
+   * Modified the zero-tolerance in filtering algorithms for better 
+   numerical behaviour in models where Z contains very small or large values.
+   * Added more examples.
+   * New citation info for arXiv.
+   
 Changes from version 1.2.3 to 1.2.4:
   * Corrected a bug in marginal likelihood computation which resulted failure in 
     multivariate Gaussian models.

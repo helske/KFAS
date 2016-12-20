@@ -14,13 +14,13 @@
 #' obtained from the output of \code{KFS} using the function
 #' \code{\link{mvInnovations}}.
 #'
-#' In rare cases of a diffuse initialization phase with highly correlated
-#' states, cumulative rounding errors in computing \code{Finf} and \code{Pinf}
-#' can sometimes cause the diffuse phase end too early,
-#' or the backward smoothing gives negative variances. Changing the tolerance
+#' In rare cases (typically with regression components with high multicollinearity or 
+#' long seasonal patterns), the cumulative rounding errors in Kalman filtering and 
+#' smoothing can cause the diffuse phase end too early,
+#' or the backward smoothing gives negative variances. In these cases, redefining the 
+#' prior state variances more informative is often helpful. Changing the tolerance
 #' parameter \code{tol} of the model (see \code{\link{SSModel}}) to smaller (or
-#' larger) can sometimes help. Another option is to redefine the prior state
-#' variances more informative.
+#' larger) can sometimes help as well.
 #'
 #' Fon non-Gaussian models the components corresponding to diffuse filtering
 #' (\code{Finf}, \code{Pinf}, \code{d}, \code{Kinf}) are not returned even

@@ -1,8 +1,56 @@
 context("Numerical issues")
 
 test_that("Test numerical issues",{
-  tol<-1e-6
-
+  tol <- 1e-6
+  
+  y <-  1 / exp(1:250)
+  x <- c(1, y[-250])
+  model <- SSModel(y ~ -1 + SSMcustom(Z = array(x, c(1, 1, 250)), T = 0, P1 = NA, Q = NA), H = 0)
+  
+  updatefn <- function(pars, model){
+    model["Q",etas = 1] <- model["P1", states = 1] <- exp(pars)
+    model
+  }
+  expect_warning(fit <- fitSSM(model = model, updatefn = updatefn,
+                               inits = 0, method = "BFGS"), NA)
+  expect_warning(out <- KFS(fit$model), NA)
+  expect_true(all(out$F > 0))
+  expect_equal(rep(exp(-1), 250), as.numeric(coef(out)))
+  expect_equal(0, min(out$V))
+  expect_equal(0, max(out$V))
+  
+  y <-  exp(1:250)
+  x <- c(1, y[-250])
+  model <- SSModel(y ~ -1 + SSMcustom(Z = array(x, c(1, 1, 250)), T = 0, P1 = NA, Q = NA), H = 0)
+  
+  updatefn <- function(pars, model){
+    model["Q",etas = 1] <- model["P1", states = 1] <- exp(pars)
+    model
+  }
+  expect_warning(fit <- fitSSM(model = model, updatefn = updatefn,
+                               inits = 0, method = "BFGS"), NA)
+  expect_warning(out <- KFS(fit$model), NA)
+  expect_true(all(out$F > 0))
+  expect_equal(rep(exp(1), 250), as.numeric(coef(out)))
+  expect_equal(0, min(out$V))
+  expect_equal(0, max(out$V))
+  
+  y <-  c(exp(1:250 + rnorm(250)), 1 / exp(1:250 + rnorm(250)))
+  x <- c(1, y[-500])
+  model <- SSModel(y ~ -1 + SSMcustom(Z = array(x, c(1, 1, 500)), T = 0, P1 = NA, Q = NA), H = 0)
+  
+  updatefn <- function(pars, model){
+    model["Q",etas = 1] <- model["P1", states = 1] <- exp(pars)
+    model
+  }
+  expect_warning(fit <- fitSSM(model = model, updatefn = updatefn,
+                               inits = 0, method = "BFGS"), NA)
+  expect_warning(out <- KFS(fit$model), NA)
+  expect_true(all(out$F > 0))
+  expect_equal(y/x, as.numeric(coef(out)))
+  expect_equal(0, min(out$V))
+  expect_equal(0, max(out$V))
+  
   y <- c(2.37375526896038, 0.484382763212699, 0.103390991781719, 0.0318635379310975,
          0.00828792079520903, 0.00153946155449415, 0.000301154179764616,
          4.69712084908583e-05, 3.76402566253327e-06, 7.45679822731237e-09,
@@ -59,4 +107,5 @@ test_that("Test numerical issues",{
   expect_equal(fit$model["H",1], 0, tolerance = tol, check.attributes = FALSE)
   expect_equal(fit$model["Q", eta = 1], 0.03556689, tolerance = tol,
                check.attributes = FALSE)
+
 })

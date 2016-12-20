@@ -1,7 +1,7 @@
 
 !diffuse filtering for single time point
 subroutine dfilter1step(ymiss, yt, zt, ht, tt, rqr, at, pt, vt, ft,kt,&
-pinf,finf,kinf,rankp,lik,tol,c,p,m,i)
+pinf,finf,kinf,rankp,lik,basetol,c,p,m,i)
 
     implicit none
 
@@ -13,7 +13,7 @@ pinf,finf,kinf,rankp,lik,tol,c,p,m,i)
     double precision, intent(in), dimension(p,p) :: ht
     double precision, intent(in), dimension(m,m) :: tt
     double precision, dimension(m,m) :: rqr
-    double precision, intent(in) :: tol,c
+    double precision, intent(in) :: basetol,c
     double precision, intent(inout) :: lik
     double precision, intent(inout), dimension(m) :: at
     double precision, intent(inout), dimension(p) :: vt,ft,finf
@@ -21,12 +21,13 @@ pinf,finf,kinf,rankp,lik,tol,c,p,m,i)
     double precision, intent(inout), dimension(m,m) :: pt,pinf
     double precision, dimension(m,m) :: mm
     double precision, dimension(m) :: ahelp
-    double precision :: finv
+    double precision :: finv, tol
 
     double precision, external :: ddot
 
     external dgemm, dsymm, dgemv, dsymv, dsyr, dsyr2
-
+    tol = basetol * minval(abs(zt), mask = abs(zt) .GT. 0.0d0)**2
+    
     do i=1, p
         call dsymv('u',m,1.0d0,pt,m,zt(:,i),1,0.0d0,kt(:,i),1)
         ft(i) = ddot(m,zt(:,i),1,kt(:,i),1) + ht(i,i)
@@ -34,7 +35,7 @@ pinf,finf,kinf,rankp,lik,tol,c,p,m,i)
             call dsymv('u',m,1.0d0,pinf,m,zt(:,i),1,0.0d0,kinf(:,i),1)
             finf(i) = ddot(m,zt(:,i),1,kinf(:,i),1)
             vt(i) = yt(i) - ddot(m,zt(:,i),1,at,1)
-            if (finf(i) .GT. tol*maxval(zt(:,i)**2)) then
+            if (finf(i) .GT. tol) then
                 finv = 1.0d0/finf(i)
                 at = at + vt(i)*finv*kinf(:,i)
                 call dsyr('u',m,ft(i)*finv**2,kinf(:,i),1,pt,m)
@@ -44,14 +45,14 @@ pinf,finf,kinf,rankp,lik,tol,c,p,m,i)
                 rankp = rankp -1
             else
                 finf(i) = 0.0d0
-                if(ft(i) .GT. tol*maxval(zt(:,i)**2)) then
+                if(ft(i) .GT. tol) then
                     finv = 1.0d0/ft(i)
                     at = at + vt(i)*finv*kt(:,i)
                     call dsyr('u',m,-finv,kt(:,i),1,pt,m)
                     lik = lik - c - 0.5d0*(log(ft(i)) + vt(i)**2*finv)
                 end if
             end if
-            if (ft(i) .LE. tol*maxval(zt(:,i)**2)) then
+            if (ft(i) .LE. tol) then
                 ft(i) = 0.0d0
             end if
             if(rankp .EQ. 0 .AND. i .LT. p) then
@@ -72,7 +73,8 @@ pinf,finf,kinf,rankp,lik,tol,c,p,m,i)
 end subroutine dfilter1step
 
 !non-diffuse filtering for single time point
-subroutine filter1step(ymiss, yt, zt, ht, tt, rqr, at, pt, vt, ft,kt,lik,tol,c,p,m,j)
+subroutine filter1step(ymiss, yt, zt, ht, tt, rqr, at, pt, vt, & 
+    ft, kt, lik, basetol, c, p, m, j)
 
     implicit none
 
@@ -84,7 +86,7 @@ subroutine filter1step(ymiss, yt, zt, ht, tt, rqr, at, pt, vt, ft,kt,lik,tol,c,p
     double precision, intent(in), dimension(p,p) :: ht
     double precision, intent(in), dimension(m,m) :: tt
     double precision, dimension(m,m) :: rqr
-    double precision, intent(in) :: tol,c
+    double precision, intent(in) :: basetol,c
     double precision, intent(inout) :: lik
     double precision, intent(inout), dimension(m) :: at
     double precision, intent(inout), dimension(p) :: vt,ft
@@ -92,18 +94,19 @@ subroutine filter1step(ymiss, yt, zt, ht, tt, rqr, at, pt, vt, ft,kt,lik,tol,c,p
     double precision, intent(inout), dimension(m,m) :: pt
     double precision, dimension(m,m) :: mm
     double precision, dimension(m) :: ahelp
-    double precision :: finv
+    double precision :: finv, tol
 
     double precision, external :: ddot
 
     external dgemm, dsymm, dgemv, dsymv, dsyr
-
+    tol = basetol * minval(abs(zt), mask = abs(zt) .GT. 0.0d0)**2
+    
     do i = j+1, p
         call dsymv('u',m,1.0d0,pt,m,zt(:,i),1,0.0d0,kt(:,i),1)
         ft(i) = ddot(m,zt(:,i),1,kt(:,i),1) + ht(i,i)
         if(ymiss(i).EQ.0) then
             vt(i) = yt(i) - ddot(m,zt(:,i),1,at,1)
-            if (ft(i) .GT. tol*maxval(zt(:,i)**2)) then
+            if (ft(i) .GT. tol) then
                 finv = 1.0d0/ft(i)
                 at = at + vt(i)*finv*kt(:,i)
                 call dsyr('u',m,-finv,kt(:,i),1,pt,m)

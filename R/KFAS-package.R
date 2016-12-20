@@ -97,7 +97,8 @@
 #' Diffuse phase is continued until rank of \eqn{P_{\infty, t}}{P[inf, t]} becomes
 #' zero. Rank of \eqn{P_{\infty, t}}{P[inf, t]} decreases by 1, if
 #' \eqn{F_{\infty, t}>\xi_t>0}{F[inf, t]>\xi[t]>0}, where \eqn{\xi_t}{\xi[t]} is by default
-#' \code{.Machine$double.eps^0.5*max(Z[, , t]^2)}. Usually the number of diffuse time points
+#' \code{.Machine$double.eps^0.5*min(X)^2)}, where X is absolute values of non-zero 
+#' elements of array Z. Usually the number of diffuse time points
 #' equals the number unknown elements of initial state vector, but missing
 #' observations or time-varying system matrices can affect this. See Koopman and
 #' Durbin (2000, 2012, 2003) for details for exact diffuse and non-diffuse
@@ -565,8 +566,8 @@ NULL
 #' # as a comparison, a fully Bayesian approach (using BUGS) with [0, 10] uniform prior for sigma
 #' # gives posterior mode for Q as 0.18, and 95% credible interval [0.036, 3.083]
 #'
-#' exp(fit_nosim$optim.out$par + c(-1, 1)*qnorm(0.975)*sqrt(1/fit_nosim$optim.out$hessian))
-#' exp(fit_sim$optim.out$par + c(-1, 1)*qnorm(0.975)*sqrt(1/fit_sim$optim.out$hessian))
+#' exp(fit_nosim$optim.out$par + c(-1, 1)*qnorm(0.975)*sqrt(1/fit_nosim$optim.out$hessian[1]))
+#' exp(fit_sim$optim.out$par + c(-1, 1)*qnorm(0.975)*sqrt(1/fit_sim$optim.out$hessian[1]))
 #'
 #' # 95% confidence intervals for probability that Cambridge wins
 #' pred_nosim <- predict(fit_nosim$model, interval = "confidence")
