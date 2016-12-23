@@ -5,7 +5,7 @@ c(
     author = "Jouni Helske",
     year = sub("-.*", "", meta$Date),
     note = sprintf("R package version %s", meta$Version),
-    url = "http://cran.r-project.org/package=KFAS",
+    url = "https://cran.r-project.org/package=KFAS",
     key = "KFAS"
   ),
   bibentry(
