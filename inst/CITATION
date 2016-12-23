@@ -12,8 +12,8 @@ c(
     bibtype = "Article",
     title = "{KFAS}: Exponential Family State Space Models in {R}",
     author = "Jouni Helske",
-    journal = "Ar{X}iv e-prints",
-    eprint = "1612.01907",
+    journal = "Accepted to Journal of Statistical Software",
+    note = "Pre-print available at ArXiv",
     url = "https://arxiv.org/abs/1612.01907",
     year = "2016",
     key = "KFASarticle"
