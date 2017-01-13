@@ -5,7 +5,9 @@ Changes from version 1.2.5 to 1.2.6:
      due to the careless use of diagonal extraction via diag function.
    * rstandard.KFS and residuals.KFS: Deviance residuals are now defunct.
    * ldl: Now checks if the argument is 1x1 matrix or scalar and returns 
-     appropriate result.
+     appropriate result, i.e. original value as 1x1 matrix.
+   * is.SSModel: Now checks that all the relevant model components are double 
+     type in order to avoid problems in Fortran side.
    
 Changes from version 1.2.4 to 1.2.5:
    * Modified the zero-tolerance in filtering algorithms for better 
