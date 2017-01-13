@@ -42,11 +42,19 @@ is.SSModel <- function(object, na.check = FALSE, return.logical = TRUE) {
   k <- attr(object, "k")
   n <- attr(object, "n")
   tv <- unname(attr(object, "tv"))
-
+  
+  components <- c("y", "Z", "H", "T", "R", "Q", "a1", "P1", "P1inf", "u",
+    "distribution", "tol", "call")
+  
+  if(all(object$distribution == "gaussian")) {
+    double_comps <- components[1:9]
+  } else {
+    double_comps <- components[1:10][-3]
+  }
+  
   if (return.logical) {
     x <- inherits(object, "SSModel") &&
-      all(c("y", "Z", "H", "T", "R", "Q", "a1","P1", "P1inf", "u",
-            "distribution", "tol", "call") %in% names(object)) &&
+      all(components %in% names(object)) &&
       all(object$distribution %in%
             c("gaussian", "poisson", "binomial", "gamma",
               "negative binomial")) &&
@@ -65,11 +73,12 @@ is.SSModel <- function(object, na.check = FALSE, return.logical = TRUE) {
          identical(dim(object$u), dim(object$y))) &&
       all(diag(object$P1inf) %in% c(0,1)) &&
       all(object$P1inf[col(diag(m)) != row(diag(m))] == 0) &&
-      all(diag(object$P1)[diag(object$P1inf > 0)] == 0)
+      all(diag(object$P1)[diag(object$P1inf > 0)] == 0) &&
+      all(sapply(double_comps, function(x) is.numeric(object[[x]]))) 
+  
     if (na.check) {
-      x <- x && !any(sapply(c("H", "u", "T", "R", "Q", "a1", "P1", "P1inf"),
-                            function(x) any(is.na(object[[x]])) ||
-                              any(is.infinite(object[[x]])))) &&
+      x <- x && !any(sapply(components[3:10], function(x) 
+        any(is.na(object[[x]])) || any(is.infinite(object[[x]])))) &&
         max(object$Q) <= tol &&
         ifelse(identical(object$u, "Omitted"), max(object$H) <= tol, TRUE)
     }
@@ -84,11 +93,12 @@ is.SSModel <- function(object, na.check = FALSE, return.logical = TRUE) {
                   "'m', 'n', 'tv' is not integer."))
     }
 
-    components <- c("y", "Z", "H", "T", "R", "Q", "a1", "P1", "P1inf", "u",
-                    "distribution", "tol", "call")
+    if (any(sapply(double_comps, function(x) !is.numeric(object[[x]])))) {
+      stop(paste0("Storage mode of some of the model matrices is not double."))
+    }
     if (!all(components %in% names(object))) {
       stop(paste("Model is not a proper object of class 'SSModel'.
-                   Following componentsare missing: ",
+                   Following components are missing: ",
                  paste(components[!(components %in% names(object))],
                        collapse = ", ")))
     }
@@ -116,9 +126,8 @@ is.SSModel <- function(object, na.check = FALSE, return.logical = TRUE) {
                   "Check dimensions of system matrices."))
     }
     if (na.check == TRUE &&
-        (any(sapply(c("H", "u", "T", "R", "Q", "a1", "P1", "P1inf"),
-                    function(x) any(is.na(object[[x]])) ||
-                    any(is.infinite(object[[x]])))) ||
+        (any(sapply(components[3:10], function(x) 
+          any(is.na(object[[x]])) || any(is.infinite(object[[x]])))) ||
          max(object$Q) > tol || ifelse(identical(object$u, "Omitted"),
                                        max(object$H) > tol, FALSE))) {
       stop(paste0("System matrices (excluding Z) contain NA or infinite ",

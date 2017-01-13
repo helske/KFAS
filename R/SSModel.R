@@ -281,6 +281,7 @@ SSModel <- function(formula, data, H, u, distribution,
     } else {
       H <- array(diag(p), dim = c(p, p, 1))
     }
+    storage.mode(H) <- "double"
     u <- "Omitted"
   } else {
     if (!missing(H))
