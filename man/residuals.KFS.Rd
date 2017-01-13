@@ -5,7 +5,7 @@
 \title{Extract Residuals of KFS output}
 \usage{
 \method{residuals}{KFS}(object, type = c("recursive", "pearson", "response",
-  "state", "deviance"), ...)
+  "state"), ...)
 }
 \arguments{
 \item{object}{KFS object}
@@ -20,7 +20,8 @@ Extract Residuals of KFS output
 \details{
 For object of class KFS, several types of residuals can be computed:
 
-  \itemize{ \item  \code{"recursive"}: One-step-ahead prediction residuals
+  \itemize{ 
+  \item  \code{"recursive"}: One-step-ahead prediction residuals
   \eqn{v_{t,i}=y_{t,i}-Z_{t,i}a_{t,i}}{v[t,i]=y[t,i]-Z[t,i]a[t,i]}. For non-Gaussian case recursive
   residuals are computed as \eqn{y_{t}-f(Z_{t}a_{t})}{y[t]-Z[t]a[t]}, i.e.
   non-sequentially. Computing recursive residuals for large non-Gaussian
@@ -36,10 +37,6 @@ For object of class KFS, several types of residuals can be computed:
   \item \code{"state"}:  Residuals based on the smoothed disturbance terms
   \eqn{\eta} are defined as \deqn{\hat \eta_t, \quad t=1,\ldots,n.}{\hat \eta[t], t=1,\ldots,n.}
   Only defined for fully Gaussian models.
-
-  \item \code{"deviance"}: Deviance residuals. Deprecated. This option was
-  meant to be used only for the GLM comparisons, as their generalization to
-  other models is lacking, but these will be completely removed in future in
-  order to avoid misleading results in non-GLM settings. }
+  }
 }
 

@@ -2,7 +2,8 @@
 #'
 #' @details For object of class KFS, several types of residuals can be computed:
 #'
-#'   \itemize{ \item  \code{"recursive"}: One-step-ahead prediction residuals
+#'   \itemize{ 
+#'   \item  \code{"recursive"}: One-step-ahead prediction residuals
 #'   \eqn{v_{t,i}=y_{t,i}-Z_{t,i}a_{t,i}}{v[t,i]=y[t,i]-Z[t,i]a[t,i]}. For non-Gaussian case recursive
 #'   residuals are computed as \eqn{y_{t}-f(Z_{t}a_{t})}{y[t]-Z[t]a[t]}, i.e.
 #'   non-sequentially. Computing recursive residuals for large non-Gaussian
@@ -18,24 +19,16 @@
 #'   \item \code{"state"}:  Residuals based on the smoothed disturbance terms
 #'   \eqn{\eta} are defined as \deqn{\hat \eta_t, \quad t=1,\ldots,n.}{\hat \eta[t], t=1,\ldots,n.}
 #'   Only defined for fully Gaussian models.
-#'
-#'   \item \code{"deviance"}: Deviance residuals. Deprecated. This option was
-#'   meant to be used only for the GLM comparisons, as their generalization to
-#'   other models is lacking, but these will be completely removed in future in
-#'   order to avoid misleading results in non-GLM settings. }
+#'   }
 #' @export
 #' @importFrom stats residuals
 #' @param object KFS object
 #' @param type Character string defining the type of residuals.
 #' @param ... Ignored.
 residuals.KFS <-  function(object,
-  type = c("recursive", "pearson", "response", "state", "deviance"), ...) {
+  type = c("recursive", "pearson", "response", "state"), ...) {
 
   type <- match.arg(type)
-
-  if(type == "deviance")
-    .Deprecated(msg="Argument type=\"deviance\" is deprecated.")
-
 
   if ((type == "state") && any(object$model$distribution !=  "gaussian"))
     stop("State residuals are only supported for fully Gaussian models.")
@@ -86,26 +79,27 @@ residuals.KFS <-  function(object,
       if (sum(bins <- object$model$distribution == "binomial") > 0)
         series[, bins] <- series[, bins]/object$model$u[, bins]
       (series - fitted(object))/sqrt(varianceFunction(object))
-    },
-    deviance = {
-      series <- object$model$y
-      if (sum(bins <- object$model$distribution == "binomial") > 0)
-        series[, bins] <- series[,bins]/object$model$u[, bins]
-      for (i in 1:attr(object$model, "p"))
-        series[, i] <-
-        ifelse(series[, i] > object$muhat[, i], 1, -1) *
-        sqrt(switch(object$model$distribution[i],
-          gaussian = (series[, i] - object$muhat[, i])^2,
-          poisson = 2 * (series[, i] * log(ifelse(series[, i] == 0, 1, series[, i]/object$muhat[, i])) - series[, i] + object$muhat[, i]),
-          binomial = 2 * object$model$u[, i] *
-            (series[, i] * log(ifelse(series[, i] == 0, 1, series[, i]/object$muhat[, i])) +
-                (1 - series[, i]) * log(ifelse(series[, i] == 1 | object$muhat[, i] == 1, 1, (1 - series[, i])/(1 - object$muhat[, i])))),
-          gamma = -2 * (log(ifelse(series[, i] == 0, 1, series[, i]/object$muhat[, i])) -
-              (series[, i] - object$muhat[, i])/object$muhat[, i]), `negative binomial` = 2 *
-            (series[, i] * log(pmax(1, series[, i])/object$muhat[, i]) -
-                (series[, i] + object$model$u[, i]) * log((series[, i] + object$model$u[, i])/(object$muhat[, i] + object$model$u[, i])))))
-      series
     }
+    # ,
+    # deviance = {
+    #   series <- object$model$y
+    #   if (sum(bins <- object$model$distribution == "binomial") > 0)
+    #     series[, bins] <- series[,bins]/object$model$u[, bins]
+    #   for (i in 1:attr(object$model, "p"))
+    #     series[, i] <-
+    #     ifelse(series[, i] > object$muhat[, i], 1, -1) *
+    #     sqrt(switch(object$model$distribution[i],
+    #       gaussian = (series[, i] - object$muhat[, i])^2,
+    #       poisson = 2 * (series[, i] * log(ifelse(series[, i] == 0, 1, series[, i]/object$muhat[, i])) - series[, i] + object$muhat[, i]),
+    #       binomial = 2 * object$model$u[, i] *
+    #         (series[, i] * log(ifelse(series[, i] == 0, 1, series[, i]/object$muhat[, i])) +
+    #             (1 - series[, i]) * log(ifelse(series[, i] == 1 | object$muhat[, i] == 1, 1, (1 - series[, i])/(1 - object$muhat[, i])))),
+    #       gamma = -2 * (log(ifelse(series[, i] == 0, 1, series[, i]/object$muhat[, i])) -
+    #           (series[, i] - object$muhat[, i])/object$muhat[, i]), `negative binomial` = 2 *
+    #         (series[, i] * log(pmax(1, series[, i])/object$muhat[, i]) -
+    #             (series[, i] + object$model$u[, i]) * log((series[, i] + object$model$u[, i])/(object$muhat[, i] + object$model$u[, i])))))
+    #   series
+    # }
   )
   ts(drop(series), start = start(object$model$y), frequency = frequency(object$model$y),
     names = colnames(object$model$y))

@@ -18,6 +18,12 @@
 #' diag(l) <- 1
 #' all.equal(l %*% d %*% t(l), m, tol = 1e-15)
 ldl <- function(x, tol) {
+  
+  if(length(x) == 1) {
+    if(x >= 0) return(matrix(x))
+    if(x < 0) stop("Matrix x is not positive semidefinite.")
+  }
+  
   if (missing(tol)) {
     tol <- max(100, max(abs(diag(as.matrix(x))))) * .Machine$double.eps
   }

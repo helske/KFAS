@@ -1,3 +1,12 @@
+Changes from version 1.2.5 to 1.2.6:
+   * rstandard.KFS: Rewrote some of the codes for standardized residuals, 
+     resulting more slightly faster and more robust computation.
+   * rstandard.KFS: Corrected bug (which resulted an error) in state residuals 
+     due to the careless use of diagonal extraction via diag function.
+   * rstandard.KFS and residuals.KFS: Deviance residuals are now defunct.
+   * ldl: Now checks if the argument is 1x1 matrix or scalar and returns 
+     appropriate result.
+   
 Changes from version 1.2.4 to 1.2.5:
    * Modified the zero-tolerance in filtering algorithms for better 
    numerical behaviour in models where Z contains very small or large values.

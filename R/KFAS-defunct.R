@@ -11,7 +11,12 @@
 #' Instead it was based on the conditional likelihood \eqn{p(y|theta)} i.e. it disregards
 #' the effect of hidden states. Therefore the value
 #' returned by this function did not make much sense in non-GLM setting.
-#'
+#' 
+#' From \code{rstandard.KFS} and \code{residuals.KFS}: Computation of deviance residuals. 
+#' This option was meant to be used only for the GLM comparisons, as their 
+#' generalization to other models is lacking, but in order to avoid misleading 
+#' results in non-GLM settings, these are now completely removed.
+#' 
 #' @export
 #' @aliases KFAS-defunct
 #' @name KFAS-defunct
@@ -27,7 +32,6 @@ deviance.KFS <- function(object, ...) {
 #' @rdname KFAS-defunct
 `subset<-.SSModel` <- function(x, element, states, etas, series, times,
                                ..., value) {
-
   .Defunct(new = "[<-.SSModel")
   x[element, states, etas, series, times, ...] <- value
   x

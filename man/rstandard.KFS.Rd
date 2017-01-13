@@ -62,12 +62,7 @@ For object of class KFS with fully Gaussian observations, several
   matrix. For Gaussian models, these coincide with the standardized smoothed
   \eqn{\epsilon} disturbance residuals, and for generalized linear models
   these coincide with the standardized Pearson residuals (hence the name).
-
-
-\item 'deviance': Deviance residuals. Deprecated. This option was meant to be
-used only for the GLM comparisons, as their generalization to other models is
-lacking, but these will be completely removed in future in order to avoid
-misleading results in non-GLM settings. }
+ }
 }
 \examples{
 modelNile <- SSModel(Nile ~ SSMtrend(1, Q = list(matrix(NA))), H = matrix(NA))

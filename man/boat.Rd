@@ -34,8 +34,8 @@ fit_sim$model["Q"]
 # as a comparison, a fully Bayesian approach (using BUGS) with [0, 10] uniform prior for sigma
 # gives posterior mode for Q as 0.18, and 95\% credible interval [0.036, 3.083]
 
-exp(fit_nosim$optim.out$par + c(-1, 1)*qnorm(0.975)*sqrt(1/fit_nosim$optim.out$hessian))
-exp(fit_sim$optim.out$par + c(-1, 1)*qnorm(0.975)*sqrt(1/fit_sim$optim.out$hessian))
+exp(fit_nosim$optim.out$par + c(-1, 1)*qnorm(0.975)*sqrt(1/fit_nosim$optim.out$hessian[1]))
+exp(fit_sim$optim.out$par + c(-1, 1)*qnorm(0.975)*sqrt(1/fit_sim$optim.out$hessian[1]))
 
 # 95\% confidence intervals for probability that Cambridge wins
 pred_nosim <- predict(fit_nosim$model, interval = "confidence")
