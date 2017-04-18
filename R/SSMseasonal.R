@@ -1,7 +1,7 @@
 #' @rdname SSModel
 #' @export
 SSMseasonal <- function(period, Q, sea.type = c("dummy", "trigonometric"),
-  type, index, a1, P1, P1inf, n = 1, state_names = NULL, ynames) {
+  type, index, a1, P1, P1inf, n = 1, state_names = NULL, ynames, harmonics) {
   
   state_names_tmp <- state_names
   
@@ -133,6 +133,22 @@ SSMseasonal <- function(period, Q, sea.type = c("dummy", "trigonometric"),
     } else {
       state_names <- state_names_tmp
     }
+  }
+  if (!missing(harmonics)) {
+    if (p > 1) 
+      stop("Argument harmonics can be used only for univariate components. ")
+    if(sea.type != "trigonometric") 
+      stop("Subharmonics can be used only in case of trigonometric seasonal. ")
+    ind <- rep(harmonics, each = 2) * rep(1:2, each = 2) + 0:1
+    Z <- Z[, ind, drop = FALSE]
+    T <- T[ind, ind]
+    R <- R[ind, ind]
+    Qm <- Qm[ind, ind, 1]
+    P1 <- P1[ind, ind]
+    P1inf <- P1inf[ind, ind]
+    a1 <- a1[ind]
+    state_names <- state_names[ind]
+    m <- k <- length(ind)
   }
   list(index = index, m = m, k = k, Z = Z, T = T, R = R, Q = Qm, a1 = a1, P1 = P1,
     P1inf = P1inf, tvq = tvq, tvr = 0, tvz = 0, state_names = state_names, period = period,

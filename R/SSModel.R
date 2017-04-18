@@ -74,6 +74,10 @@
 #' @param sea.type For seasonal component, character string defining whether to
 #'   use \code{"dummy"} or \code{"trigonometric"} form of the seasonal
 #'   component.
+#' @param harmonics For univariate trigonometric seasonal, argument 
+#'   \code{harmonics} can be used to specify which subharmonics 
+#'   are added to the model. Note that for multivariate model you can call 
+#'   \code{SSMseasonal} multiple times with different values of \code{index}.
 #' @param degree For trend component, integer defining the degree of the
 #'   polynomial trend. 1 corresponds to local level, 2 for local linear trend
 #'   and so forth.

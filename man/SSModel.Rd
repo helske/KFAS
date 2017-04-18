@@ -24,7 +24,7 @@ SSMregression(rformula, data, type, Q, index, R, a1, P1, P1inf, n = 1,
   remove.intercept = TRUE, state_names = NULL, ynames)
 
 SSMseasonal(period, Q, sea.type = c("dummy", "trigonometric"), type, index,
-  a1, P1, P1inf, n = 1, state_names = NULL, ynames)
+  a1, P1, P1inf, n = 1, state_names = NULL, ynames, harmonics)
 
 SSMtrend(degree = 1, Q, type, index, a1, P1, P1inf, n = 1,
   state_names = NULL, ynames)
@@ -121,6 +121,11 @@ terms in the model.}
 \item{sea.type}{For seasonal component, character string defining whether to
 use \code{"dummy"} or \code{"trigonometric"} form of the seasonal
 component.}
+
+\item{harmonics}{For univariate trigonometric seasonal, argument 
+\code{harmonics} can be used to specify which subharmonics 
+are added to the model. Note that for multivariate model you can call 
+\code{SSMseasonal} multiple times with different values of \code{index}.}
 
 \item{degree}{For trend component, integer defining the degree of the
 polynomial trend. 1 corresponds to local level, 2 for local linear trend

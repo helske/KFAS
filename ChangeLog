@@ -1,4 +1,6 @@
 Changes from version 1.2.5 to 1.2.6:
+   * SSMseasonal: New experimental argument harmonics for determing what 
+     subharmonics are used in trigonometric seasonal components.
    * rstandard.KFS: Rewrote some of the codes for standardized residuals, 
      resulting slightly faster and more robust computation.
    * rstandard.KFS: Corrected bug (which resulted an error) in state residuals 
