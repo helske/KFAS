@@ -11,3 +11,4 @@ kfas.Rproj
 .project
 .settings/org.eclipse.core.resources.prefs
 inst/doc
+vignettes/figure

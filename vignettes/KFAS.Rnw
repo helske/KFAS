@@ -154,7 +154,7 @@ The Kalman filter equations can be used for computing the log-likelihood, which
 in its standard form is
 \begin{equation*}
 \log L  = -\frac{np}{2}\log2\pi - \frac{1}{2}\sum^n_{t=1}(\log|F_t| +
-v^\prime_tF^{-1}_tv_t).
+v^\top_tF^{-1}_tv_t).
 \end{equation*}
 In the case of the univariate treatment and diffuse initialization, the diffuse
 log-likelihood can be written as
@@ -918,7 +918,7 @@ Currently all the time consuming parts of \pkg{KFAS} are written in \proglang{Fo
 
 \section*{Acknowledgments}
 
-The author wishes to thank Jukka Nyblom, Patricia Menendez, Spencer Graves, as well as the editor and two anonymous reviewers for the valuable comments and suggestions regarding the paper and the package. Comments, suggestions and bug reports from various users of \pkg{KFAS} over the years are also highly appreciated. The author is also grateful for the financial support from the Emil Aaltonen Foundation.
+The author wishes to thank Jukka Nyblom, Patricia Menendez, Spencer Graves, as well as the editor and two anonymous reviewers for the valuable comments and suggestions regarding the paper and the package. Comments, suggestions and bug reports from various users of \pkg{KFAS} over the years are also highly appreciated. The author has been financially supported by the Emil Aaltonen Foundation and the Academy of Finland research grant 284513.
 
 \clearpage
 \newpage
