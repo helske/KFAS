@@ -1,3 +1,9 @@
+Changes from version 1.2.6 to 1.2.7:
+   * logLik.SSModel: Changed the tolerance of degeneracy check (are all 
+   variance parameters of the model zero?) from .Machine$double.eps to 
+   .Machine$double.eps^0.75 in order to make optimization more robust to poor 
+   initial values.
+
 Changes from version 1.2.5 to 1.2.6:
    * SSMseasonal: New experimental argument harmonics for determing what 
      subharmonics are used in trigonometric seasonal components.

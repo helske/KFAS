@@ -115,7 +115,7 @@ logLik.SSModel <- function(object, marginal=FALSE, nsim = 0,
   tv <- attr(object, "tv")
   if (all(object$distribution == "gaussian")) {
     # degenerate case
-    if (all(c(object$Q, object$H) < .Machine$double.eps) || all(c(object$R, object$H) < .Machine$double.eps))
+    if (all(c(object$Q, object$H) < .Machine$double.eps^0.75) || all(c(object$R, object$H) < .Machine$double.eps^0.75))
       return(-.Machine$double.xmax ^ 0.75)
     htol <- max(100, max(apply(object$H, 3, diag))) * .Machine$double.eps
     if (p > 1 && any(abs(apply(object$H, 3, "[", !diag(p))) > htol)) {
