@@ -53,4 +53,3 @@ legend('bottomleft',
   col = c(1, 2, 4), lty = c(1, 2, 1))
 
 }
-

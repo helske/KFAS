@@ -13,4 +13,3 @@ A multivariate time series object containing the number of alcohol related
 deaths and population sizes (divided by 100000) of Finland in four age groups.
 }
 \keyword{datasets}
-

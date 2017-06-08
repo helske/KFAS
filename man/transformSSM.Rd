@@ -38,4 +38,3 @@ As all the functions in KFAS use univariate approach i.e. sequential processing,
   multivariate versions can be obtained from output of \code{\link{KFS}}
   using \code{\link{mvInnovations}} function.
 }
-

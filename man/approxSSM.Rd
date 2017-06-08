@@ -93,4 +93,3 @@ KFS(model, theta = 7)
 \code{\link{importanceSSM}}, \code{\link{SSModel}},
   \code{\link{KFS}}, \code{\link{KFAS}}.
 }
-

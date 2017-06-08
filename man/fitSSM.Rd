@@ -130,4 +130,3 @@ fit <- fitSSM(inits = rep(var(Nile)/5, 2), model = model,
 \seealso{
 \code{\link{logLik}}, and \code{\link{KFAS}} for examples.
 }
-

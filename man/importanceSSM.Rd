@@ -87,4 +87,3 @@ ts.plot(cbind(sexratio.smooth,sexratio.ci,sexratio.filter,sexratio.fci),
         col=c(1,1,1,2,2,2),lty=c(1,2,2,1,2,2))
 }
 }
-

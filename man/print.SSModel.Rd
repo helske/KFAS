@@ -14,4 +14,3 @@
 \description{
 Print SSModel Object
 }
-

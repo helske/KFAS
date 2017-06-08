@@ -36,4 +36,3 @@ model["H"] <- mean(c(out$v[1:out$d][out$Finf==0]^2/out$F[1:out$d][out$Finf==0],
 c(hatvalues(KFS(model)))
 
 }
-

@@ -72,4 +72,3 @@ curve(ll_sim(x), from = 0.1, to = 0.5, add = TRUE, col = "red")
 Koopman, S.J. and Durbin J. (2012).  Time Series Analysis by State Space Methods. Oxford: Oxford University Press.
 }
 \keyword{datasets}
-

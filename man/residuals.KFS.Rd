@@ -39,4 +39,3 @@ For object of class KFS, several types of residuals can be computed:
   Only defined for fully Gaussian models.
   }
 }
-

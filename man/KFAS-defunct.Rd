@@ -3,14 +3,15 @@
 \name{KFAS-defunct}
 \alias{KFAS-defunct}
 \alias{deviance.KFS}
-\alias{subset.SSModel}
-\alias{subset<-}
 \alias{subset<-.SSModel}
+\alias{subset<-}
+\alias{subset.SSModel}
 \title{Defunct Functions of Package KFAS}
 \usage{
 \method{deviance}{KFS}(object, ...)
 
-\method{subset}{SSModel}(x, element, states, etas, series, times, ...) <- value
+\method{subset}{SSModel}(x, element, states, etas, series, times,
+  ...) <- value
 
 subset(x, ...) <- value
 
@@ -36,4 +37,3 @@ generalization to other models is lacking, but in order to avoid misleading
 results in non-GLM settings, these are now completely removed.
 }
 \keyword{internal}
-

@@ -31,4 +31,3 @@ if (interactive()) {
   plot(modelNile)
 }
 }
-

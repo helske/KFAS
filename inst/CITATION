@@ -1,21 +1,20 @@
-c(
-  bibentry(
-    bibtype = "Manual",
-    title = "{KFAS}: {K}alman Filter and Smoother for Exponential Family State Space Models",
-    author = "Jouni Helske",
-    year = sub("-.*", "", meta$Date),
-    note = sprintf("R package version %s", meta$Version),
-    url = "https://cran.r-project.org/package=KFAS",
-    key = "KFAS"
-  ),
-  bibentry(
-    bibtype = "Article",
-    title = "{KFAS}: Exponential Family State Space Models in {R}",
-    author = "Jouni Helske",
-    journal = "Accepted to Journal of Statistical Software",
-    note = "Pre-print available at ArXiv",
-    url = "https://arxiv.org/abs/1612.01907",
-    year = "2016",
-    key = "KFASarticle"
-  )
+bibentry(bibtype = "Article",
+  title        = "{KFAS}: Exponential Family State Space Models in {R}",
+  author       = person(given = "Jouni",
+                        family = "Helske",
+                        email = "Jouni.Helske@jyu.fi"),
+  journal      = "Journal of Statistical Software",
+  year         = "2017",
+  volume       = "78",
+  number       = "10",
+  pages        = "1--39",
+  doi          = "10.18637/jss.v078.i10",
+
+  header       = "To cite KFAS in publications use:",
+  textVersion  =
+  paste("Jouni Helske (2017).",
+        "KFAS: Exponential Family State Space Models in R.",
+        "Journal of Statistical Software, 78(10), 1-39.",
+        "doi:10.18637/jss.v078.i10")
 )
+

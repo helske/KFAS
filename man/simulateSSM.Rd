@@ -114,4 +114,3 @@ lines(out_obs$alpha, lwd=2)
 Durbin J. and Koopman, S.J. (2002). A simple and efficient simulation smoother for
   state space time series analysis, Biometrika, Volume 89, Issue 3
 }
-

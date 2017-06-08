@@ -1,6 +1,6 @@
 Package: KFAS
-Version: 1.2.7
-Date: 2017-04-26
+Version: 1.2.8
+Date: 2017-06-08
 Title: Kalman Filter and Smoother for Exponential Family State Space Models
 Author: Jouni Helske <jouni.helske@jyu.fi>
 Maintainer: Jouni Helske <jouni.helske@jyu.fi>
@@ -22,4 +22,4 @@ Description: State space modelling is an efficient and flexible method for
 License: GPL (>= 2)
 BugReports: https://github.com/helske/KFAS/issues
 VignetteBuilder: knitr
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1

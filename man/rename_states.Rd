@@ -29,4 +29,3 @@ test_these <- c("y", "Z", "H", "T", "R", "Q", "a1", "P1", "P1inf")
 identical(custom_model[test_these], ll_model[test_these])
 
 }
-

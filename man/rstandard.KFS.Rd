@@ -77,4 +77,3 @@ plot(cbind(
     state = rstandard(out, "state")),
   main = "recursive and auxiliary residuals")
 }
-

@@ -75,7 +75,7 @@ render_sweave()
 library("KFAS")
 @
 
-Accepted to \emph{Journal of Statistical Software}. 
+Vignette based on the corresponding paper at \emph{Journal of Statistical Software}.
 
 \section{Introduction}
 
@@ -402,7 +402,7 @@ For computing the marginally standardized residuals, multivariate versions of $F
 \begin{equation*}
 v_{i,t} F_{i_t}^{-\frac{1}{2}}, \quad j=1,\ldots,p,\quad t=d+1\ldots,n.
 \end{equation*}
-These multivariate residuals depend on the ordering of the series, so if the residual diagnostics exhibit deviations from model assumptions, then the interpretation is somewhat more difficult than when using the marginal residuals. Therefore marginal residuals might be preferred. Note that if we want quadratic form residuals $(y_t- \hat y_t)F_t^{-1}(y_t- \hat y_t)$, then the ordering of the series does not matter.
+These multivariate residuals depend on the ordering of the series, so if the residual diagnostics exhibit deviations from model assumptions, then the interpretation is somewhat more difficult than when using the marginal residuals. Therefore marginal residuals might be preferred. Note that if we want quadratic form residuals $(y_t- \hat y_t)'F_t^{-1}(y_t- \hat y_t)$, then the ordering of the series does not matter.
 
 The recursive residuals are defined just for the non-diffuse phase, which is problematic if the model contains a long diffuse phase, for example, because a dummy variable with a diffuse prior is incorporated to the model. This is because the diffuse phase cannot end before the dummy variable changes its value at least once. In order to circumvent this, one can use a proper but highly non-informative prior distribution for the intervention variable when computing the residuals, which should have a negligible effect on the visual inspection of the residual plots.
 
@@ -865,7 +865,7 @@ Time-varying regression coefficients and random effects can be incorporated to t
 
 \subsection[Comparison to INLA]{Comparison to \pkg{INLA}}\label{comparison}
 
-\textbf{As \pkg{INLA} is not available on CRAN, the codes in this section are commented out in the vignette.}
+\textbf{As \pkg{INLA} is not available on CRAN, the codes in this section are commented out in the vignette. See the original paper at Journal of Statistical Software.}
 
 I will now briefly compare \pkg{KFAS} and \pkg{INLA}. As an illustration, we reanalyze the salmonella data analyzed by \citet{Margolin} which is available from \pkg{INLA}. The data consists of the number of revertant colonies of TA98 Salmonella with different doses of quinoline. We model the number of colonies as a Poisson GLMM with two explanatory variables and a random intercept term which tries to capture the overdispersion in the data. The codes for inference with \pkg{INLA} used here can be found from \url{http://www.r-inla.org/examples/volume-1/code-for-salm-example}. The \pkg{INLA} is not available at CRAN but can be downloaded from \url{http://www.math.ntnu.no/inla/R/stable}.
 

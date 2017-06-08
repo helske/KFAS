@@ -220,4 +220,3 @@ Koopman, S.J. and Durbin J. (2003).  Filtering and smoothing of state vector
 for diffuse state space models, Journal of Time Series Analysis, Vol. 24,
 No. 1.  \cr
 }
-

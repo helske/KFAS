@@ -45,4 +45,3 @@ is.SSModel(model)
 model$H <- 1
 is.SSModel(model)
 }
-

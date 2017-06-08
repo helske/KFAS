@@ -29,4 +29,3 @@ d <- diag(diag(l))
 diag(l) <- 1
 all.equal(l \%*\% d \%*\% t(l), m, tol = 1e-15)
 }
-

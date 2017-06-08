@@ -124,7 +124,10 @@
 #' See \code{\link{transformSSM}} for more details.
 #'
 #'
-#' @references Koopman, S.J. and Durbin J. (2000).  Fast filtering and
+#' @references Helske J. (2017). KFAS: Exponential Family State Space Models in R,
+#' Journal of Statistical Software, 78(10), 1-39. doi:10.18637/jss.v078.i10
+#' 
+#' Koopman, S.J. and Durbin J. (2000).  Fast filtering and
 #' smoothing for non-stationary time series models, Journal of American
 #' Statistical Assosiation, 92, 1630-38.
 #'
@@ -356,7 +359,20 @@
 #' out_nosim
 #' out_sim
 #' }
-#'
+#' 
+#' ## using deterministic inputs in observation and state equations
+#' model_Nile <- SSModel(Nile ~ 
+#'   SSMcustom(Z=1, T = 1, R = 0, a1 = 100, P1inf = 0, P1 = 0, Q = 0, state_names = "d_t") +
+#'   SSMcustom(Z=0, T = 1, R = 0, a1 = 100, P1inf = 0, P1 = 0, Q = 0, state_names = "c_t") +
+#'   SSMtrend(1, Q = 1500), H = 15000)
+#' model_Nile$T
+#' model_Nile$T[1, 3, 1] <- 1 # add c_t to level
+#' model_Nile0 <- SSModel(Nile ~ 
+#'   SSMtrend(2, Q = list(1500, 0), a1 = c(0, 100), P1inf = diag(c(1, 0))), 
+#'   H = 15000)
+#' 
+#' ts.plot(KFS(model_Nile0)$mu, KFS(model_Nile)$mu, col = 1:2)
+#' 
 #' ##########################################################
 #' ### Examples of generalized linear modelling with KFAS ###
 #' ##########################################################

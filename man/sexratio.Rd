@@ -50,4 +50,3 @@ ts.plot(cbind(sexratio.smooth, sexratio.ci, sexratio.smooth2, sexratio.ci2),
 }
 }
 \keyword{datasets}
-
