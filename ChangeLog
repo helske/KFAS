@@ -1,3 +1,8 @@
+Changes from version 1.2.8 to 1.2.9:
+   * Fixed a bug in model building funcitons which caused P1inf to become zero 
+     if P1 contained even a single nonzero value.
+   * R codes are now byte-compiled.
+   
 Changes from version 1.2.7 to 1.2.8:
    * Updated CITATION to refer the JSS paper.
 

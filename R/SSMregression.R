@@ -147,7 +147,7 @@ SSMregression <-  function(rformula, data, type, Q, index, R, a1, P1,
       stop("P1inf must be a (m x m) diagonal matrix where m is the number of states. ")
     P1inf <- matrix(P1inf, m, m)
   }
-  diag(P1inf)[diag(P1) > 0 || is.na(diag(P1))] <- 0
+  diag(P1inf)[diag(P1) > 0 | is.na(diag(P1))] <- 0
   if (missing(Q)) {
     k <- 0
     Q <- NULL

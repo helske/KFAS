@@ -50,7 +50,7 @@ Jouni Helske\\
 University of Jyv\"askyl\"a\\
 Department of Mathematics and Statistics\\
 40014 Jyv\"askyl\"a, Finland\\
-E-mail: \email{Jouni.Helske@jyu.fi}
+E-mail: \email{Jouni.Helske@iki.fi}
 }
 %% It is also possible to add a telephone and fax number
 %% before the e-mail in the following format:

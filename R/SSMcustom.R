@@ -80,7 +80,7 @@ SSMcustom <- function(Z, T, R, Q, a1, P1, P1inf, index, n = 1, state_names = NUL
         stop("Misspecified P1inf, argument P1inf must be a (m x m) matrix, where m is the number of states.")
     }
   }
-  diag(P1inf)[diag(P1) > 0 || is.na(diag(P1))] <- 0
+  diag(P1inf)[diag(P1) > 0 | is.na(diag(P1))] <- 0
   if (is.null(state_names)) {
     state_names <- paste0("custom", 1:m)
   } else {
