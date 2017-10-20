@@ -70,7 +70,7 @@ rstandard.KFS <- function(model,
   if (type == "state" && any(model$model$distribution != "gaussian"))
     stop("State residuals are only supported for fully gaussian models.")
 
-  res_names <- if (type == "state") rownames(model$model$a1) else colnames(model$model$y)
+  res_names <- if (type == "state") attr(model$model, "eta_types") else colnames(model$model$y)
   x <- do.call(paste0(type,"_standardized"), list(model,stype))
   return(ts(drop(x), start = start(model$model$y), frequency = frequency(model$model$y),
     names = res_names))

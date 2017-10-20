@@ -1,3 +1,7 @@
+Changes from version 1.2.9 to 1.2.10:
+   * Fixed a bug in rstandard with state disturbance residuals caused by 
+     dimension mismatch between state and disturbance variables.
+
 Changes from version 1.2.8 to 1.2.9:
    * Fixed a bug in model building funcitons which caused P1inf to become zero 
      if P1 contained even a single nonzero value.
