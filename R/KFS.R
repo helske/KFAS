@@ -86,6 +86,13 @@
 #'   \item{Pinf}{Diffuse part of the error covariance matrix of predicted states.
 #'   Only returned for Gaussian models. }
 #'
+#'   \item{att}{Filtered estimates of states, \eqn{a_tt = E(\alpha_t | y_{t},
+#'   \ldots, y_{1})}{a[t] = E(\alpha[t] | y[t], \ldots, y[1])}. }
+#'
+#'   \item{Ptt}{Non-diffuse parts of the error covariance matrix of filtered states,
+#'   \eqn{P_tt = Var(\alpha_t | y_{t}, \ldots, y_{1})
+#'   }{P[t] = Var(\alpha[t] | y[t], \ldots, y[1])}. }
+#'   
 #'   \item{t}{One-step-ahead predictions of signals, \eqn{E(Z_t\alpha_t | y_{t-1},
 #'   \ldots, y_{1})}{E(Z[t]\alpha[t] | y[t-1], \ldots, y[1])}. }
 #'
@@ -405,7 +412,7 @@ KFS <-  function(model, filtering, smoothing, simplify = TRUE,
 
   filtersignal <- ("signal" %in% filtering) || ("mean" %in% filtering)
 
-  filterout <- .Fortran(fkfilter, NAOK = TRUE, model$y, ymiss, tv,
+  filterout <- .Fortran(fkfilter2, NAOK = TRUE, model$y, ymiss, tv,
     model$Z, model$H, model$T, model$R, model$Q, model$a1, P1 = model$P1, model$P1inf,
     p, n, m, k, d = integer(1), j = integer(1), a = array(0, dim = c(m, n + 1)),
     P = array(0, dim = c(m, m, n + 1)), v = array(0, dim = c(p, n)),
@@ -413,7 +420,8 @@ KFS <-  function(model, filtering, smoothing, simplify = TRUE,
     Pinf = array(0, dim = c(m, m, n + 1)), Finf = array(0, dim = c(p, n)),
     Kinf = array(0, dim = c(m, p, n)), lik = double(1), model$tol,
     as.integer(sum(model$P1inf)), theta = array(0, c(filtersignal * n, p)),
-    P_theta = array(0, c(p, p, filtersignal * n)), as.integer(filtersignal))
+    P_theta = array(0, c(p, p, filtersignal * n)), as.integer(filtersignal), 
+    att = array(0, dim = c(m, n)), Ptt = array(0, dim = c(m, m, n)))
 
   if (filterout$d == n & filterout$j == p)
     warning("Model is degenerate, diffuse phase did not end.")
@@ -448,9 +456,11 @@ KFS <-  function(model, filtering, smoothing, simplify = TRUE,
     if (all(model$distribution == "gaussian")) {
       filterout$v[as.logical(t(ymiss))] <- NA
       if ("state" %in% filtering) {
-        rownames(filterout$a) <- rownames(model$a1)
+        rownames(filterout$a) <- rownames(filterout$att) <- rownames(model$a1)
         out <- c(out, list(a = ts(t(filterout$a), start = start(model$y),
-          frequency = frequency(model$y)), P = filterout$P, Pinf = filterout$Pinf))
+          frequency = frequency(model$y)), P = filterout$P, Pinf = filterout$Pinf,
+          att = ts(t(filterout$att), start = start(model$y),
+            frequency = frequency(model$y)), Ptt = filterout$Ptt))
       }
       if ("mean" %in% filtering) {
         colnames(filterout$theta) <- colnames(model$y)

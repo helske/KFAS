@@ -71,6 +71,13 @@ What \code{KFS} returns depends on the arguments \code{filtering},
   \item{Pinf}{Diffuse part of the error covariance matrix of predicted states.
   Only returned for Gaussian models. }
 
+  \item{att}{Filtered estimates of states, \eqn{a_tt = E(\alpha_t | y_{t},
+  \ldots, y_{1})}{a[t] = E(\alpha[t] | y[t], \ldots, y[1])}. }
+
+  \item{Ptt}{Non-diffuse parts of the error covariance matrix of filtered states,
+  \eqn{P_tt = Var(\alpha_t | y_{t}, \ldots, y_{1})
+  }{P[t] = Var(\alpha[t] | y[t], \ldots, y[1])}. }
+  
   \item{t}{One-step-ahead predictions of signals, \eqn{E(Z_t\alpha_t | y_{t-1},
   \ldots, y_{1})}{E(Z[t]\alpha[t] | y[t-1], \ldots, y[1])}. }
 

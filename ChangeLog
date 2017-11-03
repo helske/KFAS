@@ -1,3 +1,7 @@
+Changes from version 1.2.10 to 1.3.0:
+   * KFS now returns also filtered state estimates for Gaussian models 
+     (previously only one-step ahead predictions were given).
+     
 Changes from version 1.2.9 to 1.2.10:
    * Fixed a bug in rstandard with state disturbance residuals caused by 
      dimension mismatch between state and disturbance variables.
