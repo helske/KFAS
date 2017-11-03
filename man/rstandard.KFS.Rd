@@ -5,7 +5,7 @@
 \title{Extract Standardized Residuals from KFS output}
 \usage{
 \method{rstandard}{KFS}(model, type = c("recursive", "pearson", "state"),
-  standardization_type = c("marginal", "cholesky"), ...)
+  standardization_type = c("marginal", "cholesky"), zerotol = 0, ...)
 }
 \arguments{
 \item{model}{KFS object}
@@ -14,6 +14,9 @@
 
 \item{standardization_type}{Type of standardization. Either \code{"marginal"}
 (default) for marginal standardization or  \code{"cholesky"} for Cholesky-type standardization.}
+
+\item{zerotol}{Tolerance parameter for positivity checking in standardization. Default is zero. 
+The values of D <= zerotol * max(D, 0) are deemed to zero.}
 
 \item{...}{Ignored.}
 }

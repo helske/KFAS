@@ -4,7 +4,7 @@
 \alias{plot.SSModel}
 \title{Diagnostic Plots of State Space Models}
 \usage{
-\method{plot}{SSModel}(x, nsim = 0, ...)
+\method{plot}{SSModel}(x, nsim = 0, zerotol = 0, ...)
 }
 \arguments{
 \item{x}{Object of class \code{SSModel}.}
@@ -16,6 +16,9 @@ usual Gaussian filtering/smoothing so that the smoothed state estimates
 equals to the conditional mode of \eqn{p(\alpha_t|y)}{p(\alpha[t]|y)}.
 In case of \code{nsim = 0}, the mean estimates and their variances are computed using
 the Delta method (ignoring the covariance terms).}
+
+\item{zerotol}{Tolerance parameter for positivity checking in standardization. Default is zero. 
+The values of D <= zerotol * max(D, 0) are deemed to zero.}
 
 \item{...}{Ignored.}
 }

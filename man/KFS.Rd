@@ -215,6 +215,15 @@ relate to the conditional mode of \eqn{p(\alpha|y)}. When using importance
 sampling (\code{nsim>0}), results correspond to the conditional mean of
  \eqn{p(\alpha|y)}.
 }
+\examples{
+set.seed(1)
+x <- cumsum(rnorm(100, 0, 0.1))
+y <- rnorm(100, x, 0.1)
+model <- SSModel(y ~ SSMtrend(1, Q = 0.01), H = 0.01)
+out <- KFS(model)
+ts.plot(ts(x), out$a, out$att, out$alpha, col = 1:4)
+
+}
 \references{
 Koopman, S.J. and Durbin J. (2000).  Fast filtering and
 smoothing for non-stationary time series models, Journal of American
@@ -226,4 +235,7 @@ Methods. Oxford: Oxford University Press.  \cr
 Koopman, S.J. and Durbin J. (2003).  Filtering and smoothing of state vector
 for diffuse state space models, Journal of Time Series Analysis, Vol. 24,
 No. 1.  \cr
+}
+\seealso{
+\code{\link{KFAS}} for examples
 }
