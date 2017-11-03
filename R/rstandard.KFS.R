@@ -47,6 +47,8 @@
 #' @param type Type of residuals. See details.
 #' @param standardization_type Type of standardization. Either \code{"marginal"}
 #'   (default) for marginal standardization or  \code{"cholesky"} for Cholesky-type standardization.
+#' @param zerotol Tolerance parameter for positivity checking in standardization. Default is zero. 
+#' The values of D <= zerotol * max(D, 0) are deemed to zero.
 #' @param ... Ignored.
 #' @examples
 #' modelNile <- SSModel(Nile ~ SSMtrend(1, Q = list(matrix(NA))), H = matrix(NA))
@@ -62,7 +64,7 @@
 #'   main = "recursive and auxiliary residuals")
 rstandard.KFS <- function(model,
   type = c("recursive", "pearson", "state"),
-  standardization_type = c("marginal","cholesky"), ...) {
+  standardization_type = c("marginal","cholesky"), zerotol = 0, ...) {
 
   type <- match.arg(type)
   stype <- match.arg(standardization_type)
@@ -71,7 +73,7 @@ rstandard.KFS <- function(model,
     stop("State residuals are only supported for fully gaussian models.")
 
   res_names <- if (type == "state") attr(model$model, "eta_types") else colnames(model$model$y)
-  x <- do.call(paste0(type,"_standardized"), list(model,stype))
+  x <- do.call(paste0(type,"_standardized"), list(model, stype, zerotol))
   return(ts(drop(x), start = start(model$model$y), frequency = frequency(model$model$y),
     names = res_names))
 }

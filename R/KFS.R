@@ -33,6 +33,15 @@
 #'  \eqn{p(\alpha|y)}.
 #'
 #' @export
+#' @examples
+#' set.seed(1)
+#' x <- cumsum(rnorm(100, 0, 0.1))
+#' y <- rnorm(100, x, 0.1)
+#' model <- SSModel(y ~ SSMtrend(1, Q = 0.01), H = 0.01)
+#' out <- KFS(model)
+#' ts.plot(ts(x), out$a, out$att, out$alpha, col = 1:4)
+#' 
+#' @seealso \code{\link{KFAS}} for examples
 #' @importFrom stats start frequency tsp<- tsp ts
 #' @param model Object of class \code{SSModel}.
 #' @param filtering Types of filtering. Possible choices are \code{"state"},

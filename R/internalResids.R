@@ -27,7 +27,7 @@ varianceSmoother <- function(object) {
   vars
 }
 
-recursive_standardized <- function(object, stype) {
+recursive_standardized <- function(object, stype, zerotol = 0) {
   
   if(any(object$model$distribution !=  "gaussian") && !("m" %in% names(object)))
     stop("KFS object does not contain filtered means. ")
@@ -84,7 +84,7 @@ recursive_standardized <- function(object, stype) {
   res
 }
 
-pearson_standardized <- function(object, stype) {
+pearson_standardized <- function(object, stype, zerotol = 0) {
   
   n <- attr(object$model, "n")
   
@@ -104,7 +104,7 @@ pearson_standardized <- function(object, stype) {
           L <- ldl(object$model$H[yobs, yobs, (t - 1) * tv + 1] - object$V_mu[yobs, yobs, t])
           D <- diag(L)
           diag(L) <- 1
-          pos <- D > sqrt(.Machine$double.eps) * max(D, 0)
+          pos <- D > zerotol * max(D, 0)
           res[t, yobs][pos] <- (1 / sqrt(D[pos]) * 
               backsolve(L[pos, pos], diag(sum(pos)), upper.tri = FALSE)) %*% res[t, yobs][pos]
           res[t, yobs][!pos] <- NA
@@ -115,7 +115,7 @@ pearson_standardized <- function(object, stype) {
         yobs <- !is.na(res[t,])
         if(sum(yobs) > 0){
           D <- sqrt((object$model$H[,,(t-1)*tv+1] - object$V_mu[,,t])[1 + 0:(p - 1) * (p + 1)])
-          pos <- D > sqrt(.Machine$double.eps) * max(D, 0)
+          pos <- D > zerotol * max(D, 0)
           res[t, pos] <- res[t, pos] / D[pos]
           res[t, !pos] <- NA
         }
@@ -135,7 +135,7 @@ pearson_standardized <- function(object, stype) {
           L <- ldl(diag(vars[t,yobs], p) - object$V_mu[yobs,yobs,t])
           D <- diag(L)
           diag(L) <- 1
-          pos <- D > sqrt(.Machine$double.eps) * max(D, 0)
+          pos <- D > zerotol * max(D, 0)
           res[t, yobs][pos] <- (1 / sqrt(D[pos]) * 
               backsolve(L[pos, pos], diag(sum(pos)), upper.tri = FALSE)) %*% res[t, yobs][pos]
           res[t, yobs][!pos] <- NA
@@ -146,7 +146,7 @@ pearson_standardized <- function(object, stype) {
         yobs <- !is.na(res[t, ])
         if(sum(yobs) > 0){
           D <- sqrt(vars[t,] - object$V_mu[,,t][1 + 0:(p - 1) * (p + 1)])
-          pos <- D > sqrt(.Machine$double.eps) * max(D, 0)
+          pos <- D > zerotol * max(D, 0)
           res[t, pos] <- res[t, pos] / D[pos]
           res[t, !pos] <- NA
         }
@@ -156,7 +156,7 @@ pearson_standardized <- function(object, stype) {
   res
 }
 
-state_standardized <- function(object, stype) {
+state_standardized <- function(object, stype, zerotol = 0) {
   
   if (!("etahat" %in% names(object)))
     stop("KFS object needs to contain smoothed estimates of state disturbances eta.")
@@ -171,7 +171,7 @@ state_standardized <- function(object, stype) {
       L <- ldl(object$model$Q[, , i * tvq + 1] - object$V_eta[, , i])
       D <- diag(L)
       diag(L) <- 1
-      pos <- D > sqrt(.Machine$double.eps) * max(D, 0)
+      pos <- D > zerotol * max(D, 0)
       eta[i, pos] <- (1 / sqrt(D[pos]) * 
           backsolve(L[pos, pos], diag(sum(pos)), upper.tri = FALSE)) %*% eta[i, pos]
       eta[i, !pos] <- NA
@@ -179,7 +179,7 @@ state_standardized <- function(object, stype) {
   } else {
     for (i in 1:(n - 1)){        
       D <- sqrt((object$model$Q[, , i * tvq + 1] - object$V_eta[, , i])[1 + 0:(k - 1) * (k + 1)])
-      pos <- D > sqrt(.Machine$double.eps) * max(D, 0)
+      pos <- D > zerotol * max(D, 0)
       eta[i, pos] <- eta[i, pos] / D[pos]
       eta[i, !pos] <- NA
     }
