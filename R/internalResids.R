@@ -107,17 +107,17 @@ pearson_standardized <- function(object, stype, zerotol = 0) {
           pos <- D > zerotol * max(D, 0)
           res[t, yobs][pos] <- (1 / sqrt(D[pos]) * 
               backsolve(L[pos, pos], diag(sum(pos)), upper.tri = FALSE)) %*% res[t, yobs][pos]
-          res[t, yobs][!pos] <- NA
+          res[t, yobs][!pos & res[t, yobs] != 0] <- NA
         }
       }
     } else {
       for(t in 1:n){
         yobs <- !is.na(res[t,])
         if(sum(yobs) > 0){
-          D <- sqrt((object$model$H[,,(t-1)*tv+1] - object$V_mu[,,t])[1 + 0:(p - 1) * (p + 1)])
+          D <- (object$model$H[,,(t-1)*tv+1] - object$V_mu[,,t])[1 + 0:(p - 1) * (p + 1)]
           pos <- D > zerotol * max(D, 0)
-          res[t, pos] <- res[t, pos] / D[pos]
-          res[t, !pos] <- NA
+          res[t, pos] <- res[t, pos] / sqrt(D[pos])
+          res[t, !pos & res[t, yobs] != 0] <- NA
         }
       }
     }
@@ -138,17 +138,17 @@ pearson_standardized <- function(object, stype, zerotol = 0) {
           pos <- D > zerotol * max(D, 0)
           res[t, yobs][pos] <- (1 / sqrt(D[pos]) * 
               backsolve(L[pos, pos], diag(sum(pos)), upper.tri = FALSE)) %*% res[t, yobs][pos]
-          res[t, yobs][!pos] <- NA
+          res[t, yobs][!pos & res[t, yobs] != 0] <- NA
         }
       }       
     } else {
       for(t in 1:n){
         yobs <- !is.na(res[t, ])
         if(sum(yobs) > 0){
-          D <- sqrt(vars[t,] - object$V_mu[,,t][1 + 0:(p - 1) * (p + 1)])
+          D <- vars[t,] - object$V_mu[,,t][1 + 0:(p - 1) * (p + 1)]
           pos <- D > zerotol * max(D, 0)
-          res[t, pos] <- res[t, pos] / D[pos]
-          res[t, !pos] <- NA
+          res[t, pos] <- res[t, pos] / sqrt(D[pos])
+          res[t, !pos & res[t, yobs] != 0] <- NA
         }
       }
     }
@@ -174,14 +174,14 @@ state_standardized <- function(object, stype, zerotol = 0) {
       pos <- D > zerotol * max(D, 0)
       eta[i, pos] <- (1 / sqrt(D[pos]) * 
           backsolve(L[pos, pos], diag(sum(pos)), upper.tri = FALSE)) %*% eta[i, pos]
-      eta[i, !pos] <- NA
+      eta[i, !pos & eta[i,] != 0] <- NA
     }
   } else {
     for (i in 1:(n - 1)){        
-      D <- sqrt((object$model$Q[, , i * tvq + 1] - object$V_eta[, , i])[1 + 0:(k - 1) * (k + 1)])
+      D <- (object$model$Q[, , i * tvq + 1] - object$V_eta[, , i])[1 + 0:(k - 1) * (k + 1)]
       pos <- D > zerotol * max(D, 0)
-      eta[i, pos] <- eta[i, pos] / D[pos]
-      eta[i, !pos] <- NA
+      eta[i, pos] <- eta[i, pos] / sqrt(D[pos])
+      eta[i, !pos & eta[i,] != 0] <- NA
     }
   }
   eta[n, ] <- 0
