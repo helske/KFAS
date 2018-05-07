@@ -139,7 +139,7 @@ SSMseasonal <- function(period, Q, sea.type = c("dummy", "trigonometric"),
       stop("Argument harmonics can be used only for univariate components. ")
     if(sea.type != "trigonometric") 
       stop("Subharmonics can be used only in case of trigonometric seasonal. ")
-    ind <- rep(harmonics, each = 2) * rep(1:2, each = 2) + 0:1
+    ind <- rep(harmonics, each = 2) * 2 - 1:0
     Z <- Z[, ind, drop = FALSE]
     T <- T[ind, ind]
     R <- R[ind, ind]
