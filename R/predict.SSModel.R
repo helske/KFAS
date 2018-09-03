@@ -305,7 +305,7 @@ predict.SSModel <- function(object, newdata, n.ahead,
           nsim = nsim, antithetics = TRUE, maxiter = maxiter, filtered = filtered)
         nsim <- as.integer(4 * nsim)
         if (!identical(states, as.integer(1:m))) {
-          imp$samples <- .Fortran(fzalpha, as.integer(dim(object$Z)[3] > 1),
+          imp$samples <- .Fortran(fzalpha, NAOK = TRUE, as.integer(dim(object$Z)[3] > 1),
             object$Z, imp$samples, signal = array(0, c(n, p, nsim)),
             p, m, n, nsim, length(states), states)$signal
         }
@@ -326,7 +326,7 @@ predict.SSModel <- function(object, newdata, n.ahead,
             imp$samples[timespan, i, ] <- imp$samples[timespan, i, ] + log(object$u[timespan,
               i])
         }
-        varmean <- .Fortran(fvarmeanw, imp$samples[timespan, , , drop = FALSE], w,
+        varmean <- .Fortran(fvarmeanw, NAOK = TRUE, imp$samples[timespan, , , drop = FALSE], w,
           p, length(timespan),
           nsim, mean = array(0, c(length(timespan), p)),
           var = array(0, c(length(timespan), p)), as.integer(se.fit))
