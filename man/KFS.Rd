@@ -6,7 +6,8 @@
 Family State Space Models}
 \usage{
 KFS(model, filtering, smoothing, simplify = TRUE, transform = c("ldl",
-  "augment"), nsim = 0, theta, maxiter = 50, convtol = 1e-08)
+  "augment"), nsim = 0, theta, maxiter = 50, convtol = 1e-08,
+  return_model = TRUE)
 }
 \arguments{
 \item{model}{Object of class \code{SSModel}.}
@@ -48,6 +49,11 @@ approximation. Default is 50. Only used for non-Gaussian models.}
 
 \item{convtol}{Tolerance parameter for convergence checks for Gaussian
 approximation. Only used for non-Gaussian models.}
+
+\item{return_model}{Logical, indicating whether the original input model should be 
+returned as part of the output. Defaults to TRUE, but for large models can be set 
+to FALSE in order to save memory. However, many of the methods operating on the 
+output of \code{KFS} use this model so this will not work if \code{return_model=FALSE}.}
 }
 \value{
 What \code{KFS} returns depends on the arguments \code{filtering},

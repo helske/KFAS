@@ -74,6 +74,10 @@
 #'   approximation. Default is 50. Only used for non-Gaussian models.
 #' @param convtol Tolerance parameter for convergence checks for Gaussian
 #'   approximation. Only used for non-Gaussian models.
+#' @param return_model Logical, indicating whether the original input model should be 
+#' returned as part of the output. Defaults to TRUE, but for large models can be set 
+#' to FALSE in order to save memory. However, many of the methods operating on the 
+#' output of \code{KFS} use this model so this will not work if \code{return_model=FALSE}.
 #' @return What \code{KFS} returns depends on the arguments \code{filtering},
 #'   \code{smoothing} and \code{simplify}, and whether the model is Gaussian or
 #'   not:
@@ -219,7 +223,7 @@
 #'
 KFS <-  function(model, filtering, smoothing, simplify = TRUE,
   transform = c("ldl", "augment"), nsim = 0, theta, maxiter = 50,
-  convtol = 1e-08) {
+  convtol = 1e-08, return_model = TRUE) {
 
   # Check that the model object is of proper form
   is.SSModel(model, na.check = TRUE, return.logical = FALSE)
@@ -259,8 +263,15 @@ KFS <-  function(model, filtering, smoothing, simplify = TRUE,
   tv <- attr(model, "tv")
   ymiss <- is.na(model$y)
   storage.mode(ymiss) <- "integer"
+  if (return_model) {
   out <- list(model = model)
-
+  } else {
+    out <- list(model = "not stored")
+  }
+  # need to store them separately in case of model is not saved
+  out$all_gaussian <- all(model$distribution == "gaussian")
+  out$dims <- list(p = attr(model, "p"), m = attr(model, "m"), n = attr(model, "n"))
+  
   # non-Gaussian case
   if (any(model$distribution != "gaussian")) {
 
@@ -406,8 +417,16 @@ KFS <-  function(model, filtering, smoothing, simplify = TRUE,
     }
   }
 
+  
+  transform <- match.arg(arg = transform, choices = c("ldl", "augment"))
+  transformedZ <- transform == "ldl" && ("signal" %in% smoothing || "mean" %in% smoothing)
+  original_tvz <- dim(model$Z)[3] > 1
+  if (transformedZ){
+    originalZ <- model$Z # need for mean smoothing
+  } else originalZ <- double(1) 
+  
   if (all(model$distribution == "gaussian")) {
-    transform <- match.arg(arg = transform, choices = c("ldl", "augment"))
+  
     # Deal with the possible non-diagonality of H
     htol <- max(100, max(apply(model$H, 3, diag))) * .Machine$double.eps
     if (any(abs(apply(model$H, 3, "[", !diag(p))) > htol)) {
@@ -418,6 +437,7 @@ KFS <-  function(model, filtering, smoothing, simplify = TRUE,
       k <- attr(model, "k")
     } else KFS_transform <- "none"
   } else KFS_transform <- "none"
+  
 
   filtersignal <- ("signal" %in% filtering) || ("mean" %in% filtering)
 
@@ -492,7 +512,7 @@ KFS <-  function(model, filtering, smoothing, simplify = TRUE,
           frequency = frequency(model$y)), P_theta = filterout$P_theta))
       }
       if ("mean" %in% filtering) {
-        out$m <- out$model$y
+        out$m <- model$y
         out$P_mu <- array(0, c(p, p, n))
         for (i in 1:p) {
           out$m[, i] <- switch(model$distribution[i],
@@ -516,10 +536,7 @@ KFS <-  function(model, filtering, smoothing, simplify = TRUE,
 
 
   if (!("none" %in% smoothing)) {
-    transformedZ <- KFS_transform == "ldl" && ("signal" %in% smoothing || "mean" %in% smoothing)
-    if (transformedZ){
-      originalZ <- out$model$Z
-    } else originalZ <- double(1)
+    
     smoothout <- .Fortran(fgsmoothall, NAOK = TRUE, ymiss, tv, model$Z,
       model$H, model$T, model$R, model$Q, p, n, m,
       k, filterout$d, filterout$j, filterout$a, filterout$P, filterout$v,
@@ -539,7 +556,7 @@ KFS <-  function(model, filtering, smoothing, simplify = TRUE,
       thetahat = array(0, dim = c(p, n)*("signal" %in% smoothing || "mean" %in% smoothing)),
       V_theta = array(0, dim = c(p, p, n)*("signal" %in% smoothing || "mean" %in% smoothing)),
       as.integer(transformedZ),
-      originalZ, as.integer(dim(out$model$Z)[3] > 1),
+      originalZ, as.integer(original_tvz),
       as.integer(KFS_transform != "augment"),
       as.integer("state" %in% smoothing), as.integer("disturbance" %in% smoothing),
       as.integer(("signal" %in% smoothing || "mean" %in% smoothing)))
@@ -568,7 +585,7 @@ KFS <-  function(model, filtering, smoothing, simplify = TRUE,
       out$V_theta <- smoothout$V_theta
     }
     if ("mean" %in% smoothing) {
-      out$muhat <- out$model$y
+      out$muhat <- model$y
       out$V_mu <- array(0, c(p, p, n))
       for (i in 1:p) {
         out$muhat[, i] <- switch(model$distribution[i],

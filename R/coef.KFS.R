@@ -72,8 +72,9 @@ coef.KFS <- function(object, start = NULL, end = NULL, filtered = FALSE,
       several.ok = TRUE)
 
     if ("all" %in% states) {
-      states <- 1:attr(object$model, "m")
+      states <- 1:object$dims$m
     } else {
+      if (identical(object$model, "not stored")) stop("No model stored as part of KFS, cannot infer state types.")
       if ("trend" %in% states) {
         states <- c(states, "level", "slope")
       }
