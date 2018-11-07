@@ -6,14 +6,14 @@ nnd,nsim,epsplus,etaplus,aplus1,c,tol,info,antit,sim,nsim2,diff,marginal)
     implicit none
 
     integer, intent(in) ::  p, m, r, n,nnd,antit,nsim,sim,nsim2,rankp
-    integer, intent(in), dimension(n,p) :: ymiss
+    integer, intent(in), dimension(p,n) :: ymiss
     integer, intent(in), dimension(p) :: dist
     integer, intent(in), dimension(5) :: timevar
     integer, intent(inout) :: maxiter,marginal,info
     integer ::  j,t,info2
     double precision, intent(in) :: convtol,tol
-    double precision, intent(in), dimension(n,p) :: u
-    double precision, intent(in), dimension(n,p) :: yt
+    double precision, intent(in), dimension(p,n) :: u
+    double precision, intent(in), dimension(p,n) :: yt
     double precision, intent(in), dimension(p,m,(n-1)*timevar(1)+1) :: zt
     double precision, intent(in), dimension(m,m,(n-1)*timevar(3)+1) :: tt
     double precision, intent(in), dimension(m,r,(n-1)*timevar(4)+1) :: rtv
@@ -23,8 +23,8 @@ nnd,nsim,epsplus,etaplus,aplus1,c,tol,info,antit,sim,nsim2,diff,marginal)
     double precision, intent(inout), dimension(m,nsim) :: aplus1
     double precision, intent(in),dimension(nsim) :: c
     double precision, dimension(p,p,n) :: ht
-    double precision, dimension(n,p) :: ytilde
-    double precision, intent(inout), dimension(n,p) :: theta
+    double precision, dimension(p,n) :: ytilde
+    double precision, intent(inout), dimension(p,n) :: theta
     double precision, intent(inout), dimension(p,n,nsim) :: epsplus
     double precision, intent(inout), dimension(r,n,nsim) :: etaplus
     double precision, intent(inout) :: lik
@@ -59,30 +59,30 @@ nnd,nsim,epsplus,etaplus,aplus1,c,tol,info,antit,sim,nsim2,diff,marginal)
         select case(dist(j))
             case(2)
                 do t=1,n
-                    if(ymiss(t,j).EQ.0) then
-                        call dpoisf(yt(t,j), u(t,j)*exp(theta(t,j)), lik)
-                        call dnormf(ytilde(t,j), theta(t,j),sqrt(ht(j,j,t)), lik)
+                    if(ymiss(j,t).EQ.0) then
+                        call dpoisf(yt(j,t), u(j,t)*exp(theta(j,t)), lik)
+                        call dnormf(ytilde(j,t), theta(j,t),sqrt(ht(j,j,t)), lik)
                     end if
                 end do
             case(3)
                 do t=1,n
-                    if(ymiss(t,j).EQ.0) then
-                        call dbinomf(yt(t,j), u(t,j), exp(theta(t,j))/(1.0d0+exp(theta(t,j))), lik)
-                        call dnormf(ytilde(t,j), theta(t,j),sqrt(ht(j,j,t)), lik)
+                    if(ymiss(j,t).EQ.0) then
+                        call dbinomf(yt(j,t), u(j,t), exp(theta(j,t))/(1.0d0+exp(theta(j,t))), lik)
+                        call dnormf(ytilde(j,t), theta(j,t),sqrt(ht(j,j,t)), lik)
                     end if
                 end do
             case(4)
                 do t=1,n
-                    if(ymiss(t,j).EQ.0) then
-                        call dgammaf(yt(t,j), u(t,j), exp(theta(t,j))/u(t,j), lik)
-                        call dnormf(ytilde(t,j), theta(t,j),sqrt(ht(j,j,t)), lik)
+                    if(ymiss(j,t).EQ.0) then
+                        call dgammaf(yt(j,t), u(j,t), exp(theta(j,t))/u(j,t), lik)
+                        call dnormf(ytilde(j,t), theta(j,t),sqrt(ht(j,j,t)), lik)
                     end if
                 end do
             case(5)
                 do t=1,n
-                    if(ymiss(t,j).EQ.0) then
-                        call dnbinomf(yt(t,j), u(t,j), exp(theta(t,j)), lik)
-                        call dnormf(ytilde(t,j), theta(t,j),sqrt(ht(j,j,t)), lik)
+                    if(ymiss(j,t).EQ.0) then
+                        call dnbinomf(yt(j,t), u(j,t), exp(theta(j,t)), lik)
+                        call dnormf(ytilde(j,t), theta(j,t),sqrt(ht(j,j,t)), lik)
                     end if
                 end do
         end select
@@ -103,40 +103,40 @@ nnd,nsim,epsplus,etaplus,aplus1,c,tol,info,antit,sim,nsim2,diff,marginal)
             do j=1,p
                 select case(dist(j))
                     case(2)    !poisson
-                        tmp = exp(theta(:,j))
+                        tmp = exp(theta(j,:))
                         do t=1,n
-                            if(ymiss(t,j) .EQ. 0) then
+                            if(ymiss(j,t) .EQ. 0) then
                                 !  do i=1,nsim2
-                                w = w*exp(yt(t,j)*(tsim(j,t,:)-theta(t,j))-&
-                                u(t,j)*(exp(tsim(j,t,:))-tmp(t)))/&
-                                exp(-0.5d0/ht(j,j,t)*( (ytilde(t,j)-tsim(j,t,:))**2 - (ytilde(t,j)-theta(t,j))**2))
+                                w = w*exp(yt(j,t)*(tsim(j,t,:)-theta(j,t))-&
+                                u(j,t)*(exp(tsim(j,t,:))-tmp(t)))/&
+                                exp(-0.5d0/ht(j,j,t)*( (ytilde(j,t)-tsim(j,t,:))**2 - (ytilde(j,t)-theta(j,t))**2))
                               !  end do
                             end if
                         end do
                     case(3) !binomial
-                        tmp = log(1.0d0+exp(theta(:,j)))
+                        tmp = log(1.0d0+exp(theta(j,:)))
                         do t=1,n
-                            if(ymiss(t,j) .EQ. 0) then
-                                w = w*exp( yt(t,j)*(tsim(j,t,:)-theta(t,j))-&
-                                u(t,j)*(log(1.0d0+exp(tsim(j,t,:)))-tmp(t)))/&
-                                exp(-0.5d0/ht(j,j,t)*( (ytilde(t,j)-tsim(j,t,:))**2 - (ytilde(t,j)-theta(t,j))**2))
+                            if(ymiss(j,t) .EQ. 0) then
+                                w = w*exp( yt(j,t)*(tsim(j,t,:)-theta(j,t))-&
+                                u(j,t)*(log(1.0d0+exp(tsim(j,t,:)))-tmp(t)))/&
+                                exp(-0.5d0/ht(j,j,t)*( (ytilde(j,t)-tsim(j,t,:))**2 - (ytilde(j,t)-theta(j,t))**2))
                             end if
                         end do
                     case(4) ! gamma
-                        tmp = exp(-theta(:,j))
+                        tmp = exp(-theta(j,:))
                         do t=1,n
-                            if(ymiss(t,j) .EQ. 0) then
-                                w = w*exp( u(t,j)*(yt(t,j)*(tmp(t)-exp(-tsim(j,t,:)))+theta(t,j)-tsim(j,t,:)))/&
-                                exp(-0.5d0/ht(j,j,t)*( (ytilde(t,j)-tsim(j,t,:))**2 - (ytilde(t,j)-theta(t,j))**2))
+                            if(ymiss(j,t) .EQ. 0) then
+                                w = w*exp( u(j,t)*(yt(j,t)*(tmp(t)-exp(-tsim(j,t,:)))+theta(j,t)-tsim(j,t,:)))/&
+                                exp(-0.5d0/ht(j,j,t)*( (ytilde(j,t)-tsim(j,t,:))**2 - (ytilde(j,t)-theta(j,t))**2))
                             end if
                         end do
                     case(5)
-                        tmp = exp(theta(:,j))
+                        tmp = exp(theta(j,:))
                         do t=1,n
-                            if(ymiss(t,j) .EQ. 0) then
-                                w = w*exp(yt(t,j)*(tsim(j,t,:)-theta(t,j)) +&
-                                (yt(t,j)+u(t,j))*log((u(t,j)+tmp(t))/(u(t,j)+exp(tsim(j,t,:)))))/&
-                                exp(-0.5d0/ht(j,j,t)*( (ytilde(t,j)-tsim(j,t,:))**2 - (ytilde(t,j)-theta(t,j))**2))
+                            if(ymiss(j,t) .EQ. 0) then
+                                w = w*exp(yt(j,t)*(tsim(j,t,:)-theta(j,t)) +&
+                                (yt(j,t)+u(j,t))*log((u(j,t)+tmp(t))/(u(j,t)+exp(tsim(j,t,:)))))/&
+                                exp(-0.5d0/ht(j,j,t)*( (ytilde(j,t)-tsim(j,t,:))**2 - (ytilde(j,t)-theta(j,t))**2))
                             end if
                         end do
                 end select

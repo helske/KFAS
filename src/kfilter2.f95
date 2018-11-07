@@ -8,9 +8,9 @@ at, pt, vt, ft,kt, pinf, finf, kinf, lik, tol,rankp,theta,thetavar,filtersignal,
     integer, intent(in) :: p, m, r, n,filtersignal
     integer, intent(inout) :: d, j, rankp
     integer :: t,tv
-    integer, intent(in), dimension(n,p) :: ymiss
+    integer, intent(in), dimension(p,n) :: ymiss
     integer, intent(in), dimension(5) :: timevar
-    double precision, intent(in), dimension(n,p) :: yt
+    double precision, intent(in), dimension(p,n) :: yt
     double precision, intent(in), dimension(p,m,(n-1)*timevar(1)+1) :: zt
     double precision, intent(in), dimension(p,p,(n-1)*timevar(2)+1) :: ht
     double precision, intent(in), dimension(m,m,(n-1)*timevar(3)+1) :: tt
@@ -25,7 +25,7 @@ at, pt, vt, ft,kt, pinf, finf, kinf, lik, tol,rankp,theta,thetavar,filtersignal,
     double precision, intent(inout), dimension(m,p,n) :: kt,kinf
     double precision, intent(inout) :: lik
     double precision, intent(inout), dimension(p,p,n) :: thetavar
-    double precision, intent(inout), dimension(n,p) :: theta
+    double precision, intent(inout), dimension(p,n) :: theta
     double precision, intent(inout), dimension(m,n) :: att
     double precision, intent(inout), dimension(m,m,n) :: ptt
     double precision, dimension(m,r) :: mr
@@ -57,7 +57,7 @@ at, pt, vt, ft,kt, pinf, finf, kinf, lik, tol,rankp,theta,thetavar,filtersignal,
             at(:,d+1) = at(:,d)
             pt(:,:,d+1) = pt(:,:,d)
             pinf(:,:,d+1) = pinf(:,:,d)
-            call dfilter1step2(ymiss(d,:),yt(d,:),transpose(zt(:,:,(d-1)*timevar(1)+1)),ht(:,:,(d-1)*timevar(2)+1),&
+            call dfilter1step2(ymiss(:,d),yt(:,d),transpose(zt(:,:,(d-1)*timevar(1)+1)),ht(:,:,(d-1)*timevar(2)+1),&
             tt(:,:,(d-1)*timevar(3)+1),rqr(:,:,(d-1)*tv+1),&
             at(:,d+1),pt(:,:,d+1),vt(:,d),ft(:,d),kt(:,:,d),pinf(:,:,d+1),finf(:,d),kinf(:,:,d),rankp,lik,tol,c,p,m,j, &
             att(:,d),ptt(:,:,d))
@@ -66,7 +66,7 @@ at, pt, vt, ft,kt, pinf, finf, kinf, lik, tol,rankp,theta,thetavar,filtersignal,
 
         if(rankp .EQ. 0 .AND. j .LT. p) then
            !non-diffuse filtering begins
-            call filter1step2(ymiss(d,:),yt(d,:),transpose(zt(:,:,(d-1)*timevar(1)+1)),ht(:,:,(d-1)*timevar(2)+1),&
+            call filter1step2(ymiss(:,d),yt(:,d),transpose(zt(:,:,(d-1)*timevar(1)+1)),ht(:,:,(d-1)*timevar(2)+1),&
             tt(:,:,(d-1)*timevar(3)+1),rqr(:,:,(d-1)*tv+1),&
             at(:,d+1),pt(:,:,d+1),vt(:,d),ft(:,d),kt(:,:,d),lik,tol,c,p,m,j, at(:, d), ptt(:,:, d))
         else
@@ -79,14 +79,14 @@ at, pt, vt, ft,kt, pinf, finf, kinf, lik, tol,rankp,theta,thetavar,filtersignal,
     do t = d+1, n
         at(:,t+1) = at(:,t)
         pt(:,:,t+1) = pt(:,:,t)
-        call filter1step2(ymiss(t,:),yt(t,:),transpose(zt(:,:,(t-1)*timevar(1)+1)),ht(:,:,(t-1)*timevar(2)+1),&
+        call filter1step2(ymiss(:,t),yt(:,t),transpose(zt(:,:,(t-1)*timevar(1)+1)),ht(:,:,(t-1)*timevar(2)+1),&
         tt(:,:,(t-1)*timevar(3)+1),rqr(:,:,(t-1)*tv+1),&
         at(:,t+1),pt(:,:,t+1),vt(:,t),ft(:,t),kt(:,:,t),lik,tol,c,p,m,0, att(:,t), ptt(:,:,t))
     end do
 
     if(filtersignal.EQ.1) then
         do t = 1, n
-            call dgemv('n',p,m,1.0d0,zt(:,:,(t-1)*timevar(1)+1),p,at(:,t),1,0.0d0,theta(t,:),1)
+            call dgemv('n',p,m,1.0d0,zt(:,:,(t-1)*timevar(1)+1),p,at(:,t),1,0.0d0,theta(:,t),1)
             call dsymm('r','u',p,m,1.0d0,pt(:,:,t),m,zt(:,:,(t-1)*timevar(1)+1),p,0.0d0,pm,p)
             call dgemm('n','t',p,p,m,1.0d0,pm,p,zt(:,:,(t-1)*timevar(1)+1),p,0.0d0,thetavar(:,:,t),p)
         end do

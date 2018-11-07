@@ -7,9 +7,9 @@ p, n, m, r,tol,rankp,thetahat,lik)
     integer, intent(in) ::  p, m, n,r,tv
     integer, intent(inout) :: rankp
     integer ::  t, i,d, j
-    integer, intent(in), dimension(n,p) :: ymiss
+    integer, intent(in), dimension(p,n) :: ymiss
     integer, intent(in), dimension(5) :: timevar
-    double precision, intent(in), dimension(n,p) :: yt
+    double precision, intent(in), dimension(p,n) :: yt
     double precision, intent(in), dimension(p,m,(n-1)*timevar(1)+1) :: zt
     double precision, intent(in), dimension(p,p,(n-1)*timevar(2)+1) :: ht
     double precision, intent(in), dimension(m,m,(n-1)*timevar(3)+1) :: tt
@@ -29,7 +29,7 @@ p, n, m, r,tol,rankp,thetahat,lik)
     double precision, dimension(r,n) :: etahat
     double precision :: c, meps
     double precision, external :: ddot
-    double precision, intent(inout), dimension(n,p) :: thetahat
+    double precision, intent(inout), dimension(p,n) :: thetahat
     double precision, intent(inout) :: lik
     double precision, dimension(p) :: epshat
 
@@ -49,13 +49,13 @@ p, n, m, r,tol,rankp,thetahat,lik)
     !diffuse filtering
         diffuse: do while(d .LT. n .AND. rankp .GT. 0)
             d = d+1
-            call dfilter1step(ymiss(d,:),yt(d,:),transpose(zt(:,:,(d-1)*timevar(1)+1)),ht(:,:,(d-1)*timevar(2)+1),&
+            call dfilter1step(ymiss(:,d),yt(:,d),transpose(zt(:,:,(d-1)*timevar(1)+1)),ht(:,:,(d-1)*timevar(2)+1),&
             tt(:,:,(d-1)*timevar(3)+1),rqr(:,:,(d-1)*tv+1),&
             at,pt,vt(:,d),ft(:,d),kt(:,:,d),pinf,finf(:,d),kinf(:,:,d),rankp,lik,tol,c,p,m,j)
         end do diffuse
 
         if(rankp .EQ. 0 .AND. j .LT. p) then
-            call filter1step(ymiss(d,:),yt(d,:),transpose(zt(:,:,(d-1)*timevar(1)+1)),ht(:,:,(d-1)*timevar(2)+1),&
+            call filter1step(ymiss(:,d),yt(:,d),transpose(zt(:,:,(d-1)*timevar(1)+1)),ht(:,:,(d-1)*timevar(2)+1),&
             tt(:,:,(d-1)*timevar(3)+1),rqr(:,:,(d-1)*tv+1),&
             at,pt,vt(:,d),ft(:,d),kt(:,:,d),lik,tol,c,p,m,j)
 
@@ -67,7 +67,7 @@ p, n, m, r,tol,rankp,thetahat,lik)
 
     !Non-diffuse filtering continues from t=d+1, i=1
     do t = d+1, n
-        call filter1step(ymiss(t,:),yt(t,:),transpose(zt(:,:,(t-1)*timevar(1)+1)),ht(:,:,(t-1)*timevar(2)+1),&
+        call filter1step(ymiss(:,t),yt(:,t),transpose(zt(:,:,(t-1)*timevar(1)+1)),ht(:,:,(t-1)*timevar(2)+1),&
         tt(:,:,(t-1)*timevar(3)+1),rqr(:,:,(t-1)*tv+1),&
         at,pt,vt(:,t),ft(:,t),kt(:,:,t),lik,tol,c,p,m,0)
 
@@ -82,7 +82,7 @@ p, n, m, r,tol,rankp,thetahat,lik)
     rt0 = 0.0d0
 
     do t = n, d+1, -1
-        call smooth1step(ymiss(t,:), transpose(zt(:,:,(t-1)*timevar(1)+1)), ht(:,:,(t-1)*timevar(2)+1), &
+        call smooth1step(ymiss(:,t), transpose(zt(:,:,(t-1)*timevar(1)+1)), ht(:,:,(t-1)*timevar(2)+1), &
         tt(:,:,(t-1)*timevar(3)+1), rtv(:,:,(t-1)*timevar(4)+1), qt(:,:,(t-1)*timevar(5)+1), vt(:,t), &
         ft(:,t),kt(:,:,t), im,p,m,r,1,rt0,etahat(:,t),epshat,.FALSE.)
     end do
@@ -90,16 +90,16 @@ p, n, m, r,tol,rankp,thetahat,lik)
     if(d .GT. 0) then
         t = d
         if(j .LT. p) then
-            call smooth1step(ymiss(t,:), transpose(zt(:,:,(t-1)*timevar(1)+1)), ht(:,:,(t-1)*timevar(2)+1), &
+            call smooth1step(ymiss(:,t), transpose(zt(:,:,(t-1)*timevar(1)+1)), ht(:,:,(t-1)*timevar(2)+1), &
             tt(:,:,(t-1)*timevar(3)+1), rtv(:,:,(t-1)*timevar(4)+1), qt(:,:,(t-1)*timevar(5)+1), vt(:,t), &
             ft(:,t),kt(:,:,t), im,p,m,r,j+1,rt0,etahat(:,t),epshat,.FALSE.)
         end if
         rt1 = 0.0d0
-        call dsmooth1step(ymiss(t,:), transpose(zt(:,:,(t-1)*timevar(1)+1)), ht(:,:,(t-1)*timevar(2)+1), &
+        call dsmooth1step(ymiss(:,t), transpose(zt(:,:,(t-1)*timevar(1)+1)), ht(:,:,(t-1)*timevar(2)+1), &
         tt(:,:,(t-1)*timevar(3)+1), rtv(:,:,(t-1)*timevar(4)+1), qt(:,:,(t-1)*timevar(5)+1), vt(:,t), &
         ft(:,t),kt(:,:,t), im,p,m,r,j,rt0,rt1,finf(:,t),kinf(:,:,t),etahat(:,t),epshat,.FALSE.)
         do t = (d - 1), 1, -1
-            call dsmooth1step(ymiss(t,:), transpose(zt(:,:,(t-1)*timevar(1)+1)), ht(:,:,(t-1)*timevar(2)+1), &
+            call dsmooth1step(ymiss(:,t), transpose(zt(:,:,(t-1)*timevar(1)+1)), ht(:,:,(t-1)*timevar(2)+1), &
             tt(:,:,(t-1)*timevar(3)+1), rtv(:,:,(t-1)*timevar(4)+1), qt(:,:,(t-1)*timevar(5)+1), vt(:,t), &
             ft(:,t),kt(:,:,t), im,p,m,r,p,rt0,rt1,finf(:,t),kinf(:,:,t),etahat(:,t),epshat,.FALSE.)
         end do
@@ -111,13 +111,13 @@ p, n, m, r,tol,rankp,thetahat,lik)
     if(d .GT. 0) then
         call dsymv('l',m,1.0d0,p1inf,m,rt1,1,1.0d0,at,1)
     end if
-    call dgemv('n',p,m,1.0d0,zt(:,:,1),p,at,1,0.0d0,thetahat(1,:),1)
+    call dgemv('n',p,m,1.0d0,zt(:,:,1),p,at,1,0.0d0,thetahat(:,1),1)
 
     do t = 2, n
         call dgemv('n',m,m,1.0d0,tt(:,:,(t-2)*timevar(3)+1),m,at,1,0.0d0,mhelp,1)
         at=mhelp
         call dgemv('n',m,r,1.0d0,rtv(:,:,(t-2)*timevar(4)+1),m,etahat(:,t-1),1,1.0d0,at,1)
-        call dgemv('n',p,m,1.0d0,zt(:,:,(t-1)*timevar(1)+1),p,at,1,0.0d0,thetahat(t,:),1)
+        call dgemv('n',p,m,1.0d0,zt(:,:,(t-1)*timevar(1)+1),p,at,1,0.0d0,thetahat(:,t),1)
 
     end do
 

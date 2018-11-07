@@ -55,17 +55,16 @@ logLik(model_DK, nsim = 100)
 
 \dontrun{
 # only one unknown parameter, easy to check the shape of likelihood:
-# very flat, as was expected based on Hessian
 ll_nosim <- Vectorize(function(x) {
   model["Q"] <- x
-  logLik(model)
+  exp(logLik(model) + 100)
 })
 ll_sim <- Vectorize(function(x) {
   model["Q"] <- x
-  logLik(model, nsim = 100)
+  exp(logLik(model, nsim = 100) + 100)
 })
-curve(ll_nosim(x), from = 0.1, to = 0.5, ylim = c(-106, -104.5))
-curve(ll_sim(x), from = 0.1, to = 0.5, add = TRUE, col = "red")
+curve(ll_sim(x), from = 0.01, to = 1, ylim = c(0.001, 0.01))
+curve(ll_nosim(x), from = 0.01, to = 1, add = TRUE, col = "red")
 }
 }
 \references{

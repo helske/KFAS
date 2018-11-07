@@ -4,8 +4,8 @@
 \alias{print.KFS}
 \title{Print Ouput of Kalman Filter and Smoother}
 \usage{
-\method{print}{KFS}(x, type = "state", digits = max(3L, getOption("digits")
-  - 3L), ...)
+\method{print}{KFS}(x, type = "state", digits = max(3L,
+  getOption("digits") - 3L), ...)
 }
 \arguments{
 \item{x}{output object from function KFS.}

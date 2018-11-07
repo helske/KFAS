@@ -8,7 +8,7 @@ etahat,etahatvar,thetahat,thetahatvar, ldlsignal,zorig, zorigtv,aug,state,dist,s
 
     integer, intent(in) :: d, j, p, r, m, n,aug,state,dist,signal,ldlsignal,zorigtv
     integer :: t, i
-    integer, intent(in), dimension(n,p) :: ymiss
+    integer, intent(in), dimension(p,n) :: ymiss
     integer, intent(in), dimension(5) :: timevar
     double precision, intent(in), dimension(p,m,(n-1)*timevar(1)+1) :: zt
     double precision, intent(in), dimension(p,p,(n-1)*timevar(2)+1) :: ht
@@ -70,9 +70,8 @@ etahat,etahatvar,thetahat,thetahatvar, ldlsignal,zorig, zorigtv,aug,state,dist,s
 
     do t = n, d+1, -1 !do until diffuse starts
 
-
         do i = p, 1 , -1
-            if(ymiss(t,i).EQ.0) then
+            if(ymiss(i,t).EQ.0) then
                 if(ft(i,t) .GT. 0.0d0) then
                     if(aug.EQ.1 .AND. dist.EQ.1) then
                         epshat(i,t) = ht(i,i,(t-1)*timevar(2)+1)*ftinv(i,t)*(vt(i,t)-ddot(m,kt(:,i,t),1,rrec,1))
@@ -112,7 +111,7 @@ etahat,etahatvar,thetahat,thetahatvar, ldlsignal,zorig, zorigtv,aug,state,dist,s
         nt0(:,:,d+1) =  nt(:,:,d+1)
 
         do i = p, (j+1) , -1
-            if(ymiss(t,i).EQ.0) then
+            if(ymiss(i,t).EQ.0) then
                 if(ft(i,t) .GT. 0.0d0) then
                     if(aug .EQ. 1 .AND. dist.EQ.1) then
                         epshat(i,t) = ht(i,i,(t-1)*timevar(2)+1)*ftinv(i,t)*(vt(i,t)-ddot(m,kt(:,i,t),1,rrec,1))
@@ -140,7 +139,7 @@ etahat,etahatvar,thetahat,thetahatvar, ldlsignal,zorig, zorigtv,aug,state,dist,s
         nrec2 = 0.0d0
 
         do i = j, 1, -1
-            if(ymiss(t,i).EQ.0) then
+            if(ymiss(i,t).EQ.0) then
                 if(finf(i,t) .GT. 0.0d0) then
                     if(aug .EQ. 1 .AND. dist.EQ.1) then
                         epshat(i,t) = -ht(i,i,(t-1)*timevar(2)+1)*ddot(m,kinf(:,i,t),1,rrec,1)*finfinv(i,t)
@@ -241,7 +240,7 @@ etahat,etahatvar,thetahat,thetahatvar, ldlsignal,zorig, zorigtv,aug,state,dist,s
         do t=(d-1), 1, -1
 
             do i = p, 1, -1
-                if(ymiss(t,i).EQ.0) then
+                if(ymiss(i,t).EQ.0) then
                     if(finf(i,t).GT. 0.0d0) then
                         if(aug .EQ. 1 .AND. dist.EQ.1) then
                             epshat(i,t) = -ht(i,i,(t-1)*timevar(2)+1)*ddot(m,kinf(:,i,t),1,rrec,1)*finfinv(i,t)
@@ -464,4 +463,3 @@ etahat,etahatvar,thetahat,thetahatvar, ldlsignal,zorig, zorigtv,aug,state,dist,s
     end if
 
 end subroutine gsmoothall
-

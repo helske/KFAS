@@ -99,7 +99,7 @@ approxSSM <- function(model, theta, maxiter = 50, tol = 1e-08) {
   # Initial values for linear predictor theta
   if (missing(theta) || is.null(theta)) {
     theta <- initTheta(model$y, model$u, model$distribution)
-  } else theta <- array(theta, dim = c(n, p))
+  } else theta <- t(array(theta, dim = c(n, p)))
 
   dist <- pmatch(x = model$distribution, duplicates.ok = TRUE,
     table = c("gaussian", "poisson",
@@ -107,10 +107,10 @@ approxSSM <- function(model, theta, maxiter = 50, tol = 1e-08) {
 
   # Call Fortran subroutine for model approximation
   out <-
-    .Fortran(fapprox, NAOK = TRUE, model$y, ymiss, tv, model$Z, model$T,
+    .Fortran(fapprox, NAOK = TRUE, t(model$y), t(ymiss), tv, model$Z, model$T,
       model$R, Htilde = array(0, c(p, p, n)), model$Q, model$a1,
-      model$P1, model$P1inf, p, n, m, k, theta = theta, model$u,
-      ytilde = array(0, dim = c(n, p)), dist,
+      model$P1, model$P1inf, p, n, m, k, theta = theta, t(model$u),
+      ytilde = array(0, dim = c(p, n)), dist,
       maxiter = as.integer(maxiter), model$tol,
       as.integer(sum(model$P1inf)), as.double(tol), diff = double(1),
       double(1),info = integer(1))
@@ -128,10 +128,10 @@ approxSSM <- function(model, theta, maxiter = 50, tol = 1e-08) {
   }
 
   model$distribution <- rep("gaussian", p)
-  model$y[] <- out$ytilde
+  model$y[] <- t(out$ytilde)
   model$y[as.logical(ymiss)] <- NA
   model$H <- out$Htilde
-  model$thetahat <- out$theta
+  model$thetahat <- t(out$theta)
   model$iterations <- out$maxiter
   model$difference <- out$diff
   class(model) <- c("approxSSM", "SSModel")

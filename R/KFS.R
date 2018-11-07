@@ -281,16 +281,16 @@ KFS <-  function(model, filtering, smoothing, simplify = TRUE,
     # initial values for theta
     if (missing(theta)) {
       theta <- initTheta(model$y, model$u, model$distribution)
-    } else theta <- array(theta, dim = c(n, p))
+    } else theta <- t(array(theta, dim = c(n, p)))
 
 
     if (nsim > 0) {
       simtmp <- simHelper(model, nsim, TRUE)
 
       if (!("none" %in% filtering)) {
-        filterout <- .Fortran(fngfilter, NAOK = TRUE, model$y, ymiss, tv,
+        filterout <- .Fortran(fngfilter, NAOK = TRUE, t(model$y), t(ymiss), tv,
           model$Z, model$T, model$R, model$Q, model$a1, model$P1, model$P1inf,
-          model$u, theta,
+          t(model$u), theta,
           pmatch(x = model$distribution,
             table = c("gaussian", "poisson", "binomial", "gamma", "negative binomial"),
             duplicates.ok = TRUE),
@@ -337,9 +337,9 @@ KFS <-  function(model, filtering, smoothing, simplify = TRUE,
       }
       if (!("none" %in% smoothing)) {
         smoothout <-
-          .Fortran(fngsmooth, NAOK = TRUE, model$y, ymiss, tv,
+          .Fortran(fngsmooth, NAOK = TRUE, t(model$y), t(ymiss), tv,
             model$Z, model$T, model$R, model$Q, model$a1, model$P1, model$P1inf,
-            model$u, theta,
+            t(model$u), theta,
             pmatch(x = model$distribution,
               table = c("gaussian", "poisson", "binomial", "gamma", "negative binomial"),
               duplicates.ok = TRUE),
@@ -389,10 +389,10 @@ KFS <-  function(model, filtering, smoothing, simplify = TRUE,
     } else {
       # Approximating model
 
-      app <- .Fortran(fapprox, NAOK = TRUE, model$y, ymiss, tv,
+      app <- .Fortran(fapprox, NAOK = TRUE, t(model$y), t(ymiss), tv,
         model$Z, model$T, model$R, Htilde = array(0, c(p, p, n)), model$Q,
         model$a1, model$P1, model$P1inf, p, n, m,
-        k, theta = theta, model$u, ytilde = array(0, dim = c(n, p)),
+        k, theta = theta, t(model$u), ytilde = array(0, dim = c(p, n)),
         pmatch(x = model$distribution,
           table = c("gaussian", "poisson", "binomial", "gamma", "negative binomial"),
           duplicates.ok = TRUE),
@@ -409,7 +409,7 @@ KFS <-  function(model, filtering, smoothing, simplify = TRUE,
         )
       }
 
-
+      app$ytilde <- t(app$ytilde)
       tsp(app$ytilde) <- tsp(model$y)
       model$y <- app$ytilde
       model$H <- app$Htilde
@@ -441,7 +441,7 @@ KFS <-  function(model, filtering, smoothing, simplify = TRUE,
 
   filtersignal <- ("signal" %in% filtering) || ("mean" %in% filtering)
 
-  filterout <- .Fortran(fkfilter2, NAOK = TRUE, model$y, ymiss, tv,
+  filterout <- .Fortran(fkfilter2, NAOK = TRUE, t(model$y), t(ymiss), tv,
     model$Z, model$H, model$T, model$R, model$Q, model$a1, P1 = model$P1, model$P1inf,
     p, n, m, k, d = integer(1), j = integer(1), a = array(0, dim = c(m, n + 1)),
     P = array(0, dim = c(m, m, n + 1)), v = array(0, dim = c(p, n)),
@@ -537,7 +537,7 @@ KFS <-  function(model, filtering, smoothing, simplify = TRUE,
 
   if (!("none" %in% smoothing)) {
     
-    smoothout <- .Fortran(fgsmoothall, NAOK = TRUE, ymiss, tv, model$Z,
+    smoothout <- .Fortran(fgsmoothall, NAOK = TRUE, t(ymiss), tv, model$Z,
       model$H, model$T, model$R, model$Q, p, n, m,
       k, filterout$d, filterout$j, filterout$a, filterout$P, filterout$v,
       filterout$F, filterout$K, r = array(0, dim = c(m, n + 1)),

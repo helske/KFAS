@@ -4,8 +4,8 @@
 \alias{residuals.KFS}
 \title{Extract Residuals of KFS output}
 \usage{
-\method{residuals}{KFS}(object, type = c("recursive", "pearson", "response",
-  "state"), ...)
+\method{residuals}{KFS}(object, type = c("recursive", "pearson",
+  "response", "state"), ...)
 }
 \arguments{
 \item{object}{KFS object}

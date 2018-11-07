@@ -96,14 +96,16 @@ signal <- function(object, states = "all", filtered = FALSE) {
     a <- object$alphahat
     P <- object$V
   }
-  signal <- .Fortran(fsignaltheta, NAOK = TRUE, as.integer(dim(object$model$Z)[3] >
-      1), object$model$Z, t(a)[1:attr(object$model, "m"), 1:attr(object$model,
-        "n")], P[1:attr(object$model, "m"), 1:attr(object$model, "m"), 1:attr(object$model,
-          "n")], as.integer(attr(object$model, "p")), as.integer(attr(object$model,
-            "n")), as.integer(attr(object$model, "m")), theta = array(0, c(attr(object$model,
-              "n"), attr(object$model, "p"))), V_theta = array(0, c(attr(object$model,
-                "p"), attr(object$model, "p"), attr(object$model, "n"))), d = 0L,
-    states, as.integer(length(states)))
+  signal <- .Fortran(fsignaltheta, NAOK = TRUE,
+    as.integer(dim(object$model$Z)[3] > 1), 
+    object$model$Z, t(a)[1:attr(object$model, "m"), 1:attr(object$model, "n")], 
+    P[1:attr(object$model, "m"), 1:attr(object$model, "m"), 1:attr(object$model, "n")], 
+    as.integer(attr(object$model, "p")), as.integer(attr(object$model, "n")), 
+    as.integer(attr(object$model, "m")), 
+    theta = array(0, c(attr(object$model, "p"), attr(object$model, "n"))), 
+    V_theta = array(0, c(attr(object$model,"p"), attr(object$model, "p"), attr(object$model, "n"))),
+    d = 0L, states, as.integer(length(states)))
+  signal$theta <- t(signal$theta)
   attributes(signal$theta) <- attributes(object$model$y)
   list(signal = signal$theta, variance = signal$V_theta)
 }

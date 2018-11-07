@@ -8,14 +8,14 @@ convtol,alphahat,alphavar,thetahat,thetavar,yhat,yvar,smootha,smooths,smoothy)
 
     integer, intent(in) ::  p,m, r, n,nnd,nsim,smootha,smooths,smoothy, rankp
     integer, intent(in), dimension(p) :: dist
-    integer, intent(in), dimension(n,p) :: ymiss
+    integer, intent(in), dimension(p,n) :: ymiss
     integer, intent(in), dimension(5) :: timevar
     integer, intent(inout) :: maxiter,info
     integer ::  t, j
     double precision, intent(in) :: tol,convtol
-    double precision, intent(inout), dimension(n,p) :: theta
-    double precision, intent(in), dimension(n,p) :: u
-    double precision, intent(in), dimension(n,p) :: yt
+    double precision, intent(inout), dimension(p,n) :: theta
+    double precision, intent(in), dimension(p,n) :: u
+    double precision, intent(in), dimension(p,n) :: yt
     double precision, intent(in), dimension(p,m,(n-1)*timevar(1)+1) :: zt
     double precision, intent(in), dimension(m,m,(n-1)*timevar(3)+1) :: tt
     double precision, intent(in), dimension(m,r,(n-1)*timevar(4)+1) :: rtv
@@ -74,7 +74,7 @@ external isample, covmeanwprotect, dgemv, dsymm, dgemm, covmeanw
                     case(1)
                     case(2)
                         do t=1, n
-                            osim(j,t,:) = exp(osim(j,t,:))*u(t,j)
+                            osim(j,t,:) = exp(osim(j,t,:))*u(j,t)
                         end do
                     case(3)
                         osim(j,:,:) = exp(osim(j,:,:))/(1.0d0+exp(osim(j,:,:)))
@@ -105,7 +105,7 @@ external isample, covmeanwprotect, dgemv, dsymm, dgemm, covmeanw
 
                     case(2)
                         do t=1, n
-                            sim(j,t,:) = exp(sim(j,t,:))*u(t,j)
+                            sim(j,t,:) = exp(sim(j,t,:))*u(j,t)
                         end do
                     case(3)
                         sim(j,:,:) = exp(sim(j,:,:))/(1.0d0+exp(sim(j,:,:)))

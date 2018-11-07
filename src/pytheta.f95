@@ -6,11 +6,11 @@ subroutine pytheta(theta, dist, u, yt, ymiss, dev, p, n)
 
     integer, intent(in) ::  p,n
     integer, intent(in), dimension(p) :: dist
-    integer, intent(in), dimension(n,p) :: ymiss
+    integer, intent(in), dimension(p,n) :: ymiss
     integer ::  t,j
-    double precision, intent(in), dimension(n,p) :: u
-    double precision, intent(in), dimension(n,p) :: yt
-    double precision, intent(in), dimension(n,p) :: theta
+    double precision, intent(in), dimension(p,n) :: u
+    double precision, intent(in), dimension(p,n) :: yt
+    double precision, intent(in), dimension(p,n) :: theta
     double precision, intent(inout) :: dev
 
     external dpoisf, dbinomf, dgammaf, dnbinomf
@@ -20,26 +20,26 @@ subroutine pytheta(theta, dist, u, yt, ymiss, dev, p, n)
         select case(dist(j))
             case(2)
                 do t=1,n
-                    if(ymiss(t,j).EQ.0) then
-                        call dpoisf(yt(t,j), u(t,j)*exp(theta(t,j)), dev)
+                    if(ymiss(j,t).EQ.0) then
+                        call dpoisf(yt(j,t), u(j,t)*exp(theta(j,t)), dev)
                     end if
                 end do
             case(3)
                 do t=1,n
-                    if(ymiss(t,j).EQ.0) then
-                        call dbinomf(yt(t,j), u(t,j), exp(theta(t,j))/(1.0d0+exp(theta(t,j))), dev)
+                    if(ymiss(j,t).EQ.0) then
+                        call dbinomf(yt(j,t), u(j,t), exp(theta(j,t))/(1.0d0+exp(theta(j,t))), dev)
                     end if
                 end do
             case(4)
                 do t=1,n
-                    if(ymiss(t,j).EQ.0) then
-                        call dgammaf(yt(t,j), u(t,j), exp(theta(t,j))/u(t,j), dev)
+                    if(ymiss(j,t).EQ.0) then
+                        call dgammaf(yt(j,t), u(j,t), exp(theta(j,t))/u(j,t), dev)
                     end if
                 end do
             case(5)
                 do t=1,n
-                    if(ymiss(t,j).EQ.0) then
-                        call dnbinomf(yt(t,j), u(t,j), exp(theta(t,j)), dev)
+                    if(ymiss(j,t).EQ.0) then
+                        call dnbinomf(yt(j,t), u(j,t), exp(theta(j,t)), dev)
                     end if
                 end do
         end select

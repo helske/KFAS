@@ -6,22 +6,22 @@ theta, u, ytilde, dist, maxiter, tol, rankp, convtol, diff, lik, info)
     implicit none
 
     integer, intent(in) ::  p,m, r, n,rankp
-    integer, intent(in), dimension(n,p) :: ymiss
+    integer, intent(in), dimension(p,n) :: ymiss
     integer, intent(in), dimension(5) :: timevar
     integer, intent(in), dimension(p) :: dist
     integer, intent(inout) :: maxiter,info
     integer ::  i, k,tvrqr,kk,jt,dt
     double precision, intent(in) :: tol,convtol
-    double precision, intent(in), dimension(n,p) :: u
-    double precision, intent(in), dimension(n,p) :: yt
+    double precision, intent(in), dimension(p,n) :: u
+    double precision, intent(in), dimension(p,n) :: yt
     double precision, intent(in), dimension(p,m,(n-1)*timevar(1)+1) :: zt
     double precision, intent(in), dimension(m,m,(n-1)*timevar(3)+1) :: tt
     double precision, intent(in), dimension(m,r,(n-1)*timevar(4)+1) :: rtv
     double precision, intent(in), dimension(r,r,(n-1)*timevar(5)+1) :: qt
     double precision, intent(in), dimension(m) :: a1
     double precision, intent(in), dimension(m,m) ::  p1,p1inf
-    double precision, intent(inout), dimension(n,p) :: theta
-    double precision, intent(inout), dimension(n,p) :: ytilde
+    double precision, intent(inout), dimension(p,n) :: theta
+    double precision, intent(inout), dimension(p,n) :: ytilde
     double precision, intent(inout), dimension(p,p,n) :: ht
     double precision, intent(inout) :: diff
     double precision, dimension(m,r) :: mr
@@ -30,7 +30,7 @@ theta, u, ytilde, dist, maxiter, tol, rankp, convtol, diff, lik, info)
     double precision, external :: ddot
     integer, external :: finitex
     double precision dev, devold
-    double precision, dimension(n,p) :: thetanew, thetaold
+    double precision, dimension(p,n) :: thetanew, thetaold
     double precision, dimension(p,n) :: ft,finf
     double precision, dimension(m,p,n) :: kt,kinf
 
