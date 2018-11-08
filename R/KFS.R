@@ -307,6 +307,7 @@ KFS <-  function(model, filtering, smoothing, simplify = TRUE,
           P_mu = array(0, ("mean" %in% filtering) * c(p - 1, p - 1, n - 1) + 1),
           as.integer("state" %in%  filtering), as.integer("signal" %in% filtering),
           as.integer("mean" %in%  filtering))
+        
         if(filterout$info!=0){
           switch(as.character(filterout$info),
             "-3" = stop("Couldn't compute LDL decomposition of P1."),
@@ -448,10 +449,10 @@ KFS <-  function(model, filtering, smoothing, simplify = TRUE,
     F = array(0, dim = c(p, n)), K = array(0, dim = c(m, p, n)),
     Pinf = array(0, dim = c(m, m, n + 1)), Finf = array(0, dim = c(p, n)),
     Kinf = array(0, dim = c(m, p, n)), lik = double(1), model$tol,
-    as.integer(sum(model$P1inf)), theta = array(0, c(filtersignal * n, p)),
+    as.integer(sum(model$P1inf)), theta = array(0, c(p, filtersignal * n)),
     P_theta = array(0, c(p, p, filtersignal * n)), as.integer(filtersignal), 
     att = array(0, dim = c(m, n)), Ptt = array(0, dim = c(m, m, n)))
-
+  filterout$theta <- t(filterout$theta)
   if (filterout$d == n & filterout$j == p)
     warning("Model is degenerate, diffuse phase did not end.")
   if (!all(is.finite(filterout$P))) {

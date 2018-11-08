@@ -42,7 +42,7 @@ test_that("SSModel works properly",{
         SSMregression(~-1+x,index=1,Q=1,data=d, state_names = 1)
     ), NA)
    custom_model <- SSModel(1:10 ~ -1 + 
-   SSMcustom(Z = 1, T = 1, R = 1, Q = 1, P1inf = 1), H = 1) 
+      SSMcustom(Z = 1, T = 1, R = 1, Q = 1, P1inf = 1), H = 1) 
    custom_model <- rename_states(custom_model, "level")
    ll_model <- SSModel(1:10 ~ SSMtrend(1, Q = 1), H = 1)
    test_these <- c("y", "Z", "H", "T", "R", "Q", "a1", "P1", "P1inf")

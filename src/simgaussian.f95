@@ -252,7 +252,7 @@ tol,sim,c,simwhat,simdim,antithetics)
                 end if
                 do k = 1, 3*antithetics+1
                     do l = 1, p
-                        if(ymiss(1,l).GT.0) then
+                        if(ymiss(l,1).GT.0) then
                             sim(l,1,i+(k-1)*nsim) = ddot(m,zt(l,:,1),1,alphatmp(:,1,k),1)
                         end if
                     end do
@@ -262,7 +262,7 @@ tol,sim,c,simwhat,simdim,antithetics)
                         call dgemv('n',m,r,1.0d0,rtv(:,:,(t-2)*timevar(4)+1),m,etatmp(:,t-1,k),1,&
                         1.0d0,alphatmp(:,t,k),1)
                         do l = 1, p
-                            if(ymiss(t,l).GT.0) then
+                            if(ymiss(l,t).GT.0) then
                                 sim(l,t,i+(k-1)*nsim) = ddot(m,zt(l,:,(t-1)*timevar(1)+1),1,alphatmp(:,t,k),1)
                             end if
                         end do

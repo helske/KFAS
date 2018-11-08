@@ -34,7 +34,7 @@ convtol,alphahat,alphavar,thetahat,thetavar,yhat,yvar,smootha,smooths,smoothy)
     double precision, intent(inout), dimension((p-1)*smooths+1,(p-1)*smooths+1,(n-1)*smooths+1) :: thetavar
     double precision, dimension(smootha*m+(1-smootha)*p,n,4*nsim) :: sim
     double precision, dimension(smootha*p+(1-smootha),n,4*nsim*smootha+(1-smootha)) :: osim
-    double precision, dimension(n,4*nsim) :: w
+    double precision, dimension(4*nsim, n) :: w
     double precision, dimension(p,m) :: pm
     double precision, external :: ddot
 
