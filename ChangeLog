@@ -1,8 +1,3 @@
-Changes from version 1.3.3 to 1.3.4:
-   * Flipped the dimensions of (n, p) arrays in Fortran for consistency and 
-     in order to fix a rare OSX+gfortran bug. This also gave slight performance boost 
-     for some functions.
-
 Changes from version 1.3.2 to 1.3.3:
    * KFS: Fixed a bug in KFS which caused the returned Ptt to be wrong in most cases.
    * Added NAOK = TRUE for predict method so partial predictions should work in case of NA values in Z (and y).

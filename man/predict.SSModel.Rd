@@ -6,9 +6,9 @@
 \title{State Space Model Predictions}
 \usage{
 \method{predict}{SSModel}(object, newdata, n.ahead, interval = c("none",
-  "confidence", "prediction"), level = 0.95, type = c("response",
-  "link"), states = NULL, se.fit = FALSE, nsim = 0, prob = TRUE,
-  maxiter = 50, filtered = FALSE, ...)
+  "confidence", "prediction"), level = 0.95, type = c("response", "link"),
+  states = NULL, se.fit = FALSE, nsim = 0, prob = TRUE, maxiter = 50,
+  filtered = FALSE, ...)
 }
 \arguments{
 \item{object}{Object of class \code{SSModel}.}

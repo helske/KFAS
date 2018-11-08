@@ -22,5 +22,5 @@ initTheta <- function(y, u, distribution) {
     x[is.na(x) | x < 1/6] <- 1/6
     y[, ind] <- log(x)
   }
-  t(y)
+  y
 }

@@ -6,12 +6,12 @@ tol,sim,c,simwhat,simdim,antithetics)
     implicit none
 
     integer, intent(in) :: p, m, r, n, nsim,nnd,simdim,simwhat,antithetics
-    integer, intent(in), dimension(p,n) :: ymiss
+    integer, intent(in), dimension(n,p) :: ymiss
     integer, intent(in), dimension(5) :: timevar
     integer, intent(inout) :: info,rankp
     integer ::  t, i, d, j,k
     double precision, intent(in) :: tol
-    double precision, intent(in), dimension(p,n) :: yt
+    double precision, intent(in), dimension(n,p) :: yt
     double precision, intent(in), dimension(p,m,(n-1)*timevar(1)+1) :: zt
     double precision, intent(in), dimension(p,p,(n-1)*timevar(2)+1) :: ht
     double precision, intent(in), dimension(m,m,(n-1)*timevar(3)+1) :: tt
@@ -25,7 +25,7 @@ tol,sim,c,simwhat,simdim,antithetics)
     double precision, intent(inout), dimension(r,n,nsim) :: etaplus
     double precision, intent(inout), dimension(m,nsim) :: aplus1
 
-    double precision, dimension(p,n) :: yplus
+    double precision, dimension(n,p) :: yplus
     double precision, dimension(m,n+1) :: aplus
     double precision, dimension(p,n) :: ft,finf
     double precision, dimension(m,p,n) :: kt,kinf
@@ -100,8 +100,8 @@ tol,sim,c,simwhat,simdim,antithetics)
 
         do t = 1, n
             do k = 1, p
-                if(ymiss(k,t).EQ.0) then
-                    yplus(k,t) = epsplus(k,t,i)*sqrt(ht(k,k,(t-1)*timevar(2)+1)) + &
+                if(ymiss(t,k).EQ.0) then
+                    yplus(t,k) = epsplus(k,t,i)*sqrt(ht(k,k,(t-1)*timevar(2)+1)) + &
                     ddot(m,zt(k,:,(t-1)*timevar(1)+1),1,aplus(:,t),1)
                 end if
             end do
@@ -143,3 +143,4 @@ tol,sim,c,simwhat,simdim,antithetics)
         end if
     end do
 end subroutine simfilter
+

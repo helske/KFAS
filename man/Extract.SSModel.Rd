@@ -5,11 +5,9 @@
 \alias{[.SSModel}
 \title{Extract or Replace Parts of a State Space Model}
 \usage{
-\method{[}{SSModel}(x, element, states, etas, series, times,
-  ...) <- value
+\method{[}{SSModel}(x, element, states, etas, series, times, ...) <- value
 
-\method{[}{SSModel}(x, element, states, etas, series, times, drop = TRUE,
-  ...)
+\method{[}{SSModel}(x, element, states, etas, series, times, drop = TRUE, ...)
 }
 \arguments{
 \item{x}{Object of class \code{SSModel}.}

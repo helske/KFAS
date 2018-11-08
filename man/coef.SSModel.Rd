@@ -3,13 +3,14 @@
 \name{coef.SSModel}
 \alias{coef.SSModel}
 \alias{coef.KFS}
+\alias{coef.SSModel}
 \title{Smoothed Estimates or One-step-ahead Predictions of States}
 \usage{
-\method{coef}{KFS}(object, start = NULL, end = NULL,
-  filtered = FALSE, states = "all", last = FALSE, ...)
+\method{coef}{KFS}(object, start = NULL, end = NULL, filtered = FALSE,
+  states = "all", last = FALSE, ...)
 
-\method{coef}{SSModel}(object, start = NULL, end = NULL,
-  filtered = FALSE, states = "all", last = FALSE, nsim = 0, ...)
+\method{coef}{SSModel}(object, start = NULL, end = NULL, filtered = FALSE,
+  states = "all", last = FALSE, nsim = 0, ...)
 }
 \arguments{
 \item{object}{An object of class \code{KFS} or \code{SSModel}.}

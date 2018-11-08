@@ -157,7 +157,7 @@ logLik.SSModel <- function(object, marginal=FALSE, nsim = 0,
       return(-.Machine$double.xmax ^ 0.75)
     if (missing(theta) || is.null(theta)) {
       theta <- initTheta(object$y, object$u, object$distribution)
-    } else theta <- t(array(theta, dim = c(n, p)))
+    } else theta <- array(theta, dim = c(n, p))
     if (nsim == 0) {
       nsim <- 1
       sim <- 0
@@ -175,10 +175,10 @@ logLik.SSModel <- function(object, marginal=FALSE, nsim = 0,
       simtmp <- simHelper(object, nsim, antithetics)
     }
     nsim2 <- as.integer(max(sim * (3 * antithetics * nsim + nsim), 1))
-    out <- .Fortran(fngloglik, NAOK = TRUE, t(object$y), t(ymiss), tv,
+    out <- .Fortran(fngloglik, NAOK = TRUE, object$y, ymiss, tv,
       object$Z, object$T, object$R, object$Q, object$a1, object$P1, object$P1inf,
       p, m, k, n, lik = double(1),
-      theta = theta, t(object$u),
+      theta = theta, object$u,
       pmatch(x = object$distribution,
         table = c("gaussian", "poisson", "binomial", "gamma", "negative binomial"),
         duplicates.ok = TRUE),

@@ -93,7 +93,7 @@ importanceSSM <-  function(model, type = c("states", "signals"),
   # initial values for linear predictor theta
   if (missing(theta)) {
     theta <- initTheta(model$y, model$u, model$distribution)
-  } else theta <- t(array(theta, dim = c(n, p)))
+  } else theta <- array(theta, dim = c(n, p))
 
   # generate standard normal variables for importance sampling
   simtmp <- simHelper(model, nsim, antithetics)
@@ -101,8 +101,8 @@ importanceSSM <-  function(model, type = c("states", "signals"),
       match.arg(arg = type, choices = c("states", "signals")))
   simdim <- as.integer(switch(sim.what, p, k, p + k, m, p, p))
   if (!filtered) {
-    out <- .Fortran(fisample, NAOK = TRUE, t(model$y), t(ymiss), tv, model$Z,
-      model$T, model$R, model$Q, model$a1, model$P1, model$P1inf, t(model$u),
+    out <- .Fortran(fisample, NAOK = TRUE, model$y, ymiss, tv, model$Z,
+      model$T, model$R, model$Q, model$a1, model$P1, model$P1inf, model$u,
       dist = pmatch(x = model$distribution,
         table = c("gaussian", "poisson",  "binomial", "gamma", "negative binomial"),
         duplicates.ok = TRUE),
@@ -113,8 +113,8 @@ importanceSSM <-  function(model, type = c("states", "signals"),
       w = numeric(3 * nsim * antithetics + nsim),
       sim = array(0, c(simdim,  n, 3 * nsim * antithetics + nsim)), sim.what, simdim)
   } else {
-    out <- .Fortran(fisamplefilter, NAOK = TRUE, t(model$y), t(ymiss), as.integer(tv),
-      model$Z, model$T, model$R, model$Q, model$a1, model$P1, model$P1inf, t(model$u),
+    out <- .Fortran(fisamplefilter, NAOK = TRUE, model$y, ymiss, as.integer(tv),
+      model$Z, model$T, model$R, model$Q, model$a1, model$P1, model$P1inf,model$u,
       dist = pmatch(x = model$distribution,
         table = c("gaussian",  "poisson", "binomial", "gamma", "negative binomial"),
         duplicates.ok = TRUE),

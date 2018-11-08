@@ -12,7 +12,7 @@ p, m, n, lik, tol,rankp2,kt,kinf,ft,finf,d,j)
     integer, intent(inout) :: rankp2,d,j
     integer ::  t, tv,rankp
     integer, intent(in), dimension(5) :: timevar
-    double precision, intent(in), dimension(p,n) :: yt
+    double precision, intent(in), dimension(n,p) :: yt
     double precision, intent(in), dimension(p,m,(n-1)*timevar(1)+1) :: zt
     double precision, intent(in), dimension(m,m,(n-1)*timevar(3)+1) :: tt
     double precision, intent(in), dimension(m) :: a1
@@ -47,12 +47,12 @@ p, m, n, lik, tol,rankp2,kt,kinf,ft,finf,d,j)
     if(rankp .GT. 0) then
         diffuse: do while(d .LT. n .AND. rankp .GT. 0)
             d = d+1
-            call dfilter1step(ymiss,yt(:,d),transpose(zt(:,:,(d-1)*timevar(1)+1)),ht,&
+            call dfilter1step(ymiss,yt(d,:),transpose(zt(:,:,(d-1)*timevar(1)+1)),ht,&
             tt(:,:,(d-1)*timevar(3)+1),rqr(:,:,(d-1)*tv+1),&
             at,pt,vt,ft(:,d),kt(:,:,d),pinf,finf(:,d),kinf(:,:,d),rankp,lik,tol,0.0d0,p,m,j)
         end do diffuse
         if(rankp .EQ. 0 .AND. j .LT. p) then
-            call filter1step(ymiss,yt(:,d),transpose(zt(:,:,(d-1)*timevar(1)+1)),ht,&
+            call filter1step(ymiss,yt(d,:),transpose(zt(:,:,(d-1)*timevar(1)+1)),ht,&
             tt(:,:,(d-1)*timevar(3)+1),rqr(:,:,(d-1)*tv+1),&
             at,pt,vt,ft(:,d),kt(:,:,d),lik,tol,0.0d0,p,m,j)
         else
@@ -63,7 +63,7 @@ p, m, n, lik, tol,rankp2,kt,kinf,ft,finf,d,j)
     !Non-diffuse filtering continues from t=d+1, i=1
 
     do t = d+1, n
-        call filter1step(ymiss,yt(:,t),transpose(zt(:,:,(t-1)*timevar(1)+1)),ht,&
+        call filter1step(ymiss,yt(t,:),transpose(zt(:,:,(t-1)*timevar(1)+1)),ht,&
         tt(:,:,(t-1)*timevar(3)+1),rqr(:,:,(t-1)*tv+1),&
         at,pt,vt,ft(:,t),kt(:,:,t),lik,tol,0.0d0,p,m,0)
     end do
@@ -84,7 +84,7 @@ p, m, n, lik, kt,kinf,ft,finf,dt,jt)
     integer, intent(in) ::  p, m, n,dt,jt
     integer ::  t
     integer, intent(in), dimension(5) :: timevar
-    double precision, intent(in), dimension(p,n) :: yt
+    double precision, intent(in), dimension(n,p) :: yt
     double precision, intent(in), dimension(p,m,(n-1)*timevar(1)+1) :: zt
     double precision, intent(in), dimension(m,m,(n-1)*timevar(3)+1) :: tt
     double precision, intent(in), dimension(m) :: a1
@@ -102,25 +102,26 @@ p, m, n, lik, kt,kinf,ft,finf,dt,jt)
     if(dt .GT. 0) then
         !diffuse filtering begins
         do t = 1, dt - 1
-            call dfilter1stepnv(ymiss,yt(:,t),&
+            call dfilter1stepnv(ymiss,yt(t,:),&
             transpose(zt(:,:,(t-1)*timevar(1)+1)),tt(:,:,(t-1)*timevar(3)+1),&
             at,vt,ft(:,t),kt(:,:,t), finf(:,t),kinf(:,:,t),p,m,p,lik)
         end do
 
         t = dt
-        call dfilter1stepnv(ymiss,yt(:,t),&
+        call dfilter1stepnv(ymiss,yt(t,:),&
         transpose(zt(:,:,(t-1)*timevar(1)+1)),tt(:,:,(t-1)*timevar(3)+1),&
         at,vt,ft(:,t),kt(:,:,t),finf(:,t),kinf(:,:,t),p,m,jt,lik)
         !non-diffuse filtering begins
         if(jt .LT. p) then
-            call filter1stepnv(ymiss,yt(:,t),transpose(zt(:,:,(t-1)*timevar(1)+1)),&
+            call filter1stepnv(ymiss,yt(t,:),transpose(zt(:,:,(t-1)*timevar(1)+1)),&
             tt(:,:,(t-1)*timevar(3)+1),at,vt,ft(:,t),kt(:,:,t),p,m,jt,lik)
         end if
     end if
     !Non-diffuse filtering continues from t=d+1, i=1
     do t = dt + 1, n
-        call filter1stepnv(ymiss,yt(:,t),transpose(zt(:,:,(t-1)*timevar(1)+1)),&
+        call filter1stepnv(ymiss,yt(t,:),transpose(zt(:,:,(t-1)*timevar(1)+1)),&
         tt(:,:,(t-1)*timevar(3)+1),at,vt,ft(:,t),kt(:,:,t),p,m,0,lik)
     end do
 
 end subroutine pthetarest
+

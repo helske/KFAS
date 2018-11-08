@@ -141,7 +141,7 @@ simulateSSM <- function(object,
       simdim, as.integer(antithetics))
   } else {
     if (!filtered) { #simulation smoother
-      out <- .Fortran(fsimgaussian, NAOK = TRUE, t(ymiss), tv, t(object$y),
+      out <- .Fortran(fsimgaussian, NAOK = TRUE, ymiss, tv, object$y,
         object$Z, object$H, object$T, object$R, object$Q, object$a1, object$P1,
         object$P1inf, simtmp$nNonzeroP1, as.integer(nsim), simtmp$epsplus,
         simtmp$etaplus, simtmp$aplus1, p, n, m, k, info = as.integer(0),
@@ -153,7 +153,7 @@ simulateSSM <- function(object,
     } else { # simulate from predictive distribution
       if (!(sim.what %in% (4:5)))
         stop("Only state and signal simulation filtering is supported.")
-      out <- .Fortran(fsimfilter, NAOK = TRUE, t(ymiss), tv, t(object$y),
+      out <- .Fortran(fsimfilter, NAOK = TRUE, ymiss, tv, object$y,
         object$Z, object$H, object$T, object$R, object$Q, object$a1, object$P1,
         object$P1inf, simtmp$nNonzeroP1, as.integer(nsim), simtmp$epsplus,
         simtmp$etaplus, simtmp$aplus1, p, n, m, k, info = as.integer(0),

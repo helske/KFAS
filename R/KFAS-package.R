@@ -604,16 +604,17 @@ NULL
 #'
 #' \dontrun{
 #' # only one unknown parameter, easy to check the shape of likelihood:
+#' # very flat, as was expected based on Hessian
 #' ll_nosim <- Vectorize(function(x) {
 #'   model["Q"] <- x
-#'   exp(logLik(model) + 100)
+#'   logLik(model)
 #' })
 #' ll_sim <- Vectorize(function(x) {
 #'   model["Q"] <- x
-#'   exp(logLik(model, nsim = 100) + 100)
+#'   logLik(model, nsim = 100)
 #' })
-#' curve(ll_sim(x), from = 0.01, to = 1, ylim = c(0.001, 0.01))
-#' curve(ll_nosim(x), from = 0.01, to = 1, add = TRUE, col = "red")
+#' curve(ll_nosim(x), from = 0.1, to = 0.5, ylim = c(-106, -104.5))
+#' curve(ll_sim(x), from = 0.1, to = 0.5, add = TRUE, col = "red")
 #' }
 NULL
 #' Two series of average global temperature deviations for years 1880-1987

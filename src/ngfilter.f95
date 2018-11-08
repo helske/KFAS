@@ -8,14 +8,14 @@ convtol,alphahat,alphavar,thetahat,thetavar,yhat,yvar,smootha,smooths,smoothy)
 
     integer, intent(in) ::  p,m, r, n,nnd,nsim,rankp,smootha,smooths,smoothy
     integer, intent(in), dimension(p) :: dist
-    integer, intent(in), dimension(p,n) :: ymiss
+    integer, intent(in), dimension(n,p) :: ymiss
     integer, intent(in), dimension(5) :: timevar
     integer, intent(inout) :: info,maxiter
     integer ::  t, j
     double precision, intent(in) :: tol,convtol
-    double precision, intent(inout), dimension(p,n) :: theta
-    double precision, intent(in), dimension(p,n) :: u
-    double precision, intent(in), dimension(p,n) :: yt
+    double precision, intent(inout), dimension(n,p) :: theta
+    double precision, intent(in), dimension(n,p) :: u
+    double precision, intent(in), dimension(n,p) :: yt
     double precision, intent(in), dimension(p,m,(n-1)*timevar(1)+1) :: zt
     double precision, intent(in), dimension(m,m,(n-1)*timevar(3)+1) :: tt
     double precision, intent(in), dimension(m,r,(n-1)*timevar(4)+1) :: rtv
@@ -51,8 +51,8 @@ convtol,alphahat,alphavar,thetahat,thetavar,yhat,yvar,smootha,smooths,smoothy)
         end if
 
         do t=1,n
-            w(:,t) = w(:,t)/sum(w(:,t))
-            call covmeanwprotect(sim(:,t,:),w(:,t),m,1,4*nsim,alphahat(:,t),alphavar(:,:,t))
+            w(t,:) = w(t,:)/sum(w(t,:))
+            call covmeanwprotect(sim(:,t,:),w(t,:),m,1,4*nsim,alphahat(:,t),alphavar(:,:,t))
         end do
 
         if(smooths.EQ.1) then
@@ -76,7 +76,7 @@ convtol,alphahat,alphavar,thetahat,thetavar,yhat,yvar,smootha,smooths,smoothy)
 
                     case(2)
                         do t=1, n
-                            osim(j,t,:) = exp(osim(j,t,:))*u(j,t)
+                            osim(j,t,:) = exp(osim(j,t,:))*u(t,j)
                         end do
                     case(3)
                         osim(j,:,:) = exp(osim(j,:,:))/(1.0d0+exp(osim(j,:,:)))
@@ -85,7 +85,7 @@ convtol,alphahat,alphavar,thetahat,thetavar,yhat,yvar,smootha,smooths,smoothy)
                 end select
             end do
             do t=1,n
-                call covmeanw(osim(:,t,:),w(:,t),p,1,4*nsim,yhat(:,t),yvar(:,:,t))
+                call covmeanw(osim(:,t,:),w(t,:),p,1,4*nsim,yhat(:,t),yvar(:,:,t))
             end do
         end if
     else
@@ -98,12 +98,12 @@ convtol,alphahat,alphavar,thetahat,thetavar,yhat,yvar,smootha,smooths,smoothy)
         end if
 
         do t=1,n
-            w(:,t) = w(:,t)/sum(w(:,t))
+            w(t,:) = w(t,:)/sum(w(t,:))
         end do
 
         if(smooths.EQ.1) then
             do t=1,n
-                call covmeanwprotect(sim(:,t,:),w(:,t),p,1,4*nsim,thetahat(:,t),thetavar(:,:,t))
+                call covmeanwprotect(sim(:,t,:),w(t,:),p,1,4*nsim,thetahat(:,t),thetavar(:,:,t))
             end do
         end if
 
@@ -114,7 +114,7 @@ convtol,alphahat,alphavar,thetahat,thetavar,yhat,yvar,smootha,smooths,smoothy)
 
                     case(2)
                         do t=1, n
-                            sim(j,t,:) = exp(sim(j,t,:))*u(j,t)
+                            sim(j,t,:) = exp(sim(j,t,:))*u(t,j)
                         end do
                     case(3)
                         sim(j,:,:) = exp(sim(j,:,:))/(1.0d0+exp(sim(j,:,:)))
@@ -123,7 +123,7 @@ convtol,alphahat,alphavar,thetahat,thetavar,yhat,yvar,smootha,smooths,smoothy)
                 end select
             end do
             do t=1,n
-                call covmeanw(sim(:,t,:),w(:,t),p,1,4*nsim,yhat(:,t),yvar(:,:,t))
+                call covmeanw(sim(:,t,:),w(t,:),p,1,4*nsim,yhat(:,t),yvar(:,:,t))
             end do
         end if
 
