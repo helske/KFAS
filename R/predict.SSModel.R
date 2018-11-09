@@ -226,7 +226,7 @@ predict.SSModel <- function(object, newdata, n.ahead,
         if (filtered) {
           out <- KFS(model = object, filtering = "signal", smoothing = "none",
             maxiter = maxiter)
-          names(out)[5:6] <- c("thetahat", "V_theta")
+          names(out)[c("t", "P_theta")] <- c("thetahat", "V_theta")
           if (out$d > 0) {
           out$V_theta[,,1:out$d] <- Inf #diffuse phase
           }
