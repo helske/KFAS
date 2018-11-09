@@ -184,7 +184,7 @@ predict.SSModel <- function(object, newdata, n.ahead,
     if (identical(states, as.integer(1:m))) {
       if (filtered) {
         out <- KFS(model = object, filtering = "mean", smoothing = "none")
-        names(out)[6:7] <- c("muhat", "V_mu")
+        names(out)[c("m", "P_mu")] <- c("muhat", "V_mu")
         if (out$d > 0) {
         out$V_mu[,,1:out$d] <- Inf #diffuse phase
         }
