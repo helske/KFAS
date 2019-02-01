@@ -1,3 +1,4 @@
+
 #' State Space Model Predictions
 #'
 #' Function \code{predict.SSModel} predicts the future observations of a state
@@ -184,7 +185,7 @@ predict.SSModel <- function(object, newdata, n.ahead,
     if (identical(states, as.integer(1:m))) {
       if (filtered) {
         out <- KFS(model = object, filtering = "mean", smoothing = "none")
-        names(out)[c("m", "P_mu")] <- c("muhat", "V_mu")
+        names(out)[match(c("m", "P_mu"), names(out))]  <- c("muhat", "V_mu")
         if (out$d > 0) {
         out$V_mu[,,1:out$d] <- Inf #diffuse phase
         }
@@ -226,7 +227,7 @@ predict.SSModel <- function(object, newdata, n.ahead,
         if (filtered) {
           out <- KFS(model = object, filtering = "signal", smoothing = "none",
             maxiter = maxiter)
-          names(out)[c("t", "P_theta")] <- c("thetahat", "V_theta")
+          names(out)[match(c("t", "P_theta"), names(out))] <- c("thetahat", "V_theta")
           if (out$d > 0) {
           out$V_theta[,,1:out$d] <- Inf #diffuse phase
           }
