@@ -27,7 +27,9 @@
 #' @param ... Ignored.
 residuals.KFS <-  function(object,
   type = c("recursive", "pearson", "response", "state"), ...) {
-
+  
+  if (identical(object$model, "not stored")) stop("No model stored as part of KFS, cannot compute residuals.")
+  
   type <- match.arg(type)
 
   if ((type == "state") && any(object$model$distribution !=  "gaussian"))

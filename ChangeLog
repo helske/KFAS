@@ -1,3 +1,27 @@
+Changes from version 1.3.4 to 1.3.5:
+   * predict.SSModel: Previous fix from 1.3.4 didn't actually work, now fixed for real. 
+     Thanks for jhal324 for the fix.
+     
+Changes from version 1.3.3 to 1.3.4:
+   * predict.SSModel: Fixed bug from previous version which caused Gaussian predictions to 
+     fail if argument 'filtered' was TRUE.
+
+Changes from version 1.3.2 to 1.3.3:
+   * KFS: Fixed a bug in KFS which caused the returned Ptt to be wrong in most cases.
+   * Added NAOK = TRUE for predict method so partial predictions should work in case of NA values in Z (and y).
+   * KFS: Added argument return_model to KFS, setting this to FALSE can save some memory.
+   
+Changes from version 1.3.1 to 1.3.2:
+   * rstandard: Fixed a small bug in standardized residuals relating to numerically zero values. 
+   * rstandard: The standardized residual and non-standardized residual for zero-valued case 
+     are now equal (0, previously rstandard returned NA).
+   * SSMseasonal: Fixed a bug relating to argument harmonics, which returned wrong harmonics 
+     in some cases. Thanks Noobivsho on Github.
+   * Added Matrix package to Suggests as it is used in the vignette.
+   
+Changes from version 1.3.0 to 1.3.1:
+   * Fixed a bug in contemporous filtering, now Ptt is symmetric as it should.
+   
 Changes from version 1.2.10 to 1.3.0:
    * KFS now returns also filtered state estimates for Gaussian models 
      (previously only one-step ahead predictions were given).

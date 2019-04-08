@@ -66,6 +66,7 @@ rstandard.KFS <- function(model,
   type = c("recursive", "pearson", "state"),
   standardization_type = c("marginal","cholesky"), zerotol = 0, ...) {
 
+  if (identical(model$model, "not stored")) stop("No model stored as part of KFS, cannot compute residuals.")
   type <- match.arg(type)
   stype <- match.arg(standardization_type)
 

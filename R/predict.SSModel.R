@@ -1,3 +1,4 @@
+
 #' State Space Model Predictions
 #'
 #' Function \code{predict.SSModel} predicts the future observations of a state
@@ -184,7 +185,7 @@ predict.SSModel <- function(object, newdata, n.ahead,
     if (identical(states, as.integer(1:m))) {
       if (filtered) {
         out <- KFS(model = object, filtering = "mean", smoothing = "none")
-        names(out)[6:7] <- c("muhat", "V_mu")
+        names(out)[match(c("m", "P_mu"), names(out))]  <- c("muhat", "V_mu")
         if (out$d > 0) {
         out$V_mu[,,1:out$d] <- Inf #diffuse phase
         }
@@ -226,7 +227,7 @@ predict.SSModel <- function(object, newdata, n.ahead,
         if (filtered) {
           out <- KFS(model = object, filtering = "signal", smoothing = "none",
             maxiter = maxiter)
-          names(out)[5:6] <- c("thetahat", "V_theta")
+          names(out)[match(c("t", "P_theta"), names(out))] <- c("thetahat", "V_theta")
           if (out$d > 0) {
           out$V_theta[,,1:out$d] <- Inf #diffuse phase
           }
@@ -305,7 +306,7 @@ predict.SSModel <- function(object, newdata, n.ahead,
           nsim = nsim, antithetics = TRUE, maxiter = maxiter, filtered = filtered)
         nsim <- as.integer(4 * nsim)
         if (!identical(states, as.integer(1:m))) {
-          imp$samples <- .Fortran(fzalpha, as.integer(dim(object$Z)[3] > 1),
+          imp$samples <- .Fortran(fzalpha, NAOK = TRUE, as.integer(dim(object$Z)[3] > 1),
             object$Z, imp$samples, signal = array(0, c(n, p, nsim)),
             p, m, n, nsim, length(states), states)$signal
         }
@@ -326,7 +327,7 @@ predict.SSModel <- function(object, newdata, n.ahead,
             imp$samples[timespan, i, ] <- imp$samples[timespan, i, ] + log(object$u[timespan,
               i])
         }
-        varmean <- .Fortran(fvarmeanw, imp$samples[timespan, , , drop = FALSE], w,
+        varmean <- .Fortran(fvarmeanw, NAOK = TRUE, imp$samples[timespan, , , drop = FALSE], w,
           p, length(timespan),
           nsim, mean = array(0, c(length(timespan), p)),
           var = array(0, c(length(timespan), p)), as.integer(se.fit))

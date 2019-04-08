@@ -191,7 +191,7 @@ pinf,finf,kinf,rankp,lik,basetol,c,p,m,i, att, ptt)
         end if
     end do
     att = at
-    ptt = pt
+    ptt = (pt + transpose(pt)) / 2.0d0
     call dgemv('n',m,m,1.0d0,tt,m,at,1,0.0d0,ahelp,1)
     at = ahelp
     call dsymm('r','u',m,m,1.0d0,pt,m,tt,m,0.0d0,mm,m)
@@ -249,7 +249,7 @@ subroutine filter1step2(ymiss, yt, zt, ht, tt, rqr, at, pt, vt, &
     end do
 
     att = at
-    ptt = pt
+    ptt = (pt + transpose(pt)) / 2.0d0
     call dgemv('n',m,m,1.0d0,tt,m,at,1,0.0d0,ahelp,1)
     at = ahelp
 

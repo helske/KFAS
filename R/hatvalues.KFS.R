@@ -27,6 +27,8 @@
 #' c(hatvalues(KFS(model)))
 #'
 hatvalues.KFS <- function(model, ...) {
+  
+  if(identical(model$model, "not stored")) stop("No model stored as part of KFS, cannot compute residuals.")
   if (any(model$model$distribution != "gaussian")) {
     app <- approxSSM(model$model, ...)
     if (!("V_theta" %in% names(model)))

@@ -34,10 +34,10 @@ print.SSModel <-  function(x, ...) {
 #' @param ... Ignored.
 print.KFS <-
   function(x, type = "state", digits = max(3L, getOption("digits") - 3L), ...) {
-
-    p <- attr(x$model, "p")
-    m <- attr(x$model, "m")
-    n <- attr(x$model, "n")
+    
+    p <- x$dims$p
+    m <- x$dims$m
+    n <- x$dims$n
     type <- match.arg(type,choices = c("state", "signal", "mean"),
       several.ok = TRUE)
 
@@ -46,7 +46,7 @@ print.KFS <-
     namesx <- names(x)
     if("state" %in% type && any(c("a", "alphahat") %in% namesx)) {
       if (!("alphahat" %in% namesx)) {
-        gaussian<-all(x$model$distribution=="gaussian")
+        gaussian<-all(x$all_gaussian)
         print_this <- cbind(x$a[n + gaussian, ], sqrt(x$P[, , n + gaussian][mdiag]))
         colnames(print_this) <- c("Estimate", "Std. Error")
         if(gaussian){

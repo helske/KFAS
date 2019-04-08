@@ -1,24 +1,29 @@
 Package: KFAS
-Version: 1.3.0
-Date: 2017-12-08
+Version: 1.3.5
+Date: 2019-02-01
 Title: Kalman Filter and Smoother for Exponential Family State Space Models
-Author: Jouni Helske <jouni.helske@iki.fi>
-Maintainer: Jouni Helske <jouni.helske@iki.fi>
+Authors@R: 
+    person(given = "Jouni",
+           family = "Helske",
+           role = c("aut", "cre"),
+           email = "jouni.helske@iki.fi",
+           comment = c(ORCID = "0000-0001-7130-793X"))
 Depends:
     R (>= 3.1.0)
 Imports:
     stats
 Suggests:
-    MASS,
-    testthat,
     knitr,
-    lme4
-Description: State space modelling is an efficient and flexible method for 
+    lme4,
+    MASS,
+    Matrix,
+    testthat
+Description: State space modelling is an efficient and flexible framework for 
     statistical inference of a broad class of time series and other data. KFAS 
-    includes fast functions for Kalman filtering, smoothing, forecasting, and 
-    simulation of multivariate exponential family state space models, with 
-    observations from Gaussian, Poisson, binomial, negative binomial, and gamma 
-    distributions.
+    includes computationally efficient functions for Kalman filtering, smoothing, 
+    forecasting, and simulation of multivariate exponential family state space models, 
+    with observations from Gaussian, Poisson, binomial, negative binomial, and gamma 
+    distributions. See the paper by Helske (2017) <doi:10.18637/jss.v078.i10> for details.
 License: GPL (>= 2)
 BugReports: https://github.com/helske/KFAS/issues
 VignetteBuilder: knitr
