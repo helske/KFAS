@@ -5,7 +5,7 @@ test_that("SSModel works properly",{
   set.seed(123)
   d<-data.frame(x=rnorm(100))
   t12<-ts(cbind(t1=rnorm(100)+d$x,t2=rnorm(100)))
-  t12[sample(size=50,1:200)]<-NA
+  t12[c(1:7,5,89,100,145:180)]<-NA
   expect_warning(
     model<-SSModel(t12~SSMcycle(period=10, type='common',Q=2)
                    +SSMcycle(period=10, type='distinct',P1=diag(c(1,1,2,2)),Q=diag(1:2))
@@ -21,7 +21,7 @@ test_that("SSModel works properly",{
     ), NA)
   expect_warning(print(model), NA)
   expect_warning(logLik(model), NA)
-  expect_equal(logLik(model),-442.006705531500,tolerance=tol,check.attributes=FALSE)
+  expect_equal(logLik(model),-449.496924123938,tolerance=tol,check.attributes=FALSE)
   expect_warning(out<-KFS(model,filtering=c("state","mean"),smoothing=c("state","mean","disturbance")), NA)
   expect_equal(out$d,11)
   expect_equal(out$j,1)
