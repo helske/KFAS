@@ -27,5 +27,6 @@ Description: State space modelling is an efficient and flexible framework for
 License: GPL (>= 2)
 BugReports: https://github.com/helske/KFAS/issues
 VignetteBuilder: knitr
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.1
+Encoding: UTF-8
 ByteCompile: true

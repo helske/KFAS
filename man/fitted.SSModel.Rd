@@ -3,11 +3,10 @@
 \name{fitted.SSModel}
 \alias{fitted.SSModel}
 \alias{fitted.KFS}
-\alias{fitted.SSModel}
 \title{Smoothed Estimates or One-step-ahead Predictions of Fitted Values}
 \usage{
-\method{fitted}{KFS}(object, start = NULL, end = NULL, filtered = FALSE,
-  ...)
+\method{fitted}{KFS}(object, start = NULL, end = NULL,
+  filtered = FALSE, ...)
 
 \method{fitted}{SSModel}(object, start = NULL, end = NULL,
   filtered = FALSE, nsim = 0, ...)
