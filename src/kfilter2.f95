@@ -68,7 +68,7 @@ at, pt, vt, ft,kt, pinf, finf, kinf, lik, tol,rankp,theta,thetavar,filtersignal,
            !non-diffuse filtering begins
             call filter1step2(ymiss(d,:),yt(d,:),transpose(zt(:,:,(d-1)*timevar(1)+1)),ht(:,:,(d-1)*timevar(2)+1),&
             tt(:,:,(d-1)*timevar(3)+1),rqr(:,:,(d-1)*tv+1),&
-            at(:,d+1),pt(:,:,d+1),vt(:,d),ft(:,d),kt(:,:,d),lik,tol,c,p,m,j, at(:, d), ptt(:,:, d))
+            at(:,d+1),pt(:,:,d+1),vt(:,d),ft(:,d),kt(:,:,d),lik,tol,c,p,m,j, att(:, d), ptt(:,:, d))
         else
             j = p
         end if

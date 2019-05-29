@@ -1,3 +1,7 @@
+Changes from version 1.3.5 to 1.3.6:
+   * Fixed a bug in state estimation when transitioning from diffuse filtering to non-diffuse phase in case of multivariate series. Thanks to Hiroyuki Kawakatsu for noticing the issue.
+   * Fixed some internal function declarations.
+   
 Changes from version 1.3.4 to 1.3.5:
    * predict.SSModel: Previous fix from 1.3.4 didn't actually work, now fixed for real. 
      Thanks for jhal324 for the fix.
