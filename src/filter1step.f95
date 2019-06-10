@@ -136,6 +136,7 @@ pinf,finf,kinf,rankp,lik,basetol,c,p,m,i, att, ptt)
     implicit none
 
     integer, intent(in) ::  p, m
+    integer :: k1, k2
     integer, intent(inout) ::  i,rankp
     integer, intent(in), dimension(p) :: ymiss
     double precision, intent(in), dimension(p) :: yt
@@ -191,7 +192,12 @@ pinf,finf,kinf,rankp,lik,basetol,c,p,m,i, att, ptt)
         end if
     end do
     att = at
-    ptt = (pt + transpose(pt)) / 2.0d0
+    do k1 = 1,m
+      do k2 = k1,m
+        ptt(k1, k2) = pt(k1, k2)
+        ptt(k2, k1) = ptt(k1, k2)
+      end do
+    end do
     call dgemv('n',m,m,1.0d0,tt,m,at,1,0.0d0,ahelp,1)
     at = ahelp
     call dsymm('r','u',m,m,1.0d0,pt,m,tt,m,0.0d0,mm,m)
@@ -210,7 +216,7 @@ subroutine filter1step2(ymiss, yt, zt, ht, tt, rqr, at, pt, vt, &
     implicit none
 
     integer, intent(in) ::  p, m,j
-    integer ::  i
+    integer ::  i, k1, k2
     integer, intent(in), dimension(p) :: ymiss
     double precision, intent(in), dimension(p) :: yt
     double precision, intent(in), dimension(m,p) :: zt
@@ -249,7 +255,12 @@ subroutine filter1step2(ymiss, yt, zt, ht, tt, rqr, at, pt, vt, &
     end do
 
     att = at
-    ptt = (pt + transpose(pt)) / 2.0d0
+    do k1 = 1,m
+      do k2 = k1,m
+        ptt(k1, k2) = pt(k1, k2)
+        ptt(k2, k1) = ptt(k1, k2)
+      end do
+    end do
     call dgemv('n',m,m,1.0d0,tt,m,at,1,0.0d0,ahelp,1)
     at = ahelp
 
