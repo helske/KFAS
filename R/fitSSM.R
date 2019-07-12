@@ -94,8 +94,8 @@
 #'
 #' checkfn <- function(model){
 #'   #test positive semidefiniteness of H and Q
-#'   inherits(try(ldl(model$H[,,1]),TRUE),'try-error') ||
-#'   inherits(try(ldl(model$Q[,,1]),TRUE),'try-error')
+#'   !inherits(try(ldl(model$H[,,1]),TRUE),'try-error') &&
+#'   !inherits(try(ldl(model$Q[,,1]),TRUE),'try-error')
 #' }
 #'
 #'

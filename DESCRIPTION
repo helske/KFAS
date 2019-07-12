@@ -1,6 +1,6 @@
 Package: KFAS
-Version: 1.3.7
-Date: 2019-06-10
+Version: 1.3.7-1
+Date: 2019-07-03
 Title: Kalman Filter and Smoother for Exponential Family State Space Models
 Authors@R: 
     person(given = "Jouni",

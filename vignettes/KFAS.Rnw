@@ -236,7 +236,7 @@ Ht <- matrix(NA)
 Tt <- matrix(c(1, 0, 1, 1), 2, 2)
 Rt <- matrix(c(1, 0), 2, 1)
 Qt <- matrix(NA)
-a1 <- matrix(c(1, 0), 2, 1)
+a1 <- matrix(0, 2, 1)
 P1 <- matrix(0, 2, 2)
 P1inf <- diag(2)
 
