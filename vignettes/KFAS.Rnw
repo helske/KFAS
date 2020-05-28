@@ -283,7 +283,7 @@ The signal $\theta_t$ is the linear predictor which is connected to the expected
 
 \item Gamma distribution with a shape parameter $u_t$ and an expected value $\mu_t$, again with log-link $\theta_t = \log(\mu)$, where Gamma distribution is defined as
 \begin{equation*}
-p(y_t|\mu_t,u_t) = \frac{u_t^{u_t}}{\Gamma(u_t)}\mu_t^{-u_t}y_t^{u_t-1}e^{\frac{y_t u_t}{\mu_t}}.
+p(y_t|\mu_t,u_t) = \frac{u_t^{u_t}}{\Gamma(u_t)}\mu_t^{-u_t}y_t^{u_t-1}e^{\frac{-y_t u_t}{\mu_t}}.
 \end{equation*}
 This gives us $\E(y_t|\theta_t)=e^{\theta_t}$ and $\VAR(y_t|\theta_t) = e^{2\theta_t}/u_t$.
 
