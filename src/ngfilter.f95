@@ -2,11 +2,13 @@
 
 subroutine ngfilter(yt, ymiss, timevar, zt, tt, rtv, qt, a1, p1,p1inf, u, theta,&
 dist, p,n, m, r, rankp, nnd,nsim,epsplus,etaplus,aplus1,c,tol,info,maxiter,&
-convtol,alphahat,alphavar,thetahat,thetavar,yhat,yvar,smootha,smooths,smoothy)
+convtol,alphahat,alphavar,thetahat,thetavar,yhat,yvar,smootha,smooths,smoothy,&
+expected)
 
     implicit none
 
-    integer, intent(in) ::  p,m, r, n,nnd,nsim,rankp,smootha,smooths,smoothy
+    integer, intent(in) ::  p,m, r, n,nnd,nsim,rankp,smootha,smooths,smoothy&
+    , expected
     integer, intent(in), dimension(p) :: dist
     integer, intent(in), dimension(n,p) :: ymiss
     integer, intent(in), dimension(5) :: timevar
@@ -44,7 +46,7 @@ convtol,alphahat,alphavar,thetahat,thetavar,yhat,yvar,smootha,smooths,smoothy)
 
         call isamplefilter(yt, ymiss, timevar, zt, tt, rtv, qt, a1, p1,p1inf, u, dist, &
         p, n, m, r, theta, maxiter,rankp,convtol, nnd,nsim,epsplus,etaplus,&
-        aplus1,c,tol,info,1,w,sim,4,m)
+        aplus1,c,tol,info,1,w,sim,4,m, expected)
 
         if(info .ne. 0 .and. info .ne. 3) then
             return
@@ -91,7 +93,7 @@ convtol,alphahat,alphavar,thetahat,thetavar,yhat,yvar,smootha,smooths,smoothy)
     else
         call isamplefilter(yt, ymiss, timevar, zt, tt, rtv, qt, a1, p1,p1inf, u, dist, &
         p, n, m, r, theta, maxiter,rankp,convtol, nnd,nsim,epsplus,etaplus,&
-        aplus1,c,tol,info,1,w,sim,5,p)
+        aplus1,c,tol,info,1,w,sim,5,p, expected)
 
         if(info .ne. 0 .and. info .ne. 3) then
             return
@@ -128,9 +130,4 @@ convtol,alphahat,alphavar,thetahat,thetavar,yhat,yvar,smootha,smooths,smoothy)
         end if
 
     end if
-
-
-
-
-
 end subroutine ngfilter

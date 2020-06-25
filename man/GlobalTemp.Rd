@@ -4,7 +4,9 @@
 \name{GlobalTemp}
 \alias{GlobalTemp}
 \title{Two series of average global temperature deviations for years 1880-1987}
-\format{A time series object containing 108 times 2 observations.}
+\format{
+A time series object containing 108 times 2 observations.
+}
 \source{
 http://lib.stat.cmu.edu/general/stoffer/tsa2/
 }

@@ -4,9 +4,17 @@
 \alias{importanceSSM}
 \title{Importance Sampling of Exponential Family State Space Model}
 \usage{
-importanceSSM(model, type = c("states", "signals"), filtered = FALSE,
-  nsim = 1000, save.model = FALSE, theta, antithetics = FALSE,
-  maxiter = 50)
+importanceSSM(
+  model,
+  type = c("states", "signals"),
+  filtered = FALSE,
+  nsim = 1000,
+  save.model = FALSE,
+  theta,
+  antithetics = FALSE,
+  maxiter = 50,
+  expected = FALSE
+)
 }
 \arguments{
 \item{model}{Exponential family state space model of class \code{SSModel}.}
@@ -29,6 +37,13 @@ simulations, one for location and another for scale. Default is FALSE.}
 
 \item{maxiter}{Maximum number of iterations used in linearisation. Default is
 50.}
+
+\item{expected}{Logical value defining the approximation of H_t in case of Gamma 
+and negative binomial distribution. Default is \code{FALSE} which matches the 
+algorithm of Durbin & Koopman (1997), whereas \code{TRUE} uses the expected value
+of observations in the equations, leading to results which match with \code{glm} (where applicable).
+The latter case was the default behaviour of KFAS before version 1.3.8.
+Essentially this is the difference between observed and expected information.}
 }
 \value{
 A list containing elements

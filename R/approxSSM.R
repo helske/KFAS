@@ -32,6 +32,12 @@
 #' @param maxiter The maximum number of iterations used in approximation.
 #'   Default is 50.
 #' @param tol Tolerance parameter for convergence checks.
+#' @param expected Logical value defining the approximation of H_t in case of Gamma 
+#' and negative binomial distribution. Default is \code{FALSE} which matches the 
+#' algorithm of Durbin & Koopman (1997), whereas \code{TRUE} uses the expected value
+#' of observations in the equations, leading to results which match with \code{glm} (where applicable).
+#' The latter case was the default behaviour of KFAS before version 1.3.8.
+#' Essentially this is the difference between observed and expected information.
 #' @return An object of class \code{SSModel} which contains the approximating Gaussian state space model
 #'   with following additional components:
 #'   \item{thetahat}{Mode of \eqn{p(\theta|y)}. }
@@ -74,7 +80,7 @@
 #' model <- SSModel(y~1, dist = "binomial")
 #' KFS(model, theta = 2)
 #' KFS(model, theta = 7)
-approxSSM <- function(model, theta, maxiter = 50, tol = 1e-08) {
+approxSSM <- function(model, theta, maxiter = 50, tol = 1e-08, expected = FALSE) {
 
   if (maxiter < 1) {
     stop("Argument maxiter must a positive integer. ")
@@ -87,7 +93,11 @@ approxSSM <- function(model, theta, maxiter = 50, tol = 1e-08) {
   if (all(model$distribution == "gaussian")) {
     stop("Model is completely Gaussian, nothing to approximate. ")
   }
-
+  
+  if (!is.logical(expected))
+    stop("Argument expected should be logical. ")
+  expected <- as.integer(expected)
+  
   p <- attr(model, "p")
   m <- attr(model, "m")
   k <- attr(model, "k")
@@ -113,7 +123,7 @@ approxSSM <- function(model, theta, maxiter = 50, tol = 1e-08) {
       ytilde = array(0, dim = c(n, p)), dist,
       maxiter = as.integer(maxiter), model$tol,
       as.integer(sum(model$P1inf)), as.double(tol), diff = double(1),
-      double(1),info = integer(1))
+      double(1),info = integer(1), expected)
   if (out$info != 0) {
     warning(switch(as.character(out$info),
       "-3" = "Couldn't compute LDL decomposition of P1.",

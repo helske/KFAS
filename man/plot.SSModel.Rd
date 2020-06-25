@@ -4,7 +4,7 @@
 \alias{plot.SSModel}
 \title{Diagnostic Plots of State Space Models}
 \usage{
-\method{plot}{SSModel}(x, nsim = 0, zerotol = 0, ...)
+\method{plot}{SSModel}(x, nsim = 0, zerotol = 0, expected = FALSE, ...)
 }
 \arguments{
 \item{x}{Object of class \code{SSModel}.}
@@ -19,6 +19,13 @@ the Delta method (ignoring the covariance terms).}
 
 \item{zerotol}{Tolerance parameter for positivity checking in standardization. Default is zero. 
 The values of D <= zerotol * max(D, 0) are deemed to zero.}
+
+\item{expected}{Logical value defining the approximation of H_t in case of Gamma 
+and negative binomial distribution. Default is \code{FALSE} which matches the 
+algorithm of Durbin & Koopman (1997), whereas \code{TRUE} uses the expected value
+of observations in the equations, leading to results which match with \code{glm} (where applicable).
+The latter case was the default behaviour of KFAS before version 1.3.8.
+Essentially this is the difference between observed and expected information.}
 
 \item{...}{Ignored.}
 }

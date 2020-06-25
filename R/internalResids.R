@@ -27,7 +27,7 @@ varianceSmoother <- function(object) {
   vars
 }
 
-recursive_standardized <- function(object, stype, zerotol = 0) {
+recursive_standardized <- function(object, stype, zerotol = 0, expected = FALSE) {
   
   if(any(object$model$distribution !=  "gaussian") && !("m" %in% names(object)))
     stop("KFS object does not contain filtered means. ")
@@ -49,7 +49,7 @@ recursive_standardized <- function(object, stype, zerotol = 0) {
       res[1:object$d, ] <- NA      
     }
   } else {
-    d<-KFS(approxSSM(object$model),filtering="state",smoothing="none")$d      
+    d<-KFS(approxSSM(object$model, expected = expected),filtering="state",smoothing="none")$d      
     vars<-varianceFilter(object)
     res<-object$model$y  
     if (sum(bins <- object$model$distribution == "binomial") > 0)
@@ -84,7 +84,7 @@ recursive_standardized <- function(object, stype, zerotol = 0) {
   res
 }
 
-pearson_standardized <- function(object, stype, zerotol = 0) {
+pearson_standardized <- function(object, stype, zerotol = 0, ...) {
   
   n <- attr(object$model, "n")
   
@@ -156,7 +156,7 @@ pearson_standardized <- function(object, stype, zerotol = 0) {
   res
 }
 
-state_standardized <- function(object, stype, zerotol = 0) {
+state_standardized <- function(object, stype, zerotol = 0, ...) {
   
   if (!("etahat" %in% names(object)))
     stop("KFS object needs to contain smoothed estimates of state disturbances eta.")

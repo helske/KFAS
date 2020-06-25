@@ -46,6 +46,7 @@ This function is simple wrapper around \code{\link{optim}}. For optimal performa
 complicated problems, it is more efficient to use problem specific codes with
 calls to \code{logLik} method directly.
 
+
 In \code{fitSSM}, the objective function for \code{\link{optim}} first
 updates the model based on the current values of the parameters under optimization,
 using function \code{updatefn}. Then function \code{checkfn}
@@ -105,8 +106,8 @@ updatefn <- function(pars, model){
 
 checkfn <- function(model){
   #test positive semidefiniteness of H and Q
-  inherits(try(ldl(model$H[,,1]),TRUE),'try-error') ||
-  inherits(try(ldl(model$Q[,,1]),TRUE),'try-error')
+  !inherits(try(ldl(model$H[,,1]),TRUE),'try-error') &&
+  !inherits(try(ldl(model$Q[,,1]),TRUE),'try-error')
 }
 
 

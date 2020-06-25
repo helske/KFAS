@@ -78,6 +78,12 @@
 #' returned as part of the output. Defaults to TRUE, but for large models can be set 
 #' to FALSE in order to save memory. However, many of the methods operating on the 
 #' output of \code{KFS} use this model so this will not work if \code{return_model=FALSE}.
+#' @param expected Logical value defining the approximation of H_t in case of Gamma 
+#' and negative binomial distribution. Default is \code{FALSE} which matches the 
+#' algorithm of Durbin & Koopman (1997), whereas \code{TRUE} uses the expected value
+#' of observations in the equations, leading to results which match with \code{glm} (where applicable).
+#' The latter case was the default behaviour of KFAS before version 1.3.8.
+#' Essentially this is the difference between observed and expected information.
 #' @return What \code{KFS} returns depends on the arguments \code{filtering},
 #'   \code{smoothing} and \code{simplify}, and whether the model is Gaussian or
 #'   not:
@@ -223,7 +229,7 @@
 #'
 KFS <-  function(model, filtering, smoothing, simplify = TRUE,
   transform = c("ldl", "augment"), nsim = 0, theta, maxiter = 50,
-  convtol = 1e-08, return_model = TRUE) {
+  convtol = 1e-08, return_model = TRUE, expected = FALSE) {
 
   # Check that the model object is of proper form
   is.SSModel(model, na.check = TRUE, return.logical = FALSE)
@@ -256,6 +262,9 @@ KFS <-  function(model, filtering, smoothing, simplify = TRUE,
       smoothing <- smoothing[smoothing != "disturbance"]
     }
   }
+  if (!is.logical(expected))
+    stop("Argument expected should be logical. ")
+  expected <- as.integer(expected)
   p <- attr(model, "p")
   m <- attr(model, "m")
   k <- attr(model, "k")
@@ -306,7 +315,7 @@ KFS <-  function(model, filtering, smoothing, simplify = TRUE,
           mu = array(0, ("mean" %in% filtering) * c(p - 1, n - 1) + 1),
           P_mu = array(0, ("mean" %in% filtering) * c(p - 1, p - 1, n - 1) + 1),
           as.integer("state" %in%  filtering), as.integer("signal" %in% filtering),
-          as.integer("mean" %in%  filtering))
+          as.integer("mean" %in%  filtering), expected)
         if(filterout$info!=0){
           switch(as.character(filterout$info),
             "-3" = stop("Couldn't compute LDL decomposition of P1."),
@@ -354,7 +363,7 @@ KFS <-  function(model, filtering, smoothing, simplify = TRUE,
             muhat = array(0, ("mean" %in% smoothing) * c(p - 1, n - 1) + 1),
             V_mu = array(0, ("mean" %in% smoothing) * c(p - 1, p - 1, n - 1) + 1),
             as.integer("state" %in%  smoothing), as.integer("signal" %in% smoothing),
-            as.integer("mean" %in% smoothing))
+            as.integer("mean" %in% smoothing), expected)
         if (smoothout$info != 0) {
           switch(as.character(smoothout$info),
             "-3" = stop("Couldn't compute LDL decomposition of P1."),
@@ -397,7 +406,7 @@ KFS <-  function(model, filtering, smoothing, simplify = TRUE,
           table = c("gaussian", "poisson", "binomial", "gamma", "negative binomial"),
           duplicates.ok = TRUE),
         maxiter = as.integer(maxiter), model$tol, as.integer(sum(model$P1inf)),
-        convtol, diff = double(1),lik=double(1), info=integer(1))
+        convtol, diff = double(1),lik=double(1), info=integer(1), expected)
 
       if(app$info!=0){
         switch(as.character(app$info),

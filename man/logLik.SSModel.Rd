@@ -5,9 +5,20 @@
 \alias{logLik}
 \title{Log-likelihood of the State Space Model.}
 \usage{
-\method{logLik}{SSModel}(object, marginal = FALSE, nsim = 0,
-  antithetics = TRUE, theta, check.model = TRUE, transform = c("ldl",
-  "augment"), maxiter = 50, seed, convtol = 1e-08, ...)
+\method{logLik}{SSModel}(
+  object,
+  marginal = FALSE,
+  nsim = 0,
+  antithetics = TRUE,
+  theta,
+  check.model = TRUE,
+  transform = c("ldl", "augment"),
+  maxiter = 50,
+  seed,
+  convtol = 1e-08,
+  expected = FALSE,
+  ...
+)
 }
 \arguments{
 \item{object}{State space model of class \code{SSModel}.}
@@ -42,6 +53,13 @@ non-Gaussian model.}
 
 \item{convtol}{Tolerance parameter for convergence checks for Gaussian
 approximation.}
+
+\item{expected}{Logical value defining the approximation of H_t in case of Gamma 
+and negative binomial distribution. Default is \code{FALSE} which matches the 
+algorithm of Durbin & Koopman (1997), whereas \code{TRUE} uses the expected value
+of observations in the equations, leading to results which match with \code{glm} (where applicable).
+The latter case was the default behaviour of KFAS before version 1.3.8.
+Essentially this is the difference between observed and expected information.}
 
 \item{...}{Ignored.}
 }

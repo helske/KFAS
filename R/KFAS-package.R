@@ -63,7 +63,7 @@
 #' then needed when making inferences about signal which contains the error terms also).
 #'
 #'\item \eqn{y_t \sim \textrm{Poisson}(u_t\lambda_t), }{y[t]~Poisson(u[t]\lambda[t]), } where \eqn{u_t}{u[t]}
-#' is an offset term, with \eqn{\theta_t = log(u_t\lambda_t)}{\theta[t] = log(u[t]\lambda[t])}.
+#' is an offset term, with \eqn{\theta_t = log(\lambda_t)}{\theta[t] = log(\lambda[t])}.
 #'
 #'\item \eqn{y_t \sim \textrm{binomial}(u_t, \pi_t), }{y[t]~binomial(u[t], \pi[t]), } with \eqn{\theta_t =
 #' log[\pi_t/(1-\pi_t)]}{\theta[t] = log(\pi[t]/(1-\pi[t]))}, where
@@ -394,7 +394,8 @@
 #' out_D93$V[, , 1]
 #'
 #' # approximating model as in GLM
-#' out_D93_nosim <- KFS(model_D93, smoothing = c("state", "signal", "mean"))
+#' out_D93_nosim <- KFS(model_D93, smoothing = c("state", "signal", "mean"), 
+#'   expected = TRUE)
 #'
 #' # with importance sampling. Number of simulations is too small here,
 #' # with large enough nsim the importance sampling actually gives
@@ -467,7 +468,7 @@
 #' ### Linear mixed model with KFAS ###
 #' ####################################
 #'
-#' # example from ?lmer of lme4 pacakge
+#' # example from ?lmer of lme4 package
 #' data("sleepstudy", package = "lme4")
 #'
 #' model_lmm <- SSModel(Reaction ~ Days +

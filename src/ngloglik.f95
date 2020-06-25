@@ -1,11 +1,13 @@
 ! Non-Gaussian log-likelihood computation
 subroutine ngloglik(yt, ymiss, timevar, zt, tt, rtv, qt, a1, p1,p1inf, p,m,&
 r, n, lik, theta, u, dist,maxiter,rankp,convtol, &
-nnd,nsim,epsplus,etaplus,aplus1,c,tol,info,antit,sim,nsim2,diff,marginal)
+nnd,nsim,epsplus,etaplus,aplus1,c,tol,info,antit,sim,nsim2,diff,marginal&
+, expected)
 
     implicit none
 
-    integer, intent(in) ::  p, m, r, n,nnd,antit,nsim,sim,nsim2,rankp
+    integer, intent(in) ::  p, m, r, n,nnd,antit,nsim,sim,nsim2,&
+    rankp, expected
     integer, intent(in), dimension(n,p) :: ymiss
     integer, intent(in), dimension(p) :: dist
     integer, intent(in), dimension(5) :: timevar
@@ -37,7 +39,7 @@ nnd,nsim,epsplus,etaplus,aplus1,c,tol,info,antit,sim,nsim2,diff,marginal)
     external approx, marginalxx, dpoisf, dnormf, dbinomf, dgammaf, dnbinomf, simgaussian
     !approximate
     call approx(yt, ymiss, timevar, zt, tt, rtv, ht, qt, a1, p1,p1inf, p, n, m, r,&
-    theta, u, ytilde, dist,maxiter,tol,rankp,convtol,diff,lik, info)
+    theta, u, ytilde, dist,maxiter,tol,rankp,convtol,diff,lik, info, expected)
 
     if(info .ne. 0 .and. info .ne. 3) then
         return

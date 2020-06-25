@@ -5,11 +5,9 @@
 \alias{[.SSModel}
 \title{Extract or Replace Parts of a State Space Model}
 \usage{
-\method{[}{SSModel}(x, element, states, etas, series, times,
-  ...) <- value
+\method{[}{SSModel}(x, element, states, etas, series, times, ...) <- value
 
-\method{[}{SSModel}(x, element, states, etas, series, times, drop = TRUE,
-  ...)
+\method{[}{SSModel}(x, element, states, etas, series, times, drop = TRUE, ...)
 }
 \arguments{
 \item{x}{Object of class \code{SSModel}.}
@@ -58,7 +56,7 @@ If \code{element} is not one of
 \code{"a1"}, \code{"P1"}, \code{"P1inf"}, \code{"u"},
 the default single bracket list extraction 
 and assignments (\code{x[element]} and \code{x[element] <- value}) 
-are used (and other arguments are ignored).
+are used (and other arguments are ignored). 
 
 If \code{element} is one of 
 \code{"y"}, \code{"Z"}, \code{"H"}, \code{"T"}, \code{"R"}, \code{"Q"}, 

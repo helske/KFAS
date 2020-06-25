@@ -4,7 +4,7 @@
 \alias{approxSSM}
 \title{Linear Gaussian Approximation for Exponential Family State Space Model}
 \usage{
-approxSSM(model, theta, maxiter = 50, tol = 1e-08)
+approxSSM(model, theta, maxiter = 50, tol = 1e-08, expected = FALSE)
 }
 \arguments{
 \item{model}{A non-Gaussian state space model object of class \code{SSModel}.}
@@ -15,6 +15,13 @@ approxSSM(model, theta, maxiter = 50, tol = 1e-08)
 Default is 50.}
 
 \item{tol}{Tolerance parameter for convergence checks.}
+
+\item{expected}{Logical value defining the approximation of H_t in case of Gamma 
+and negative binomial distribution. Default is \code{FALSE} which matches the 
+algorithm of Durbin & Koopman (1997), whereas \code{TRUE} uses the expected value
+of observations in the equations, leading to results which match with \code{glm} (where applicable).
+The latter case was the default behaviour of KFAS before version 1.3.8.
+Essentially this is the difference between observed and expected information.}
 }
 \value{
 An object of class \code{SSModel} which contains the approximating Gaussian state space model

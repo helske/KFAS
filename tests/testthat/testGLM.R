@@ -47,10 +47,10 @@ clotting <- data.frame(
 glm.gamma<-glm(lot1 ~ log(u), data = clotting, family = Gamma("log"),control=list(epsilon=1e-8))
 #dispersion=1
 model.gamma1<-SSModel(lot1 ~ log(u), data = clotting, distribution = 'gamma')
-kfas.gamma1<-KFS(model.gamma1,smoothing=c('state','signal','mean'))
+kfas.gamma1<-KFS(model.gamma1,smoothing=c('state','signal','mean'), expected = TRUE)
 #dispersion from gamma.glm
 model.gamma2<-SSModel(lot1 ~ log(u), u = 1/summary(glm.gamma)$dispersion, data = clotting, distribution = 'gamma')
-kfas.gamma2<-KFS(model.gamma2,smoothing=c('state','signal','mean'),maxiter=1000,convtol=1e-8)  
+kfas.gamma2<-KFS(model.gamma2,smoothing=c('state','signal','mean'),maxiter=1000,convtol=1e-8, expected = TRUE)  
 
 ## Test for NB GLM
 ## From MASS library, ?glm.nb
@@ -59,18 +59,18 @@ glm.NB <- glm.nb(Days ~ Sex/(Age + Eth*Lrn), data = quine,control=glm.control(ep
 # estimate theta
 theta0<-1
 model.NB<-SSModel(Days ~ Sex/(Age + Eth*Lrn), u=theta0, data = quine, distribution = 'negative binomial')
-kfas.NB<-KFS(model.NB,smoothing='mean')
+kfas.NB<-KFS(model.NB,smoothing='mean', expected = TRUE)
 theta<-theta.ml(y=quine$Days,mu=c(fitted(kfas.NB)))
 maxit<-10
 i<-0
 while(abs(theta-theta0)/theta0>1e-7 && i<maxit){
   model.NB$u[]<-theta0<-theta
-  kfas.NB<-KFS(model.NB,smoothing='mean')
+  kfas.NB<-KFS(model.NB,smoothing='mean', expected = TRUE)
   theta<-theta.ml(y=quine$Days,mu=c(fitted(kfas.NB)))
   i<-i+1
 }
 model.NB$u[]<-theta
-kfas.NB<-KFS(model.NB,smoothing=c('state','signal','mean'),convtol=1e-15)
+kfas.NB<-KFS(model.NB,smoothing=c('state','signal','mean'),convtol=1e-15, expected = TRUE)
 
 test_that("Gaussian GLM fitting works properly",{
   for(i in 1:length(model.gaussian$y))
@@ -280,9 +280,11 @@ test_that("Predictions for GLM works properly",{
   
   
   pred.glm.gamma.link<-predict(glm.gamma,type="link",se.fit=TRUE)
-  pred.kfas.gamma.link<-predict(model.gamma2,type="link",se.fit=TRUE,interval="confidence")
+  pred.kfas.gamma.link<-predict(model.gamma2,type="link",se.fit=TRUE,
+    interval="confidence", expected = TRUE)
   pred.glm.gamma.response<-predict(glm.gamma,type="response",se.fit=TRUE)
-  pred.kfas.gamma.response<-predict(model.gamma2,type="response",se.fit=TRUE,interval="confidence")  
+  pred.kfas.gamma.response<-predict(model.gamma2,type="response",se.fit=TRUE,
+    interval="confidence", expected = TRUE)  
   expect_equal(pred.glm.gamma.link$fit,obj=c(pred.kfas.gamma.link[,"fit"]),tolerance=tol, check.attributes=FALSE)
   expect_equal(pred.glm.gamma.link$se.fit,obj=c(pred.kfas.gamma.link[,"se.fit"]),tolerance=tol, check.attributes=FALSE)
   expect_equal(pred.glm.gamma.response$fit,obj=c(pred.kfas.gamma.response[,"fit"]),tolerance=tol, check.attributes=FALSE)
@@ -290,9 +292,10 @@ test_that("Predictions for GLM works properly",{
   
   
   pred.glm.NB.link<-predict(glm.NB,type="link",se.fit=TRUE)
-  pred.kfas.NB.link<-predict(model.NB,type="link",se.fit=TRUE,interval="confidence")
+  pred.kfas.NB.link<-predict(model.NB,type="link",se.fit=TRUE,interval="confidence", expected = TRUE)
   pred.glm.NB.response<-predict(glm.NB,type="response",se.fit=TRUE)
-  pred.kfas.NB.response<-predict(model.NB,type="response",se.fit=TRUE,interval="confidence")  
+  pred.kfas.NB.response<-predict(model.NB,type="response",se.fit=TRUE,interval="confidence",
+    expected = TRUE)  
   expect_equal(pred.glm.NB.link$fit,obj=c(pred.kfas.NB.link[,"fit"]),tolerance=tol, check.attributes=FALSE)
   expect_equal(pred.glm.NB.link$se.fit,obj=c(pred.kfas.NB.link[,"se.fit"]),tolerance=tol, check.attributes=FALSE)
   expect_equal(pred.glm.NB.response$fit,obj=c(pred.kfas.NB.response[,"fit"]),tolerance=tol, check.attributes=FALSE)

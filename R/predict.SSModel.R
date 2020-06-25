@@ -57,6 +57,12 @@
 #' interval bounds and standard errors of fitted values are set to \code{-Inf}/\code{Inf}
 #' (If the interest is in the first time points it might be useful to use
 #' non-exact diffuse initialization.).
+#' @param expected Logical value defining the approximation of H_t in case of Gamma 
+#' and negative binomial distribution. Default is \code{FALSE} which matches the 
+#' algorithm of Durbin & Koopman (1997), whereas \code{TRUE} uses the expected value
+#' of observations in the equations, leading to results which match with \code{glm} (where applicable).
+#' The latter case was the default behaviour of KFAS before version 1.3.8.
+#' Essentially this is the difference between observed and expected information.
 #' @param \dots Ignored.
 #' @return A matrix or list of matrices containing the predictions, and
 #'   optionally standard errors.
@@ -78,7 +84,7 @@
 predict.SSModel <- function(object, newdata, n.ahead,
   interval = c("none", "confidence", "prediction"), level = 0.95,
   type = c("response", "link"), states = NULL, se.fit = FALSE,  nsim = 0,
-  prob = TRUE, maxiter = 50, filtered = FALSE, ...) {
+  prob = TRUE, maxiter = 50, filtered = FALSE, expected = FALSE, ...) {
 
   interval <- match.arg(interval)
   type <- match.arg(type)
@@ -226,18 +232,18 @@ predict.SSModel <- function(object, newdata, n.ahead,
       if (identical(states, as.integer(1:m))) {
         if (filtered) {
           out <- KFS(model = object, filtering = "signal", smoothing = "none",
-            maxiter = maxiter)
+            maxiter = maxiter, expected = expected)
           names(out)[match(c("t", "P_theta"), names(out))] <- c("thetahat", "V_theta")
           if (out$d > 0) {
           out$V_theta[,,1:out$d] <- Inf #diffuse phase
           }
         } else {
-          out <- KFS(model = object, smoothing = "signal", maxiter = maxiter)
+          out <- KFS(model = object, smoothing = "signal", maxiter = maxiter, expected = expected)
         }
       } else {
         if (filtered) {
           out <- KFS(model = object, filtering = "state", smoothing = "none",
-            maxiter = maxiter)
+            maxiter = maxiter, expected = expected)
           d <- out$d
           out <- signal(out, states = states, filtered = TRUE)
           names(out) <- c("thetahat", "V_theta")
@@ -245,8 +251,8 @@ predict.SSModel <- function(object, newdata, n.ahead,
           out$V_theta[,,1:d] <- Inf #diffuse phase
           }
         } else {
-          out <- signal(KFS(model = object, smoothing = "state", maxiter = maxiter),
-            states = states)
+          out <- signal(KFS(model = object, smoothing = "state", 
+            maxiter = maxiter, expected = expected), states = states)
           names(out) <- c("thetahat", "V_theta")
         }
 
@@ -297,13 +303,14 @@ predict.SSModel <- function(object, newdata, n.ahead,
 
     } else {# with importance sampling
       if (filtered) {
-        d <- KFS(approxSSM(object, maxiter = maxiter), smoothing = "none")$d
+        d <- KFS(approxSSM(object, maxiter = maxiter, expected = expected), smoothing = "none")$d
       }
 
       if (interval == "none") {
         imp <- importanceSSM(object,
           ifelse(identical(states, as.integer(1:m)), "signal", "states"),
-          nsim = nsim, antithetics = TRUE, maxiter = maxiter, filtered = filtered)
+          nsim = nsim, antithetics = TRUE, maxiter = maxiter, filtered = filtered,
+          expected = expected)
         nsim <- as.integer(4 * nsim)
         if (!identical(states, as.integer(1:m))) {
           imp$samples <- .Fortran(fzalpha, NAOK = TRUE, as.integer(dim(object$Z)[3] > 1),
@@ -345,7 +352,7 @@ predict.SSModel <- function(object, newdata, n.ahead,
       } else {
         pred <- interval(object, interval = interval, level = level, type = type,
           states = states, nsim = nsim, se.fit = se.fit, timespan = timespan,
-          prob = prob, maxiter = maxiter, filtered = filtered)
+          prob = prob, maxiter = maxiter, filtered = filtered, expected = expected)
         if (filtered && d > 0) {
           for (i in 1:p) {
             pred[[i]][1:d, "lwr"] <- -Inf

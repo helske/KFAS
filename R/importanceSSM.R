@@ -24,6 +24,12 @@
 #'   simulations, one for location and another for scale. Default is FALSE.
 #' @param maxiter Maximum number of iterations used in linearisation. Default is
 #'   50.
+#' @param expected Logical value defining the approximation of H_t in case of Gamma 
+#' and negative binomial distribution. Default is \code{FALSE} which matches the 
+#' algorithm of Durbin & Koopman (1997), whereas \code{TRUE} uses the expected value
+#' of observations in the equations, leading to results which match with \code{glm} (where applicable).
+#' The latter case was the default behaviour of KFAS before version 1.3.8.
+#' Essentially this is the difference between observed and expected information.
 #' @return A list containing elements
 #' \item{samples}{Simulated samples. }
 #' \item{weights}{Importance weights. }
@@ -69,7 +75,7 @@
 #' }
 importanceSSM <-  function(model, type = c("states", "signals"),
   filtered = FALSE,  nsim = 1000, save.model = FALSE, theta,
-  antithetics = FALSE, maxiter = 50) {
+  antithetics = FALSE, maxiter = 50, expected = FALSE) {
 
   if (all(model$distribution == "gaussian")) {
     stop("Model is completely Gaussian, use simulateSSM instead. ")
@@ -80,8 +86,9 @@ importanceSSM <-  function(model, type = c("states", "signals"),
     stop("Argument nsim must a positive integer. ")
   # Check that the model object is of proper form
   is.SSModel(model, na.check = TRUE, return.logical = FALSE)
-
-
+  if (!is.logical(expected))
+    stop("Argument expected should be logical. ")
+  expected <- as.integer(expected)
   p <- attr(model, "p")
   m <- attr(model, "m")
   k <- attr(model, "k")
@@ -111,7 +118,8 @@ importanceSSM <-  function(model, type = c("states", "signals"),
       simtmp$epsplus, simtmp$etaplus, simtmp$aplus1, simtmp$c2, model$tol,
       info = integer(1), as.integer(antithetics),
       w = numeric(3 * nsim * antithetics + nsim),
-      sim = array(0, c(simdim,  n, 3 * nsim * antithetics + nsim)), sim.what, simdim)
+      sim = array(0, c(simdim,  n, 3 * nsim * antithetics + nsim)), sim.what, simdim,
+      expected)
   } else {
     out <- .Fortran(fisamplefilter, NAOK = TRUE, model$y, ymiss, as.integer(tv),
       model$Z, model$T, model$R, model$Q, model$a1, model$P1, model$P1inf,model$u,
@@ -123,7 +131,8 @@ importanceSSM <-  function(model, type = c("states", "signals"),
       simtmp$epsplus, simtmp$etaplus, simtmp$aplus1, simtmp$c2,
       model$tol, info = integer(1), as.integer(antithetics),
       w = array(0, c(n, 3 * nsim * antithetics + nsim)),
-      sim = array(0, c(simdim, n, 3 * nsim * antithetics + nsim)), sim.what, simdim)
+      sim = array(0, c(simdim, n, 3 * nsim * antithetics + nsim)), sim.what, simdim,
+      expected)
   }
   if(out$info!=0){
     switch(as.character(out$info),

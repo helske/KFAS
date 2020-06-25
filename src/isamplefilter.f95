@@ -2,12 +2,12 @@
 
 subroutine isamplefilter(yt, ymiss, timevar, zt, tt, rtv, qt, a1, p1,p1inf, u, dist, &
 p, n, m, r, theta, maxiter,rankp,convtol, nnd,nsim,epsplus,etaplus,&
-aplus1,c,tol,info,antithetics,w,sim,simwhat,simdim)
+aplus1,c,tol,info,antithetics,w,sim,simwhat,simdim, expected)
 
     implicit none
 
     integer, intent(in) ::  p,m, r, n,nnd,antithetics,nsim&
-    ,simwhat,simdim,rankp
+    ,simwhat,simdim,rankp, expected
     integer, intent(in), dimension(p) :: dist
     integer, intent(in), dimension(n,p) :: ymiss
     integer, intent(in), dimension(5) :: timevar
@@ -77,7 +77,8 @@ aplus1,c,tol,info,antithetics,w,sim,simwhat,simdim)
         call approx(yt(1:i,:), ymiss(1:i,:), timevar, zt(:,:,1:((i-1)*timevar(1)+1)), &
         tt(:,:,1:((i-1)*timevar(3)+1)), rtv(:,:,1:((i-1)*timevar(4)+1)), ht(:,:,1:i),&
         qt(:,:,1:((i-1)*timevar(5)+1)), a1, p1,p1inf, p,i,m,r,&
-        theta(1:i,:), u(1:i,:), ytilde(1:i,:), dist,maxiter2,tol,rankp,convtol,diff,lik,info2)
+        theta(1:i,:), u(1:i,:), ytilde(1:i,:), dist,maxiter2,tol,rankp,convtol,diff,lik,&
+        info2, expected)
 
         if(info2 .ne. 0 .and. info2 .ne. 3) then !check for errors in approximating algorithm
             info = info2

@@ -49,6 +49,12 @@
 #'   (default) for marginal standardization or  \code{"cholesky"} for Cholesky-type standardization.
 #' @param zerotol Tolerance parameter for positivity checking in standardization. Default is zero. 
 #' The values of D <= zerotol * max(D, 0) are deemed to zero.
+#' @param expected Logical value defining the approximation of H_t in case of Gamma 
+#' and negative binomial distribution. Default is \code{FALSE} which matches the 
+#' algorithm of Durbin & Koopman (1997), whereas \code{TRUE} uses the expected value
+#' of observations in the equations, leading to results which match with \code{glm} (where applicable).
+#' The latter case was the default behaviour of KFAS before version 1.3.8.
+#' Essentially this is the difference between observed and expected information.
 #' @param ... Ignored.
 #' @examples
 #' modelNile <- SSModel(Nile ~ SSMtrend(1, Q = list(matrix(NA))), H = matrix(NA))
@@ -64,7 +70,8 @@
 #'   main = "recursive and auxiliary residuals")
 rstandard.KFS <- function(model,
   type = c("recursive", "pearson", "state"),
-  standardization_type = c("marginal","cholesky"), zerotol = 0, ...) {
+  standardization_type = c("marginal","cholesky"), zerotol = 0, 
+  expected = FALSE,...) {
 
   if (identical(model$model, "not stored")) stop("No model stored as part of KFS, cannot compute residuals.")
   type <- match.arg(type)
@@ -74,7 +81,7 @@ rstandard.KFS <- function(model,
     stop("State residuals are only supported for fully gaussian models.")
 
   res_names <- if (type == "state") attr(model$model, "eta_types") else colnames(model$model$y)
-  x <- do.call(paste0(type,"_standardized"), list(model, stype, zerotol))
+  x <- do.call(paste0(type,"_standardized"), list(model, stype, zerotol, expected))
   return(ts(drop(x), start = start(model$model$y), frequency = frequency(model$model$y),
     names = res_names))
 }

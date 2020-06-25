@@ -4,9 +4,14 @@
 \alias{simulateSSM}
 \title{Simulation of a Gaussian State Space Model}
 \usage{
-simulateSSM(object, type = c("states", "signals", "disturbances",
-  "observations", "epsilon", "eta"), filtered = FALSE, nsim = 1,
-  antithetics = FALSE, conditional = TRUE)
+simulateSSM(
+  object,
+  type = c("states", "signals", "disturbances", "observations", "epsilon", "eta"),
+  filtered = FALSE,
+  nsim = 1,
+  antithetics = FALSE,
+  conditional = TRUE
+)
 }
 \arguments{
 \item{object}{Gaussian state space object of class \code{SSModel}.}

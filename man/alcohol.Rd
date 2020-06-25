@@ -4,7 +4,9 @@
 \name{alcohol}
 \alias{alcohol}
 \title{Alcohol related deaths in Finland 1969--2013}
-\format{A multivariate time series object with 45 times 8 observations.}
+\format{
+A multivariate time series object with 45 times 8 observations.
+}
 \source{
 Statistics Finland \url{http://pxnet2.stat.fi/PXWeb/pxweb/en/StatFin/}.
 }

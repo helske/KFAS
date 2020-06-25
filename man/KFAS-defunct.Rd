@@ -10,8 +10,7 @@
 \usage{
 \method{deviance}{KFS}(object, ...)
 
-\method{subset}{SSModel}(x, element, states, etas, series, times,
-  ...) <- value
+\method{subset}{SSModel}(x, element, states, etas, series, times, ...) <- value
 
 subset(x, ...) <- value
 

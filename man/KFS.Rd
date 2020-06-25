@@ -5,9 +5,19 @@
 \title{Kalman Filter and Smoother with Exact Diffuse Initialization for Exponential
 Family State Space Models}
 \usage{
-KFS(model, filtering, smoothing, simplify = TRUE, transform = c("ldl",
-  "augment"), nsim = 0, theta, maxiter = 50, convtol = 1e-08,
-  return_model = TRUE)
+KFS(
+  model,
+  filtering,
+  smoothing,
+  simplify = TRUE,
+  transform = c("ldl", "augment"),
+  nsim = 0,
+  theta,
+  maxiter = 50,
+  convtol = 1e-08,
+  return_model = TRUE,
+  expected = FALSE
+)
 }
 \arguments{
 \item{model}{Object of class \code{SSModel}.}
@@ -54,6 +64,13 @@ approximation. Only used for non-Gaussian models.}
 returned as part of the output. Defaults to TRUE, but for large models can be set 
 to FALSE in order to save memory. However, many of the methods operating on the 
 output of \code{KFS} use this model so this will not work if \code{return_model=FALSE}.}
+
+\item{expected}{Logical value defining the approximation of H_t in case of Gamma 
+and negative binomial distribution. Default is \code{FALSE} which matches the 
+algorithm of Durbin & Koopman (1997), whereas \code{TRUE} uses the expected value
+of observations in the equations, leading to results which match with \code{glm} (where applicable).
+The latter case was the default behaviour of KFAS before version 1.3.8.
+Essentially this is the difference between observed and expected information.}
 }
 \value{
 What \code{KFS} returns depends on the arguments \code{filtering},

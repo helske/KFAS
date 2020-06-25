@@ -4,7 +4,9 @@
 \name{boat}
 \alias{boat}
 \title{Oxford-Cambridge boat race results 1829-2011}
-\format{A time series object containing 183 observations (including 28 missing observations).}
+\format{
+A time series object containing 183 observations (including 28 missing observations).
+}
 \source{
 http://www.ssfpack.com/DKbook.html
 }

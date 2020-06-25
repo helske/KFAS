@@ -4,7 +4,7 @@
 #' @importFrom stats quantile rnorm rbinom rpois rnbinom rgamma
 interval <- function(model, interval = c("confidence", "prediction"), level,
   type = c("response",  "link"), states = NULL, nsim, se.fit = TRUE,
-  timespan, prob = TRUE, maxiter = 50, filtered = FALSE) {
+  timespan, prob = TRUE, maxiter = 50, filtered = FALSE, expected = FALSE) {
 
   interval <- match.arg(interval)
 
@@ -16,7 +16,7 @@ interval <- function(model, interval = c("confidence", "prediction"), level,
   p <- attr(model, "p")
   # Generate sample via importance sampling
   imp <- importanceSSM(model, ifelse(identical(states, as.integer(1:m)), "signal", "states"),
-    nsim = nsim, antithetics = TRUE, maxiter = maxiter, filtered = filtered)
+    nsim = nsim, antithetics = TRUE, maxiter = maxiter, filtered = filtered, expected = expected)
   nsim <- as.integer(4 * nsim)
   w <- imp$weights/sum(imp$weights)
   imp$samples <- imp$samples[timespan, , , drop = FALSE]

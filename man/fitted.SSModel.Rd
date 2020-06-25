@@ -5,11 +5,9 @@
 \alias{fitted.KFS}
 \title{Smoothed Estimates or One-step-ahead Predictions of Fitted Values}
 \usage{
-\method{fitted}{KFS}(object, start = NULL, end = NULL,
-  filtered = FALSE, ...)
+\method{fitted}{KFS}(object, start = NULL, end = NULL, filtered = FALSE, ...)
 
-\method{fitted}{SSModel}(object, start = NULL, end = NULL,
-  filtered = FALSE, nsim = 0, ...)
+\method{fitted}{SSModel}(object, start = NULL, end = NULL, filtered = FALSE, nsim = 0, ...)
 }
 \arguments{
 \item{object}{An object of class \code{KFS} or \code{SSModel}.}

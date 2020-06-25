@@ -1,11 +1,11 @@
 ! Subroutine for computation of the approximating Gaussian model for non-Gaussian models
 
 subroutine approx(yt, ymiss, timevar, zt, tt, rtv, ht, qt, a1, p1,p1inf, p, n, m, r,&
-theta, u, ytilde, dist, maxiter, tol, rankp, convtol, diff, lik, info)
+theta, u, ytilde, dist, maxiter, tol, rankp, convtol, diff, lik, info, expected)
 
     implicit none
 
-    integer, intent(in) ::  p,m, r, n,rankp
+    integer, intent(in) ::  p,m, r, n,rankp, expected
     integer, intent(in), dimension(n,p) :: ymiss
     integer, intent(in), dimension(5) :: timevar
     integer, intent(in), dimension(p) :: dist
@@ -56,7 +56,7 @@ theta, u, ytilde, dist, maxiter, tol, rankp, convtol, diff, lik, info)
         k=k+1
         ! compute new guess thetanew
         call approxloop(yt, ymiss, timevar, zt, tt, rtv, ht, qt, rqr, tvrqr, a1, p1,p1inf, p,n,m,r, &
-        theta, thetanew, u, ytilde, dist,tol,rankp,lik)
+        theta, thetanew, u, ytilde, dist,tol,rankp,lik, expected)
         ! and log(p(theta|y))
         call pytheta(thetanew, dist, u, yt, ymiss, dev, p, n)
         if(rankp .NE. m) then
@@ -77,7 +77,7 @@ theta, u, ytilde, dist, maxiter, tol, rankp, convtol, diff, lik, info)
                     !backtrack
                     theta = 0.5d0*(thetaold+theta)
                     call approxloop(yt, ymiss, timevar, zt, tt, rtv, ht, qt, rqr, tvrqr, a1, p1,p1inf, p,n,m,r, &
-                    theta, thetanew, u, ytilde, dist,tol,rankp,lik)
+                    theta, thetanew, u, ytilde, dist,tol,rankp,lik, expected)
 
                     call pytheta(thetanew, dist, u, yt, ymiss, dev, p, n)
                     if(rankp .NE. m) then
@@ -102,7 +102,7 @@ theta, u, ytilde, dist, maxiter, tol, rankp, convtol, diff, lik, info)
 
                     theta = 0.5d0*(thetaold+theta)
                     call approxloop(yt, ymiss, timevar, zt, tt, rtv, ht, qt, rqr, tvrqr, a1, p1,p1inf, p,n,m,r, &
-                    theta, thetanew, u, ytilde, dist,tol,rankp,lik)
+                    theta, thetanew, u, ytilde, dist,tol,rankp,lik, expected)
 
                     call pytheta(thetanew, dist, u, yt, ymiss, dev, p, n)
                     if(rankp .NE. m) then
@@ -126,7 +126,7 @@ theta, u, ytilde, dist, maxiter, tol, rankp, convtol, diff, lik, info)
                 ! new guess by halving the last try
                 theta = 0.5d0*(thetaold+theta)
                 call approxloop(yt, ymiss, timevar, zt, tt, rtv, ht, qt, rqr, tvrqr, a1, p1,p1inf, p,n,m,r, &
-                theta, thetanew, u, ytilde, dist,tol,rankp,lik)
+                theta, thetanew, u, ytilde, dist,tol,rankp,lik, expected)
 
                 call pytheta(thetanew, dist, u, yt, ymiss, dev, p, n)
                 if(rankp .NE. m) then

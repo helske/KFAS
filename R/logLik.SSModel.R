@@ -59,6 +59,12 @@
 #'   non-Gaussian model.
 #' @param convtol Tolerance parameter for convergence checks for Gaussian
 #'   approximation.
+#' @param expected Logical value defining the approximation of H_t in case of Gamma 
+#' and negative binomial distribution. Default is \code{FALSE} which matches the 
+#' algorithm of Durbin & Koopman (1997), whereas \code{TRUE} uses the expected value
+#' of observations in the equations, leading to results which match with \code{glm} (where applicable).
+#' The latter case was the default behaviour of KFAS before version 1.3.8.
+#' Essentially this is the difference between observed and expected information.
 #' @param ... Ignored.
 #' @return Log-likelihood of the model.
 #' @examples 
@@ -98,7 +104,8 @@
 #' 
 logLik.SSModel <- function(object, marginal=FALSE, nsim = 0,
   antithetics = TRUE, theta, check.model = TRUE,
-  transform = c("ldl", "augment"), maxiter = 50, seed, convtol = 1e-8, ...) {
+  transform = c("ldl", "augment"), maxiter = 50, seed, convtol = 1e-8, 
+  expected = FALSE, ...) {
 
   # Check that the model object is of proper form
   if (check.model) {
@@ -106,6 +113,9 @@ logLik.SSModel <- function(object, marginal=FALSE, nsim = 0,
       return(-.Machine$double.xmax ^ 0.75)
     }
   }
+  if (!is.logical(expected))
+    stop("Argument expected should be logical. ")
+  expected <- as.integer(expected)
   p <- attr(object, "p")
   m <- attr(object, "m")
   k <- attr(object, "k")
@@ -187,7 +197,7 @@ logLik.SSModel <- function(object, marginal=FALSE, nsim = 0,
       simtmp$aplus1, simtmp$c2, object$tol,
       info = integer(1), as.integer(antithetics), as.integer(sim), nsim2,
       diff = double(1),
-      marginal = as.integer(marginal))
+      marginal = as.integer(marginal), expected)
 
     if(out$info!=0){
       warning(switch(as.character(out$info),

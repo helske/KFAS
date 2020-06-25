@@ -1,11 +1,11 @@
 ! subroutine for computing new guess of conditional mode theta for non-Gaussian model given current guess
 
 subroutine approxloop(yt, ymiss, timevar, zt, tt, rtv, ht, qt, rqr, tvrqr, a1, p1,p1inf, p,n,m,r, &
-theta, thetanew, u, ytilde, dist,tol,rankp,lik)
+theta, thetanew, u, ytilde, dist,tol,rankp,lik, expected)
 
     implicit none
 
-    integer, intent(in) ::  p,m, r, n,tvrqr,rankp
+    integer, intent(in) ::  p,m, r, n,tvrqr,rankp, expected
     integer, intent(in), dimension(n,p) :: ymiss
     integer, intent(in), dimension(5) :: timevar
     integer, intent(in), dimension(p) :: dist
@@ -54,19 +54,44 @@ theta, thetanew, u, ytilde, dist,tol,rankp,lik)
                     end if
                 end do
             case(4)
-                do i=1,n
-                    if(ymiss(i,j).EQ.0) then
-                        ht(j,j,i) =1.0d0/u(i,j)
-                        ytilde(i,j) = theta(i,j)+yt(i,j)/exp(theta(i,j))-1.0d0
-                    end if
-                end do
+               if (expected .EQ. 1) then
+                 ! this was in use from version 1.0.3 to 1.3.7-1 
+                 ! wich results standard errors matching to expected information
+                 ! matrix as in glm function
+                 do i=1,n
+                   if(ymiss(i,j).EQ.0) then
+                     ht(j,j,i) = 1.0d0/u(i,j)
+                     ytilde(i,j) = theta(i,j)+yt(i,j)/exp(theta(i,j))-1.0d0
+                   end if
+                 end do
+               else
+                 do i=1,n
+                   if(ymiss(i,j).EQ.0) then
+                     ht(j,j,i) = exp(theta(i,j))/(u(i,j)*yt(i,j))
+                     ytilde(i,j) = theta(i,j)+1.0d0-exp(theta(i,j))/yt(i,j)
+                   end if
+                 end do
+               end if
             case(5)
-                do i=1,n
-                    if(ymiss(i,j).EQ.0) then
-                        ht(j,j,i) = (1.0d0/u(i,j)+1.0d0/exp(theta(i,j)))
-                        ytilde(i,j) = theta(i,j)+yt(i,j)/exp(theta(i,j))-1.0d0
-                    end if
-                end do
+               if (expected .EQ. 1) then
+                 ! this was in use from version 1.0.3 to 1.3.7-1 
+                 ! wich results standard errors matching to expected information
+                 ! matrix as in glm function
+                 do i=1,n
+                   if(ymiss(i,j).EQ.0) then
+                     ht(j,j,i) = (1.0d0/u(i,j)+1.0d0/exp(theta(i,j)))
+                     ytilde(i,j) = theta(i,j)+yt(i,j)/exp(theta(i,j))-1.0d0
+                   end if
+                 end do
+               else
+                 do i=1,n
+                   if(ymiss(i,j).EQ.0) then
+                     ht(j,j,i) = (exp(theta(i,j))+u(i,j))**2/(u(i,j)*exp(theta(i,j))*(yt(i,j)+u(i,j)))
+                     ytilde(i,j) = theta(i,j) + &
+                     ht(j,j,i)*u(i,j)*(yt(i,j)-exp(theta(i,j)))/(u(i,j)+exp(theta(i,j)))
+                   end if
+                 end do
+               end if
         end select
     end do
 
