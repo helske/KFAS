@@ -70,7 +70,7 @@ and negative binomial distribution. Default is \code{FALSE} which matches the
 algorithm of Durbin & Koopman (1997), whereas \code{TRUE} uses the expected value
 of observations in the equations, leading to results which match with \code{glm} (where applicable).
 The latter case was the default behaviour of KFAS before version 1.3.8.
-Essentially this is the difference between observed and expected information.}
+Essentially this is the difference between observed and expected information in GLM context.}
 }
 \value{
 What \code{KFS} returns depends on the arguments \code{filtering},
@@ -221,12 +221,14 @@ obtained from the output of \code{KFS} using the function
 \code{\link{mvInnovations}}.
 
 In rare cases (typically with regression components with high multicollinearity or 
-long seasonal patterns), the cumulative rounding errors in Kalman filtering and 
+long cyclic patterns), the cumulative rounding errors in Kalman filtering and 
 smoothing can cause the diffuse phase end too early,
-or the backward smoothing gives negative variances. In these cases, redefining the 
-prior state variances more informative is often helpful. Changing the tolerance
-parameter \code{tol} of the model (see \code{\link{SSModel}}) to smaller (or
-larger) can sometimes help as well.
+or the backward smoothing gives negative variances (in diffuse and nondiffuse cases). 
+In these cases, redefining the  prior state variances more informative is often helpful. 
+Changing the tolerance parameter \code{tol} of the model (see \code{\link{SSModel}}) to smaller 
+(or larger), or scaling the model input can sometimes help as well. These numerical issues 
+are well known in Kalman filtering/smoothing in general 
+(there are other numerically more stable versions available, but these are in general slower).
 
 Fon non-Gaussian models the components corresponding to diffuse filtering
 (\code{Finf}, \code{Pinf}, \code{d}, \code{Kinf}) are not returned even

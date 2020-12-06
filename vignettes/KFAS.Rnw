@@ -18,7 +18,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% almost as usual
-\author{Jouni Helske\\ Link\"oping University}
+\author{Jouni Helske\\ University of Jyvaskyla}
 \title{\pkg{KFAS}: Exponential Family State Space Models in \proglang{R}}
 
 %% for pretty printing and a nice hypersummary also set:

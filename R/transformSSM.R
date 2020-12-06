@@ -18,6 +18,10 @@
 #'   multivariate versions can be obtained from output of \code{\link{KFS}}
 #'   using \code{\link{mvInnovations}} function.
 #'   
+#'   In case of augmentation of the state vector, some care is needed interpreting the 
+#'   subsequent filtering/smoothing results: For example the \code{muhat} from the output of \code{KFS} 
+#'   now contains also the smoothed observational level noise as that is part of the state vector.
+#'   
 #'   
 #' @export
 #' @param object State space model object from function \code{\link{SSModel}}.

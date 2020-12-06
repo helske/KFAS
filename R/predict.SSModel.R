@@ -40,7 +40,7 @@
 #' @param states Which states are used in computing the predictions. Either a
 #'   numeric vector containing the indices of the corresponding states, or a
 #'   character vector defining the types of the corresponding states. Possible choices are
-#'   \code{"all"},  \code{"level"}, \code{"slope"},
+#'   \code{"all"},  \code{"level"}, \code{"slope"} (which does not make sense as the corresponding Z is zero.),
 #'   \code{"trend"},  \code{"regression"}, \code{"arima"}, \code{"custom"},
 #'   \code{"cycle"} or \code{"seasonal"}, where \code{"trend"} extracts all states relating to trend.
 #'    These can be combined. Default is \code{"all"}.
@@ -62,7 +62,7 @@
 #' algorithm of Durbin & Koopman (1997), whereas \code{TRUE} uses the expected value
 #' of observations in the equations, leading to results which match with \code{glm} (where applicable).
 #' The latter case was the default behaviour of KFAS before version 1.3.8.
-#' Essentially this is the difference between observed and expected information.
+#' Essentially this is the difference between observed and expected information in GLM context.
 #' @param \dots Ignored.
 #' @return A matrix or list of matrices containing the predictions, and
 #'   optionally standard errors.
@@ -184,7 +184,7 @@ predict.SSModel <- function(object, newdata, n.ahead,
     if (type == "link")
       stop("Prediction intervals can only be computed at response scale.")
     if (nsim < 1)
-      stop("Cannot compute prediction intervals for non-gaussian models without importance sampling.")
+      stop("Cannot compute prediction intervals for non-gaussian models without importance sampling. Use 'nsim' argument.")
   }
   pred <- vector("list", length = p)
   if (gaussianmodel) { #Gaussian case

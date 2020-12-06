@@ -152,8 +152,23 @@
 #'
 #' ts.plot(out$alphahat[,-1], b1, b2, col = 1:4)
 #' 
+#' # SSMregression with multivariate observations
 #' 
-#' # example of using data argument
+#' x <- matrix(rnorm(30), 10, 3) # one variable per each series
+#' y <- x + rnorm(30)
+#' model <- SSModel(y ~ SSMregression(list(~ X1, ~ X2, ~ X3), data = data.frame(x)))
+#' # more generally SSMregression(sapply(1:3, function(i) formula(paste0("~ X",i))), ...)
+#' 
+#' # three covariates per series, with same coefficients:
+#' y <- x[,1] + x[,2] + x[,3] + matrix(rnorm(30), 10, 3)
+#' model <- SSModel(y ~ -1 + SSMregression(~ X1 + X2 + X3, remove.intercept = FALSE, 
+#'   type = "common", data = data.frame(x)))
+#' 
+#' # the above cases can be combined in various ways, you can call SSMregression multiple times:
+#' model <- SSModel(y ~  SSMregression(~ X1 + X2, type = "common") + 
+#'   SSMregression(~ X2), data = data.frame(x))
+#' 
+#' # examples of using data argument
 #' y <- x <- rep(1, 3)
 #' data1 <- data.frame(x = rep(2, 3))
 #' data2 <- data.frame(x = rep(3, 3))
