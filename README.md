@@ -2,7 +2,6 @@
 [![codecov.io](http://codecov.io/github/helske/KFAS/coverage.svg?branch=master)](http://codecov.io/github/helske/KFAS?branch=master)
 [![downloads](http://cranlogs.r-pkg.org/badges/KFAS)](http://cranlogs.r-pkg.org/badges/KFAS)
 [![cran version](http://www.r-pkg.org/badges/version/KFAS)](http://cran.r-project.org/package=KFAS)
-[![Research software impact](http://depsy.org/api/package/cran/KFAS/badge.svg)](http://depsy.org/package/r/KFAS)
 
 KFAS: R Package for Exponential Family State Space Models
 ==========================================================================
