@@ -25,13 +25,11 @@ p, m, n, lik, tol,rankp2,kt,kinf,ft,finf,d,j)
     double precision, intent(inout), dimension(m,p,n) :: kt,kinf
     double precision, dimension(m,m) :: pt,pinf
     double precision, intent(inout), dimension(m,m,(n-1)*max(timevar(4),timevar(5))+1) :: rqr
-    double precision :: meps
     integer, dimension(p) :: ymiss
     double precision, dimension(p,p) :: ht
 
     external dgemm, dsymm, dgemv, dsymv, dsyr, dsyr2
 
-    meps = epsilon(meps)
     tv= max(timevar(4),timevar(5))
     ymiss = 0
     ht = 0.0d0

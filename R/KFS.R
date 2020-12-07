@@ -18,6 +18,8 @@
 #' long cyclic patterns), the cumulative rounding errors in Kalman filtering and 
 #' smoothing can cause the diffuse phase end too early,
 #' or the backward smoothing gives negative variances (in diffuse and nondiffuse cases). 
+#' Since version 1.4.0, filtering and smoothing algorithms truncate these values to zero during the 
+#' recursions, but this can still leads some numerical problems.
 #' In these cases, redefining the  prior state variances more informative is often helpful. 
 #' Changing the tolerance parameter \code{tol} of the model (see \code{\link{SSModel}}) to smaller 
 #' (or larger), or scaling the model input can sometimes help as well. These numerical issues 
@@ -469,9 +471,11 @@ KFS <-  function(model, filtering, smoothing, simplify = TRUE,
     stop("Non-finite values on covariance matrix P. ")
   }
   filterout$Pinf <- filterout$Pinf[1:m, 1:m, 1:filterout$d, drop = FALSE]
-  if (filterout$d > 0 & m > 1 & min(apply(filterout$Pinf, 3, diag)) < 0)
-    warning(paste0("Possible error in diffuse filtering: Negative variances in Pinf, ",
-      "check the model or try changing the tolerance parameter tol or P1/P1inf of the model."))
+  # this is not possible anymore due to intermediate rounding from 1.4-> onwards
+  #if (filterout$d > 0 & m > 1 & min(apply(filterout$Pinf, 3, diag)) < 0)
+  #  warning(paste0("Possible error in diffuse filtering: Negative variances in Pinf, ",
+  #    "check the model or try changing the tolerance parameter tol or P1/P1inf of the model."))
+  
   if (sum(filterout$Finf > 0) != sum(diag(model$P1inf)))
     warning(paste0("Possible error in diffuse filtering: Number of nonzero elements in ",
       "Finf is not equal to the number of diffuse states. \n",
@@ -572,9 +576,10 @@ KFS <-  function(model, filtering, smoothing, simplify = TRUE,
       as.integer("state" %in% smoothing), as.integer("disturbance" %in% smoothing),
       as.integer(("signal" %in% smoothing || "mean" %in% smoothing)))
 
-    if (m > 1 & min(apply(smoothout$V, 3, diag)) < 0)
-      warning(paste0("Possible error in smoothing: Negative variances in V, ",
-        "check the model or try changing the tolerance parameter tol or P1/P1inf of the model."))
+    # This is not possible anymore due to the intermediate rounding since 1.4.0
+    #if (m > 1 & min(apply(smoothout$V, 3, diag)) < 0)
+    #  warning(paste0("Possible error in smoothing: Negative variances in V, ",
+    #    "check the model or try changing the tolerance parameter tol or P1/P1inf of the model."))
     if ("state" %in% smoothing) {
       out$alphahat <- ts(t(smoothout$alphahat), start = start(model$y), frequency = frequency(model$y))
       colnames(out$alphahat) <- rownames(model$a1)

@@ -7,7 +7,7 @@ etahat,etahatvar,thetahat,thetahatvar, ldlsignal,zorig, zorigtv,aug,state,dist,s
     implicit none
 
     integer, intent(in) :: d, j, p, r, m, n,aug,state,dist,signal,ldlsignal,zorigtv
-    integer :: t, i
+    integer :: t, i, k1, k2
     integer, intent(in), dimension(n,p) :: ymiss
     integer, intent(in), dimension(5) :: timevar
     double precision, intent(in), dimension(p,m,(n-1)*timevar(1)+1) :: zt
@@ -354,9 +354,23 @@ etahat,etahatvar,thetahat,thetahatvar, ldlsignal,zorig, zorigtv,aug,state,dist,s
             call dsymm('r','u',m,m,-1.0d0,pt(:,:,t),m,mm,m,1.0d0,vvt(:,:,t),m)
             call dsymm('l','u',m,m,1.0d0,pinf(:,:,t),m,nt1(:,:,t),m,0.0d0,mm,m)
             call dsymm('r','u',m,m,-1.0d0,pt(:,:,t),m,mm,m,0.0d0,mm2,m)
+            
             vvt(:,:,t) = vvt(:,:,t) + mm2 + transpose(mm2)
             call dsymm('l','u',m,m,1.0d0,pinf(:,:,t),m,nt2(:,:,t),m,0.0d0,mm,m)
             call dsymm('r','u',m,m,-1.0d0,pinf(:,:,t),m,mm,m,1.0d0,vvt(:,:,t),m)
+            ! force symmetry
+            do k1 = 1,m
+              do k2 = k1,m
+                vvt(k2,k1,t) = vvt(k1,k2,t)
+              end do
+            end do
+            ! remove clear rounding errors (negative variances)
+            do i=1, m
+              if (vvt(i,i,t) .LE. 0) then
+                vvt(i,:,t) = 0.0d0
+                vvt(:,i,t) = 0.0d0
+              end if
+            end do
         end do
         do t = d+1, n
             ahat(:,t) = at(:,t)
@@ -364,6 +378,20 @@ etahat,etahatvar,thetahat,thetahatvar, ldlsignal,zorig, zorigtv,aug,state,dist,s
             call dsymm('l','u',m,m,1.0d0,pt(:,:,t),m,nt(:,:,t),m,0.0d0,mm,m)
             mm = im - mm
             call dsymm('r','u',m,m,1.0d0,pt(:,:,t),m,mm,m,0.0d0,vvt(:,:,t),m)
+            
+            ! force symmetry
+            do k1 = 1,m
+              do k2 = k1,m
+                vvt(k2,k1,t) = vvt(k1,k2,t)
+              end do
+            end do            
+            ! remove clear rounding errors (negative variances)
+            do i=1, m
+              if (vvt(i,i,t) .LE. 0) then
+                vvt(i,:,t) = 0.0d0
+                vvt(:,i,t) = 0.0d0
+              end if
+            end do
         end do
     end if
 
@@ -375,6 +403,14 @@ etahat,etahatvar,thetahat,thetahatvar, ldlsignal,zorig, zorigtv,aug,state,dist,s
             call dsymm('r','u',m,r,1.0d0,qt(:,:,(t-1)*timevar(5)+1),r,rtv(:,:,(t-1)*timevar(4)+1),m,0.0d0,mr,m)
             call dsymm('l','u',m,r,1.0d0,nt0(:,:,t+1),m,mr,m,0.0d0,mr2,m)
             call dgemm('t','n',r,r,m,-1.0d0,mr,m,mr2,m,1.0d0,etahatvar(:,:,t),r)
+            
+            ! remove clear rounding errors (negative variances)
+            do i=1, r
+              if (etahatvar(i,i,t) .LE. 0) then
+                etahatvar(i,:,t) = 0.0d0
+                etahatvar(:,i,t) = 0.0d0
+              end if
+            end do
         end do
         do t = d+1, n
             call dgemv('t',m,r,1.0d0,rtv(:,:,(t-1)*timevar(4)+1),m,rt(:,t+1),1,0.0d0,help,1)
@@ -383,6 +419,13 @@ etahat,etahatvar,thetahat,thetahatvar, ldlsignal,zorig, zorigtv,aug,state,dist,s
             call dsymm('r','u',m,r,1.0d0,qt(:,:,(t-1)*timevar(5)+1),r,rtv(:,:,(t-1)*timevar(4)+1),m,0.0d0,mr,m)
             call dsymm('l','u',m,r,1.0d0,nt(:,:,t+1),m,mr,m,0.0d0,mr2,m)
             call dgemm('t','n',r,r,m,-1.0d0,mr,m,mr2,m,1.0d0,etahatvar(:,:,t),r)
+            ! remove clear rounding errors (negative variances)
+            do i=1, r
+              if (etahatvar(i,i,t) .LE. 0) then
+                etahatvar(i,:,t) = 0.0d0
+                etahatvar(:,i,t) = 0.0d0
+              end if
+            end do
         end do
     end if
 
@@ -411,6 +454,13 @@ etahat,etahatvar,thetahat,thetahatvar, ldlsignal,zorig, zorigtv,aug,state,dist,s
                     call dsymm('r','u',m,m,-1.0d0,pinf(:,:,t),m,mm,m,1.0d0,nrec,m)
                     call dsymm('r','u',p,m,1.0d0,nrec,m,zorig(:,:,(t-1)*zorigtv+1),p,0.0d0,pm,p)
                     call dgemm('n','t',p,p,m,1.0d0,pm,p,zorig(:,:,(t-1)*zorigtv+1),p,0.0d0,thetahatvar(:,:,t),p)
+                    ! remove clear rounding errors (negative variances)
+                    do i=1, p
+                      if (thetahatvar(i,i,t) .LE. 0) then
+                        thetahatvar(i,:,t) = 0.0d0
+                        thetahatvar(:,i,t) = 0.0d0
+                      end if
+                    end do
                 end do
                 do t = d+1, n
                     rrec = at(:,t)
@@ -421,6 +471,13 @@ etahat,etahatvar,thetahat,thetahatvar, ldlsignal,zorig, zorigtv,aug,state,dist,s
                     call dsymm('r','u',m,m,-1.0d0,pt(:,:,t),m,mm,m,1.0d0,nrec,m)
                     call dsymm('r','u',p,m,1.0d0,nrec,m,zorig(:,:,(t-1)*zorigtv+1),p,0.0d0,pm,p)
                     call dgemm('n','t',p,p,m,1.0d0,pm,p,zorig(:,:,(t-1)*zorigtv+1),p,0.0d0,thetahatvar(:,:,t),p)
+                    ! remove clear rounding errors (negative variances)
+                    do i=1, p
+                      if (thetahatvar(i,i,t) .LE. 0) then
+                        thetahatvar(i,:,t) = 0.0d0
+                        thetahatvar(:,i,t) = 0.0d0
+                      end if
+                    end do
                 end do
             end if
         else
@@ -448,6 +505,13 @@ etahat,etahatvar,thetahat,thetahatvar, ldlsignal,zorig, zorigtv,aug,state,dist,s
                     call dsymm('r','u',m,m,-1.0d0,pinf(:,:,t),m,mm,m,1.0d0,nrec,m)
                     call dsymm('r','u',p,m,1.0d0,nrec,m,zt(:,:,(t-1)*timevar(1)+1),p,0.0d0,pm,p)
                     call dgemm('n','t',p,p,m,1.0d0,pm,p,zt(:,:,(t-1)*timevar(1)+1),p,0.0d0,thetahatvar(:,:,t),p)
+                    ! remove clear rounding errors (negative variances)
+                    do i=1, p
+                      if (thetahatvar(i,i,t) .LE. 0) then
+                        thetahatvar(i,:,t) = 0.0d0
+                        thetahatvar(:,i,t) = 0.0d0
+                      end if
+                    end do
                 end do
                 do t = d+1, n
                     rrec = at(:,t)
@@ -458,6 +522,13 @@ etahat,etahatvar,thetahat,thetahatvar, ldlsignal,zorig, zorigtv,aug,state,dist,s
                     call dsymm('r','u',m,m,-1.0d0,pt(:,:,t),m,mm,m,1.0d0,nrec,m)
                     call dsymm('r','u',p,m,1.0d0,nrec,m,zt(:,:,(t-1)*timevar(1)+1),p,0.0d0,pm,p)
                     call dgemm('n','t',p,p,m,1.0d0,pm,p,zt(:,:,(t-1)*timevar(1)+1),p,0.0d0,thetahatvar(:,:,t),p)
+                    ! remove clear rounding errors (negative variances)
+                    do i=1, p
+                      if (thetahatvar(i,i,t) .LE. 0) then
+                        thetahatvar(i,:,t) = 0.0d0
+                        thetahatvar(:,i,t) = 0.0d0
+                      end if
+                    end do
                 end do
             end if
         end if

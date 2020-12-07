@@ -30,12 +30,11 @@ at, pt, vt, ft,kt, pinf, finf, kinf, lik, tol,rankp,theta,thetavar,filtersignal,
     double precision, intent(inout), dimension(m,m,n) :: ptt
     double precision, dimension(m,r) :: mr
     double precision, dimension(p,m) :: pm
-    double precision :: c,meps
+    double precision :: c
     double precision, external :: ddot
     double precision, dimension(m,m,(n-1)*max(timevar(4),timevar(5))+1) :: rqr
     external dgemm, dsymm, dgemv, dsymv, dsyr, dsyr2
 
-    meps = epsilon(meps)
     c = 0.5d0*log(8.0d0*atan(1.0d0))
 
     lik = 0.0d0

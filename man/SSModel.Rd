@@ -163,8 +163,10 @@ additional noise).}
 \code{rep("gaussian", p)}, where \code{p} is the number of series.}
 
 \item{tol}{A tolerance parameter used in checking whether \code{Finf} or \code{F} is numerically zero.
-Defaults to \code{.Machine$double.eps^0.5}. If smoothing gives negative variances for
-smoothed states, try adjusting this.}
+Defaults to \code{.Machine$double.eps^0.5}. If \code{F < tol * max(abs(Z[Z > 0]))^2},
+ then F is deemed to be zero (i.e. differences are due to numerical precision). 
+ This has mostly effect only on determining when to end exact diffuse phase. Tweaking this 
+ and/or scaling model parameters/observations can sometimes help with numerical issues.}
 
 \item{rformula}{For regression component, right hand side formula or list of
 of such formulas defining the custom regression part.}
@@ -213,7 +215,7 @@ Object of class \code{SSModel}, which is a list with the following
   matrix of an additional parameters in case of non-Gaussian model.}
   \item{distribution}{A vector of length p giving the distributions of the
   observations. }
-  \item{tol}{A tolerance parameter for the diffuse phase. }
+  \item{tol}{A tolerance parameter for Kalman filtering. }
   \item{call}{Original call to the function. } In addition, object of class
   \code{SSModel} contains following attributes:
   \item{names}{Names of the
@@ -321,8 +323,6 @@ try(c(SSModel(y ~ -1 + SSMregression(f), data = data1)$Z))
 }
 \seealso{
 \code{artransform}
-
-\code{\link{KFAS}} for examples.
 
 \code{\link{KFAS}} for examples.
 }

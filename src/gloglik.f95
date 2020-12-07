@@ -26,13 +26,12 @@ p, m, r, n, lik, tol,rankp)
     double precision, dimension(m,p) :: kt,kinf
     double precision, dimension(m,m) :: pt,pinf
     double precision, dimension(m,r) :: mr
-    double precision :: c, meps
+    double precision :: c
     double precision, external :: ddot
     double precision, dimension(m,m,(n-1)*max(timevar(4),timevar(5))+1) :: rqr
 
     external dgemm, dsymm, dgemv, dsymv, dsyr, dsyr2, marginalxx
 
-    meps = epsilon(meps)
 
     ! compute RQR'
     tv= max(timevar(4),timevar(5))

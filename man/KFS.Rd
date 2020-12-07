@@ -224,6 +224,8 @@ In rare cases (typically with regression components with high multicollinearity 
 long cyclic patterns), the cumulative rounding errors in Kalman filtering and 
 smoothing can cause the diffuse phase end too early,
 or the backward smoothing gives negative variances (in diffuse and nondiffuse cases). 
+Since version 1.4.0, filtering and smoothing algorithms truncate these values to zero during the 
+recursions, but this can still leads some numerical problems.
 In these cases, redefining the  prior state variances more informative is often helpful. 
 Changing the tolerance parameter \code{tol} of the model (see \code{\link{SSModel}}) to smaller 
 (or larger), or scaling the model input can sometimes help as well. These numerical issues 

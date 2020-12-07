@@ -1,12 +1,13 @@
 Changes from version 1.3.7-1 to 1.4.0
-   * Changed the tolerance for checking negative variances to zero instead of 
-     -sqrt(machine epsilon) in KFS output.
    * The approximation algorithm for Gamma and negative binomial case was changed slightly.
      New version is based on Taylor approximation, whereas old version was a slight modification of 
      this wrt the variances of the approximating model. 
      For simple GLM the difference is essentially observed (current) vs. expected (old)
      information matrix, i.e. the state covariance matrix estimates can differ slightly.
      You can revert back to old version by using the argument 'expected = TRUE' where applicable.
+   * Kalman filter and smoothing now performs some intermediate rounding to zero 
+     in obvious negative rounding errors of covariance matrices. Symmetry of Vt is now also forced.
+     These should help in some numerically unstable cases and have no effect in typical models.
    * Fixed the definition of theta of the Poisson distribution case in ?KFAS help page. 
 
 Changes from version 1.3.7 to 1.3.7-1

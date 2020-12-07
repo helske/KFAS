@@ -29,12 +29,11 @@ d, j, p, m, n, r,tol,rankp,ft,finf,kt,kinf,epshat,etahat,rt0,rt1,needeps)
     double precision, intent(inout), dimension(r,n) :: etahat
     double precision, intent(inout), dimension(p,n) :: epshat
     double precision, intent(inout), dimension(m) :: rt0,rt1
-    double precision :: meps,lik
+    double precision :: lik
     double precision, external :: ddot
 
     external dgemm, dsymm, dgemv, dsymv, dsyr, dsyr2, dger
 
-    meps = epsilon(meps)
     tv = max(timevar(4),timevar(5))
     lik = 0.0d0
 

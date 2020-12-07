@@ -69,6 +69,17 @@ pinf,finf,kinf,rankp,lik,basetol,c,p,m,i)
 
     call dsymm('r','u',m,m,1.0d0,pinf,m,tt,m,0.0d0,mm,m)
     call dgemm('n','t',m,m,m,1.0d0,mm,m,tt,m,0.0d0,pinf,m)
+    
+    do i=1, m
+      if (pt(i,i) .LE. 0) then
+        pt(i,:) = 0.0d0
+        pt(:,i) = 0.0d0
+      end if
+      if (pinf(i,i) .LE. 0) then
+        pinf(i,:) = 0.0d0
+        pinf(:,i) = 0.0d0
+      end if
+    end do
 
 end subroutine dfilter1step
 
@@ -123,7 +134,14 @@ subroutine filter1step(ymiss, yt, zt, ht, tt, rqr, at, pt, vt, &
     call dsymm('r','u',m,m,1.0d0,pt,m,tt,m,0.0d0,mm,m)
     call dgemm('n','t',m,m,m,1.0d0,mm,m,tt,m,0.0d0,pt,m)
     pt = pt + rqr
-
+    
+    do i=1, m
+      if (pt(i,i) .LE. 0) then
+        pt(i,:) = 0.0d0
+        pt(:,i) = 0.0d0
+      end if
+    end do
+    
 end subroutine filter1step
 
 !! as above, but returns also att and ptt
@@ -207,6 +225,21 @@ pinf,finf,kinf,rankp,lik,basetol,c,p,m,i, att, ptt)
     call dsymm('r','u',m,m,1.0d0,pinf,m,tt,m,0.0d0,mm,m)
     call dgemm('n','t',m,m,m,1.0d0,mm,m,tt,m,0.0d0,pinf,m)
 
+    do i=1, m
+      if (pt(i,i) .LE. 0) then
+        pt(i,:) = 0.0d0
+        pt(:,i) = 0.0d0
+      end if
+      if (ptt(i,i) .LE. 0) then
+        ptt(i,:) = 0.0d0
+        ptt(:,i) = 0.0d0
+      end if
+      if (pinf(i,i) .LE. 0) then
+        pinf(i,:) = 0.0d0
+        pinf(:,i) = 0.0d0
+      end if
+    end do
+    
 end subroutine dfilter1step2
 
 !non-diffuse filtering for single time point
@@ -268,5 +301,16 @@ subroutine filter1step2(ymiss, yt, zt, ht, tt, rqr, at, pt, vt, &
     call dgemm('n','t',m,m,m,1.0d0,mm,m,tt,m,0.0d0,pt,m)
     pt = pt + rqr
 
+    do i=1, m
+      if (pt(i,i) .LE. 0) then
+        pt(i,:) = 0.0d0
+        pt(:,i) = 0.0d0
+      end if
+      if (ptt(i,i) .LE. 0) then
+        ptt(i,:) = 0.0d0
+        ptt(:,i) = 0.0d0
+      end if
+    end do
+    
 end subroutine filter1step2
 

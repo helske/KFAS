@@ -27,7 +27,7 @@ p, n, m, r,tol,rankp,thetahat,lik)
     double precision, dimension(m) :: rt0,rt1
     double precision, dimension(m,m) :: im
     double precision, dimension(r,n) :: etahat
-    double precision :: c, meps
+    double precision :: c
     double precision, external :: ddot
     double precision, intent(inout), dimension(n,p) :: thetahat
     double precision, intent(inout) :: lik
@@ -36,7 +36,6 @@ p, n, m, r,tol,rankp,thetahat,lik)
     external dgemv, dsymv
 
     epshat = 0.0d0
-    meps = epsilon(meps)
     lik=0.0d0
     c = 0.5d0*log(8.0d0*atan(1.0d0))
 
