@@ -90,7 +90,7 @@ convtol,alphahat,alphavar,thetahat,thetavar,yhat,yvar,smootha,smooths,smoothy&
     else
         call isample(yt, ymiss, timevar, zt, tt, rtv, qt, a1, p1,p1inf, u, dist, &
         p, n, m, r, theta, maxiter,rankp,convtol, nnd,nsim,epsplus,etaplus,&
-        aplus1,c,tol,info,1,w,sim,5,p, expected)
+        aplus1,c,tol,info,1,w,sim,5,p, expected, htol)
 
         if(info /= 0) then
             return
