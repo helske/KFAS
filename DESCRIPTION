@@ -30,3 +30,4 @@ VignetteBuilder: knitr
 RoxygenNote: 7.1.1
 Encoding: UTF-8
 ByteCompile: true
+URL: https://github.com/helske/KFAS
