@@ -1,3 +1,11 @@
+Changes from version 1.4.1 to 1.4.2
+   * Added some examples.
+   * Added an additional check for the convergence of the Gaussian approximation, 
+     which checks whether the largest variance term H of the approximating model is overly large,
+     suggesting a convergence to a nonidentifiable case with zero signal-to-noise ratio. 
+     The default check is very generous max(H) > 1e15. This can be changed using argument 'H_tol' 
+     in logLik, approxSSM, importanceSSM, and KFS.
+   
 Changes from version 1.4.0 to 1.4.1
    * Fixed internal approximation function declaration.
 

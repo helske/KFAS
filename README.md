@@ -26,7 +26,7 @@ Main features
 
 Most of the algorithms are based on book "Time Series Analysis by State Space Methods" and related articles by J. Durbin and S.J. Koopman.
 
-Current version of KFAS in [CRAN](http://cran.r-project.org/web/packages/KFAS/index.html) is 1.4.0. You can install the latest development version from github using devtools package:
+KFAS is available at [CRAN](http://cran.r-project.org/web/packages/KFAS/index.html). You can install the latest development version from the GitHub using the devtools package:
 
 ```R
 install.packages("devtools")

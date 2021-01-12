@@ -13,5 +13,6 @@ Statistics Finland \url{http://pxnet2.stat.fi/PXWeb/pxweb/en/StatFin/}.
 \description{
 A multivariate time series object containing the number of alcohol related
 deaths and population sizes (divided by 100000) of Finland in four age groups.
+See JSS paper for examples.
 }
 \keyword{datasets}

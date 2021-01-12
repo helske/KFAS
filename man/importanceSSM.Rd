@@ -13,7 +13,8 @@ importanceSSM(
   theta,
   antithetics = FALSE,
   maxiter = 50,
-  expected = FALSE
+  expected = FALSE,
+  H_tol = 1e+15
 )
 }
 \arguments{
@@ -44,6 +45,9 @@ algorithm of Durbin & Koopman (1997), whereas \code{TRUE} uses the expected valu
 of observations in the equations, leading to results which match with \code{glm} (where applicable).
 The latter case was the default behaviour of KFAS before version 1.3.8.
 Essentially this is the difference between observed and expected information.}
+
+\item{H_tol}{Tolerance parameter for check \code{max(H) > H_tol}, which suggests that the approximation 
+converged to degenerate case with near zero signal-to-noise ratio. Default is very generous 1e15.}
 }
 \value{
 A list containing elements

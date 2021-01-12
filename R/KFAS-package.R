@@ -143,12 +143,16 @@
 #' @docType package
 #' @name KFAS
 #' @aliases KFAS
+#' @seealso See also \code{\link{logLik}}, \code{\link{fitSSM}}, 
+#' \code{\link{boat}}, \code{\link{sexratio}},
+#' \code{\link{GlobalTemp}}, \code{\link{SSModel}}, 
+#' \code{\link{importanceSSM}}, \code{\link{approxSSM}} for more examples.
 #' @useDynLib KFAS, .registration = TRUE
-#' @seealso examples in \code{\link{boat}}, \code{\link{sexratio}},
-#' \code{\link{importanceSSM}}, \code{\link{approxSSM}}.
 #' @examples
-#'
-#' # Example of local level model for Nile series
+#' 
+#' ################################################
+#' # Example of local level model for Nile series #
+#' ################################################
 #' # See Durbin and Koopman (2012)
 #'
 #' model_Nile <- SSModel(Nile ~
@@ -185,29 +189,10 @@
 #'   main = "River Nile")
 #'
 #'
-#' # Example of multivariate local level model with only one state
-#' # Two series of average global temperature deviations for years 1880-1987
-#' # See Shumway and Stoffer (2006), p. 327 for details
-#'
-#' data("GlobalTemp")
-#'
-#' model_temp <- SSModel(GlobalTemp ~ SSMtrend(1, Q = NA, type = "common"),
-#'   H = matrix(NA, 2, 2))
-#'
-#' # Estimating the variance parameters
-#' inits <- chol(cov(GlobalTemp))[c(1, 4, 3)]
-#' inits[1:2] <- log(inits[1:2])
-#' fit_temp <- fitSSM(model_temp, c(0.5*log(.1), inits), method = "BFGS")
-#'
-#' out_temp <- KFS(fit_temp$model)
-#'
-#' ts.plot(cbind(model_temp$y, coef(out_temp)), col = 1:3)
-#' legend("bottomright",
-#'   legend = c(colnames(GlobalTemp), "Smoothed signal"), col = 1:3, lty = 1)
-#'
-#'
 #' \dontrun{
-#' # Seatbelts data
+#' ##################
+#' # Seatbelts data #
+#' ##################
 #' # See Durbin and Koopman (2012)
 #'
 #' model_drivers <- SSModel(log(drivers) ~ SSMtrend(1, Q = list(NA))+
@@ -297,7 +282,9 @@
 #'   col = c(1, 2, 2, 3, 4, 4, 5, 6), lty = c(1, 2, 2, 1, 2, 2, 1, 1))
 #' }
 #'
-#' ## Simulate ARMA(2, 2) process
+#' ######################
+#' # ARMA(2, 2) process #
+#' ######################
 #' set.seed(1)
 #' y <- arima.sim(n = 1000, list(ar = c(0.8897, -0.4858), ma = c(-0.2279, 0.2488)),
 #'                innov = rnorm(1000) * sqrt(0.5))
@@ -340,7 +327,9 @@
 #' # small differences because the intercept is handled differently in arima
 #'
 #' \dontrun{
-#' # Poisson model
+#' #################
+#' # Poisson model #
+#' #################
 #' # See Durbin and Koopman (2012)
 #' model_van <- SSModel(VanKilled ~ law + SSMtrend(1, Q = list(matrix(NA)))+
 #'                SSMseasonal(period = 12, sea.type = "dummy", Q = NA),
@@ -515,7 +504,9 @@
 #' out_lmm$V[3:4,3:4,1]
 #' }
 #' \dontrun{
-#' # Example of Cubic spline smoothing
+#' #########################################
+#' ### Example of cubic spline smoothing ###
+#' #########################################
 #' # See Durbin and Koopman (2012)
 #' require("MASS")
 #' data("mcycle")
@@ -546,7 +537,60 @@
 #' lines(x = mcycle$times, y = pred[, 2], lty = 2)
 #' lines(x = mcycle$times, y = pred[, 3], lty = 2)
 #' }
-#'
+#' 
+#' \dontrun{
+#' ##################################################################
+#' # Example of multivariate model with common parameters           #  
+#' # and unknown intercept terms in state and observation equations #
+#' ##################################################################
+#' set.seed(1)
+#' n1 <- 20
+#' n2 <- 30
+#' z1 <- sin(1:n1)
+#' z2 <- cos(1:n2)
+#' 
+#' C <- 0.6
+#' D <- -0.4
+#' # random walk with drift D
+#' x1 <- cumsum(rnorm(n1) + D)
+#' x2 <- cumsum(rnorm(n2) + D)
+#' 
+#' y1 <- rnorm(n1, z1 * x1 + C * 1)
+#' y2 <- rnorm(n2, z2 * x2 + C * 2)
+#' 
+#' n <- max(n1, n2)
+#' Y <- matrix(NA, n, 2)
+#' Y[1:n1, 1] <- y1
+#' Y[1:n2, 2] <- y2
+#' 
+#' Z <- array(0, c(2, 4, n))
+#' Z[1, 1, 1:n1] <- z1
+#' Z[2, 2, 1:n2] <- z2 # trailing zeros are ok, as corresponding y is NA
+#' Z[1, 3, ] <- 1 # x = 1
+#' Z[2, 3, ] <- 2 # x = 2
+#' # last state is only used in state equation so zeros in Z
+#' 
+#' T <- diag(4) # a1_t for y1, a2_t for y2, C, D
+#' T[1, 4] <- 1 # D affects a_t
+#' T[2, 4] <- 1 # D affects a_t
+#' Q <- diag(c(NA, NA, 0, 0))
+#' P1inf <- diag(4)
+#' model <- SSModel(Y ~ -1 + SSMcustom(Z = Z, T = T, Q = Q, P1inf = P1inf,
+#'   state_names = c("a1", "a2", "C", "D")), H = diag(NA, 2))
+#' 
+#' updatefn <- function(pars, model) {
+#'   model$Q[] <- diag(c(exp(pars[1]), exp(pars[1]), 0, 0))
+#'   model$H[] <- diag(exp(pars[2]), 2)
+#'   model
+#' }
+#' 
+#' fit <- fitSSM(model, inits = rep(-1, 2), updatefn = updatefn)
+#' 
+#' fit$model$Q[H]
+#' fit$model$Q[1]
+#' KFS(fit$model)
+#' 
+#' }
 #'
 NULL
 #' Oxford-Cambridge boat race results 1829-2011
@@ -557,7 +601,7 @@ NULL
 #' @name boat
 #' @docType data
 #' @format A time series object containing 183 observations (including 28 missing observations).
-#' @references  Koopman, S.J. and Durbin J. (2012).  Time Series Analysis by State Space Methods. Oxford: Oxford University Press.
+#' @references  Koopman, S.J. and Durbin J. (2012). Time Series Analysis by State Space Methods. Oxford: Oxford University Press.
 #' @source http://www.ssfpack.com/DKbook.html
 #' @keywords datasets
 #' @examples
@@ -633,6 +677,28 @@ NULL
 #' Analysis and Its Applications: With R examples.
 #' @source http://lib.stat.cmu.edu/general/stoffer/tsa2/
 #' @keywords datasets
+#' @examples 
+#' 
+#' # Example of multivariate local level model with only one state
+#' # Two series of average global temperature deviations for years 1880-1987
+#' # See Shumway and Stoffer (2006), p. 327 for details
+#'
+#' data("GlobalTemp")
+#'
+#' model_temp <- SSModel(GlobalTemp ~ SSMtrend(1, Q = NA, type = "common"),
+#'   H = matrix(NA, 2, 2))
+#'
+#' # Estimating the variance parameters
+#' inits <- chol(cov(GlobalTemp))[c(1, 4, 3)]
+#' inits[1:2] <- log(inits[1:2])
+#' fit_temp <- fitSSM(model_temp, c(0.5*log(.1), inits), method = "BFGS")
+#'
+#' out_temp <- KFS(fit_temp$model)
+#'
+#' ts.plot(cbind(model_temp$y, coef(out_temp)), col = 1:3)
+#' legend("bottomright",
+#'   legend = c(colnames(GlobalTemp), "Smoothed signal"), col = 1:3, lty = 1)
+#'
 NULL
 #' Number of males and females born in Finland from 1751 to 2011
 #'
@@ -685,6 +751,7 @@ NULL
 #'
 #' A multivariate time series object containing the number of alcohol related
 #' deaths and population sizes (divided by 100000) of Finland in four age groups.
+#' See JSS paper for examples.
 #'
 #' @name alcohol
 #' @docType data

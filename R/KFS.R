@@ -87,7 +87,11 @@
 #' algorithm of Durbin & Koopman (1997), whereas \code{TRUE} uses the expected value
 #' of observations in the equations, leading to results which match with \code{glm} (where applicable).
 #' The latter case was the default behaviour of KFAS before version 1.3.8.
-#' Essentially this is the difference between observed and expected information in GLM context.
+#' Essentially this is the difference between observed and expected information in the GLM context. 
+#' Only used for non-Gaussian model.
+#' @param H_tol Tolerance parameter for check \code{max(H) > tol_H}, which suggests that the approximation 
+#' converged to degenerate case with near zero signal-to-noise ratio. Default is very generous 1e15. 
+#' Only used for non-Gaussian model.
 #' @return What \code{KFS} returns depends on the arguments \code{filtering},
 #'   \code{smoothing} and \code{simplify}, and whether the model is Gaussian or
 #'   not:
@@ -230,10 +234,13 @@
 #' Koopman, S.J. and Durbin J. (2003).  Filtering and smoothing of state vector
 #' for diffuse state space models, Journal of Time Series Analysis, Vol. 24,
 #' No. 1.  \cr
-#'
+#' @seealso \code{\link{logLik}}, \code{\link{KFAS}}, \code{\link{fitSSM}}, 
+#' \code{\link{boat}}, \code{\link{sexratio}},
+#' \code{\link{GlobalTemp}}, \code{\link{SSModel}}, 
+#' \code{\link{importanceSSM}}, \code{\link{approxSSM}} for examples.
 KFS <-  function(model, filtering, smoothing, simplify = TRUE,
   transform = c("ldl", "augment"), nsim = 0, theta, maxiter = 50,
-  convtol = 1e-08, return_model = TRUE, expected = FALSE) {
+  convtol = 1e-08, return_model = TRUE, expected = FALSE, H_tol = 1e15) {
 
   # Check that the model object is of proper form
   is.SSModel(model, na.check = TRUE, return.logical = FALSE)
@@ -303,7 +310,7 @@ KFS <-  function(model, filtering, smoothing, simplify = TRUE,
       if (!("none" %in% filtering)) {
         filterout <- .Fortran(fngfilter, NAOK = TRUE, model$y, ymiss, tv,
           model$Z, model$T, model$R, model$Q, model$a1, model$P1, model$P1inf,
-          model$u, theta,
+          model$u, theta = theta,
           pmatch(x = model$distribution,
             table = c("gaussian", "poisson", "binomial", "gamma", "negative binomial"),
             duplicates.ok = TRUE),
@@ -319,9 +326,10 @@ KFS <-  function(model, filtering, smoothing, simplify = TRUE,
           mu = array(0, ("mean" %in% filtering) * c(p - 1, n - 1) + 1),
           P_mu = array(0, ("mean" %in% filtering) * c(p - 1, p - 1, n - 1) + 1),
           as.integer("state" %in%  filtering), as.integer("signal" %in% filtering),
-          as.integer("mean" %in%  filtering), expected)
+          as.integer("mean" %in%  filtering), expected, H_tol = H_tol)
         if(filterout$info!=0){
           switch(as.character(filterout$info),
+            "-5" = warning(paste0("Gaussian approximation converged to a degenerate case with max(H) = ", filterout$H_tol, ".")),           
             "-3" = stop("Couldn't compute LDL decomposition of P1."),
             "-2" =  stop("Couldn't compute LDL decomposition of Q."),
             "1" =  stop("Gaussian approximation failed due to non-finite value in linear predictor."),
@@ -352,7 +360,7 @@ KFS <-  function(model, filtering, smoothing, simplify = TRUE,
         smoothout <-
           .Fortran(fngsmooth, NAOK = TRUE, model$y, ymiss, tv,
             model$Z, model$T, model$R, model$Q, model$a1, model$P1, model$P1inf,
-            model$u, theta,
+            model$u, theta = theta,
             pmatch(x = model$distribution,
               table = c("gaussian", "poisson", "binomial", "gamma", "negative binomial"),
               duplicates.ok = TRUE),
@@ -367,9 +375,10 @@ KFS <-  function(model, filtering, smoothing, simplify = TRUE,
             muhat = array(0, ("mean" %in% smoothing) * c(p - 1, n - 1) + 1),
             V_mu = array(0, ("mean" %in% smoothing) * c(p - 1, p - 1, n - 1) + 1),
             as.integer("state" %in%  smoothing), as.integer("signal" %in% smoothing),
-            as.integer("mean" %in% smoothing), expected)
+            as.integer("mean" %in% smoothing), expected, H_tol = H_tol)
         if (smoothout$info != 0) {
           switch(as.character(smoothout$info),
+            "-5" = warning(paste0("Gaussian approximation converged to a degenerate case with max(H) = ",smoothout$H_tol, ".")),
             "-3" = stop("Couldn't compute LDL decomposition of P1."),
             "-2" =  stop("Couldn't compute LDL decomposition of Q."),
             "1" =  stop("Gaussian approximation failed due to non-finite value in linear predictor."),
@@ -410,10 +419,11 @@ KFS <-  function(model, filtering, smoothing, simplify = TRUE,
           table = c("gaussian", "poisson", "binomial", "gamma", "negative binomial"),
           duplicates.ok = TRUE),
         maxiter = as.integer(maxiter), model$tol, as.integer(sum(model$P1inf)),
-        convtol, diff = double(1),lik=double(1), info=integer(1), expected)
+        convtol, diff = double(1),lik=double(1), info=integer(1), expected, H_tol = H_tol)
 
       if(app$info!=0){
         switch(as.character(app$info),
+          "-5" = warning(paste0("Gaussian approximation converged to a degenerate case with max(H) = ", app$H_tol, ".")),
           "-3" = stop("Couldn't compute LDL decomposition of P1."),
           "-2" =  stop("Couldn't compute LDL decomposition of Q."),
           "1" =  stop("Gaussian approximation failed due to non-finite value in linear predictor."),

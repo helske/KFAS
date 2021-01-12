@@ -16,7 +16,8 @@ KFS(
   maxiter = 50,
   convtol = 1e-08,
   return_model = TRUE,
-  expected = FALSE
+  expected = FALSE,
+  H_tol = 1e+15
 )
 }
 \arguments{
@@ -70,7 +71,12 @@ and negative binomial distribution. Default is \code{FALSE} which matches the
 algorithm of Durbin & Koopman (1997), whereas \code{TRUE} uses the expected value
 of observations in the equations, leading to results which match with \code{glm} (where applicable).
 The latter case was the default behaviour of KFAS before version 1.3.8.
-Essentially this is the difference between observed and expected information in GLM context.}
+Essentially this is the difference between observed and expected information in the GLM context. 
+Only used for non-Gaussian model.}
+
+\item{H_tol}{Tolerance parameter for check \code{max(H) > tol_H}, which suggests that the approximation 
+converged to degenerate case with near zero signal-to-noise ratio. Default is very generous 1e15. 
+Only used for non-Gaussian model.}
 }
 \value{
 What \code{KFS} returns depends on the arguments \code{filtering},
@@ -265,4 +271,9 @@ No. 1.  \cr
 }
 \seealso{
 \code{\link{KFAS}} for examples
+
+\code{\link{logLik}}, \code{\link{KFAS}}, \code{\link{fitSSM}}, 
+\code{\link{boat}}, \code{\link{sexratio}},
+\code{\link{GlobalTemp}}, \code{\link{SSModel}}, 
+\code{\link{importanceSSM}}, \code{\link{approxSSM}} for examples.
 }

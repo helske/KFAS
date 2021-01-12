@@ -17,6 +17,7 @@
   seed,
   convtol = 1e-08,
   expected = FALSE,
+  H_tol = 1e+15,
   ...
 )
 }
@@ -52,14 +53,18 @@ Default is 50. Only used for non-Gaussian model.}
 non-Gaussian model.}
 
 \item{convtol}{Tolerance parameter for convergence checks for Gaussian
-approximation.}
+approximation. Only used for non-Gaussian model.}
 
 \item{expected}{Logical value defining the approximation of H_t in case of Gamma 
 and negative binomial distribution. Default is \code{FALSE} which matches the 
 algorithm of Durbin & Koopman (1997), whereas \code{TRUE} uses the expected value
 of observations in the equations, leading to results which match with \code{glm} (where applicable).
 The latter case was the default behaviour of KFAS before version 1.3.8.
-Essentially this is the difference between observed and expected information.}
+Essentially this is the difference between observed and expected information. Only used for non-Gaussian model.}
+
+\item{H_tol}{Tolerance parameter for check \code{max(H) > tol_H}, which suggests that the approximation 
+converged to degenerate case with near zero signal-to-noise ratio. Default is very generous 1e15. 
+Only used for non-Gaussian model.}
 
 \item{...}{Ignored.}
 }

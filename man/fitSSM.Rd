@@ -129,5 +129,8 @@ fit <- fitSSM(inits = rep(var(Nile)/5, 2), model = model,
                  updatefn = update_model, checkfn = check_model)
 }
 \seealso{
-\code{\link{logLik}}, and \code{\link{KFAS}} for examples.
+\code{\link{logLik}}, \code{\link{KFAS}}, 
+\code{\link{boat}}, \code{\link{sexratio}},
+\code{\link{GlobalTemp}}, \code{\link{SSModel}}, 
+\code{\link{importanceSSM}}, \code{\link{approxSSM}} for more examples.
 }

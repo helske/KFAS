@@ -30,6 +30,8 @@
 #' of observations in the equations, leading to results which match with \code{glm} (where applicable).
 #' The latter case was the default behaviour of KFAS before version 1.3.8.
 #' Essentially this is the difference between observed and expected information.
+#' @param H_tol Tolerance parameter for check \code{max(H) > H_tol}, which suggests that the approximation 
+#' converged to degenerate case with near zero signal-to-noise ratio. Default is very generous 1e15.
 #' @return A list containing elements
 #' \item{samples}{Simulated samples. }
 #' \item{weights}{Importance weights. }
@@ -75,7 +77,7 @@
 #' }
 importanceSSM <-  function(model, type = c("states", "signals"),
   filtered = FALSE,  nsim = 1000, save.model = FALSE, theta,
-  antithetics = FALSE, maxiter = 50, expected = FALSE) {
+  antithetics = FALSE, maxiter = 50, expected = FALSE, H_tol = 1e15) {
 
   if (all(model$distribution == "gaussian")) {
     stop("Model is completely Gaussian, use simulateSSM instead. ")
@@ -113,29 +115,30 @@ importanceSSM <-  function(model, type = c("states", "signals"),
       dist = pmatch(x = model$distribution,
         table = c("gaussian", "poisson",  "binomial", "gamma", "negative binomial"),
         duplicates.ok = TRUE),
-      p, n, m, k, theta, maxiter = as.integer(maxiter),
+      p, n, m, k, theta = theta, maxiter = as.integer(maxiter),
       simtmp$nNonzeroP1inf, 1e-08, simtmp$nNonzeroP1, as.integer(nsim),
       simtmp$epsplus, simtmp$etaplus, simtmp$aplus1, simtmp$c2, model$tol,
       info = integer(1), as.integer(antithetics),
       w = numeric(3 * nsim * antithetics + nsim),
       sim = array(0, c(simdim,  n, 3 * nsim * antithetics + nsim)), sim.what, simdim,
-      expected)
+      expected, H_tol = H_tol)
   } else {
     out <- .Fortran(fisamplefilter, NAOK = TRUE, model$y, ymiss, as.integer(tv),
       model$Z, model$T, model$R, model$Q, model$a1, model$P1, model$P1inf,model$u,
       dist = pmatch(x = model$distribution,
         table = c("gaussian",  "poisson", "binomial", "gamma", "negative binomial"),
         duplicates.ok = TRUE),
-      p, n, m, k, theta, maxiter = as.integer(maxiter),
+      p, n, m, k, theta = theta, maxiter = as.integer(maxiter),
       simtmp$nNonzeroP1inf, 1e-08, simtmp$nNonzeroP1, as.integer(nsim),
       simtmp$epsplus, simtmp$etaplus, simtmp$aplus1, simtmp$c2,
       model$tol, info = integer(1), as.integer(antithetics),
       w = array(0, c(n, 3 * nsim * antithetics + nsim)),
       sim = array(0, c(simdim, n, 3 * nsim * antithetics + nsim)), sim.what, simdim,
-      expected)
+      expected, H_tol = H_tol)
   }
   if(out$info!=0){
     switch(as.character(out$info),
+      "-5" = warning(paste0("Gaussian approximation converged to a degenerate case with max(H) = ", out$H_tol, ".")),
       "-3" = stop("Couldn't compute LDL decomposition of P1."),
       "-2" =  stop("Couldn't compute LDL decomposition of Q."),
       "1" = stop("Gaussian approximation failed due to non-finite value in linear predictor."),

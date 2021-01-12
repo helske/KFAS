@@ -2,7 +2,7 @@
 
 subroutine isamplefilter(yt, ymiss, timevar, zt, tt, rtv, qt, a1, p1,p1inf, u, dist, &
 p, n, m, r, theta, maxiter,rankp,convtol, nnd,nsim,epsplus,etaplus,&
-aplus1,c,tol,info,antithetics,w,sim,simwhat,simdim, expected)
+aplus1,c,tol,info,antithetics,w,sim,simwhat,simdim, expected, htol)
 
     implicit none
 
@@ -14,6 +14,7 @@ aplus1,c,tol,info,antithetics,w,sim,simwhat,simdim, expected)
     integer, intent(inout) ::info, maxiter
     integer ::  t, j,i,k,maxiter2,maxitermax,info2
     double precision, intent(in) :: convtol,tol
+    double precision, intent(inout) :: htol
     double precision, intent(in), dimension(n,p) :: u
     double precision, intent(in), dimension(n,p) :: yt
     double precision, intent(in), dimension(p,m,(n-1)*timevar(1)+1) :: zt
@@ -78,7 +79,7 @@ aplus1,c,tol,info,antithetics,w,sim,simwhat,simdim, expected)
         tt(:,:,1:((i-1)*timevar(3)+1)), rtv(:,:,1:((i-1)*timevar(4)+1)), ht(:,:,1:i),&
         qt(:,:,1:((i-1)*timevar(5)+1)), a1, p1,p1inf, p,i,m,r,&
         theta(1:i,:), u(1:i,:), ytilde(1:i,:), dist,maxiter2,tol,rankp,convtol,diff,lik,&
-        info2, expected)
+        info2, expected, htol)
 
         if(info2 .ne. 0 .and. info2 .ne. 3) then !check for errors in approximating algorithm
             info = info2
@@ -211,4 +212,5 @@ aplus1,c,tol,info,antithetics,w,sim,simwhat,simdim, expected)
         sim(:,i+1,:) = sim2(:,i+1,:)
     end do
     maxiter=maxitermax
+   
 end subroutine isamplefilter

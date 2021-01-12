@@ -1,7 +1,7 @@
 ! Subroutine for computation of the approximating Gaussian model for non-Gaussian models
 
 subroutine approx(yt, ymiss, timevar, zt, tt, rtv, ht, qt, a1, p1,p1inf, p, n, m, r,&
-theta, u, ytilde, dist, maxiter, tol, rankp, convtol, diff, lik, info, expected)
+theta, u, ytilde, dist, maxiter, tol, rankp, convtol, diff, lik, info, expected, htol)
 
     implicit none
 
@@ -12,6 +12,7 @@ theta, u, ytilde, dist, maxiter, tol, rankp, convtol, diff, lik, info, expected)
     integer, intent(inout) :: maxiter,info
     integer ::  i, k,tvrqr,kk,jt,dt
     double precision, intent(in) :: tol,convtol
+    double precision, intent(inout) :: htol
     double precision, intent(in), dimension(n,p) :: u
     double precision, intent(in), dimension(n,p) :: yt
     double precision, intent(in), dimension(p,m,(n-1)*timevar(1)+1) :: zt
@@ -151,4 +152,12 @@ theta, u, ytilde, dist, maxiter, tol, rankp, convtol, diff, lik, info, expected)
         info=3
     end if
     maxiter=k
+    
+    ! check if the the approximation lead to potentially zero signal-to-noise ratio
+    if(maxval(ht) > htol) then
+      info = -5
+      htol = maxval(ht)
+      return
+    end if
+    
 end subroutine approx

@@ -58,13 +58,16 @@
 #' @param seed The value is used as a seed via \code{set.seed} function. Only used for
 #'   non-Gaussian model.
 #' @param convtol Tolerance parameter for convergence checks for Gaussian
-#'   approximation.
+#'   approximation. Only used for non-Gaussian model.
 #' @param expected Logical value defining the approximation of H_t in case of Gamma 
 #' and negative binomial distribution. Default is \code{FALSE} which matches the 
 #' algorithm of Durbin & Koopman (1997), whereas \code{TRUE} uses the expected value
 #' of observations in the equations, leading to results which match with \code{glm} (where applicable).
 #' The latter case was the default behaviour of KFAS before version 1.3.8.
-#' Essentially this is the difference between observed and expected information.
+#' Essentially this is the difference between observed and expected information. Only used for non-Gaussian model.
+#' @param H_tol Tolerance parameter for check \code{max(H) > tol_H}, which suggests that the approximation 
+#' converged to degenerate case with near zero signal-to-noise ratio. Default is very generous 1e15. 
+#' Only used for non-Gaussian model.
 #' @param ... Ignored.
 #' @return Log-likelihood of the model.
 #' @examples 
@@ -105,7 +108,7 @@
 logLik.SSModel <- function(object, marginal=FALSE, nsim = 0,
   antithetics = TRUE, theta, check.model = TRUE,
   transform = c("ldl", "augment"), maxiter = 50, seed, convtol = 1e-8, 
-  expected = FALSE, ...) {
+  expected = FALSE, H_tol = 1e15, ...) {
 
   # Check that the model object is of proper form
   if (check.model) {
@@ -162,8 +165,9 @@ logLik.SSModel <- function(object, marginal=FALSE, nsim = 0,
   } else {
     if (maxiter < 1)
       stop("Argument maxiter must a positive integer. ")
-    if (all(c(object$Q, object$u) == 0) || all(c(object$R, object$u) == 0) ||
-        any(!is.finite(c(object$R, object$Q, object$u) == 0)))
+    # degenerate case
+    if (all(c(object$Q, object$u) == .Machine$double.eps^0.75) || all(c(object$R, object$u) == .Machine$double.eps^0.75) ||
+        any(!is.finite(c(object$R, object$Q, object$u) == .Machine$double.eps^0.75)))
       return(-.Machine$double.xmax ^ 0.75)
     if (missing(theta) || is.null(theta)) {
       theta <- initTheta(object$y, object$u, object$distribution)
@@ -197,18 +201,27 @@ logLik.SSModel <- function(object, marginal=FALSE, nsim = 0,
       simtmp$aplus1, simtmp$c2, object$tol,
       info = integer(1), as.integer(antithetics), as.integer(sim), nsim2,
       diff = double(1),
-      marginal = as.integer(marginal), expected)
+      marginal = as.integer(marginal), expected, H_tol = H_tol)
 
     if(out$info!=0){
       warning(switch(as.character(out$info),
-        "-3" = "Couldn't compute LDL decomposition of P1.",
-        "-2" =  "Couldn't compute LDL decomposition of Q.",
-        "1" = "Gaussian approximation failed due to non-finite value in linear predictor.",
-        "2" = "Gaussian approximation failed due to non-finite value of p(theta|y).",
+        "-5" = paste0("Gaussian approximation converged to a degenerate case with max(H) = ",out$H_tol, ".",
+          "\nReturning ", -.Machine$double.xmax^0.75, "."),
+        "-3" = paste0("Couldn't compute LDL decomposition of P1.",
+          "\nReturning ", -.Machine$double.xmax^0.75, "."),
+        "-2" = paste0("Couldn't compute LDL decomposition of Q.",
+          "\nReturning ", -.Machine$double.xmax^0.75, "."),
+        "1" = paste0("Gaussian approximation failed due to non-finite value in linear predictor.",
+          "\nReturning ", -.Machine$double.xmax^0.75, "."),
+        "2" = paste0("Gaussian approximation failed due to non-finite value of p(theta|y).",
+          "\nReturning ", -.Machine$double.xmax^0.75, "."),
         "3" = "Maximum number of iterations reached, the approximation did not converge.",
-        "5" = "Computation of marginal likelihood failed, could not compute the additional term."
+        "5" = paste0("Computation of marginal likelihood failed, could not compute the additional term.",
+          "\nReturning ", -.Machine$double.xmax^0.75, ".")
       ))
-      if(out$info!=3) return(-.Machine$double.xmax^0.75)
+      if(out$info!=3) {
+        return(-.Machine$double.xmax^0.75)
+      }
     }
   }
   out$lik

@@ -2,7 +2,7 @@
 
 subroutine isample(yt, ymiss, timevar, zt, tt, rtv, qt, a1, p1,p1inf, u, dist, &
 p, n, m, r, theta, maxiter,rankp,convtol, nnd,nsim,epsplus,etaplus,&
-aplus1,c,tol,info,antithetics,w,sim,simwhat,simdim, expected)
+aplus1,c,tol,info,antithetics,w,sim,simwhat,simdim, expected, htol)
 
     implicit none
 
@@ -14,6 +14,7 @@ aplus1,c,tol,info,antithetics,w,sim,simwhat,simdim, expected)
     integer, intent(inout) :: maxiter,info
     integer ::  t, j,i,info2
     double precision, intent(in) :: convtol,tol
+    double precision, intent(inout) :: htol
     double precision, intent(in), dimension(n,p) :: u
     double precision, intent(in), dimension(n,p) :: yt
     double precision, intent(in), dimension(p,m,(n-1)*timevar(1)+1) :: zt
@@ -43,7 +44,7 @@ aplus1,c,tol,info,antithetics,w,sim,simwhat,simdim, expected)
 
     ! approximate
     call approx(yt, ymiss, timevar, zt, tt, rtv, ht, qt, a1, p1,p1inf, p,n,m,r,&
-    theta, u, ytilde, dist,maxiter,tol,rankp,convtol,diff,lik,info, expected)
+    theta, u, ytilde, dist,maxiter,tol,rankp,convtol,diff,lik,info, expected, htol)
 
     if(info .ne. 0 .and. info .ne. 3) then
         return
@@ -168,6 +169,5 @@ aplus1,c,tol,info,antithetics,w,sim,simwhat,simdim, expected)
 
     end if
 
-
-
+   
 end subroutine isample

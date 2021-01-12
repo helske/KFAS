@@ -16,6 +16,29 @@ for years 1880-1987. These series are same as used in Shumway and Stoffer
 (2006), where they are known as HL and Folland series. For more details, see
 Shumway and Stoffer (2006, p. 327).
 }
+\examples{
+
+# Example of multivariate local level model with only one state
+# Two series of average global temperature deviations for years 1880-1987
+# See Shumway and Stoffer (2006), p. 327 for details
+
+data("GlobalTemp")
+
+model_temp <- SSModel(GlobalTemp ~ SSMtrend(1, Q = NA, type = "common"),
+  H = matrix(NA, 2, 2))
+
+# Estimating the variance parameters
+inits <- chol(cov(GlobalTemp))[c(1, 4, 3)]
+inits[1:2] <- log(inits[1:2])
+fit_temp <- fitSSM(model_temp, c(0.5*log(.1), inits), method = "BFGS")
+
+out_temp <- KFS(fit_temp$model)
+
+ts.plot(cbind(model_temp$y, coef(out_temp)), col = 1:3)
+legend("bottomright",
+  legend = c(colnames(GlobalTemp), "Smoothed signal"), col = 1:3, lty = 1)
+
+}
 \references{
 Shumway, Robert H. and Stoffer, David S. (2006). Time Series
 Analysis and Its Applications: With R examples.

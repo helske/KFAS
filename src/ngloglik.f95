@@ -2,7 +2,7 @@
 subroutine ngloglik(yt, ymiss, timevar, zt, tt, rtv, qt, a1, p1,p1inf, p,m,&
 r, n, lik, theta, u, dist,maxiter,rankp,convtol, &
 nnd,nsim,epsplus,etaplus,aplus1,c,tol,info,antit,sim,nsim2,diff,marginal&
-, expected)
+, expected, htol)
 
     implicit none
 
@@ -14,6 +14,7 @@ nnd,nsim,epsplus,etaplus,aplus1,c,tol,info,antit,sim,nsim2,diff,marginal&
     integer, intent(inout) :: maxiter,marginal,info
     integer ::  j,t,info2
     double precision, intent(in) :: convtol,tol
+    double precision, intent(inout) :: htol
     double precision, intent(in), dimension(n,p) :: u
     double precision, intent(in), dimension(n,p) :: yt
     double precision, intent(in), dimension(p,m,(n-1)*timevar(1)+1) :: zt
@@ -39,12 +40,12 @@ nnd,nsim,epsplus,etaplus,aplus1,c,tol,info,antit,sim,nsim2,diff,marginal&
     external approx, marginalxx, dpoisf, dnormf, dbinomf, dgammaf, dnbinomf, simgaussian
     !approximate
     call approx(yt, ymiss, timevar, zt, tt, rtv, ht, qt, a1, p1,p1inf, p, n, m, r,&
-    theta, u, ytilde, dist,maxiter,tol,rankp,convtol,diff,lik, info, expected)
-
+    theta, u, ytilde, dist,maxiter,tol,rankp,convtol,diff,lik, info, expected, htol)
+    
     if(info .ne. 0 .and. info .ne. 3) then
         return
     end if
-
+    
     if(marginal.EQ.1) then
         j = int(sum(p1inf))
         if(j.GT.0) then
@@ -144,7 +145,6 @@ nnd,nsim,epsplus,etaplus,aplus1,c,tol,info,antit,sim,nsim2,diff,marginal&
                 end select
             end do
 
-
             lik= lik+log(sum(w)/dble(nsim2))
         else
             info = info2
@@ -152,7 +152,5 @@ nnd,nsim,epsplus,etaplus,aplus1,c,tol,info,antit,sim,nsim2,diff,marginal&
         end if
 
     end if
-
-
 
 end subroutine ngloglik

@@ -38,6 +38,8 @@
 #' of observations in the equations, leading to results which match with \code{glm} (where applicable).
 #' The latter case was the default behaviour of KFAS before version 1.3.8.
 #' Essentially this is the difference between observed and expected information.
+#' @param H_tol Tolerance parameter for check \code{max(H) > tol_H}, which suggests that the approximation 
+#' converged to degenerate case with near zero signal-to-noise ratio. Default is very generous 1e15.
 #' @return An object of class \code{SSModel} which contains the approximating Gaussian state space model
 #'   with following additional components:
 #'   \item{thetahat}{Mode of \eqn{p(\theta|y)}. }
@@ -80,7 +82,7 @@
 #' model <- SSModel(y~1, dist = "binomial")
 #' KFS(model, theta = 2)
 #' KFS(model, theta = 7)
-approxSSM <- function(model, theta, maxiter = 50, tol = 1e-08, expected = FALSE) {
+approxSSM <- function(model, theta, maxiter = 50, tol = 1e-08, expected = FALSE, H_tol = 1e15) {
 
   if (maxiter < 1) {
     stop("Argument maxiter must a positive integer. ")
@@ -123,9 +125,10 @@ approxSSM <- function(model, theta, maxiter = 50, tol = 1e-08, expected = FALSE)
       ytilde = array(0, dim = c(n, p)), dist,
       maxiter = as.integer(maxiter), model$tol,
       as.integer(sum(model$P1inf)), as.double(tol), diff = double(1),
-      double(1),info = integer(1), expected)
+      double(1),info = integer(1), expected, H_tol = H_tol)
   if (out$info != 0) {
     warning(switch(as.character(out$info),
+      "-5" = paste0("Gaussian approximation converged to a potentially degenerate case with max(H) = ", out$H_tol, "."),
       "-3" = "Couldn't compute LDL decomposition of P1.",
       "-2" =  "Couldn't compute LDL decomposition of Q.",
       "1" = paste0("Gaussian approximation failed due to ",
@@ -136,7 +139,6 @@ approxSSM <- function(model, theta, maxiter = 50, tol = 1e-08, expected = FALSE)
         "difference was ", signif(out$diff, 3))
     ))
   }
-
   model$distribution <- rep("gaussian", p)
   model$y[] <- out$ytilde
   model$y[as.logical(ymiss)] <- NA
