@@ -72,6 +72,9 @@ jobs:
           remotes::install_deps(dependencies = TRUE)
           remotes::install_cran("rcmdcheck")
           tinytex::parse_install(text = "! LaTeX Error: File `ae.sty' not found.")
+          tinytex::parse_install(text = "! LaTeX Error: File `grfext.sty' not found.")
+          tinytex::parse_install(text = "! Package babel Error: Unknown option `english'.")
+          
         shell: Rscript {0}
 
       - name: Check
