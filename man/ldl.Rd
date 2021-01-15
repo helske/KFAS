@@ -10,7 +10,8 @@ ldl(x, tol)
 \item{x}{Symmetrix matrix.}
 
 \item{tol}{Tolerance parameter for LDL decomposition, determines which
-diagonal values are counted as zero. Same value is used in isSymmetric function.}
+diagonal values are counted as zero. Same value is used in isSymmetric function. 
+Default is \code{max(100, max(abs(diag(as.matrix(x))))) * .Machine$double.eps}.}
 }
 \value{
 Transformed matrix with D in diagonal, L in strictly lower diagonal
@@ -24,7 +25,7 @@ Function \code{ldl} computes the LDL decomposition of a positive semidefinite ma
 x <- matrix(c(1:5, (1:5)^2), 5, 2)
 x <- cbind(x, x[, 1] + 3*x[, 2])
 m <- crossprod(x)
-l <- ldl(m)
+l <- ldl(m, tol = 1e-8) # arm64 Mac setup in CRAN fails with default tolerance
 d <- diag(diag(l))
 diag(l) <- 1
 all.equal(l \%*\% d \%*\% t(l), m, tol = 1e-15)

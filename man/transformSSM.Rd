@@ -4,7 +4,7 @@
 \alias{transformSSM}
 \title{Transform Multivariate State Space Model for Sequential Processing}
 \usage{
-transformSSM(object, type = c("ldl", "augment"))
+transformSSM(object, type = c("ldl", "augment"), tol)
 }
 \arguments{
 \item{object}{State space model object from function \code{\link{SSModel}}.}
@@ -14,6 +14,9 @@ and multiplies the observation equation with the \eqn{L_t^{-1}}{L[t]^-1}, so \eq
 \sim N(0,D_t)}{\epsilon[t]* ~ N(0,D[t])}. Option \code{"augment"} adds 
 \eqn{\epsilon_t}{\epsilon[t]} to the state vector, so \eqn{Q_t}{Q[t]} becomes block diagonal 
 with blocks \eqn{Q_t}{Q[t]} and \eqn{H_t}{H[t]}.}
+
+\item{tol}{Tolerance parameter for LDL decomposition (see \code{\link{ldl}}). Default is 
+\code{max(100, max(abs(apply(object$H, 3, diag)))) * .Machine$double.eps}.}
 }
 \value{
 \item{model}{Transformed model.}

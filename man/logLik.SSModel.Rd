@@ -18,6 +18,7 @@
   convtol = 1e-08,
   expected = FALSE,
   H_tol = 1e+15,
+  transform_tol,
   ...
 )
 }
@@ -65,6 +66,9 @@ Essentially this is the difference between observed and expected information. On
 \item{H_tol}{Tolerance parameter for check \code{max(H) > tol_H}, which suggests that the approximation 
 converged to degenerate case with near zero signal-to-noise ratio. Default is very generous 1e15. 
 Only used for non-Gaussian model.}
+
+\item{transform_tol}{Tolerance parameter for LDL decomposition in case of a 
+non-diagonal H and \code{transform = "ldl"}. See \code{\link{transformSSM}} and \code{\link{ldl}} for details.}
 
 \item{...}{Ignored.}
 }

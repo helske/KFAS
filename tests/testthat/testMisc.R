@@ -12,10 +12,10 @@ expect_equal(c(hatvalues(KFS(model))),
 })
 
 test_that("ldl works properly",{
-  
+  set.seed(1)
   x <- matrix(rnorm(9), 3, 3)
   m <- crossprod(x)
-  l <- ldl(m)
+  l <- ldl(m, tol = 1e-8)
   d <- diag(diag(l))
   diag(l) <- 1
   expect_equal(l %*% d %*% t(l), m)
@@ -23,7 +23,7 @@ test_that("ldl works properly",{
   x <- matrix(c(1:5, (1:5)^2), 5, 2)
   x <- cbind(x, x[, 1] + 3*x[, 2])
   m <- crossprod(x)
-  l <- ldl(m)
+  l <- ldl(m, tol = 1e-8)
   d <- diag(diag(l))
   diag(l) <- 1
   expect_equal(l %*% d %*% t(l), m)

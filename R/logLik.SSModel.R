@@ -68,6 +68,8 @@
 #' @param H_tol Tolerance parameter for check \code{max(H) > tol_H}, which suggests that the approximation 
 #' converged to degenerate case with near zero signal-to-noise ratio. Default is very generous 1e15. 
 #' Only used for non-Gaussian model.
+#' @param transform_tol Tolerance parameter for LDL decomposition in case of a 
+#' non-diagonal H and \code{transform = "ldl"}. See \code{\link{transformSSM}} and \code{\link{ldl}} for details.
 #' @param ... Ignored.
 #' @return Log-likelihood of the model.
 #' @examples 
@@ -108,7 +110,7 @@
 logLik.SSModel <- function(object, marginal=FALSE, nsim = 0,
   antithetics = TRUE, theta, check.model = TRUE,
   transform = c("ldl", "augment"), maxiter = 50, seed, convtol = 1e-8, 
-  expected = FALSE, H_tol = 1e15, ...) {
+  expected = FALSE, H_tol = 1e15, transform_tol, ...) {
 
   # Check that the model object is of proper form
   if (check.model) {
@@ -130,10 +132,14 @@ logLik.SSModel <- function(object, marginal=FALSE, nsim = 0,
     # degenerate case
     if (all(c(object$Q, object$H) < .Machine$double.eps^0.75) || all(c(object$R, object$H) < .Machine$double.eps^0.75))
       return(-.Machine$double.xmax ^ 0.75)
-    htol <- max(100, max(apply(object$H, 3, diag))) * .Machine$double.eps
-    if (p > 1 && any(abs(apply(object$H, 3, "[", !diag(p))) > htol)) {
+    if(missing(transform_tol)) {
+      transform_tol <- max(100, max(apply(object$H, 3, diag))) * .Machine$double.eps
+    }
+    if (p > 1 && any(abs(apply(object$H, 3, "[", !diag(p))) > transform_tol)) {
       object <-
-        tryCatch(transformSSM(object, type = match.arg(arg = transform, choices = c("ldl", "augment"))),
+        tryCatch(transformSSM(object, 
+          type = match.arg(arg = transform, choices = c("ldl", "augment")),
+          tol = transform_tol),
           error = function(e) e)
       if (!inherits(object, "SSModel")) {
         warning(object$message)

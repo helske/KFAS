@@ -30,8 +30,10 @@
 #'   \sim N(0,D_t)}{\epsilon[t]* ~ N(0,D[t])}. Option \code{"augment"} adds 
 #'   \eqn{\epsilon_t}{\epsilon[t]} to the state vector, so \eqn{Q_t}{Q[t]} becomes block diagonal 
 #'   with blocks \eqn{Q_t}{Q[t]} and \eqn{H_t}{H[t]}.
+#' @param tol Tolerance parameter for LDL decomposition (see \code{\link{ldl}}). Default is 
+#' \code{max(100, max(abs(apply(object$H, 3, diag)))) * .Machine$double.eps}.
 #' @return \item{model}{Transformed model.}
-transformSSM <- function(object, type = c("ldl", "augment")) {
+transformSSM <- function(object, type = c("ldl", "augment"), tol) {
   
   if (any(object$distribution != "gaussian")) 
     stop("Nothing to transform as matrix H is not defined for non-gaussian model.")
@@ -90,12 +92,13 @@ transformSSM <- function(object, type = c("ldl", "augment")) {
       unidim <- ydims[uniqs]
       hobs <- yobs[, uniqs, drop = FALSE]
       storage.mode(yobs) <- storage.mode(hobs) <- storage.mode(hchol) <- "integer"
+      if(missing(tol)) tol <- max(100, max(abs(apply(object$H, 3, diag)))) * .Machine$double.eps
       # compute the transformations for y, Z and H
       out <- .Fortran(fldlssm, NAOK = TRUE, yt = yt, ydims = ydims, yobs = yobs, 
         tv = as.integer(tv), Zt = Z, p = p, m = m, 
         n = n, ichols = ichols, nh = as.integer(nh), hchol = hchol, 
         unidim = as.integer(unidim), info = as.integer(0), hobs = hobs, 
-        tol = max(100, max(abs(apply(object$H, 3, diag)))) * .Machine$double.eps)
+        tol = tol)
       if(out$info!=0){
         stop(switch(as.character(out$info),
           "1" = "LDL decomposition of H failed.",

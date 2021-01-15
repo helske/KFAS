@@ -92,6 +92,9 @@
 #' @param H_tol Tolerance parameter for check \code{max(H) > tol_H}, which suggests that the approximation 
 #' converged to degenerate case with near zero signal-to-noise ratio. Default is very generous 1e15. 
 #' Only used for non-Gaussian model.
+#' @param transform_tol Tolerance parameter for LDL decomposition in case of a 
+#' non-diagonal H and \code{transform = "ldl"}. See \code{\link{transformSSM}} and 
+#' \code{\link{ldl}} for details.
 #' @return What \code{KFS} returns depends on the arguments \code{filtering},
 #'   \code{smoothing} and \code{simplify}, and whether the model is Gaussian or
 #'   not:
@@ -240,7 +243,8 @@
 #' \code{\link{importanceSSM}}, \code{\link{approxSSM}} for examples.
 KFS <-  function(model, filtering, smoothing, simplify = TRUE,
   transform = c("ldl", "augment"), nsim = 0, theta, maxiter = 50,
-  convtol = 1e-08, return_model = TRUE, expected = FALSE, H_tol = 1e15) {
+  convtol = 1e-08, return_model = TRUE, expected = FALSE, H_tol = 1e15,
+  transform_tol) {
 
   # Check that the model object is of proper form
   is.SSModel(model, na.check = TRUE, return.logical = FALSE)
@@ -451,9 +455,11 @@ KFS <-  function(model, filtering, smoothing, simplify = TRUE,
   if (all(model$distribution == "gaussian")) {
   
     # Deal with the possible non-diagonality of H
-    htol <- max(100, max(apply(model$H, 3, diag))) * .Machine$double.eps
-    if (any(abs(apply(model$H, 3, "[", !diag(p))) > htol)) {
-      model <- transformSSM(model, type = transform)
+    if(missing(transform_tol)) {
+      transform_tol <- max(100, max(apply(model$H, 3, diag))) * .Machine$double.eps
+    }
+    if (any(abs(apply(model$H, 3, "[", !diag(p))) > transform_tol)) {
+      model <- transformSSM(model, type = transform, tol = transform_tol)
       KFS_transform <- transform
       tv <- attr(model, "tv")
       m <- attr(model, "m")
