@@ -1,3 +1,7 @@
+Changes from version 1.4.2 to 1.4.3
+   * Fixed declarations of Fortran functions affected by the addition of 'H_tol' 
+   (see previous version).
+   
 Changes from version 1.4.1 to 1.4.2
    * Added some examples.
    * Added an additional check for the convergence of the Gaussian approximation, 
