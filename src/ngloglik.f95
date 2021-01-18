@@ -38,6 +38,7 @@ subroutine ngloglik(yt, ymiss, timevar, zt, tt, rtv, qt, a1, p1,p1inf, p,m, &
     double precision, external :: ddot
 
     external approx, marginalxx, dpoisf, dnormf, dbinomf, dgammaf, dnbinomf, simgaussian
+    ht = 0.0d0
     !approximate
     call approx(yt, ymiss, timevar, zt, tt, rtv, ht, qt, a1, p1,p1inf, p, n, m, r,&
     theta, u, ytilde, dist,maxiter,tol,rankp,convtol,diff,lik, info, expected, htol)

@@ -1,9 +1,10 @@
-Changes from version 1.4.2 to 1.4.3
+Changes from version 1.4.2 to 1.4.4
    * Fixed declarations of Fortran functions affected by the addition of 'H_tol' 
      (see previous version).
    * Added argument 'transform_tol' tol to logLik, KFS, and transformSSM functions, which
      can be used to adjust the default tolerance parameter of LDL decomposition in case of 
      numerical issues on M1 Mac. 
+   * Fixed uninitialized memory issues from 1.4.2.
    
 Changes from version 1.4.1 to 1.4.2
    * Added some examples.
