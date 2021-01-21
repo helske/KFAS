@@ -191,6 +191,9 @@ logLik.SSModel <- function(object, marginal=FALSE, nsim = 0,
       sim <- 1
       if (missing(seed))
         seed <- 123
+      runif(1) # make sure there is a seed
+      old_seed <- get0(".Random.seed", envir = .GlobalEnv, inherits = FALSE)
+      on.exit(assign(".Random.seed", old_seed, envir = .GlobalEnv, inherits = FALSE))
       set.seed(seed)
       simtmp <- simHelper(object, nsim, antithetics)
     }
