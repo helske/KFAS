@@ -586,7 +586,7 @@
 #' 
 #' fit <- fitSSM(model, inits = rep(-1, 2), updatefn = updatefn)
 #' 
-#' fit$model$Q[H]
+#' fit$model$H[1]
 #' fit$model$Q[1]
 #' KFS(fit$model)
 #' 

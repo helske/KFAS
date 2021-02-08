@@ -2,6 +2,7 @@ Changes from version 1.4.4 to 1.4.5
    * Changed the RNG behaviour of logLik method: Previously set.seed call in case of 
      importance sampling based log-likelihood computation altered the
      global RNG state, but now old state is restored on exit. 
+   * Fixed typo in the state and observation intercept example in `?KFAS` 
 
 Changes from version 1.4.2 to 1.4.4
    * Fixed declarations of Fortran functions affected by the addition of 'H_tol' 
