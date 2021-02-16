@@ -33,6 +33,7 @@ SSMcycle(
   a1,
   P1,
   P1inf,
+  damping = 1,
   n = 1,
   state_names = NULL,
   ynames
@@ -140,6 +141,9 @@ cycle/seasonal pattern.}
 \item{type}{For cycle, seasonal, trend and regression components, character
 string defining if \code{"distinct"} or \code{"common"} states are used for
 different series.}
+
+\item{damping}{A damping factor for cycle component. Defaults to 1. 
+Note that there are no checks for the range of the factor.}
 
 \item{formula}{An object of class \code{\link{formula}} containing the
 symbolic description of the model. The intercept term can be removed with

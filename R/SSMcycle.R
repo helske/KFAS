@@ -1,6 +1,6 @@
 #' @rdname SSModel
 #' @export
-SSMcycle <- function(period, Q, type, index, a1, P1, P1inf, n = 1, state_names = NULL, ynames) {
+SSMcycle <- function(period, Q, type, index, a1, P1, P1inf, damping = 1, n = 1, state_names = NULL, ynames) {
   if (missing(index))
     index <- 1
   p <- length(index)
@@ -21,7 +21,7 @@ SSMcycle <- function(period, Q, type, index, a1, P1, P1inf, n = 1, state_names =
   Z <- matrix(0, p, m)
   T <- matrix(0, m, m)
   Z_univariate <- matrix(c(1, 0), 1, 2)
-  T_univariate <- matrix(c(cos(lambda), -sin(lambda), sin(lambda), cos(lambda)),
+  T_univariate <- damping * matrix(c(cos(lambda), -sin(lambda), sin(lambda), cos(lambda)),
     2, 2)
   if (type != 2) {
     for (i in 1:p) {

@@ -73,6 +73,8 @@
 #'   equation.
 #' @param period For a cycle and seasonal components, the length of the
 #'   cycle/seasonal pattern.
+#' @param damping A damping factor for cycle component. Defaults to 1. 
+#' Note that there are no checks for the range of the factor.
 #' @param sea.type For seasonal component, character string defining whether to
 #'   use \code{"dummy"} or \code{"trigonometric"} form of the seasonal
 #'   component.
