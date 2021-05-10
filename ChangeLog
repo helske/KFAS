@@ -1,5 +1,7 @@
 Changes from version 1.4.4 to 1.4.5
    * Added an argument damping to `SSMcycle` for defining damping factor.
+   * Set F to NA if Z contains NA's. KFS earlier set F to zero in these cases.
+   * Added a reminder to cite the JSS paper instead of only the package itself.
    * Changed the RNG behaviour of logLik method: Previously set.seed call in case of 
      importance sampling based log-likelihood computation altered the
      global RNG state, but now old state is restored on exit. 

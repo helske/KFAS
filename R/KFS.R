@@ -515,6 +515,9 @@ KFS <-  function(model, filtering, smoothing, simplify = TRUE,
 
     if (all(model$distribution == "gaussian")) {
       filterout$v[as.logical(t(ymiss))] <- NA
+      # set F to NA if v is NA, 
+      # (if Z contains NAs F should be NA as well, but F was set to 0 earlier)
+      filterout$F[is.na(filterout$v)] <- NA
       if ("state" %in% filtering) {
         rownames(filterout$a) <- rownames(filterout$att) <- rownames(model$a1)
         out <- c(out, list(a = ts(t(filterout$a), start = start(model$y),
