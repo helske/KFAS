@@ -127,6 +127,67 @@ check_model <- function(model) {
 
 fit <- fitSSM(inits = rep(var(Nile)/5, 2), model = model,
                  updatefn = update_model, checkfn = check_model)
+
+# More complex model
+
+set.seed(1)
+
+n <- 1000
+
+x1 <- rnorm(n)
+x2 <- rnorm(n)
+beta1 <- 1 + cumsum(rnorm(n, sd = 0.1)) # time-varying regression effect
+beta2 <- -0.3 # time-invariant effect
+
+# ARMA(2, 1) errors
+z <- arima.sim(model = list(ar = c(0.7, -0.4), ma = 0.5), n = n, sd = 0.5)
+
+# generate data, regression part + ARMA errors
+y <- beta1 * x1 + beta2 * x2 + z
+ts.plot(y)
+
+# build the model using just zeros for now
+# But note no extra white noise term so H is fixed to zero
+model <- SSModel(y ~ SSMregression(~ x1 + x2, Q = 0, R = matrix(c(1, 0), 2, 1)) +
+  SSMarima(rep(0, 2), 0, Q = 0), H = 0) 
+
+# update function for fitSSM
+
+update_function <- function(pars, model){
+
+  ## separate calls for model components, use exp to ensure positive variances
+  tmp_reg <- SSMregression(~ x1 + x2, Q = exp(pars[1]), R = matrix(c(1, 0), 2, 1))
+  tmp_arima <- try(SSMarima(artransform(pars[2:3]), 
+    artransform(pars[4]), Q = exp(pars[5])), silent = TRUE)
+  
+  # stationary check, see note in artransform docs
+  if(inherits(tmp_arima, "try-error")) {
+    model$Q[] <- NA # set something to NA just in case original model is ok
+    return(model) # this goes to checkfn and causes rejection due to NA values
+  }
+  
+  model["Q", etas = "regression"] <- tmp_reg$Q
+  model["Q", etas = "arima"] <- tmp_arima$Q
+  
+  model["T", "arima"] <- tmp_arima$T
+  model["R", states = "arima", etas = "arima"] <- tmp_arima$R
+  model["P1", "arima"] <- tmp_arima$P1
+  
+  # you could also directly build the whole model here again, i.e.
+  # model <- SSModel(y ~ 
+  #   SSMregression(~ x1 + x2, Q = exp(pars[1]), R = matrix(c(1, 0), 2, 1)) +
+  #   SSMarima(artransform(pars[2:3]), artransform(pars[4]), Q = exp(pars[5])), 
+  #   H = 0)
+  
+  model
+  
+}
+fit  <- fitSSM(model = model,
+  inits = rep(0.1, 5),
+  updatefn = update_function, method = "BFGS")
+
+ts.plot(cbind(beta1, KFS(fit$model)$alphahat[, "x1"]), col = 1:2)
+
 }
 \seealso{
 \code{\link{logLik}}, \code{\link{KFAS}}, 

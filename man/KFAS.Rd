@@ -278,9 +278,9 @@ likfn <- function(pars, model, estimate = TRUE){
     Q = exp(pars[5])), silent = TRUE)
   if(!inherits(tmp, "try-error")){
     model["T", "arima"] <- tmp$T
-    model["R", "arima"] <- tmp$R
+    model["R", states = "arima", etas = "arima"] <- tmp$R
     model["P1", "arima"] <- tmp$P1
-    model["Q", "arima"] <- tmp$Q
+    model["Q", etas = "arima"] <- tmp$Q
     if(estimate){
       -logLik(model)
     } else model

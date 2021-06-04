@@ -297,9 +297,9 @@
 #'     Q = exp(pars[5])), silent = TRUE)
 #'   if(!inherits(tmp, "try-error")){
 #'     model["T", "arima"] <- tmp$T
-#'     model["R", "arima"] <- tmp$R
+#'     model["R", states = "arima", etas = "arima"] <- tmp$R
 #'     model["P1", "arima"] <- tmp$P1
-#'     model["Q", "arima"] <- tmp$Q
+#'     model["Q", etas = "arima"] <- tmp$Q
 #'     if(estimate){
 #'       -logLik(model)
 #'     } else model
@@ -707,7 +707,7 @@ NULL
 #' @name sexratio
 #' @docType data
 #' @format A time series object containing the number of males and females born in Finland from 1751 to 2011.
-#' @source Statistics Finland \url{http://pxnet2.stat.fi/PXWeb/pxweb/en/StatFin/}.
+#' @source Statistics Finland \url{https://pxnet2.stat.fi/PXWeb/pxweb/en/StatFin/}.
 #' @keywords datasets
 #' @examples
 #' data("sexratio")
@@ -756,6 +756,6 @@ NULL
 #' @name alcohol
 #' @docType data
 #' @format A multivariate time series object with 45 times 8 observations.
-#' @source Statistics Finland \url{http://pxnet2.stat.fi/PXWeb/pxweb/en/StatFin/}.
+#' @source Statistics Finland \url{https://pxnet2.stat.fi/PXWeb/pxweb/en/StatFin/}.
 #' @keywords datasets
 NULL

@@ -1,3 +1,6 @@
+Changes from version 1.4.5 to 1.4.5-1
+   * Added an example of more complex model estimation with fitSSM.
+   
 Changes from version 1.4.4 to 1.4.5
    * Added an argument damping to `SSMcycle` for defining damping factor.
    * Set F to NA if Z contains NA's. KFS earlier set F to zero in these cases.

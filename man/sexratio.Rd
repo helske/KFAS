@@ -8,7 +8,7 @@
 A time series object containing the number of males and females born in Finland from 1751 to 2011.
 }
 \source{
-Statistics Finland \url{http://pxnet2.stat.fi/PXWeb/pxweb/en/StatFin/}.
+Statistics Finland \url{https://pxnet2.stat.fi/PXWeb/pxweb/en/StatFin/}.
 }
 \description{
 A time series object containing the number of males and females born in Finland from 1751 to 2011.
