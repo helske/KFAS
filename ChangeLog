@@ -1,4 +1,5 @@
-Changes from version 1.4.5 to 1.4.5-1
+Changes from version 1.4.5 to 1.4.6
+   * Changed the Fortran file extensions from .f95 to .f90 for better portability.
    * Added an example of more complex model estimation with fitSSM.
    
 Changes from version 1.4.4 to 1.4.5
