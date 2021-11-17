@@ -36,7 +36,7 @@ theta, u, ytilde, dist, maxiter, tol, rankp, convtol, diff, lik, info, expected,
     double precision, dimension(m,p,n) :: kt,kinf
 
     external dgemm, pytheta, pthetafirst, approxloop, pthetarest
-
+  
     !compute rqr
     tvrqr = max(timevar(4),timevar(5))
     do i=1, (n-1)*tvrqr+1
@@ -46,6 +46,7 @@ theta, u, ytilde, dist, maxiter, tol, rankp, convtol, diff, lik, info, expected,
 
     ! compute logp(theta) for the first time, no need to compute kt/kinf and ft/finf in successive calls
     ! in case of totally diffuse initialization term p(theta)=0 for all theta
+    
     if(rankp .NE. m) then
         call pthetafirst(theta, timevar, zt, tt, rqr, a1, p1, p1inf, p, m, n, devold, tol,rankp,kt,kinf,ft,finf,dt,jt)
     end if
@@ -73,6 +74,7 @@ theta, u, ytilde, dist, maxiter, tol, rankp, convtol, diff, lik, info, expected,
                     kk = kk + 1
                     if(kk .GT. maxiter) then
                         info = 1
+                        maxiter=k
                         return
                     end if
                     !backtrack
@@ -87,6 +89,7 @@ theta, u, ytilde, dist, maxiter, tol, rankp, convtol, diff, lik, info, expected,
                 end do
             else !cannot correct step size as we have just began
                 info = 1
+                maxiter=k
                 return
             end if
         end if
@@ -98,6 +101,7 @@ theta, u, ytilde, dist, maxiter, tol, rankp, convtol, diff, lik, info, expected,
                     kk = kk + 1
                     if(kk .GT. maxiter) then !did not find valid likelihood
                         info = 2
+                        maxiter=k
                         return
                     end if
 
@@ -106,13 +110,14 @@ theta, u, ytilde, dist, maxiter, tol, rankp, convtol, diff, lik, info, expected,
                     theta, thetanew, u, ytilde, dist,tol,rankp,lik, expected)
 
                     call pytheta(thetanew, dist, u, yt, ymiss, dev, p, n)
+                    
                     if(rankp .NE. m) then
                         call pthetarest(thetanew, timevar, zt, tt, a1, p, m, n, dev, kt,kinf,ft,finf,dt,jt)
                     end if
-
                 end do
             else !cannot correct step size as we have just began
                 info = 2
+                maxiter=k
                 return
             end if
         end if

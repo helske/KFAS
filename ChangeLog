@@ -1,3 +1,8 @@
+Changes from version 1.4.6 to 1.4.7
+   * Corrected the return value of maxiter in case the Gaussian approximation 
+     fails. Now returns the iteration number where the failure occured instead 
+     of maximum number based on the call.
+
 Changes from version 1.4.5 to 1.4.6
    * Changed the Fortran file extensions from .f95 to .f90 for better portability.
    * Added an example of more complex model estimation with fitSSM.
