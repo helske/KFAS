@@ -59,7 +59,7 @@ SSMarima <- function(ar = NULL, ma = NULL, d = 0, Q, stationary = TRUE,
     temp <- try(solve(a = diag(mnd^2) - matrix(kronecker(T[nd, nd], T[nd,
       nd]), mnd^2, mnd^2), b = c(R[nd, , drop = FALSE] %*%
           Q %*% t(R[nd, , drop = FALSE]))), TRUE)
-    if (class(temp) == "try-error") {
+    if (inherits(temp, "try-error")) {
       stop("ARIMA part is numerically too close to non-stationarity.")
     } else P1[nd, nd] <- temp
   } else diag(P1inf) <- 1

@@ -1,13 +1,13 @@
 #' Confidence Intervals of Smoothed States
 #'
-#' Compute confidence intervals of the smoothed estimates of states of
-#' \code{SSModel} object or extract them from output of \code{KFS}.
+#' Extract confidence intervals of the smoothed estimates of states from the 
+#' output of \code{KFS}.
 #'
 #' @export
 #' @importFrom stats confint window
-#' @name confint.SSModel
-#' @param object An object of class \code{KFS} or \code{SSModel}.
-#' @param states Which states to extract? Either a numeric vector containing
+#' @name confint.KFS
+#' @param object An object of class \code{KFS}.
+#' @param parm Which states to extract? Either a numeric vector containing
 #'  the indices of the corresponding states, or a character vector defining the
 #'  types of the corresponding states. Possible choices are
 #'   \code{"all"},  \code{"level"}, \code{"slope"},
@@ -22,14 +22,12 @@
 #' model <- SSModel(log(drivers) ~ SSMtrend(1, Q = list(1)) +
 #'  SSMseasonal(period = 12, sea.type = "trigonometric") +
 #'  log(PetrolPrice) + law, data = Seatbelts, H = 1)
-#'
-#' confint(model, states = "regression", last = TRUE)
-#' confint(model, start = c(1983, 12), end = c(1984, 2))
 #' out <- KFS(model)
-#' confint(out, states = "regression", last = TRUE)
+#'
+#' confint(out, parm = "regression", last = TRUE)
 #' confint(out, start = c(1983, 12), end = c(1984, 2))
 #'
-confint.KFS <- function(object, states = "all", level = 0.95, ...) {
+confint.KFS <- function(object, parm = "all", level = 0.95, ...) {
   
   if ("alphahat" %in% names(object)) {
     V <- object$V
