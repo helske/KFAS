@@ -32,12 +32,12 @@ confint.KFS <- function(object, parm = "all", level = 0.95, ...) {
   if ("alphahat" %in% names(object)) {
     V <- object$V
   } else stop("Input does not contain smoothed estimates for states, rerun KFS with state smoothing.")
-  if (is.numeric(states)) {
-    states <- as.integer(states)
+  if (is.numeric(parm)) {
+    states <- as.integer(parm)
     if (min(states) < 1 | max(states) > attr(object$model, "m"))
       stop("Vector states should contain the indices or names (state types) of the states.")
   } else {
-    states <- match.arg(arg = states,
+    states <- match.arg(arg = parm,
       choices = c("all", "arima", "custom", "level","slope", "cycle",
         "seasonal", "trend", "regression"),
       several.ok = TRUE)
