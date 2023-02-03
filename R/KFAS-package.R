@@ -707,7 +707,7 @@ NULL
 #' @name sexratio
 #' @docType data
 #' @format A time series object containing the number of males and females born in Finland from 1751 to 2011.
-#' @source Statistics Finland \url{https://pxnet2.stat.fi/PXWeb/pxweb/en/StatFin/}.
+#' @source Statistics Finland \url{https://statfin.stat.fi/PxWeb/pxweb/en/StatFin/}.
 #' @keywords datasets
 #' @examples
 #' data("sexratio")
@@ -756,6 +756,6 @@ NULL
 #' @name alcohol
 #' @docType data
 #' @format A multivariate time series object with 45 times 8 observations.
-#' @source Statistics Finland \url{https://pxnet2.stat.fi/PXWeb/pxweb/en/StatFin/}.
+#' @source Statistics Finland \url{https://statfin.stat.fi/PxWeb/pxweb/en/StatFin/}.
 #' @keywords datasets
 NULL

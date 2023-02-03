@@ -8,7 +8,7 @@
 A multivariate time series object with 45 times 8 observations.
 }
 \source{
-Statistics Finland \url{https://pxnet2.stat.fi/PXWeb/pxweb/en/StatFin/}.
+Statistics Finland \url{https://statfin.stat.fi/PxWeb/pxweb/en/StatFin/}.
 }
 \description{
 A multivariate time series object containing the number of alcohol related

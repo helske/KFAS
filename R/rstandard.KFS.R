@@ -42,13 +42,13 @@
 #'   of \eqn{Var(\hat\mu_t) = H_t - V_{\mu,t}}{Var(\hat\mu[t]) = H[t] - V[\mu,t]}, or the diagonal of the same
 #'   matrix. For Gaussian models, these coincide with the standardized smoothed
 #'   \eqn{\epsilon} disturbance residuals
-#'   (as \eqn{V_{\mu,t} = V_{\eps,t}}{V[\mu,t]=V[\eps,t]}),
+#'   (as \eqn{V_{\mu,t} = V_{\epsilon,t}}{V[\mu,t]=V[\epsilon,t]}),
 #'   and for generalized linear models
 #'   these coincide with the standardized Pearson residuals (hence the name).
 #'  }
 #'
 #' Note that the variance estimates from \code{KFS} are of form Var(x | y),
-#' e.g., \code{V_eps} from \code{KFS} is \eqn{Var(\eps_t | Y)}{Var(\eps_t | Y)}
+#' e.g., \code{V_eps} from \code{KFS} is \eqn{Var(\epsilon_t | Y)}{Var(\epsilon_t | Y)}
 #' and matches with equation 4.69 in Section 4.5.3 of Durbin and Koopman (2012).
 #' (in case of univariate Gaussian model). But for the standardization we need
 #' Var(E(x | y)) (e.g., Var(\code{epshat}) which we get with the law
