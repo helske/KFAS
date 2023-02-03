@@ -12,6 +12,8 @@ structural time series, ARIMA models, generalized linear models and generalized 
 
 If you use KFAS in your paper, please cite it properly, see `citation("KFAS")` in R, or above link to the paper.
 
+See also [bssm package](https://cran.r-project.org/package=bssm) if your are more interested in Bayesian inference on state space models.
+
 Main features
 --------------------------------------------------------------------------
 
@@ -20,7 +22,7 @@ Main features
 - Simulation smoothing of Gaussian models
 - Importance sampling based inference of non-Gaussian models
 - Exact diffuse initialization
-- Sequential processing
+- Sequential processing (univariate treatment of multivariate models)
 - Multivariate models with mixed distributions
 
 Most of the algorithms are based on book "Time Series Analysis by State Space Methods" and related articles by J. Durbin and S.J. Koopman.

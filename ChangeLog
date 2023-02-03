@@ -1,140 +1,144 @@
-Changes from version 1.4.6 to 1.4.7
-   * Corrected the return value of maxiter in case the Gaussian approximation 
-     fails. Now returns the iteration number where the failure occured instead 
+Changes from version 1.4.6 to 1.5.0
+   * Added a `confint` method for `KFS` output.
+   * Corrected the return value of maxiter in case the Gaussian approximation
+     fails. Now returns the iteration number where the failure occured instead
      of maximum number based on the call.
+   * Improved documentation on the standardarized residuals and added new 
+     examples.
+   * Added two new examples for custom models.
 
 Changes from version 1.4.5 to 1.4.6
    * Changed the Fortran file extensions from .f95 to .f90 for better portability.
    * Added an example of more complex model estimation with fitSSM.
-   
+
 Changes from version 1.4.4 to 1.4.5
    * Added an argument damping to `SSMcycle` for defining damping factor.
    * Set F to NA if Z contains NA's. KFS earlier set F to zero in these cases.
    * Added a reminder to cite the JSS paper instead of only the package itself.
-   * Changed the RNG behaviour of logLik method: Previously set.seed call in case of 
+   * Changed the RNG behaviour of logLik method: Previously set.seed call in case of
      importance sampling based log-likelihood computation altered the
-     global RNG state, but now old state is restored on exit. 
-   * Fixed typo in the state and observation intercept example in `?KFAS`. 
+     global RNG state, but now old state is restored on exit.
+   * Fixed typo in the state and observation intercept example in `?KFAS`.
 
 Changes from version 1.4.2 to 1.4.4
-   * Fixed declarations of Fortran functions affected by the addition of 'H_tol' 
+   * Fixed declarations of Fortran functions affected by the addition of 'H_tol'
      (see previous version).
    * Added argument 'transform_tol' tol to logLik, KFS, and transformSSM functions, which
-     can be used to adjust the default tolerance parameter of LDL decomposition in case of 
-     numerical issues on M1 Mac. 
+     can be used to adjust the default tolerance parameter of LDL decomposition in case of
+     numerical issues on M1 Mac.
    * Fixed uninitialized memory issues from 1.4.2.
-   
+
 Changes from version 1.4.1 to 1.4.2
    * Added some examples.
-   * Added an additional check for the convergence of the Gaussian approximation, 
+   * Added an additional check for the convergence of the Gaussian approximation,
      which checks whether the largest variance term H of the approximating model is overly large,
-     suggesting a convergence to a nonidentifiable case with zero signal-to-noise ratio. 
-     The default check is very generous max(H) > 1e15. This can be changed using argument 'H_tol' 
+     suggesting a convergence to a nonidentifiable case with zero signal-to-noise ratio.
+     The default check is very generous max(H) > 1e15. This can be changed using argument 'H_tol'
      in logLik, approxSSM, importanceSSM, and KFS.
-   
+
 Changes from version 1.4.0 to 1.4.1
    * Fixed internal approximation function declaration.
 
 Changes from version 1.3.7-1 to 1.4.0
    * The approximation algorithm for Gamma and negative binomial case was changed slightly.
-     New version is based on Taylor approximation, whereas old version was a slight modification of 
-     this wrt the variances of the approximating model. 
+     New version is based on Taylor approximation, whereas old version was a slight modification of
+     this wrt the variances of the approximating model.
      For simple GLM the difference is essentially observed (current) vs. expected (old)
      information matrix, i.e. the state covariance matrix estimates can differ slightly.
      You can revert back to old version by using the argument 'expected = TRUE' where applicable.
-   * Kalman filter and smoothing now performs some intermediate rounding to zero 
+   * Kalman filter and smoothing now performs some intermediate rounding to zero
      in obvious negative rounding errors of covariance matrices. Symmetry of Vt is now also forced.
      These should help in some numerically unstable cases and have no effect in typical models.
-   * Fixed the definition of theta of the Poisson distribution case in ?KFAS help page. 
+   * Fixed the definition of theta of the Poisson distribution case in ?KFAS help page.
 
 Changes from version 1.3.7 to 1.3.7-1
    * Minor fixes in examples of fitSSM and vignette. Thanks for Max Thilo for spotting these.
-     
+
 Changes from version 1.3.6 to 1.3.7
-   * Ptt is symmetric as it should, previously the strictly lower 
+   * Ptt is symmetric as it should, previously the strictly lower
      triangular part was wrong. Thanks for jye1999 for catching the bug.
-     
+
 Changes from version 1.3.5 to 1.3.6:
-   * Fixed a bug in state estimation when transitioning from diffuse 
-     filtering to non-diffuse phase in case of multivariate series. 
+   * Fixed a bug in state estimation when transitioning from diffuse
+     filtering to non-diffuse phase in case of multivariate series.
      Thanks to Hiroyuki Kawakatsu for noticing the issue.
    * Fixed some internal function declarations.
-   
+
 Changes from version 1.3.4 to 1.3.5:
-   * predict.SSModel: Previous fix from 1.3.4 didn't actually work, 
+   * predict.SSModel: Previous fix from 1.3.4 didn't actually work,
      now fixed for real. Thanks for jhal324 for the fix.
-   * Changed some of the tests due to the changes in sample function.   
-     
+   * Changed some of the tests due to the changes in sample function.
+
 Changes from version 1.3.3 to 1.3.4:
-   * predict.SSModel: Fixed bug from previous version which caused Gaussian predictions to 
+   * predict.SSModel: Fixed bug from previous version which caused Gaussian predictions to
      fail if argument 'filtered' was TRUE.
 
 Changes from version 1.3.2 to 1.3.3:
    * KFS: Fixed a bug in KFS which caused the returned Ptt to be wrong in most cases.
    * Added NAOK = TRUE for predict method so partial predictions should work in case of NA values in Z (and y).
    * KFS: Added argument return_model to KFS, setting this to FALSE can save some memory.
-   
+
 Changes from version 1.3.1 to 1.3.2:
-   * rstandard: Fixed a small bug in standardized residuals relating to numerically zero values. 
-   * rstandard: The standardized residual and non-standardized residual for zero-valued case 
+   * rstandard: Fixed a small bug in standardized residuals relating to numerically zero values.
+   * rstandard: The standardized residual and non-standardized residual for zero-valued case
      are now equal (0, previously rstandard returned NA).
-   * SSMseasonal: Fixed a bug relating to argument harmonics, which returned wrong harmonics 
+   * SSMseasonal: Fixed a bug relating to argument harmonics, which returned wrong harmonics
      in some cases. Thanks Noobivsho on Github.
    * Added Matrix package to Suggests as it is used in the vignette.
-   
+
 Changes from version 1.3.0 to 1.3.1:
    * Fixed a bug in contemporous filtering, now Ptt is symmetric as it should.
-   
+
 Changes from version 1.2.10 to 1.3.0:
-   * KFS now returns also filtered state estimates for Gaussian models 
+   * KFS now returns also filtered state estimates for Gaussian models
      (previously only one-step ahead predictions were given).
-   * Added a zerotol argument with default value of zero to standardized residuals. 
-     This can be used to guard numerical issues in residual computations. 
-     The previous hard-coded value of sqrt(machine epsilon) was too tight in 
+   * Added a zerotol argument with default value of zero to standardized residuals.
+     This can be used to guard numerical issues in residual computations.
+     The previous hard-coded value of sqrt(machine epsilon) was too tight in
      some settings.
-   
+
 Changes from version 1.2.9 to 1.2.10:
-   * Fixed a bug in rstandard with state disturbance residuals caused by 
+   * Fixed a bug in rstandard with state disturbance residuals caused by
      dimension mismatch between state and disturbance variables.
 
 Changes from version 1.2.8 to 1.2.9:
-   * Fixed a bug in model building funcitons which caused P1inf to become zero 
+   * Fixed a bug in model building funcitons which caused P1inf to become zero
      if P1 contained even a single nonzero value.
    * R codes are now byte-compiled.
-   
+
 Changes from version 1.2.7 to 1.2.8:
    * Updated CITATION to refer the JSS paper.
 
 Changes from version 1.2.6 to 1.2.7:
-   * logLik.SSModel: Changed the tolerance of degeneracy check (are all 
-   variance parameters of the model zero?) from .Machine$double.eps to 
-   .Machine$double.eps^0.75 in order to make optimization more robust to poor 
+   * logLik.SSModel: Changed the tolerance of degeneracy check (are all
+   variance parameters of the model zero?) from .Machine$double.eps to
+   .Machine$double.eps^0.75 in order to make optimization more robust to poor
    initial values.
 
 Changes from version 1.2.5 to 1.2.6:
-   * SSMseasonal: New experimental argument harmonics for determing what 
+   * SSMseasonal: New experimental argument harmonics for determing what
      subharmonics are used in trigonometric seasonal components.
-   * rstandard.KFS: Rewrote some of the codes for standardized residuals, 
+   * rstandard.KFS: Rewrote some of the codes for standardized residuals,
      resulting slightly faster and more robust computation.
-   * rstandard.KFS: Corrected bug (which resulted an error) in state residuals 
+   * rstandard.KFS: Corrected bug (which resulted an error) in state residuals
      due to the careless use of diagonal extraction via diag function.
    * rstandard.KFS: Correct names for standardized state residuals.
    * rstandard.KFS and residuals.KFS: Deviance residuals are now defunct.
-   * ldl: Now checks if the argument is 1x1 matrix or scalar and returns 
+   * ldl: Now checks if the argument is 1x1 matrix or scalar and returns
      appropriate result, i.e. original value as 1x1 matrix.
-   * is.SSModel: Now checks that all the relevant model components are double 
+   * is.SSModel: Now checks that all the relevant model components are double
      type in order to avoid problems in Fortran side.
-   * Added example to mvInnovations function for computing the filtered 
+   * Added example to mvInnovations function for computing the filtered
      estimates from the one-step-ahead predictions computed by KFS.
-   
+
 Changes from version 1.2.4 to 1.2.5:
-   * Modified the zero-tolerance in filtering algorithms for better 
+   * Modified the zero-tolerance in filtering algorithms for better
    numerical behaviour in models where Z contains very small or large values.
    * Added more examples.
    * New citation info for arXiv.
-   
+
 Changes from version 1.2.3 to 1.2.4:
-  * Corrected a bug in marginal likelihood computation which resulted failure in 
+  * Corrected a bug in marginal likelihood computation which resulted failure in
     multivariate Gaussian models.
 
 Changes from version 1.2.2 to 1.2.3:

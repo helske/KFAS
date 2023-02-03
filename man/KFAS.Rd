@@ -103,7 +103,7 @@ initial states in a Bayesian framework.
 Diffuse phase is continued until rank of \eqn{P_{\infty, t}}{P[inf, t]} becomes
 zero. Rank of \eqn{P_{\infty, t}}{P[inf, t]} decreases by 1, if
 \eqn{F_{\infty, t}>\xi_t>0}{F[inf, t]>\xi[t]>0}, where \eqn{\xi_t}{\xi[t]} is by default
-\code{.Machine$double.eps^0.5*min(X)^2)}, where X is absolute values of non-zero 
+\code{.Machine$double.eps^0.5*min(X)^2)}, where X is absolute values of non-zero
 elements of array Z. Usually the number of diffuse time points
 equals the number unknown elements of initial state vector, but missing
 observations or time-varying system matrices can affect this. See Koopman and
@@ -134,7 +134,7 @@ See \code{\link{transformSSM}} for more details.
 ################################################
 # Example of local level model for Nile series #
 ################################################
-# See Durbin and Koopman (2012)
+# See Durbin and Koopman (2012) and also ?SSModel for another Nile example
 
 model_Nile <- SSModel(Nile ~
   SSMtrend(1, Q = list(matrix(NA))), H = matrix(NA))
@@ -331,14 +331,14 @@ out_sim
 }
 
 ## using deterministic inputs in observation and state equations
-model_Nile <- SSModel(Nile ~ 
+model_Nile <- SSModel(Nile ~
   SSMcustom(Z=1, T = 1, R = 0, a1 = 100, P1inf = 0, P1 = 0, Q = 0, state_names = "d_t") +
   SSMcustom(Z=0, T = 1, R = 0, a1 = 100, P1inf = 0, P1 = 0, Q = 0, state_names = "c_t") +
   SSMtrend(1, Q = 1500), H = 15000)
 model_Nile$T
 model_Nile$T[1, 3, 1] <- 1 # add c_t to level
-model_Nile0 <- SSModel(Nile ~ 
-  SSMtrend(2, Q = list(1500, 0), a1 = c(0, 100), P1inf = diag(c(1, 0))), 
+model_Nile0 <- SSModel(Nile ~
+  SSMtrend(2, Q = list(1500, 0), a1 = c(0, 100), P1inf = diag(c(1, 0))),
   H = 15000)
 
 ts.plot(KFS(model_Nile0)$mu, KFS(model_Nile)$mu, col = 1:2)
@@ -364,7 +364,7 @@ summary(glm_D93)$cov.s
 out_D93$V[, , 1]
 
 # approximating model as in GLM
-out_D93_nosim <- KFS(model_D93, smoothing = c("state", "signal", "mean"), 
+out_D93_nosim <- KFS(model_D93, smoothing = c("state", "signal", "mean"),
   expected = TRUE)
 
 # with importance sampling. Number of simulations is too small here,
@@ -521,7 +521,7 @@ lines(x = mcycle$times, y = pred[, 3], lty = 2)
 
 \dontrun{
 ##################################################################
-# Example of multivariate model with common parameters           #  
+# Example of multivariate model with common parameters           #
 # and unknown intercept terms in state and observation equations #
 ##################################################################
 set.seed(1)
@@ -593,8 +593,8 @@ Shumway, Robert H. and Stoffer, David S. (2006).  Time Series Analysis and
 Its Applications: With R examples.  \cr
 }
 \seealso{
-See also \code{\link{logLik}}, \code{\link{fitSSM}}, 
+See also \code{\link{logLik}}, \code{\link{fitSSM}},
 \code{\link{boat}}, \code{\link{sexratio}},
-\code{\link{GlobalTemp}}, \code{\link{SSModel}}, 
+\code{\link{GlobalTemp}}, \code{\link{SSModel}},
 \code{\link{importanceSSM}}, \code{\link{approxSSM}} for more examples.
 }

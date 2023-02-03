@@ -142,7 +142,7 @@ cycle/seasonal pattern.}
 string defining if \code{"distinct"} or \code{"common"} states are used for
 different series.}
 
-\item{damping}{A damping factor for cycle component. Defaults to 1. 
+\item{damping}{A damping factor for cycle component. Defaults to 1.
 Note that there are no checks for the range of the factor.}
 
 \item{formula}{An object of class \code{\link{formula}} containing the
@@ -168,8 +168,8 @@ additional noise).}
 
 \item{tol}{A tolerance parameter used in checking whether \code{Finf} or \code{F} is numerically zero.
 Defaults to \code{.Machine$double.eps^0.5}. If \code{F < tol * max(abs(Z[Z > 0]))^2},
- then F is deemed to be zero (i.e. differences are due to numerical precision). 
- This has mostly effect only on determining when to end exact diffuse phase. Tweaking this 
+ then F is deemed to be zero (i.e. differences are due to numerical precision).
+ This has mostly effect only on determining when to end exact diffuse phase. Tweaking this
  and/or scaling model parameters/observations can sometimes help with numerical issues.}
 
 \item{rformula}{For regression component, right hand side formula or list of
@@ -183,9 +183,9 @@ terms in the model.}
 use \code{"dummy"} or \code{"trigonometric"} form of the seasonal
 component.}
 
-\item{harmonics}{For univariate trigonometric seasonal, argument 
-\code{harmonics} can be used to specify which subharmonics 
-are added to the model. Note that for multivariate model you can call 
+\item{harmonics}{For univariate trigonometric seasonal, argument
+\code{harmonics} can be used to specify which subharmonics
+are added to the model. Note that for multivariate model you can call
 \code{SSMseasonal} multiple times with different values of \code{index}.}
 
 \item{degree}{For trend component, integer defining the degree of the
@@ -259,6 +259,42 @@ model_int$T
 model_int$T[1, 2, 1] <- 1 # add the intercept value to level
 out <- KFS(model_int)
 
+# An example of a time-varying variance
+
+model_drivers <- SSModel(log(cbind(front, rear)) ~ SSMtrend(1, Q = list(diag(2))),
+data = Seatbelts, H = array(NA, c(2, 2, 192)))
+
+ownupdatefn <- function(pars, model){
+  diag(model$Q[, , 1]) <- exp(pars[1:2])
+  model$H[,,1:169] <- diag(exp(pars[3:4])) # break in variance
+  model$H[,,170:192] <- diag(exp(pars[5:6]))
+  model
+}
+
+fit_drivers <- fitSSM(model_drivers, inits = rep(-1, 6),
+  updatefn = ownupdatefn, method = "BFGS")
+fit_drivers$model$H[,,1]
+fit_drivers$model$H[,,192]
+
+# An example of shift in the level component
+
+Tt <- array(diag(2), c(2, 2, 100))
+Tt[1,2,28] <- 1
+Z <- matrix(c(1,0), 1, 2)
+Q <- diag(c(NA, 0), 2)
+model <- SSModel(Nile ~ -1 + SSMcustom(Z, Tt, Q = Q, P1inf = diag(2)),
+  H = matrix(NA))
+
+model <- fitSSM(model, c(10,10), method = "BFGS")$model
+model$Q
+model$H
+
+conf_Nile <- predict(model, interval = "confidence", level = 0.9)
+pred_Nile <- predict(model, interval = "prediction", level = 0.9)
+
+ts.plot(cbind(Nile, pred_Nile, conf_Nile[, -1]), col = c(1:2, 3, 3, 4, 4),
+        ylab = "Predicted Annual flow", main = "River Nile")
+
 # dynamic regression model
 
 set.seed(1)
@@ -288,11 +324,11 @@ model <- SSModel(y ~ SSMregression(list(~ X1, ~ X2, ~ X3), data = data.frame(x))
 
 # three covariates per series, with same coefficients:
 y <- x[,1] + x[,2] + x[,3] + matrix(rnorm(30), 10, 3)
-model <- SSModel(y ~ -1 + SSMregression(~ X1 + X2 + X3, remove.intercept = FALSE, 
+model <- SSModel(y ~ -1 + SSMregression(~ X1 + X2 + X3, remove.intercept = FALSE,
   type = "common", data = data.frame(x)))
 
 # the above cases can be combined in various ways, you can call SSMregression multiple times:
-model <- SSModel(y ~  SSMregression(~ X1 + X2, type = "common") + 
+model <- SSModel(y ~  SSMregression(~ X1 + X2, type = "common") +
   SSMregression(~ X2), data = data.frame(x))
 
 # examples of using data argument
@@ -328,5 +364,5 @@ try(c(SSModel(y ~ -1 + SSMregression(f), data = data1)$Z))
 \seealso{
 \code{artransform}
 
-\code{\link{KFAS}} for examples.
+\code{\link{KFAS}} for more examples.
 }
