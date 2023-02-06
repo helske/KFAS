@@ -24,14 +24,13 @@
 #'  log(PetrolPrice) + law, data = Seatbelts, H = 1)
 #' out <- KFS(model)
 #'
-#' confint(out, parm = "regression", last = TRUE)
-#' confint(out, start = c(1983, 12), end = c(1984, 2))
+#' confint(out, parm = "regression")
 #'
 confint.KFS <- function(object, parm = "all", level = 0.95, ...) {
   
-  if ("alphahat" %in% names(object)) {
-    V <- object$V
-  } else stop("Input does not contain smoothed estimates for states, rerun KFS with state smoothing.")
+  if (!("alphahat" %in% names(object))) {
+    stop("Input does not contain smoothed estimates for states, rerun KFS with state smoothing.")
+  }
   if (is.numeric(parm)) {
     states <- as.integer(parm)
     if (min(states) < 1 | max(states) > attr(object$model, "m"))
@@ -53,11 +52,16 @@ confint.KFS <- function(object, parm = "all", level = 0.95, ...) {
       states <- which(attr(object$model, "state_types") %in% states)
     }
   }
-  tmp <- sqrt(V[states, states, ])
-  if (!is.null(start) && identical(start,end)) {
-    tmp[1, ]
-  } else {
-    drop(tmp)
-  }
   
+  sds <- t(sqrt(apply(object$V[states, states, ], 3, diag)))
+  means <- object$alphahat[, states]
+  cis <- vector("list", length(states))
+  names(cis) <- rownames(object$model$a1)[states]
+  for (i in seq_along(states)) {
+    cis[[i]] <- cbind(
+      lwr = means[, i] + qnorm((1 - level)/2) * sds[, i],
+      upr = means[, i] - qnorm((1 - level)/2) * sds[, i]
+    )
+  }
+  cis
 }

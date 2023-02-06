@@ -35,7 +35,6 @@ model <- SSModel(log(drivers) ~ SSMtrend(1, Q = list(1)) +
  log(PetrolPrice) + law, data = Seatbelts, H = 1)
 out <- KFS(model)
 
-confint(out, parm = "regression", last = TRUE)
-confint(out, start = c(1983, 12), end = c(1984, 2))
+confint(out, parm = "regression")
 
 }
