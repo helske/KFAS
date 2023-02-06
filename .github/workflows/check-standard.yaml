@@ -41,8 +41,9 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: any::rcmdcheck
-          needs: check
+          extra-packages: 
+            any::rcmdcheck
+            any::tinytex
       
       - name: Install dependencies
         run: |
