@@ -45,8 +45,14 @@ jobs:
           needs: check
       
       - uses: r-lib/actions/setup-tinytex@v2
-      - run: tlmgr --version
       
+      - name: Install dependencies
+        run: |
+          tinytex::parse_install(text = "! LaTeX Error: File `ae.sty' not found.")
+          tinytex::parse_install(text = "! LaTeX Error: File `grfext.sty' not found.")
+          tinytex::tlmgr_install("babel-english")
+        shell: Rscript {0}
+        
       - uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
