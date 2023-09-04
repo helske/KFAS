@@ -3,6 +3,7 @@
 \docType{package}
 \name{KFAS}
 \alias{KFAS}
+\alias{KFAS-package}
 \title{KFAS: Functions for Exponential Family State Space Models}
 \description{
 Package KFAS contains functions for Kalman filtering, smoothing and

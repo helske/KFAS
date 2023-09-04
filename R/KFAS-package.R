@@ -142,7 +142,7 @@
 #' Its Applications: With R examples.  \cr
 #' @docType package
 #' @name KFAS
-#' @aliases KFAS
+#' @aliases KFAS KFAS-package
 #' @seealso See also \code{\link{logLik}}, \code{\link{fitSSM}},
 #' \code{\link{boat}}, \code{\link{sexratio}},
 #' \code{\link{GlobalTemp}}, \code{\link{SSModel}},

@@ -1,3 +1,6 @@
+Changes from version 1.5.0 to 1.5.1
+   * Added explicit alias for KFAS-package due to changes in roxygen2.
+   
 Changes from version 1.4.6 to 1.5.0
    * Added a `confint` method for `KFS` output.
    * Corrected the return value of maxiter in case the Gaussian approximation

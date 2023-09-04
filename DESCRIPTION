@@ -1,5 +1,5 @@
 Package: KFAS
-Version: 1.5.0
+Version: 1.5.1
 Title: Kalman Filter and Smoother for Exponential Family State Space Models
 Authors@R: 
     person(given = "Jouni",
