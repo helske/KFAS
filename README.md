@@ -1,4 +1,5 @@
 [![R-CMD-check](https://github.com/helske/KFAS/workflows/R-CMD-check/badge.svg)](https://github.com/helske/KFAS/actions)
+[![Codecov test coverage](https://codecov.io/gh/helske/KFAS/graph/badge.svg)](https://app.codecov.io/gh/helske/KFAS)
 [![cran version](http://www.r-pkg.org/badges/version/KFAS)](http://cran.r-project.org/package=KFAS)
 [![downloads](http://cranlogs.r-pkg.org/badges/KFAS)](http://cranlogs.r-pkg.org/badges/KFAS)
 

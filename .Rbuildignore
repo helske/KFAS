@@ -7,3 +7,4 @@
 ^README.md$
 constrains_on_states.R
 ^\.github$
+^codecov\.yml$
