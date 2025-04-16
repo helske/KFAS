@@ -8,14 +8,19 @@
 #' functions defining different types of components of the model, named as
 #' \code{SSMarima}, \code{SSMcustom}, \code{SSMcycle}, \code{SSMregression},
 #' \code{SSMseasonal} and \code{SSMtrend}.
-#'
-#' For more details, see package vignette (the mathematical notation is somewhat non-readable in ASCII).
+#' 
+#' \code{SSMbespoke} function is similar to \code{\link{SSMcustom}} but instead 
+#' of defining the model component directly via system matrices, it wraps an 
+#' arbitrary user-defined function which should return the output from 
+#' \code{\link{SSMcustom}}.
+#' For more details, see package vignette.
 #'
 #' @export
 #' @importFrom stats terms update.formula drop.terms model.response model.matrix delete.response update.formula
 #' @rdname SSModel
 #' @name SSModel
-#' @seealso \code{\link{KFAS}} for more examples.
+#' @seealso \code{\link{KFAS}} for more examples and \code{link{SSMbespoke}} for 
+#'   an alternative way of creating custom components.
 #' @param formula An object of class \code{\link{formula}} containing the
 #'   symbolic description of the model. The intercept term can be removed with
 #'   \code{-1} as in \code{lm}. In case of trend or differenced arima component the
@@ -253,7 +258,7 @@ SSModel <- function(formula, data, H, u, distribution,
   mf[[1L]] <- as.name("model.frame")
   mf$na.action <- as.name("na.pass")
   components <- c("SSMregression", "SSMtrend", "SSMseasonal", "SSMcycle",
-    "SSMarima", "SSMcustom")
+    "SSMarima", "SSMcustom", "SSMbespoke")
 
   all_terms <- terms_out <- terms(formula, specials = components, data = data)
   specials <- attr(all_terms, "specials")

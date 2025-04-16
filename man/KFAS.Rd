@@ -599,3 +599,7 @@ See also \code{\link{logLik}}, \code{\link{fitSSM}},
 \code{\link{GlobalTemp}}, \code{\link{SSModel}},
 \code{\link{importanceSSM}}, \code{\link{approxSSM}} for more examples.
 }
+\author{
+\strong{Maintainer}: Jouni Helske \email{jouni.helske@iki.fi} (\href{https://orcid.org/0000-0001-7130-793X}{ORCID})
+
+}

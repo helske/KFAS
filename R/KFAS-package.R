@@ -592,7 +592,7 @@
 #'
 #' }
 #'
-NULL
+"_PACKAGE"
 #' Oxford-Cambridge boat race results 1829-2011
 #'
 #' Results of the annual boat race between universities of Oxford (0) and Cambridge (1).
