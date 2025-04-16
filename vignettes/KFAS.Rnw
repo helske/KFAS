@@ -47,9 +47,7 @@ State space modelling is an efficient and flexible method for statistical infere
 %% in the following format:
 \Address{
 Jouni Helske\\
-University of Jyv\"askyl\"a\\
-Department of Mathematics and Statistics\\
-40014 Jyv\"askyl\"a, Finland\\
+University of Turku\\
 E-mail: \email{Jouni.Helske@iki.fi}
 }
 %% It is also possible to add a telephone and fax number

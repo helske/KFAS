@@ -1,7 +1,8 @@
 Changes from version 1.5.1 to 1.6.0
    * Added a new function `SSMbespoke` to be used inside `SSModel`. This allows
      users to abstract the functionality of `SSMcustom` via their own bespoke 
-     function using, e.g., `SSMbespoke(myfun()) in the model formula.
+     function using, e.g., `SSMbespoke(myfun()) in the model formula. Thank you 
+     Matteo Pelagatti for the suggestion.
 
 Changes from version 1.5.0 to 1.5.1
    * Added explicit alias for KFAS-package due to changes in roxygen2.
