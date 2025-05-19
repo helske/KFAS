@@ -63,7 +63,18 @@ jobs:
       - name: Setup TeX Live
         uses: teatimeguest/setup-texlive-action@v3
         with:
-          packages: scheme-basic
+          packages: |
+            scheme-basic
+            amsmath
+            natbib
+            inputenc
+            fontenc
+            babel
+            graphicx
+            a4wide
+            color
+            ae
+            fancyvrb
       - uses: r-hub/actions/run-check@v1
         with:
           token: ${{ secrets.RHUB_TOKEN }}
@@ -96,7 +107,18 @@ jobs:
       - name: Setup TeX Live
         uses: teatimeguest/setup-texlive-action@v3
         with:
-          packages: scheme-basic
+          packages: |
+            scheme-basic
+            amsmath
+            natbib
+            inputenc
+            fontenc
+            babel
+            graphicx
+            a4wide
+            color
+            ae
+            fancyvrb
       - uses: r-hub/actions/run-check@v1
         with:
           job-config: ${{ matrix.config.job-config }}
