@@ -19,6 +19,7 @@
   maxiter = 50,
   filtered = FALSE,
   expected = FALSE,
+  u_new,
   ...
 )
 }
@@ -72,6 +73,10 @@ algorithm of Durbin & Koopman (1997), whereas \code{TRUE} uses the expected valu
 of observations in the equations, leading to results which match with \code{glm} (where applicable).
 The latter case was the default behaviour of KFAS before version 1.3.8.
 Essentially this is the difference between observed and expected information in GLM context.}
+
+\item{u_new}{For non-Gaussian models, optional vector of length matching the 
+number of observation series. This defines the 'u' component to be used
+together with \code{n.ahead} argument.}
 
 \item{\dots}{Ignored.}
 }
