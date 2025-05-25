@@ -35,13 +35,16 @@ expected, htol)
     double precision, intent(inout), dimension((p-1)*smoothy+1,(p-1)*smoothy+1,(n-1)*smoothy+1) :: yvar
     double precision, intent(inout), dimension((p-1)*smooths+1,(n-1)*smooths+1) :: thetahat
     double precision, intent(inout), dimension((p-1)*smooths+1,(p-1)*smooths+1,(n-1)*smooths+1) :: thetavar
-    double precision, dimension(smootha*m+(1-smootha)*p,n,4*nsim) :: sim
-    double precision, dimension(smootha*p+(1-smootha),n,4*nsim*smootha+(1-smootha)) :: osim
-    double precision, dimension(n,4*nsim) :: w
     double precision, dimension(p,m) :: pm
-    double precision, external :: ddot
+    double precision, dimension(:,:,:), allocatable :: sim
+    double precision, dimension(:,:,:), allocatable :: osim
+    double precision, dimension(:,:), allocatable :: w
 
+    double precision, external :: ddot
     external isamplefilter, covmeanwprotect, dgemv, dsymm, dgemm, covmeanw
+    
+    allocate(w(n,4*nsim))
+    allocate(sim(smootha*m+(1-smootha)*p,n,4*nsim))
 
     if(smootha.EQ.1) then
 
@@ -67,6 +70,7 @@ expected, htol)
         end if
 
         if(smoothy.EQ.1) then
+            allocate(osim(smootha*p+(1-smootha),n,4*nsim*smootha+(1-smootha)))
             do t = 1, n
                 do j = 1,p
                     call dgemv('t',m,4*nsim,1.0d0,sim(:,t,:),m,zt(j,:,(t-1)*timevar(1)+1),1,0.0d0,osim(j,t,:),1)
@@ -90,6 +94,7 @@ expected, htol)
             do t=1,n
                 call covmeanw(osim(:,t,:),w(t,:),p,1,4*nsim,yhat(:,t),yvar(:,:,t))
             end do
+            deallocate(osim)
         end if
     else
         call isamplefilter(yt, ymiss, timevar, zt, tt, rtv, qt, a1, p1,p1inf, u, dist, &
@@ -129,6 +134,7 @@ expected, htol)
                 call covmeanw(sim(:,t,:),w(t,:),p,1,4*nsim,yhat(:,t),yvar(:,:,t))
             end do
         end if
-
     end if
+    deallocate(sim)
+    deallocate(w)
 end subroutine ngfilter

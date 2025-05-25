@@ -30,13 +30,13 @@ aplus1,c,tol,info,antithetics,w,sim,simwhat,simdim, expected, htol)
     double precision, intent(inout), dimension(n,p) :: theta
     double precision, dimension(p,p,n) :: ht
     double precision, intent(inout), dimension(simdim,n,3 * nsim * antithetics + nsim) :: sim
-    double precision, dimension(p,(3 * nsim * antithetics + nsim)*(5-simwhat)) :: tsim
     double precision, dimension(n,p) :: ytilde
     double precision, dimension(n) :: tmp
-    double precision, dimension(3 * nsim * antithetics + nsim) :: w
+    double precision, intent(inout), dimension(3 * nsim * antithetics + nsim) :: w
     double precision :: diff
     double precision, external :: ddot
     double precision :: lik
+    double precision, dimension(:,:), allocatable :: tsim
 
     external approx, simgaussian
 
@@ -112,6 +112,8 @@ aplus1,c,tol,info,antithetics,w,sim,simwhat,simdim, expected, htol)
         end do
 
     else
+    
+        allocate(tsim(p,(3 * nsim * antithetics + nsim)*(5-simwhat)))
         do j=1,p
             select case(dist(j))
                 case(2)    !poisson
@@ -165,9 +167,7 @@ aplus1,c,tol,info,antithetics,w,sim,simwhat,simdim, expected, htol)
                     end do
             end select
         end do
-
-
+        deallocate(tsim)
     end if
-
    
 end subroutine isample

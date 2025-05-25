@@ -31,10 +31,10 @@ subroutine ngloglik(yt, ymiss, timevar, zt, tt, rtv, qt, a1, p1,p1inf, p,m, &
     double precision, intent(inout), dimension(p,n,nsim) :: epsplus
     double precision, intent(inout), dimension(r,n,nsim) :: etaplus
     double precision, intent(inout) :: lik
-    double precision, dimension(p,n,nsim2) :: tsim
     double precision, dimension(n) :: tmp
-    double precision, dimension(nsim2) :: w
     double precision, intent(inout) :: diff
+    double precision, dimension(:), allocatable :: w
+    double precision, dimension(:,:,:), allocatable :: tsim
     double precision, external :: ddot
 
     external approx, marginalxx, dpoisf, dnormf, dbinomf, dgammaf, dnbinomf, simgaussian
@@ -93,7 +93,8 @@ subroutine ngloglik(yt, ymiss, timevar, zt, tt, rtv, qt, a1, p1,p1inf, p,m, &
     end do
 
     if(sim .EQ. 1) then
-
+        allocate(w(nsim))
+        allocate(tsim(p, n, nsim2))
         w=1.0d0
         info2 = 0
 
@@ -151,7 +152,8 @@ subroutine ngloglik(yt, ymiss, timevar, zt, tt, rtv, qt, a1, p1,p1inf, p,m, &
             info = info2
             return
         end if
-
+        deallocate(tsim)
+        deallocate(w)
     end if
 
 end subroutine ngloglik

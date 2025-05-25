@@ -35,13 +35,15 @@ convtol,alphahat,alphavar,thetahat,thetavar,yhat,yvar,smootha,smooths,smoothy&
     double precision, intent(inout), dimension((p-1)*smoothy+1,(p-1)*smoothy+1,(n-1)*smoothy+1) :: yvar
     double precision, intent(inout), dimension((p-1)*smooths+1,(n-1)*smooths+1) :: thetahat
     double precision, intent(inout), dimension((p-1)*smooths+1,(p-1)*smooths+1,(n-1)*smooths+1) :: thetavar
-    double precision, dimension(smootha*m+(1-smootha)*p,n,4*nsim) :: sim
-    double precision, dimension(smootha*p+(1-smootha),n,4*nsim*smootha+(1-smootha)) :: osim
-    double precision, dimension(4*nsim) :: w
     double precision, dimension(p,m) :: pm
+    double precision, dimension(:,:,:), allocatable :: sim
+    double precision, dimension(:,:,:), allocatable :: osim
+    double precision, dimension(:), allocatable :: w
     double precision, external :: ddot
-
     external isample, covmeanwprotect, dgemv, dsymm, dgemm, covmeanw
+    
+    allocate(sim(smootha*m+(1-smootha)*p,n,4*nsim))
+    allocate(w(4*nsim))
 
     if(smootha.EQ.1) then
 
@@ -66,6 +68,7 @@ convtol,alphahat,alphavar,thetahat,thetavar,yhat,yvar,smootha,smooths,smoothy&
         end if
 
         if(smoothy.EQ.1) then
+            allocate(osim(smootha*p+(1-smootha),n,4*nsim*smootha+(1-smootha)))
             do t = 1, n
                 do j = 1,p
                     call dgemv('t',m,4*nsim,1.0d0,sim(:,t,:),m,zt(j,:,(t-1)*timevar(1)+1),1,0.0d0,osim(j,t,:),1)
@@ -86,6 +89,8 @@ convtol,alphahat,alphavar,thetahat,thetavar,yhat,yvar,smootha,smooths,smoothy&
                 end select
             end do
             call covmeanw(osim,w,p,n,4*nsim,yhat,yvar)
+            
+           deallocate(osim)
         end if
     else
         call isample(yt, ymiss, timevar, zt, tt, rtv, qt, a1, p1,p1inf, u, dist, &
@@ -120,5 +125,6 @@ convtol,alphahat,alphavar,thetahat,thetavar,yhat,yvar,smootha,smooths,smoothy&
         end if
 
     end if
-
+    deallocate(sim)
+    deallocate(w)
 end subroutine ngsmooth

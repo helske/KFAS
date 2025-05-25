@@ -9,6 +9,8 @@ Changes from version 1.5.1 to 1.6.0
      `n.ahead` to define constant (series-specific) `u` for future predictions, 
      thus avoiding the need for the `newdata` if model is otherwise 
      time-invariant.
+   * Adjustments to Fortran codes to deal with optimizations of the flang 
+     compiler which lead to importance sampling to crash due to stack overflow.
 
 Changes from version 1.5.0 to 1.5.1
    * Added explicit alias for KFAS-package due to changes in roxygen2.

@@ -30,21 +30,21 @@ aplus1,c,tol,info,antithetics,w,sim,simwhat,simdim, expected, htol)
     double precision, intent(inout), dimension(n,p) :: theta
     double precision, dimension(p,p,n) :: ht
     double precision, intent(inout), dimension(simdim,n,3 * nsim * antithetics + nsim) :: sim
-    double precision, dimension(p,(3 * nsim * antithetics + nsim)*(5-simwhat)) :: tsim
+    double precision, intent(inout), dimension(n,3 * nsim * antithetics + nsim) :: w
     double precision, dimension(n,p) :: ytilde
     double precision, dimension(n) :: tmp
-    double precision, dimension(n,3 * nsim * antithetics + nsim) :: w
     double precision, external :: ddot
 
     integer, dimension(n,p) :: ymiss2
     double precision, dimension(p,n,nsim) :: epsplus2
     double precision, dimension(r,n,nsim) :: etaplus2
     double precision, dimension(m,nsim) :: aplus12
-    double precision, dimension(simdim,n,3 * nsim * antithetics + nsim) :: sim2
     double precision :: diff
     double precision :: lik
-
+    double precision, dimension(:,:), allocatable :: tsim
+    double precision, dimension(:,:,:), allocatable :: sim2
     external approx, simgaussian
+    allocate(sim2(simdim,n,3 * nsim * antithetics + nsim))
 
     ht=0.0d0
     ytilde=0.0d0
@@ -155,6 +155,7 @@ aplus1,c,tol,info,antithetics,w,sim,simwhat,simdim, expected, htol)
             end do
 
         else
+            allocate(tsim(p,(3 * nsim * antithetics + nsim)*(5-simwhat)))
             do j=1,p
                 select case(dist(j))
                     case(2)    !poisson
@@ -208,9 +209,10 @@ aplus1,c,tol,info,antithetics,w,sim,simwhat,simdim, expected, htol)
                         end do
                 end select
             end do
+            deallocate(tsim)
         end if
         sim(:,i+1,:) = sim2(:,i+1,:)
     end do
     maxiter=maxitermax
-   
+    deallocate(sim2)
 end subroutine isamplefilter

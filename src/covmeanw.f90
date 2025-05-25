@@ -29,27 +29,31 @@ subroutine covmeanwprotect(x,w,m,n,k,meanx,covx)
 
     implicit none
     integer, intent(in) :: m, n, k
-    integer :: t,i
+    integer :: t,i,j,l
     double precision, intent(in), dimension(m,n,k) :: x
     double precision, intent(in), dimension(k) :: w
     double precision, intent(inout), dimension(m,n) :: meanx
     double precision, intent(inout), dimension(m,m,n) :: covx
-    double precision, dimension(m,n,k) :: x2
+    double precision, dimension(:,:), allocatable :: x2
 
     external dgemm
-
-
-    do i = 1, k
-        meanx = meanx + x(:,:,i)*w(i)
+     do i = 1, k
+        do j = 1, m
+          do l = 1,n
+              meanx(j, l) = meanx(j,l)+x(j,l,i)*w(i)
+          end do
+        end do
     end do
-    do i = 1, k
-        x2(:,:,i) = sqrt(w(i))*(x(:,:,i) - meanx)
-    end do
-
+    allocate(x2(m,k))
     do t = 1, n
-        call dgemm('n','t',m,m,k,1.0d0,x2(:,t,:),m,x2(:,t,:),m,0.0d0,covx(:,:,t),m)
+        do i = 1, k
+          do j = 1, m
+              x2(j, i) = sqrt(w(i))*(x(j,t,i) - meanx(j,t))
+          end do
+        end do
+        call dgemm('n','t',m,m,k,1.0d0,x2,m,x2,m,0.0d0,covx(:,:,t),m)
     end do
-
+    deallocate(x2)
 end subroutine covmeanwprotect
 
 subroutine varmeanw(x,w,m,n,k,meanx,varx,var)
