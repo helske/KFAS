@@ -1015,7 +1015,7 @@ r_{t,i-1} &= Z_{t,i}^\top v_{t,i}F_{t,i}^{-1} + L_{t,i}^\top r_{t,i}, \\
 r_{t-1,p_t} &= T_{t-1}^\top r_{t,0},\\
 N_{t,i-1} &= Z_{t,i}^\top Z_{t,i}F_{t,i}^{-1} +L_{t,i}^\top N_{t,i}L_{t,i},\\
 N_{t-1,p_t} &= T_{t-1}^\top N_{t,0}T_{t-1},\\
-L_{t,i} &= I - K_{t,i}Z_{t,i}^\top F_{t,i}^{-1},
+L_{t,i} &= I - K_{t,i}Z_{t,i} F_{t,i}^{-1},
 \end{aligned}
 \end{equation*}
 for $t=n,\ldots,1$ and $i=p_t,\ldots,1$, with $r_{n,p_n}=0$ and $N_{n,p_n}=0$.

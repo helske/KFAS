@@ -1,3 +1,6 @@
+Changes from version 1.6.0 to 1.6.1
+   * Fixed a typo in the smoothing recursion formulas of the vignette 
+   (extra transpose in equation for L).
 Changes from version 1.5.1 to 1.6.0
    * Added a new function `SSMbespoke` to be used inside `SSModel`. This allows
      users to abstract the functionality of `SSMcustom` via their own bespoke 
